@@ -8,6 +8,12 @@ const theme = {
     body: 'sans-serif',
     heading: 'sans-serif'
   },
+  fontWeights: {
+    normal: 400,
+    medium: 500,
+    semibold: 600,
+    bold: 700
+  },
   radii: {
     default: '6px'
   },
