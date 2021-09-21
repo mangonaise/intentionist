@@ -1,10 +1,10 @@
 import styled from '@emotion/styled';
-import { typography, TypographyProps } from 'styled-system';
+import { color, ColorProps, space, SpaceProps, typography, TypographyProps } from 'styled-system';
 
-type StyleProps = TypographyProps
+type StyleProps = SpaceProps & ColorProps & TypographyProps
 
 const Text = styled.p<StyleProps>({
   margin: 0
-}, typography)
+}, space, color, typography)
 
 export default Text
