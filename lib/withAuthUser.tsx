@@ -1,12 +1,12 @@
 import { User } from '@firebase/auth'
 import { observer } from 'mobx-react-lite'
 import { useRouter } from 'next/dist/client/router'
-import { useEffect } from 'react'
+import { createContext, useEffect } from 'react'
 import authHandler from './auth'
 
-type WrappedComponentUsingAuth = (props: { user: User }) => JSX.Element
+export const AuthUserContext = createContext<User>(null!)
 
-const withAuth = (WrappedComponent: WrappedComponentUsingAuth) => observer(() => {
+const withAuthUser = (WrappedComponent: () => JSX.Element) => observer(() => {
   const router = useRouter()
 
   useEffect(() => {
@@ -16,7 +16,11 @@ const withAuth = (WrappedComponent: WrappedComponentUsingAuth) => observer(() =>
   }, [authHandler.user])
 
   if (!authHandler.user) return null
-  return <WrappedComponent user={authHandler.user} />
+  return (
+    <AuthUserContext.Provider value={authHandler.user}>
+      <WrappedComponent />
+    </AuthUserContext.Provider>
+  )
 })
 
-export default withAuth
+export default withAuthUser

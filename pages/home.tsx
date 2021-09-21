@@ -1,12 +1,15 @@
+import { useContext } from 'react'
+import withAuthUser, { AuthUserContext } from '@/lib/withAuthUser'
+import authHandler from '@/lib/auth'
 import Head from 'next/head'
 import Button from '@/components/primitives/Button'
 import CenteredFlex from '@/components/primitives/CenteredFlex'
 import Heading from '@/components/primitives/Heading'
 import Text from '@/components/primitives/Text'
-import authHandler from '@/lib/auth'
-import withAuth from '@/lib/withAuth'
 
-const Home = withAuth(({ user }) => {
+const Home = withAuthUser(() => {
+  const user = useContext(AuthUserContext)
+
   return (
     <CenteredFlex height="90vh" flexDirection="column">
       <Head><title>Home</title></Head>
