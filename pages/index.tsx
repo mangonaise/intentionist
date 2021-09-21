@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { useRouter } from 'next/dist/client/router'
 import { useEffect, useState } from 'react'
 import authHandler from '@/lib/auth'
+import Head from 'next/head'
 import Icon from '@/components/primitives/Icon'
 import IconButton from '@/components/primitives/IconButton'
 import IntentionistIcon from '@/components/icons/IntentionistIcon'
@@ -24,6 +25,7 @@ const LandingPage: NextPage = () => {
 
   return (
     <CenteredFlex height="90vh" flexDirection="column">
+      <Head><title>Intentionist | Social habit tracker and journal</title></Head>
       <Icon icon={IntentionistIcon} fontSize="4rem" mb={8} />
       <IconButton icon={GoogleIcon} onClick={() => authHandler.signInWithGoogle()}>
         Continue with Google
