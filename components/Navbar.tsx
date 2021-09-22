@@ -14,7 +14,7 @@ const Navbar = () => {
   return (
     <FadeIn maxWidth="max" margin="auto">
       <Flex alignItems="center" mb={[4]} py={[0, 0, 4]}>
-        <Icon icon={IntentionistIcon} fontSize={['2rem', '3rem']} mr={[4, 5, 6]} />
+        <Icon icon={IntentionistIcon} fontSize={['2rem', '3rem']} mr={[4, 5, 6]} color="accent" />
         <Heading as="p" fontSize={['1.5rem', '2rem']} fontWeight={650} letterSpacing="0.03ch">
           intentionist
         </Heading>

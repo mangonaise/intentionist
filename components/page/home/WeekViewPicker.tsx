@@ -1,4 +1,6 @@
 import { observer } from 'mobx-react-lite'
+import { useEffect } from 'react'
+import { setAccentColor } from 'styles/theme'
 import weeksHandler, { WeekView } from '@/lib/app/weeksHandler'
 import CalendarIcon from '@/components/icons/CalendarIcon'
 import JournalIcon from '@/components/icons/JournalIcon'
@@ -15,6 +17,10 @@ const buttonData: Array<{ view: WeekView, text: string, icon: () => JSX.Element 
 const WeekViewPicker = () => {
   const { view, setView } = weeksHandler()
 
+  useEffect(() => {
+    setAccentColor(view)
+  }, [view])
+
   return (
     <Flex>
       {buttonData.map((data, index) => (
@@ -23,8 +29,7 @@ const WeekViewPicker = () => {
           onClick={() => setView(data.view)}
           flex={1}
           mr={index < 2 ? 3 : 0}
-          bg={data.view === view ? '' : 'transparent'}
-          style={{ transition: 'background-color 150ms' }}
+          bg={data.view === view ? 'var(--accent-color)' : ''}
           key={data.view}
         >
           {data.text}

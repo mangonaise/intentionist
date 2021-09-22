@@ -18,6 +18,7 @@ const background = ({ bg }: CustomProps) => ({
 
 const Button = styled.button<ButtonProps>({
   cursor: 'pointer',
+  userSelect: 'none',
   padding: '0.7rem 1rem',
   border: 'none',
   color: 'inherit',
@@ -26,6 +27,7 @@ const Button = styled.button<ButtonProps>({
   fontWeight: 450,
   borderRadius: theme.radii.default,
   backgroundColor: theme.colors.button,
+  transition: 'var(--focus-transition), background-color 180ms'
 }, background, space, flexbox, typography, color, border)
 
 export default Button

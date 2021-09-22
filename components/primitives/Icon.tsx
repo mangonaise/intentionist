@@ -1,17 +1,17 @@
 import styled from '@emotion/styled'
 import { HTMLAttributes } from 'react'
-import { space, SpaceProps, typography, TypographyProps } from 'styled-system'
+import { color, ColorProps, space, SpaceProps, typography, TypographyProps } from 'styled-system'
 
 interface CustomProps extends HTMLAttributes<HTMLDivElement> {
   icon: () => JSX.Element
 }
-type StyleProps = SpaceProps & TypographyProps
+type StyleProps = SpaceProps & ColorProps & TypographyProps
 type IconProps = CustomProps & StyleProps
 
 const IconWrapper = styled.div<StyleProps>({
   display: 'inline-flex',
   verticalAlign: 'bottom'
-}, space, typography)
+}, space, color, typography)
 
 const Icon = ({ icon, ...props }: IconProps) => {
   const IconComponent = icon

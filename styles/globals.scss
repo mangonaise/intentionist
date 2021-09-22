@@ -11,21 +11,28 @@
   --text-color: white;
   --button-color: rgba(255, 255, 255, 0.06);
   --button-highlight-color: rgba(255, 255, 255, 0.08);
-  --focus-color: rgba(255, 255, 255, 0.6);
+  --focus-color: rgba(255, 255, 255, 0.75);
+  --focus-transition: box-shadow 200ms ease;
+  --tracker-accent-color: #608FAF;
+  --journal-accent-color: #609A6A;
+  --focus-accent-color: #BB636F;
 }
 
 html,
 body {
+  height: 100%;
   padding: 0.5rem;
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, "Helvetica Neue", sans-serif;
   color: var(--text-color);
+  background: linear-gradient(to bottom, var(--accent-color) var(--accent-gradient-offset), transparent 150px);
+  background-repeat: no-repeat;
   background-color: var(--background-color);
 
-  :focus {
+  :focus {      
     outline: none;
     box-shadow: 0 0 0 3px var(--focus-color);
-    transition: box-shadow 200ms ease;
+    transition: var(--focus-transition);
     &:not(:focus-visible) {
       outline: none;
       box-shadow: none;
