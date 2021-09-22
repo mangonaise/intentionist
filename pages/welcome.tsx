@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useRouter } from 'next/dist/client/router'
 import { FormEvent, useEffect, useState } from 'react'
+import Head from 'next/head'
 import BackIcon from '@/components/icons/BackIcon'
 import LoadingScreen from '@/components/LoadingScreen'
 import FadeIn from '@/components/primitives/FadeIn'
@@ -34,7 +35,8 @@ const NewUserPage = withAuthUser(observer(({ authUser }) => {
   if (profileInfo === undefined) return <LoadingScreen />
   return (
     <FadeIn>
-      <IconButton m={4} icon={BackIcon} onClick={authHandler.handleSignOut} />
+      <Head><title>Welcome</title></Head>
+      <IconButton icon={BackIcon} onClick={authHandler.handleSignOut} />
       <CenteredFlex flexDirection="column" width={['100%', '25rem']} minHeight="50vh" margin="auto">
         <Heading as="h1" mb={3}>Hello! 👋</Heading>
         <Text mb={8} textAlign="center">Welcome to intentionist.</Text>

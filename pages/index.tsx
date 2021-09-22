@@ -26,8 +26,8 @@ const LandingPage: NextPage = () => {
   if (hide) return <LoadingScreen />
   return (
     <FadeIn>
+      <Head><title>Intentionist | Social habit tracker and journal</title></Head>
       <CenteredFlex height="90vh" flexDirection="column">
-        <Head><title>Intentionist | Social habit tracker and journal</title></Head>
         <Icon icon={IntentionistIcon} fontSize="4rem" mb={8} />
         <IconButton icon={GoogleIcon} onClick={authHandler.signInWithGoogle}>
           Continue with Google
