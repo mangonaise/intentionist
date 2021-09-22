@@ -10,7 +10,7 @@ import IntentionistIcon from '@/components/icons/IntentionistIcon'
 import GoogleIcon from '@/components/icons/GoogleIcon'
 import CenteredFlex from '@/components/primitives/CenteredFlex'
 import LoadingScreen from '@/components/LoadingScreen'
-import PageWrapper from '@/components/PageWrapper'
+import FadeIn from '@/components/primitives/FadeIn'
 
 const LandingPage: NextPage = () => {
   const [hide, setHide] = useState(false)
@@ -24,9 +24,8 @@ const LandingPage: NextPage = () => {
   }, [authHandler.user])
 
   if (hide) return <LoadingScreen />
-
   return (
-    <PageWrapper>
+    <FadeIn>
       <CenteredFlex height="90vh" flexDirection="column">
         <Head><title>Intentionist | Social habit tracker and journal</title></Head>
         <Icon icon={IntentionistIcon} fontSize="4rem" mb={8} />
@@ -34,7 +33,7 @@ const LandingPage: NextPage = () => {
           Continue with Google
         </IconButton>
       </CenteredFlex >
-    </PageWrapper>
+    </FadeIn>
   )
 }
 

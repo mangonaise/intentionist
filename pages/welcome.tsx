@@ -3,7 +3,7 @@ import { useRouter } from 'next/dist/client/router'
 import { FormEvent, useEffect, useState } from 'react'
 import BackIcon from '@/components/icons/BackIcon'
 import LoadingScreen from '@/components/LoadingScreen'
-import PageWrapper from '@/components/PageWrapper'
+import FadeIn from '@/components/primitives/FadeIn'
 import Button from '@/components/primitives/Button'
 import CenteredFlex from '@/components/primitives/CenteredFlex'
 import Flex from '@/components/primitives/Flex'
@@ -30,9 +30,10 @@ const NewUserPage = withAuthUser(observer(({ authUser }) => {
     profileHandler().updateUserProfile({ displayName })
   }
 
-  if (profileInfo !== null) return <LoadingScreen />
+  if (profileInfo) return null
+  if (profileInfo === undefined) return <LoadingScreen />
   return (
-    <PageWrapper>
+    <FadeIn>
       <IconButton m={4} icon={BackIcon} onClick={authHandler.handleSignOut} />
       <CenteredFlex flexDirection="column" width={['100%', '25rem']} minHeight="50vh" margin="auto">
         <Heading as="h1" mb={3}>Hello! 👋</Heading>
@@ -53,7 +54,7 @@ const NewUserPage = withAuthUser(observer(({ authUser }) => {
           <Button type="submit">Start</Button>
         </Flex>
       </CenteredFlex>
-    </PageWrapper>
+    </FadeIn>
   )
 }))
 

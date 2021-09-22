@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import authHandler from './auth'
 import LoadingScreen from '@/components/LoadingScreen'
 
-type WrappedComponent = ({ authUser }: { authUser: User }) => JSX.Element
+type WrappedComponent = ({ authUser }: { authUser: User }) => JSX.Element | null
 
 const withAuthUser = (WrappedComponent: WrappedComponent) => observer(() => {
   useEffect(() => {
