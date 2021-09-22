@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import profileHandler from './app/profileHandler'
 import withAuthUser from './withAuthUser'
 import LoadingScreen from '@/components/LoadingScreen'
+import Navbar from '@/components/Navbar'
 
 const withApp = (WrappedComponent: () => JSX.Element) => withAuthUser(observer(() => {
   const router = useRouter()
@@ -16,7 +17,12 @@ const withApp = (WrappedComponent: () => JSX.Element) => withAuthUser(observer((
   }, [profileInfo])
 
   if (!profileInfo) return <LoadingScreen />
-  return <WrappedComponent />
+  return (
+    <>
+      <Navbar />
+      <WrappedComponent />
+    </>
+  )
 }))
 
 export default withApp
