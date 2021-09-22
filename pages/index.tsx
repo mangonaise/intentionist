@@ -10,6 +10,7 @@ import IntentionistIcon from '@/components/icons/IntentionistIcon'
 import GoogleIcon from '@/components/icons/GoogleIcon'
 import CenteredFlex from '@/components/primitives/CenteredFlex'
 import LoadingScreen from '@/components/LoadingScreen'
+import PageWrapper from '@/components/PageWrapper'
 
 const LandingPage: NextPage = () => {
   const [hide, setHide] = useState(false)
@@ -25,13 +26,15 @@ const LandingPage: NextPage = () => {
   if (hide) return <LoadingScreen />
 
   return (
-    <CenteredFlex height="90vh" flexDirection="column">
-      <Head><title>Intentionist | Social habit tracker and journal</title></Head>
-      <Icon icon={IntentionistIcon} fontSize="4rem" mb={8} />
-      <IconButton icon={GoogleIcon} onClick={authHandler.signInWithGoogle}>
-        Continue with Google
-      </IconButton>
-    </CenteredFlex >
+    <PageWrapper>
+      <CenteredFlex height="90vh" flexDirection="column">
+        <Head><title>Intentionist | Social habit tracker and journal</title></Head>
+        <Icon icon={IntentionistIcon} fontSize="4rem" mb={8} />
+        <IconButton icon={GoogleIcon} onClick={authHandler.signInWithGoogle}>
+          Continue with Google
+        </IconButton>
+      </CenteredFlex >
+    </PageWrapper>
   )
 }
 

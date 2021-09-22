@@ -1,6 +1,9 @@
+import { observer } from 'mobx-react-lite'
+import { useRouter } from 'next/dist/client/router'
+import { FormEvent, useEffect, useState } from 'react'
 import BackIcon from '@/components/icons/BackIcon'
 import LoadingScreen from '@/components/LoadingScreen'
-import Box from '@/components/primitives/Box'
+import PageWrapper from '@/components/PageWrapper'
 import Button from '@/components/primitives/Button'
 import CenteredFlex from '@/components/primitives/CenteredFlex'
 import Flex from '@/components/primitives/Flex'
@@ -12,9 +15,6 @@ import Text from '@/components/primitives/Text'
 import profileHandler from '@/lib/app/profileHandler'
 import authHandler from '@/lib/auth'
 import withAuthUser from '@/lib/withAuthUser'
-import { observer } from 'mobx-react-lite'
-import { useRouter } from 'next/dist/client/router'
-import { FormEvent, useEffect, useState } from 'react'
 
 const NewUserPage = withAuthUser(observer(({ authUser }) => {
   const router = useRouter()
@@ -32,7 +32,7 @@ const NewUserPage = withAuthUser(observer(({ authUser }) => {
 
   if (profileInfo !== null) return <LoadingScreen />
   return (
-    <Box>
+    <PageWrapper>
       <IconButton m={4} icon={BackIcon} onClick={authHandler.handleSignOut} />
       <CenteredFlex flexDirection="column" width={['100%', '25rem']} minHeight="50vh" margin="auto">
         <Heading as="h1" mb={3}>Hello! 👋</Heading>
@@ -53,7 +53,7 @@ const NewUserPage = withAuthUser(observer(({ authUser }) => {
           <Button type="submit">Start</Button>
         </Flex>
       </CenteredFlex>
-    </Box>
+    </PageWrapper>
   )
 }))
 
