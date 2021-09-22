@@ -1,11 +1,11 @@
 import { User } from '@firebase/auth'
 import { observer } from 'mobx-react-lite'
-import { createContext, useEffect } from 'react'
+import { useEffect } from 'react'
 import authHandler from './auth'
 
-export const AuthUserContext = createContext<User>(null!)
+type WrappedComponent = ({ authUser }: { authUser: User }) => JSX.Element | null
 
-const withAuthUser = (WrappedComponent: () => JSX.Element) => observer(() => {
+const withAuthUser = (WrappedComponent: WrappedComponent) => observer(() => {
   useEffect(() => {
     if (!authHandler.cachedAuthState) {
       window.location.assign('/')
@@ -14,9 +14,7 @@ const withAuthUser = (WrappedComponent: () => JSX.Element) => observer(() => {
 
   if (!authHandler.user) return null
   return (
-    <AuthUserContext.Provider value={authHandler.user}>
-      <WrappedComponent />
-    </AuthUserContext.Provider>
+    <WrappedComponent authUser={authHandler.user} />
   )
 })
 

@@ -27,7 +27,7 @@ const LandingPage: NextPage = () => {
     <CenteredFlex height="90vh" flexDirection="column">
       <Head><title>Intentionist | Social habit tracker and journal</title></Head>
       <Icon icon={IntentionistIcon} fontSize="4rem" mb={8} />
-      <IconButton icon={GoogleIcon} onClick={() => authHandler.signInWithGoogle()}>
+      <IconButton icon={GoogleIcon} onClick={authHandler.signInWithGoogle}>
         Continue with Google
       </IconButton>
     </CenteredFlex >

@@ -1,5 +1,5 @@
-import { useContext } from 'react'
-import withAuthUser, { AuthUserContext } from '@/lib/withAuthUser'
+import withApp from '@/lib/withApp'
+import profileHandler from '@/lib/app/profileHandler'
 import authHandler from '@/lib/auth'
 import Head from 'next/head'
 import Button from '@/components/primitives/Button'
@@ -7,16 +7,15 @@ import CenteredFlex from '@/components/primitives/CenteredFlex'
 import Heading from '@/components/primitives/Heading'
 import Text from '@/components/primitives/Text'
 
-const Home = withAuthUser(() => {
-  const user = useContext(AuthUserContext)
-
+const Home = withApp(() => {
   return (
     <CenteredFlex height="90vh" flexDirection="column">
       <Head><title>Home</title></Head>
       <Heading mb={6}>Home</Heading>
-      <Text>This page is only visible to authenticated users.</Text>
-      <Text mb={6}>You are signed in as <Text as="span" color="skyblue">{user.displayName}</Text>.</Text>
-      <Button onClick={() => authHandler.handleSignOut()}>Sign out</Button>
+      <Text>This page is only visible to users with a profile in the database.</Text>
+      <Text>If there is no profile, you will be redirected to the /welcome page.</Text>
+      <Text mb={6}>Your display name: {profileHandler().profileInfo?.displayName}</Text>
+      <Button onClick={authHandler.handleSignOut}>Sign out</Button>
     </CenteredFlex>
   )
 })
