@@ -1,4 +1,5 @@
 import BackIcon from '@/components/icons/BackIcon'
+import LoadingScreen from '@/components/LoadingScreen'
 import Box from '@/components/primitives/Box'
 import Button from '@/components/primitives/Button'
 import CenteredFlex from '@/components/primitives/CenteredFlex'
@@ -29,11 +30,11 @@ const NewUserPage = withAuthUser(observer(({ authUser }) => {
     profileHandler().updateUserProfile({ displayName })
   }
 
-  if (profileInfo !== null) return null
+  if (profileInfo !== null) return <LoadingScreen />
   return (
     <Box>
       <IconButton m={4} icon={BackIcon} onClick={authHandler.handleSignOut} />
-      <CenteredFlex flexDirection="column" width={['100%', '25rem']} margin="auto">
+      <CenteredFlex flexDirection="column" width={['100%', '25rem']} minHeight="50vh" margin="auto">
         <Heading as="h1" mb={3}>Hello! 👋</Heading>
         <Text mb={8} textAlign="center">Welcome to intentionist.</Text>
         <Flex as="form" flexDirection="column" width="100%" px={4} onSubmit={handleSubmitUser}>

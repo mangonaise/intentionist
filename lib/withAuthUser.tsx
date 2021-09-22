@@ -2,8 +2,9 @@ import { User } from '@firebase/auth'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import authHandler from './auth'
+import LoadingScreen from '@/components/LoadingScreen'
 
-type WrappedComponent = ({ authUser }: { authUser: User }) => JSX.Element | null
+type WrappedComponent = ({ authUser }: { authUser: User }) => JSX.Element
 
 const withAuthUser = (WrappedComponent: WrappedComponent) => observer(() => {
   useEffect(() => {
@@ -12,7 +13,7 @@ const withAuthUser = (WrappedComponent: WrappedComponent) => observer(() => {
     }
   }, [authHandler.user])
 
-  if (!authHandler.user) return null
+  if (!authHandler.user) return <LoadingScreen />
   return (
     <WrappedComponent authUser={authHandler.user} />
   )

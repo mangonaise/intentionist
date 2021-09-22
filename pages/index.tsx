@@ -9,6 +9,7 @@ import IconButton from '@/components/primitives/IconButton'
 import IntentionistIcon from '@/components/icons/IntentionistIcon'
 import GoogleIcon from '@/components/icons/GoogleIcon'
 import CenteredFlex from '@/components/primitives/CenteredFlex'
+import LoadingScreen from '@/components/LoadingScreen'
 
 const LandingPage: NextPage = () => {
   const [hide, setHide] = useState(false)
@@ -21,7 +22,7 @@ const LandingPage: NextPage = () => {
     }
   }, [authHandler.user])
 
-  if (hide) return null
+  if (hide) return <LoadingScreen />
 
   return (
     <CenteredFlex height="90vh" flexDirection="column">

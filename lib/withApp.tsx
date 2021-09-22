@@ -3,6 +3,7 @@ import { useRouter } from 'next/dist/client/router'
 import { useEffect } from 'react'
 import profileHandler from './app/profileHandler'
 import withAuthUser from './withAuthUser'
+import LoadingScreen from '@/components/LoadingScreen'
 
 const withApp = (WrappedComponent: () => JSX.Element) => withAuthUser(observer(() => {
   const router = useRouter()
@@ -14,7 +15,7 @@ const withApp = (WrappedComponent: () => JSX.Element) => withAuthUser(observer((
     }
   }, [profileInfo])
 
-  if (!profileInfo) return null
+  if (!profileInfo) return <LoadingScreen />
   return <WrappedComponent />
 }))
 
