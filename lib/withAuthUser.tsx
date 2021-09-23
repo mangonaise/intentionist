@@ -2,7 +2,7 @@ import { User } from '@firebase/auth'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import authHandler from './auth'
-import LoadingScreen from '@/components/LoadingScreen'
+import LoadingScreen from '@/components/app/LoadingScreen'
 
 type WrappedComponent = ({ authUser }: { authUser: User }) => JSX.Element | null
 

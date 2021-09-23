@@ -27,7 +27,6 @@ const Button = styled.button<ButtonProps>({
   fontWeight: 450,
   borderRadius: theme.radii.default,
   backgroundColor: theme.colors.button,
-  transition: 'var(--focus-transition), background-color 180ms'
 }, background, space, flexbox, typography, color, border)
 
 export default Button

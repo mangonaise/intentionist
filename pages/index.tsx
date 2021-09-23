@@ -9,7 +9,7 @@ import IconButton from '@/components/primitives/IconButton'
 import IntentionistIcon from '@/components/icons/IntentionistIcon'
 import GoogleIcon from '@/components/icons/GoogleIcon'
 import CenteredFlex from '@/components/primitives/CenteredFlex'
-import LoadingScreen from '@/components/LoadingScreen'
+import LoadingScreen from '@/components/app/LoadingScreen'
 import FadeIn from '@/components/primitives/FadeIn'
 
 const LandingPage: NextPage = () => {
