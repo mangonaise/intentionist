@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import accentColorHandler, { AccentColor } from '@/lib/ui/accentColorHandler'
+import accentColorHandler, { AccentColor } from '@/logic/ui/accentColorHandler'
 import theme from 'styles/theme'
 import Box from '../primitives/Box'
 import FadeIn from '../primitives/FadeIn'

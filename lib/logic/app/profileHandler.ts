@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx'
-import authHandler from '../auth'
+import authHandler from './authHandler'
 import dbHandler from './dbHandler'
 
 export type ProfileInfo = {
@@ -11,21 +11,21 @@ class ProfileHandler {
   public profileInfo: ProfileInfo | null | undefined
 
   private constructor() {
-    this.fetchUserProfile()
     makeAutoObservable(this)
   }
 
-  private async fetchUserProfile() {
+  public fetchUserProfile = async () => {
+    if (this.profileInfo !== undefined) return
     const userDoc = await dbHandler().getUserDoc()
     runInAction(() => this.profileInfo = userDoc?.profile || null)
   }
 
-  public async updateUserProfile(info: ProfileInfo) {
+  public updateUserProfile = async (info: ProfileInfo) => {
     this.profileInfo = info
     await dbHandler().updateUserDoc('', { profile: info })
   }
 
-  public static getInstance() {
+  public static getInstance = () => {
     if (!ProfileHandler.instance) {
       if (!authHandler.user) throw new Error('Should not be instantiating profile handler when unauthenticated.')
       ProfileHandler.instance = new ProfileHandler()
