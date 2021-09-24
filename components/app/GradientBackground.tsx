@@ -25,10 +25,8 @@ const GradientBackground = () => {
           right={0}
           height="150px"
           opacity={data.name === activeColor ? 1 : 0}
-          style={{
-            background: `linear-gradient(to bottom, ${data.color} ${data.yOffset}, transparent 150px)`,
-            transition: 'opacity 250ms ease-out'
-          }}
+          background={`linear-gradient(to bottom, ${data.color} ${data.yOffset}, transparent 150px)`}
+          style={{ transition: 'opacity 250ms ease-out' }}
           key={data.name}
         />
       ))}
