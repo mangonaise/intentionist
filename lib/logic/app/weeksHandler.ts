@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import authHandler from '../auth'
+import authHandler from './authHandler'
 
 export type WeekView = 'tracker' | 'journal' | 'focus'
 
@@ -13,7 +13,7 @@ class WeeksHandler {
 
   public setView = (view: WeekView) => { this.view = view }
 
-  public static getInstance() {
+  public static getInstance = () => {
     if (!WeeksHandler.instance) {
       if (!authHandler.user) throw new Error('Should not be instantiating weeks handler when unauthenticated.')
       WeeksHandler.instance = new WeeksHandler()

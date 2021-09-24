@@ -1,15 +1,14 @@
-import { firebaseApp } from './firebase';
-import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth'
+import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth'
 import { makeAutoObservable } from 'mobx';
+import { auth } from '../../firebase';
 
-const firebaseAuth = getAuth(firebaseApp)
 const isBrowser = typeof window !== 'undefined'
 
 class AuthHandler {
   user: User | null = null
 
   constructor() {
-    onAuthStateChanged(firebaseAuth, (user) => this.setUser(user))
+    onAuthStateChanged(auth, (user) => this.setUser(user))
     makeAutoObservable(this)
   }
 
@@ -18,26 +17,26 @@ class AuthHandler {
     return !!localStorage.getItem('authState')
   }
 
-  public async signInWithGoogle() {
+  public signInWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider()
       provider.setCustomParameters({ prompt: "select_account" })
-      await signInWithPopup(firebaseAuth, provider)
+      await signInWithPopup(auth, provider)
     } catch (error) {
       console.error(error)
     }
   }
 
-  public async handleSignOut() {
-    await signOut(firebaseAuth)
+  public handleSignOut = async () => {
+    await signOut(auth)
   }
 
-  private setUser(user: User | null) {
+  private setUser = (user: User | null) => {
     this.setCachedAuthState(!!user)
     this.user = user
   }
 
-  private setCachedAuthState(authState: boolean) {
+  private setCachedAuthState = (authState: boolean) => {
     if (!isBrowser) return
     if (authState) {
       localStorage.setItem('authState', '1')

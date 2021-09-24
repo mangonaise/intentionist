@@ -1,8 +1,6 @@
-import { doc, getDoc, setDoc, getFirestore } from '@firebase/firestore'
-import { firebaseApp } from '../firebase'
-import authHandler from '../auth'
-
-export const db = getFirestore(firebaseApp)
+import { db } from '../../firebase'
+import { doc, getDoc, setDoc } from '@firebase/firestore'
+import authHandler from './authHandler'
 
 class DbHandler {
   public static instance: DbHandler
@@ -12,19 +10,19 @@ class DbHandler {
     this.uid = uid
   }
 
-  private userDocRef(...pathSegments: string[]) {
+  public userDocRef = (...pathSegments: string[]) => {
     return doc(db, 'users', this.uid, ...pathSegments)
   }
 
-  public async getUserDoc(...pathSegments: string[]) {
+  public getUserDoc = async (...pathSegments: string[]) => {
     return (await getDoc(this.userDocRef(...pathSegments))).data()
   }
 
-  public async updateUserDoc(path: string, data: object) {
+  public updateUserDoc = async (path: string, data: object) => {
     await setDoc(this.userDocRef(path), data, { merge: true })
   }
 
-  public static getInstance() {
+  public static getInstance = () => {
     if (!DbHandler.instance) {
       if (!authHandler.user) throw new Error('Should not be instantiating database handler when unauthenticated.')
       DbHandler.instance = new DbHandler(authHandler.user.uid)

@@ -2,6 +2,9 @@ import { observer } from 'mobx-react-lite'
 import { useRouter } from 'next/dist/client/router'
 import { FormEvent, useEffect, useState } from 'react'
 import Head from 'next/head'
+import authHandler from '@/logic/app/authHandler'
+import profileHandler from '@/logic/app/profileHandler'
+import withAuthUser from '@/components/app/withAuthUser'
 import LoadingScreen from '@/components/app/LoadingScreen'
 import BackIcon from '@/components/icons/BackIcon'
 import FadeIn from '@/components/primitives/FadeIn'
@@ -13,17 +16,18 @@ import IconButton from '@/components/primitives/IconButton'
 import Input from '@/components/primitives/Input'
 import Label from '@/components/primitives/Label'
 import Text from '@/components/primitives/Text'
-import profileHandler from '@/lib/app/profileHandler'
-import authHandler from '@/lib/auth'
-import withAuthUser from '@/lib/withAuthUser'
 
 const NewUserPage = withAuthUser(observer(({ authUser }) => {
   const router = useRouter()
   const [displayName, setDisplayName] = useState(authUser.displayName || '')
-  const { profileInfo } = profileHandler()
+  const { profileInfo, fetchUserProfile } = profileHandler()
 
   useEffect(() => {
-    if (profileInfo) router.push('/home')
+    if (profileInfo === undefined) {
+      fetchUserProfile()
+    } else if (profileInfo) {
+      router.push('/home')
+    } 
   }, [profileInfo])
 
   function handleSubmitUser(e: FormEvent<HTMLDivElement>) {
