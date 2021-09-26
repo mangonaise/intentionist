@@ -22,26 +22,22 @@ export const authState = new (class {
   current = false
 
   constructor() {
-    onAuthStateChanged(auth, (user) => this.setUser(user))
+    onAuthStateChanged(auth, (user) => this.setCurrentState(!!user))
     makeAutoObservable(this)
+  }
+
+  private setCurrentState = (state: boolean) => {
+    this.current = state
+    if (!isBrowser) return
+    if (state) {
+      localStorage.setItem('authState', '1')
+    } else {
+      localStorage.removeItem('authState')
+    }
   }
 
   public get cached() {
     if (!isBrowser) return false
     return !!localStorage.getItem('authState')
-  }
-
-  private setUser = (user: User | null) => {
-    this.setCachedAuthState(!!user)
-    this.current = !!user
-  }
-
-  private setCachedAuthState = (authState: boolean) => {
-    if (!isBrowser) return
-    if (authState) {
-      localStorage.setItem('authState', '1')
-    } else {
-      localStorage.removeItem('authState')
-    }
   }
 })
