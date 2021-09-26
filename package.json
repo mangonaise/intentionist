@@ -15,6 +15,7 @@
     "test": "cd ./firebase && firebase emulators:exec jest"
   },
   "dependencies": {
+    "@abraham/reflection": "^0.8.0",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "firebase": "^9.0.2",
@@ -24,12 +25,15 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "sass": "^1.41.1",
-    "styled-system": "^5.1.5"
+    "styled-system": "^5.1.5",
+    "tsyringe": "^4.6.0"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.15.4",
     "@types/jest": "^27.0.2",
     "@types/react": "17.0.21",
     "@types/styled-system": "^5.1.13",
+    "babel-plugin-transform-typescript-metadata": "^0.3.2",
     "eslint": "7.32.0",
     "eslint-config-next": "11.1.2",
     "jest": "^27.2.1",

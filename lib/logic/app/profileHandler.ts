@@ -1,38 +1,29 @@
+import DbHandler from './DbHandler'
 import { makeAutoObservable, runInAction } from 'mobx'
-import authHandler from './authHandler'
-import dbHandler from './dbHandler'
+import { singleton } from 'tsyringe'
 
 export type ProfileInfo = {
   displayName: string
 }
 
-class ProfileHandler {
-  private static instance: ProfileHandler
+@singleton()
+export default class ProfileHandler {
+  private dbHandler: DbHandler
   public profileInfo: ProfileInfo | null | undefined
 
-  private constructor() {
+  constructor(dbHandler: DbHandler) {
+    this.dbHandler = dbHandler
     makeAutoObservable(this)
   }
 
   public fetchUserProfile = async () => {
     if (this.profileInfo !== undefined) return
-    const userDoc = await dbHandler().getUserDoc()
+    const userDoc = await this.dbHandler.getUserDoc()
     runInAction(() => this.profileInfo = userDoc?.profile || null)
   }
 
   public updateUserProfile = async (info: ProfileInfo) => {
     this.profileInfo = info
-    await dbHandler().updateUserDoc('', { profile: info })
-  }
-
-  public static getInstance = () => {
-    if (!ProfileHandler.instance) {
-      if (!authHandler.user) throw new Error('Should not be instantiating profile handler when unauthenticated.')
-      ProfileHandler.instance = new ProfileHandler()
-    }
-    return ProfileHandler.instance
+    await this.dbHandler.updateUserDoc('', { profile: info })
   }
 }
-
-const profileHandler = () => ProfileHandler.getInstance()
-export default profileHandler

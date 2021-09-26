@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import { FadeIn, Box } from '@/components/primitives'
-import accentColorHandler, { AccentColor } from '@/logic/ui/accentColorHandler'
+import accentColor, { AccentColor } from '@/lib/logic/utils/accentColor'
 import theme from 'styles/theme'
 
 const gradientMap: Array<{ name: AccentColor, color: string, yOffset: string }> = [
@@ -12,7 +12,7 @@ const gradientMap: Array<{ name: AccentColor, color: string, yOffset: string }> 
 ]
 
 const GradientBackground = () => {
-  const activeColor = accentColorHandler.accentColor
+  const activeColor = accentColor.current
 
   return (
     <FadeIn>

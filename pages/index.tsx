@@ -5,19 +5,19 @@ import { useEffect, useState } from 'react'
 import { LoadingScreen } from '@/components/app'
 import { CenteredFlex, FadeIn, Icon, IconButton } from '@/components/primitives'
 import { IntentionistIcon, GoogleIcon } from '@/components/icons'
+import { authState, signInWithGoogle } from '@/lib/logic/utils/authUtilities'
 import Head from 'next/head'
-import authHandler from '@/logic/app/authHandler'
 
 const LandingPage: NextPage = () => {
   const [hide, setHide] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
-    if (authHandler.cachedAuthState) {
+    if (authState.cached) {
       setHide(true)
       router.push('/home')
     }
-  }, [authHandler.user])
+  }, [authState.current])
 
   if (hide) return <LoadingScreen />
   return (
@@ -25,7 +25,7 @@ const LandingPage: NextPage = () => {
       <Head><title>Intentionist | Social habit tracker and journal</title></Head>
       <CenteredFlex height="90vh" flexDirection="column">
         <Icon icon={IntentionistIcon} fontSize="4rem" mb={8} />
-        <IconButton icon={GoogleIcon} onClick={authHandler.signInWithGoogle}>
+        <IconButton icon={GoogleIcon} onClick={signInWithGoogle}>
           Continue with Google
         </IconButton>
       </CenteredFlex >

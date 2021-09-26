@@ -1,17 +1,19 @@
 import { observer } from 'mobx-react-lite'
+import { container } from 'tsyringe'
 import { useRouter } from 'next/dist/client/router'
 import { FormEvent, useEffect, useState } from 'react'
 import { LoadingScreen, withAuthUser } from '@/components/app'
 import { FadeIn, Button, CenteredFlex, Flex, Heading, IconButton, Input, Label, Text } from '@/components/primitives'
 import { BackIcon } from '@/components/icons'
+import { handleSignOut } from '@/lib/logic/utils/authUtilities'
 import Head from 'next/head'
-import authHandler from '@/logic/app/authHandler'
-import profileHandler from '@/logic/app/profileHandler'
+import ProfileHandler from '@/lib/logic/app/ProfileHandler'
+import AuthUser from '@/lib/logic/app/AuthUser'
 
-const NewUserPage = withAuthUser(observer(({ authUser }) => {
+const NewUserPage = withAuthUser(observer(() => {
   const router = useRouter()
-  const [displayName, setDisplayName] = useState(authUser.displayName || '')
-  const { profileInfo, fetchUserProfile } = profileHandler()
+  const [displayName, setDisplayName] = useState(container.resolve(AuthUser).displayName || '')
+  const { profileInfo, fetchUserProfile, updateUserProfile } = container.resolve(ProfileHandler)
 
   useEffect(() => {
     if (profileInfo === undefined) {
@@ -23,7 +25,7 @@ const NewUserPage = withAuthUser(observer(({ authUser }) => {
 
   function handleSubmitUser(e: FormEvent<HTMLDivElement>) {
     e.preventDefault()
-    profileHandler().updateUserProfile({ displayName })
+    updateUserProfile({ displayName })
   }
 
   if (profileInfo) return null
@@ -31,7 +33,7 @@ const NewUserPage = withAuthUser(observer(({ authUser }) => {
   return (
     <FadeIn>
       <Head><title>Welcome</title></Head>
-      <IconButton icon={BackIcon} onClick={authHandler.handleSignOut} />
+      <IconButton icon={BackIcon} onClick={handleSignOut} />
       <CenteredFlex flexDirection="column" width={['100%', '25rem']} minHeight="50vh" margin="auto">
         <Heading as="h1" mb={3}>Hello! 👋</Heading>
         <Text mb={8} textAlign="center">Welcome to intentionist.</Text>

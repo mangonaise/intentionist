@@ -2,8 +2,9 @@ import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { Flex, IconButton } from '@/components/primitives'
 import { CalendarIcon, JournalIcon, TimerIcon } from '@/components/icons'
-import weeksHandler, { WeekView } from '@/logic/app/weeksHandler'
-import accentColorHandler from '@/logic/ui/accentColorHandler'
+import WeeksHandler, { WeekView } from '@/lib/logic/app/WeeksHandler'
+import accentColor from '@/lib/logic/utils/accentColor'
+import { container } from 'tsyringe'
 
 const buttonData: Array<{ view: WeekView, text: string, icon: () => JSX.Element }> = [
   { view: 'tracker', text: 'Habit tracker', icon: CalendarIcon },
@@ -12,10 +13,10 @@ const buttonData: Array<{ view: WeekView, text: string, icon: () => JSX.Element 
 ]
 
 const WeekViewPicker = () => {
-  const { view, setView } = weeksHandler()
+  const { view, setView } = container.resolve(WeeksHandler) 
 
   useEffect(() => {
-    accentColorHandler.setAccentColor(view)
+    accentColor.set(view)
   }, [view])
 
   return (
@@ -26,7 +27,7 @@ const WeekViewPicker = () => {
           onClick={() => setView(data.view)}
           flex={1}
           mr={index < 2 ? 3 : 0}
-          bg={data.view === view ? accentColorHandler.accentColor : ''}
+          bg={data.view === view ? accentColor.current : ''}
           style={{ transition: 'var(--focus-transition), background-color 200ms' }}
           key={data.view}
         >

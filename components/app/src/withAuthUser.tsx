@@ -1,21 +1,20 @@
-import { User } from '@firebase/auth'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
+import { authState } from '@/lib/logic/utils/authUtilities'
 import { LoadingScreen } from '..'
-import authHandler from '@/logic/app/authHandler'
 
-type WrappedComponent = ({ authUser }: { authUser: User }) => JSX.Element | null
+type WrappedComponent = () => JSX.Element | null
 
 const withAuthUser = (WrappedComponent: WrappedComponent) => observer(() => {
   useEffect(() => {
-    if (!authHandler.cachedAuthState) {
+    if (!authState.cached) {
       window.location.assign('/')
     }
-  }, [authHandler.user])
+  }, [authState.current])
 
-  if (!authHandler.user) return <LoadingScreen />
+  if (!authState.current) return <LoadingScreen />
   return (
-    <WrappedComponent authUser={authHandler.user} />
+    <WrappedComponent />
   )
 })
 

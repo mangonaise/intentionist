@@ -1,26 +1,18 @@
+import DbHandler from './DbHandler'
 import { makeAutoObservable } from 'mobx'
-import authHandler from './authHandler'
+import { singleton } from 'tsyringe'
 
 export type WeekView = 'tracker' | 'journal' | 'focus'
 
-class WeeksHandler {
-  private static instance: WeeksHandler
+@singleton()
+export default class WeeksHandler {
+  private dbHandler: DbHandler
   public view = 'tracker' as WeekView
 
-  private constructor() {
+  constructor(dbHandler: DbHandler) {
+    this.dbHandler = dbHandler
     makeAutoObservable(this)
   }
 
   public setView = (view: WeekView) => { this.view = view }
-
-  public static getInstance = () => {
-    if (!WeeksHandler.instance) {
-      if (!authHandler.user) throw new Error('Should not be instantiating weeks handler when unauthenticated.')
-      WeeksHandler.instance = new WeeksHandler()
-    }
-    return WeeksHandler.instance
-  }
 }
-
-const weeksHandler = () => WeeksHandler.getInstance()
-export default weeksHandler

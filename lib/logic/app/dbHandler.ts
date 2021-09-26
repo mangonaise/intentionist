@@ -1,13 +1,14 @@
+import AuthUser from './AuthUser'
 import { db } from '../../firebase'
 import { doc, getDoc, setDoc } from '@firebase/firestore'
-import authHandler from './authHandler'
+import { singleton } from 'tsyringe'
 
-class DbHandler {
-  public static instance: DbHandler
+@singleton()
+export default class DbHandler {
   private uid
 
-  private constructor(uid: string) {
-    this.uid = uid
+  constructor(authUser: AuthUser) {
+    this.uid = authUser.uid
   }
 
   public userDocRef = (...pathSegments: string[]) => {
@@ -21,15 +22,4 @@ class DbHandler {
   public updateUserDoc = async (path: string, data: object) => {
     await setDoc(this.userDocRef(path), data, { merge: true })
   }
-
-  public static getInstance = () => {
-    if (!DbHandler.instance) {
-      if (!authHandler.user) throw new Error('Should not be instantiating database handler when unauthenticated.')
-      DbHandler.instance = new DbHandler(authHandler.user.uid)
-    }
-    return DbHandler.instance
-  }
 }
-
-const dbHandler = () => DbHandler.getInstance()
-export default dbHandler

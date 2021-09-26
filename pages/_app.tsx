@@ -1,3 +1,4 @@
+import '@abraham/reflection'
 import '../styles/globals.scss'
 import type { AppProps } from 'next/app'
 import { ThemeProvider } from '@emotion/react'

@@ -1,13 +1,14 @@
 import { observer } from 'mobx-react-lite'
+import { container } from 'tsyringe'
 import { useRouter } from 'next/dist/client/router'
 import { useEffect } from 'react'
 import { LoadingScreen, Navbar, GradientBackground } from '..'
-import profileHandler from '@/logic/app/profileHandler'
+import ProfileHandler from '@/lib/logic/app/ProfileHandler'
 import withAuthUser from './withAuthUser'
 
 const withApp = (WrappedComponent: () => JSX.Element) => withAuthUser(observer(() => {
   const router = useRouter()
-  const { profileInfo, fetchUserProfile } = profileHandler()
+  const { profileInfo, fetchUserProfile } = container.resolve(ProfileHandler)
 
   useEffect(() => {
     if (profileInfo === undefined) {
