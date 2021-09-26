@@ -1,8 +1,7 @@
 import { observer } from 'mobx-react-lite'
+import { FadeIn, Box } from '@/components/primitives'
 import accentColorHandler, { AccentColor } from '@/logic/ui/accentColorHandler'
 import theme from 'styles/theme'
-import Box from '../primitives/Box'
-import FadeIn from '../primitives/FadeIn'
 
 const gradientMap: Array<{ name: AccentColor, color: string, yOffset: string }> = [
   { name: 'tracker', color: theme.colors.tracker, yOffset: '-500px' },

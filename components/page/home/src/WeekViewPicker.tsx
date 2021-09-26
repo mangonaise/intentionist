@@ -1,12 +1,9 @@
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
+import { Flex, IconButton } from '@/components/primitives'
+import { CalendarIcon, JournalIcon, TimerIcon } from '@/components/icons'
 import weeksHandler, { WeekView } from '@/logic/app/weeksHandler'
 import accentColorHandler from '@/logic/ui/accentColorHandler'
-import CalendarIcon from '@/components/icons/CalendarIcon'
-import JournalIcon from '@/components/icons/JournalIcon'
-import TimerIcon from '@/components/icons/TimerIcon'
-import Flex from '@/components/primitives/Flex'
-import IconButton from '@/components/primitives/IconButton'
 
 const buttonData: Array<{ view: WeekView, text: string, icon: () => JSX.Element }> = [
   { view: 'tracker', text: 'Habit tracker', icon: CalendarIcon },

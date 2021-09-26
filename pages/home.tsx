@@ -1,7 +1,7 @@
-import withApp from '@/components/app/withApp'
+import { withApp } from '@/components/app'
+import { WeekViewPicker } from '@/components/page/home'
+import { FadeIn } from '@/components/primitives'
 import Head from 'next/head'
-import FadeIn from '@/components/primitives/FadeIn'
-import WeekViewPicker from '@/components/page/home/WeekViewPicker'
 
 const Home = withApp(() => {
   return (

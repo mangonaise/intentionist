@@ -1,16 +1,9 @@
 import { observer } from 'mobx-react-lite'
+import { FadeIn, Flex, Heading, Icon, IconButton, Spacer, Text } from '@/components/primitives'
+import { BackIcon, IntentionistIcon } from '@/components/icons'
 import profileHandler from '@/logic/app/profileHandler'
 import authHandler from '@/logic/app/authHandler'
 import accentColorHandler from '@/logic/ui/accentColorHandler'
-import IntentionistIcon from '../icons/IntentionistIcon'
-import FadeIn from '../primitives/FadeIn'
-import BackIcon from '../icons/BackIcon'
-import Flex from '../primitives/Flex'
-import Heading from '../primitives/Heading'
-import Icon from '../primitives/Icon'
-import IconButton from '../primitives/IconButton'
-import Spacer from '../primitives/Spacer'
-import Text from '../primitives/Text'
 
 const Navbar = () => {
   return (

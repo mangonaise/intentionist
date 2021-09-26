@@ -1,6 +1,5 @@
-import CenteredFlex from '../primitives/CenteredFlex'
-import Icon from '../primitives/Icon'
-import IntentionistIcon from '../icons/IntentionistIcon'
+import { CenteredFlex, Icon } from '@/components/primitives'
+import { IntentionistIcon } from '@/components/icons'
 
 const LoadingScreen = () => {
   return (
