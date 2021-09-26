@@ -6,7 +6,7 @@ import { LoadingScreen, Navbar, GradientBackground } from '..'
 import ProfileHandler from '@/lib/logic/app/ProfileHandler'
 import withAuthUser from './withAuthUser'
 
-const withApp = (WrappedComponent: () => JSX.Element) => withAuthUser(observer(() => {
+const withProfile = (WrappedComponent: () => JSX.Element) => withAuthUser(observer(() => {
   const router = useRouter()
   const { profileInfo, fetchUserProfile } = container.resolve(ProfileHandler)
 
@@ -28,4 +28,4 @@ const withApp = (WrappedComponent: () => JSX.Element) => withAuthUser(observer((
   )
 }))
 
-export default withApp
+export default withProfile
