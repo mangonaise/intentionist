@@ -8,7 +8,7 @@ export default class AuthUser {
 
   constructor() {
     if (!auth.currentUser) {
-      throw new Error('Cannot instantiate AuthUser when not authenticated')
+      throw new Error('Cannot construct AuthUser when not authenticated')
     }
     this.uid = auth.currentUser.uid
     this.displayName = auth.currentUser.displayName
