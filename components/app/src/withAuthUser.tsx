@@ -7,7 +7,7 @@ type WrappedComponent = () => JSX.Element | null
 
 const withAuthUser = (WrappedComponent: WrappedComponent) => observer(() => {
   useEffect(() => {
-    if (!authState.cached) {
+    if (!authState.getCachedState()) {
       window.location.assign('/')
     }
   }, [authState.current])

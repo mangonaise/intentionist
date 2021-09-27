@@ -13,7 +13,7 @@ const LandingPage: NextPage = () => {
   const router = useRouter()
 
   useEffect(() => {
-    if (authState.cached) {
+    if (authState.getCachedState()) {
       setHide(true)
       router.push('/home')
     }

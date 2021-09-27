@@ -36,7 +36,7 @@ export const authState = new (class {
     }
   }
 
-  public get cached() {
+  public getCachedState() {
     if (!isBrowser) return false
     return !!localStorage.getItem('authState')
   }
