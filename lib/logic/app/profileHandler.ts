@@ -17,7 +17,7 @@ export default class ProfileHandler {
   }
 
   public fetchUserProfile = async () => {
-    if (this.profileInfo !== undefined) return
+    if (this.profileInfo !== undefined) return this.profileInfo
     const userDoc = await this.dbHandler.getUserDoc()
     runInAction(() => this.profileInfo = userDoc?.profile || null)
   }

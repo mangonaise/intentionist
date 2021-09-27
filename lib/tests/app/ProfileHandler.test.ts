@@ -32,6 +32,11 @@ test('attempting to fetch non-existent profile will set local profile info to nu
   expect(profileHandler.profileInfo).toBeNull()
 })
 
+test('attempting to fetch profile twice will instead return existing profile', async () => {
+  expect(await profileHandler.fetchUserProfile()).toBeUndefined()
+  expect(await profileHandler.fetchUserProfile()).not.toBeUndefined()
+})
+
 test('fetching profile of an existing user works', async () => {
   const profile = { displayName: 'Bob' }
   await setDoc(dbHandler.userDocRef(''), { profile })
