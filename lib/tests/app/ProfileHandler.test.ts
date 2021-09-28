@@ -7,9 +7,9 @@ import DbHandler from '../../logic/app/DbHandler'
 import ProfileHandler from '../../logic/app/ProfileHandler'
 import signInDummyUser from '../_setup/signIn'
 
-let authUser: AuthUser
-let profileHandler: ProfileHandler
-let dbHandler: DbHandler
+// 🔨
+
+let authUser: AuthUser, profileHandler: ProfileHandler, dbHandler: DbHandler
 
 beforeAll(async () => {
   await signInDummyUser()
@@ -22,6 +22,8 @@ afterEach(async () => {
   await deleteDoc(doc(db, 'users', authUser.uid))
   profileHandler.profileInfo = undefined
 })
+
+// 🧪
 
 test('user profile is undefined before fetching', async () => {
   expect(profileHandler.profileInfo).toBeUndefined()
