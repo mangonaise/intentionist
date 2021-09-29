@@ -4,15 +4,17 @@ import { border, BorderProps, color, ColorProps, flexbox, FlexboxProps, layout, 
 import theme from 'styles/theme';
 
 interface CustomProps extends HTMLAttributes<HTMLButtonElement> { 
-  bg?: string 
+  bg?: string,
+  reduceHoverOpacity?: boolean
 }
 type StyleProps = SpaceProps & FlexboxProps & LayoutProps & TypographyProps & ColorProps & BorderProps
 export type ButtonProps = StyleProps & CustomProps
 
-const background = ({ bg }: CustomProps) => ({
+const custom = ({ bg, reduceHoverOpacity }: CustomProps) => ({
   backgroundColor: bg || theme.colors.button,
   '&:hover': {
-    backgroundColor: bg || theme.colors.buttonHighlight
+    backgroundColor: bg || theme.colors.buttonHighlight,
+    opacity: reduceHoverOpacity ? 0.9 : 1
   }
 })
 
@@ -27,6 +29,6 @@ const Button = styled.button<ButtonProps>({
   fontWeight: 450,
   borderRadius: theme.radii.default,
   backgroundColor: theme.colors.button,
-}, background, space, layout, flexbox, typography, color, border)
+}, custom, space, layout, flexbox, typography, color, border)
 
 export default Button

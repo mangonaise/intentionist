@@ -12,7 +12,14 @@ const HabitEditorNavSection = () => {
       <Box as="span" alignSelf="center" ml={4} color="whiteAlpha.60">
         {editor.isNewHabit ? 'Adding new ' : 'Editing '}habit
       </Box>
-      <Button onClick={editor.saveAndExit} bg="text" color="bg" ml="auto" fontWeight="medium">
+      <Button
+        onClick={editor.saveAndExit}
+        bg="text"
+        color="bg"
+        reduceHoverOpacity
+        ml="auto"
+        fontWeight="medium"
+      >
         {editor.isNewHabit ? 'Add' : 'Save'}
       </Button>
     </Flex>

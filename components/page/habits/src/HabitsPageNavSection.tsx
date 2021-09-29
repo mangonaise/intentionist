@@ -19,6 +19,7 @@ const HabitsPageNavSection = () => {
           icon={PlusIcon}
           bg="text"
           color="bg"
+          reduceHoverOpacity
           ml="auto"
           mt={[3, 0]}
           width={['100%', 'auto']}
