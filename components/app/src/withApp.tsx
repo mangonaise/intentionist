@@ -15,7 +15,7 @@ const withApp = (WrappedComponent: () => JSX.Element, accent?: AccentColor) => w
   const { fetchHabits, hasFetchedHabits } = container.resolve(HabitsHandler)
   const [fade] = useState(!profileInfo)
 
-  useEffect(() => {    
+  useEffect(() => {
     // Repeated fetches will not call the database
     fetchUserProfile()
     fetchHabits()
@@ -34,9 +34,10 @@ const withApp = (WrappedComponent: () => JSX.Element, accent?: AccentColor) => w
   if (!profileInfo || !hasFetchedHabits) return <LoadingScreen />
   return (
     <>
-      {fade 
-        ? <FadeIn><GradientBackground /><Navbar /></FadeIn>
-        : <><GradientBackground /><Navbar /></>}
+      <FadeIn time={fade ? undefined : 0}>
+        <GradientBackground />
+        <Navbar />
+      </FadeIn>
       <WrappedComponent />
     </>
   )

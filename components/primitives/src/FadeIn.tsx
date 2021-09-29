@@ -9,7 +9,7 @@ const FadeIn = ({ time = 300, delay = 25, children, ...props }: Props) => {
   return (
     <Box
       {...props}
-      style={{ opacity: 0, animation: `fade-in forwards ${time}ms ${delay}ms` }}
+      style={time > 0 ? { opacity: 0, animation: `fade-in forwards ${time}ms ${delay}ms` } : {}}
     >
       {children}
     </Box>
