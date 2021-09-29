@@ -4,6 +4,7 @@ import HabitsHandler, { Habit } from '../../logic/app/HabitsHandler'
 import generateHabitId from '../../logic/utils/generateHabitId'
 import HabitFilterHandler from '../../logic/app/HabitFilterHandler'
 import signInDummyUser from '../_setup/signIn'
+import resetHabits from '../_setup/resetHabits'
 
 // 🔨
 
@@ -19,9 +20,7 @@ beforeAll(async () => {
 })
 
 afterEach(async () => {
-  for (const habit of habitsHandler.habits) {
-    await habitsHandler.deleteHabitById(habit.id)
-  }
+  await resetHabits()
 })
 
 // 🧪
@@ -46,6 +45,6 @@ test('filter defaults to active', async () => {
   expect(container.resolve(HabitFilterHandler).filteredHabits).toEqual([])
 })
 
-test('teardown: all habits are deleted', () => {
+test('teardown: all habits are deleted', async () => {
   expect(habitsHandler.habits).toEqual([])
 })

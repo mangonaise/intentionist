@@ -1,30 +1,21 @@
 import '@abraham/reflection'
 import { omit } from 'lodash'
-import { doc, deleteDoc } from '@firebase/firestore'
 import { container } from 'tsyringe'
-import { db } from '../../firebase'
-import AuthUser from '../../logic/app/AuthUser'
+import signInDummyUser from '../_setup/signIn'
+import resetHabits from '../_setup/resetHabits'
 import DbHandler from '../../logic/app/DbHandler'
 import HabitsHandler, { Habit } from '../../logic/app/HabitsHandler'
-import signInDummyUser from '../_setup/signIn'
 import generateHabitId from '../../logic/utils/generateHabitId'
 
 // 🔨
 
-let authUser: AuthUser, dbHandler: DbHandler, habitsHandler: HabitsHandler
+let dbHandler: DbHandler, habitsHandler: HabitsHandler
 const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '🧪', status: 'active' }
 const dummyHabitB: Habit = { id: generateHabitId(), name: 'Build app', icon: '👨‍💻', status: 'active' }
 const getHabitsDoc = async () => await dbHandler.getUserDoc('data', 'habits')
 
-async function resetHabits() {
-  await deleteDoc(doc(db, 'users', authUser.uid, 'data', 'habits'))
-  habitsHandler.habits = []
-  habitsHandler.hasFetchedHabits = false
-}
-
 beforeAll(async () => {
   await signInDummyUser()
-  authUser = container.resolve(AuthUser)
   dbHandler = container.resolve(DbHandler)
   habitsHandler = container.resolve(HabitsHandler)
   await resetHabits()
