@@ -18,7 +18,6 @@ beforeAll(async () => {
   await signInDummyUser()
   dbHandler = container.resolve(DbHandler)
   habitsHandler = container.resolve(HabitsHandler)
-  await resetHabits()
 })
 
 afterEach(async () => {

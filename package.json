@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "emulate": "cd ./firebase && firebase emulators:start",
-    "test": "cd ./firebase && firebase emulators:exec jest"
+    "test": "cd ./firebase && firebase emulators:exec 'jest --runInBand --forceExit'"
   },
   "dependencies": {
     "@abraham/reflection": "^0.8.0",
