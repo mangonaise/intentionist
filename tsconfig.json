@@ -23,13 +23,15 @@
     "paths": {
       "@/components/*": ["components/*"],
       "@/lib/*": ["lib/*"],
-      "@/logic/*": ["lib/logic/*"]
+      "@/logic/*": ["lib/logic/*"],
+      "@/test-setup/*": ["lib/tests/_setup/*"]
     }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx", 
+    "jest.config.js" 
   ],
   "exclude": [
     "node_modules"

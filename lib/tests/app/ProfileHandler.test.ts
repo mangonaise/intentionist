@@ -1,11 +1,11 @@
 import '@abraham/reflection'
 import { setDoc, deleteDoc, doc } from '@firebase/firestore'
 import { container } from 'tsyringe'
-import { db } from '../../firebase'
-import AuthUser from '../../logic/app/AuthUser'
-import DbHandler from '../../logic/app/DbHandler'
-import ProfileHandler from '../../logic/app/ProfileHandler'
-import signInDummyUser from '../_setup/signIn'
+import { db } from '@/lib/firebase'
+import signInDummyUser from '@/test-setup/signIn'
+import AuthUser from '@/logic/app/AuthUser'
+import DbHandler from '@/logic/app/DbHandler'
+import ProfileHandler from '@/logic/app/ProfileHandler'
 
 // 🔨
 

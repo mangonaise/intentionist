@@ -1,10 +1,10 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
-import HabitsHandler, { Habit } from '../../logic/app/HabitsHandler'
-import generateHabitId from '../../logic/utils/generateHabitId'
-import HabitFilterHandler from '../../logic/app/HabitFilterHandler'
-import signInDummyUser from '../_setup/signIn'
-import resetHabits from '../_setup/resetHabits'
+import signInDummyUser from '@/test-setup/signIn'
+import resetHabits from '@/test-setup/resetHabits'
+import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
+import generateHabitId from '@/logic/utils/generateHabitId'
+import HabitFilterHandler from '@/logic/app/HabitFilterHandler'
 
 // 🔨
 
@@ -29,7 +29,7 @@ test('filters habits correctly', async () => {
   await habitsHandler.setHabit(activeHabit)
   await habitsHandler.setHabit(suspendedHabit)
   await habitsHandler.setHabit(archivedHabit)
-  
+
   const filterHandler = container.resolve(HabitFilterHandler)
   filterHandler.setFilter('archived')
   expect(filterHandler.filteredHabits).toEqual([archivedHabit])

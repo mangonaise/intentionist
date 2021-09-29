@@ -2,10 +2,6 @@
   "name": "intentionist",
   "version": "0.1.0",
   "private": true,
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node"
-  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

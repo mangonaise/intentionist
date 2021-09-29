@@ -1,5 +1,5 @@
-import { authState, handleSignOut } from '../../logic/utils/authUtilities'
-import signInDummyUser from '../_setup/signIn'
+import { authState, handleSignOut } from '@/logic/utils/authUtilities'
+import signInDummyUser from '@/test-setup/signIn'
 
 test('signing in and out correctly updates local auth state', async () => {
   expect(authState.current).toBe(false)

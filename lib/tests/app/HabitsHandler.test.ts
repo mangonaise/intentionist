@@ -1,11 +1,11 @@
 import '@abraham/reflection'
 import { omit } from 'lodash'
 import { container } from 'tsyringe'
-import signInDummyUser from '../_setup/signIn'
-import resetHabits from '../_setup/resetHabits'
-import DbHandler from '../../logic/app/DbHandler'
-import HabitsHandler, { Habit } from '../../logic/app/HabitsHandler'
-import generateHabitId from '../../logic/utils/generateHabitId'
+import signInDummyUser from '@/test-setup/signIn'
+import resetHabits from '@/test-setup/resetHabits'
+import DbHandler from '@/logic/app/DbHandler'
+import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
+import generateHabitId from '@/logic/utils/generateHabitId'
 
 // 🔨
 

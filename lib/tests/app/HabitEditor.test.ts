@@ -1,11 +1,11 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { when } from 'mobx'
-import MockRouter from '../_setup/mock/MockRouter'
-import signInDummyUser from '../_setup/signIn'
-import HabitEditor, { newHabit } from '../../logic/app/HabitEditor'
-import HabitsHandler, { Habit } from '../../logic/app/HabitsHandler'
-import DbHandler from '../../logic/app/DbHandler'
+import signInDummyUser from '@/test-setup/signIn'
+import MockRouter from '@/test-setup/mock/MockRouter'
+import DbHandler from '@/logic/app/DbHandler'
+import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
+import HabitEditor, { newHabit } from '@/logic/app/HabitEditor'
 
 // 🔨
 
