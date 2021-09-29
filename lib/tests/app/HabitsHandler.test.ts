@@ -16,17 +16,22 @@ const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '�
 const dummyHabitB: Habit = { id: generateHabitId(), name: 'Build app', icon: '👨‍💻', status: 'active' }
 const getHabitsDoc = async () => await dbHandler.getUserDoc('data', 'habits')
 
+async function resetHabits() {
+  await deleteDoc(doc(db, 'users', authUser.uid, 'data', 'habits'))
+  habitsHandler.habits = []
+  habitsHandler.hasFetchedHabits = false
+}
+
 beforeAll(async () => {
   await signInDummyUser()
   authUser = container.resolve(AuthUser)
   dbHandler = container.resolve(DbHandler)
   habitsHandler = container.resolve(HabitsHandler)
+  await resetHabits()
 })
 
 afterEach(async () => {
-  await deleteDoc(doc(db, 'users', authUser.uid, 'data', 'habits'))
-  habitsHandler.habits = []
-  habitsHandler.hasFetchedHabits = false
+  await resetHabits()
 })
 
 // 🧪
