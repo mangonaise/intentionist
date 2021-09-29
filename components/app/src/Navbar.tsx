@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import { container } from 'tsyringe'
-import { FadeIn, Flex, Heading, Icon, IconButton, Spacer, Text } from '@/components/primitives'
+import { Box, Flex, Heading, Icon, IconButton, Spacer, Text } from '@/components/primitives'
 import { BackIcon, IntentionistIcon } from '@/components/icons'
 import { handleSignOut } from '@/lib/logic/utils/authUtilities'
 import ProfileHandler from '@/lib/logic/app/ProfileHandler'
@@ -10,7 +10,7 @@ const Navbar = () => {
   const { profileInfo } = container.resolve(ProfileHandler) 
 
   return (
-    <FadeIn maxWidth="max" margin="auto">
+    <Box maxWidth="max" margin="auto">
       <Flex alignItems="center" mb={[4]} py={[0, 0, 4]}>
         <Icon
           icon={IntentionistIcon}
@@ -26,7 +26,7 @@ const Navbar = () => {
         <Text mr={3} opacity={0.5}>{profileInfo?.displayName}</Text>
         <IconButton onClick={handleSignOut} icon={BackIcon} />
       </Flex>
-    </FadeIn>
+    </Box>
   )
 }
 

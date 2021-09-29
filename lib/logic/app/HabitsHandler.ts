@@ -34,20 +34,20 @@ export default class HabitsHandler {
     this.handleFetchedHabitsDoc(habitsDoc as HabitsDocumentData | undefined)
   }
 
-  public setHabit = async (updatedHabit: Habit) => {
-    let existingHabit = this.habits.find(habit => habit.id === updatedHabit.id)
+  public setHabit = async (habitToSet: Habit) => {
+    let existingHabit = this.habits.find(habit => habit.id === habitToSet.id)
     if (!existingHabit) {
-      return await this.addNewHabit(updatedHabit)
+      return await this.addNewHabit(habitToSet)
     }
-    if (isEqual(existingHabit, updatedHabit)) return
+    if (isEqual(existingHabit, habitToSet)) return
     
     // 💻
     const index = this.habits.indexOf(existingHabit)
-    this.habits[index] = updatedHabit
+    this.habits[index] = habitToSet
 
     // ☁️
     await this.dbHandler.updateUserDoc('data/habits', {
-      habits: { [updatedHabit.id]: { ...omit(updatedHabit, 'id') } }
+      habits: { [habitToSet.id]: { ...omit(habitToSet, 'id') } }
     })
     
     return this.habits[index]

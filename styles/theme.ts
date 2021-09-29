@@ -2,12 +2,27 @@ const theme = {
   breakpoints: ['600px', '1250px',],
   colors: {
     text: 'var(--text-color)',
-    background: 'var(--background-color)',
+    bg: 'var(--background-color)',
+    divider: 'var(--divider-color)',
     button: 'var(--button-color)',
     buttonHighlight: 'var(--button-highlight-color)',
     tracker: 'var(--tracker-accent-color)',
     journal: 'var(--journal-accent-color)',
-    focus: 'var(--focus-accent-color)'
+    focus: 'var(--focus-accent-color)',
+    whiteAlpha: {
+      0: 'rgba(255, 255, 255, 0)',
+      5: 'rgba(255, 255, 255, 0.05)',
+      10: 'rgba(255, 255, 255, 0.1)',
+      20: 'rgba(255, 255, 255, 0.2)',
+      30: 'rgba(255, 255, 255, 0.3)',
+      40: 'rgba(255, 255, 255, 0.4)',
+      50: 'rgba(255, 255, 255, 0.5)',
+      60: 'rgba(255, 255, 255, 0.6)',
+      70: 'rgba(255, 255, 255, 0.7)',
+      80: 'rgba(255, 255, 255, 0.8)',
+      90: 'rgba(255, 255, 255, 0.9)',
+      100: 'rgba(255, 255, 255, 1)',
+    }
   },
   fonts: {
     body: 'sans-serif',
@@ -23,7 +38,8 @@ const theme = {
     default: '6px'
   },
   sizes: {
-    max: '1200px'
+    max: '1200px',
+    habits: '800px'
   },
   space: ['0', '0.25rem', '0.5rem', '0.75rem', '1rem', '1.25rem', '1.5rem', '1.75rem', '2rem']
 }

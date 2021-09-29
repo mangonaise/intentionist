@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import { FadeIn, Box } from '@/components/primitives'
+import { Box } from '@/components/primitives'
 import accentColor, { AccentColor } from '@/lib/logic/utils/accentColor'
 import theme from 'styles/theme'
 
@@ -7,7 +7,7 @@ const gradientMap: Array<{ name: AccentColor, color: string, yOffset: string }> 
   { name: 'tracker', color: theme.colors.tracker, yOffset: '-500px' },
   { name: 'journal', color: theme.colors.journal, yOffset: '-475px' },
   { name: 'focus', color: theme.colors.focus, yOffset: '-500px' },
-  { name: 'neutral', color: theme.colors.text, yOffset: '-1000px' },
+  { name: 'neutral', color: theme.colors.text, yOffset: '-1100px' },
   { name: 'off', color: 'transparent', yOffset: '' }
 ]
 
@@ -15,7 +15,7 @@ const GradientBackground = () => {
   const activeColor = accentColor.current
 
   return (
-    <FadeIn>
+    <Box>
       {gradientMap.map(data => (
         <Box
           position="fixed"
@@ -29,7 +29,7 @@ const GradientBackground = () => {
           key={data.name}
         />
       ))}
-    </FadeIn>
+    </Box>
   )
 }
 

@@ -1,12 +1,12 @@
 import styled from '@emotion/styled';
 import { HTMLAttributes } from 'react';
-import { border, BorderProps, color, ColorProps, flexbox, FlexboxProps, space, SpaceProps, typography, TypographyProps } from 'styled-system';
+import { border, BorderProps, color, ColorProps, flexbox, FlexboxProps, layout, LayoutProps, space, SpaceProps, typography, TypographyProps } from 'styled-system';
 import theme from 'styles/theme';
 
 interface CustomProps extends HTMLAttributes<HTMLButtonElement> { 
   bg?: string 
 }
-type StyleProps = SpaceProps & FlexboxProps & TypographyProps & ColorProps & BorderProps
+type StyleProps = SpaceProps & FlexboxProps & LayoutProps & TypographyProps & ColorProps & BorderProps
 export type ButtonProps = StyleProps & CustomProps
 
 const background = ({ bg }: CustomProps) => ({
@@ -19,7 +19,7 @@ const background = ({ bg }: CustomProps) => ({
 const Button = styled.button<ButtonProps>({
   cursor: 'pointer',
   userSelect: 'none',
-  padding: '0.7rem 1rem',
+  padding: '0.65rem 1rem',
   border: 'none',
   color: 'inherit',
   fontSize: 'inherit',
@@ -27,6 +27,6 @@ const Button = styled.button<ButtonProps>({
   fontWeight: 450,
   borderRadius: theme.radii.default,
   backgroundColor: theme.colors.button,
-}, background, space, flexbox, typography, color, border)
+}, background, space, layout, flexbox, typography, color, border)
 
 export default Button

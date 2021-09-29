@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import Button, { ButtonProps } from './Button'
 import CenteredFlex from './CenteredFlex'
 import Icon from './Icon'
@@ -9,7 +10,7 @@ interface Props extends ButtonProps {
 
 const iconMargin = '0.8em'
 
-const IconButton = ({ icon, right, children, ...props }: Props) => {
+const IconButton = forwardRef(({ icon, right, children, ...props }: Props, ref) => {
   return (
     <Button {...props}>
       <CenteredFlex flexDirection={right ? 'row-reverse' : 'row'}>
@@ -23,6 +24,6 @@ const IconButton = ({ icon, right, children, ...props }: Props) => {
       </CenteredFlex>
     </Button>
   )
-}
+})
 
 export default IconButton

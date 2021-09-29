@@ -5,6 +5,7 @@ import theme from 'styles/theme';
 type StyleProps = SpaceProps & TypographyProps
 
 const Input = styled.input<StyleProps>({
+  width: '100%',
   padding: '0.6rem 0.8rem',
   fontFamily: 'inherit',
   fontSize: 'inherit',

@@ -3,9 +3,7 @@ import { useEffect } from 'react'
 import { authState } from '@/lib/logic/utils/authUtilities'
 import { LoadingScreen } from '..'
 
-type WrappedComponent = () => JSX.Element | null
-
-const withAuthUser = (WrappedComponent: WrappedComponent) => observer(() => {
+const withAuthUser = (WrappedComponent: () => JSX.Element | null) => observer(() => {
   useEffect(() => {
     if (!authState.getCachedState()) {
       window.location.assign('/')
