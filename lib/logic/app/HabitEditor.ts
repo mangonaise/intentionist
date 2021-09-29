@@ -4,8 +4,6 @@ import Router from '../types/router'
 import generateHabitId from '../utils/generateHabitId'
 import HabitsHandler, { Habit } from './HabitsHandler'
 
-export const newHabit: Habit = { id: generateHabitId(), name: '', icon: '🙂', status: 'active' }
-
 type QueryParams = {
   id: string | undefined
 }
@@ -27,7 +25,7 @@ export default class HabitEditor {
     const query = router.query as QueryParams
     if (query?.id === 'new') {
       this.isNewHabit = true
-      this.habit = newHabit
+      this.habit = this.generateEmptyHabit()
     } else {
       this.isNewHabit = false
       const existingHabit = habitsHandler.habits.find(habit => habit.id === query.id)
@@ -54,5 +52,14 @@ export default class HabitEditor {
 
   public exit = () => {
     this.router.push('/habits')
+  }
+
+  private generateEmptyHabit = () => {
+    return {
+      id: generateHabitId(),
+      name: '',
+      icon: '🙂',
+      status: 'active'
+    } as Habit
   }
 }

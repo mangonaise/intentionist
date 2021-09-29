@@ -5,7 +5,7 @@ import signInDummyUser from '@/test-setup/signIn'
 import MockRouter from '@/test-setup/mock/MockRouter'
 import DbHandler from '@/logic/app/DbHandler'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
-import HabitEditor, { newHabit } from '@/logic/app/HabitEditor'
+import HabitEditor from '@/logic/app/HabitEditor'
 
 // 🔨
 
@@ -14,7 +14,7 @@ let habitsHandler: HabitsHandler
 const router = container.resolve(MockRouter)
 container.register('Router', { useValue: router })
 
-const dummyHabit: Habit = { id: 'abcdefgh', name: 'test', icon: '🧪', status: 'active' }
+const dummyHabit: Habit = { id: 'abcdefgh', name: 'Test habit editor', icon: '📝', status: 'active' }
 
 beforeAll(async () => {
   await signInDummyUser()
@@ -45,7 +45,6 @@ describe('when habits have already been fetched', () => {
     router.setQuery({ id: 'new' })
     const habitEditor = container.resolve(HabitEditor)
     expect(habitEditor.isNewHabit).toBe(true)
-    expect(habitEditor.habit).toEqual(newHabit)
   })
 
   test('if no habit id matches router query.id, will route to habits page', () => {
@@ -61,13 +60,20 @@ describe('when habits have already been fetched', () => {
     expect(habitEditor.habit).toEqual(dummyHabit)
   })
 
-  test('newly created habit is reflected in HabitsHandler', async () => {
+  test('newly created habits are reflected in HabitsHandler', async () => {
     router.setQuery({ id: 'new' })
-    const habitEditor = container.resolve(HabitEditor)
-    const createdHabit = habitEditor.habit
+
+    let habitEditor = container.resolve(HabitEditor)
+    const createdHabitA = habitEditor.habit
     habitEditor.saveAndExit()
     await when(() => container.resolve(DbHandler).isWriteComplete)
-    expect(habitsHandler.habits).toEqual([createdHabit])
+
+    habitEditor = container.resolve(HabitEditor)
+    const createdHabitB = habitEditor.habit
+    habitEditor.saveAndExit()
+    await when(() => container.resolve(DbHandler).isWriteComplete)
+
+    expect(habitsHandler.habits).toEqual([createdHabitA, createdHabitB])
   })
 
   test('updated habit is reflected in HabitsHandler', async () => {
