@@ -19,7 +19,7 @@ const background = ({ bg }: CustomProps) => ({
 const Button = styled.button<ButtonProps>({
   cursor: 'pointer',
   userSelect: 'none',
-  padding: '0.65rem 1rem',
+  padding: '0.7rem 1rem',
   border: 'none',
   color: 'inherit',
   fontSize: 'inherit',
