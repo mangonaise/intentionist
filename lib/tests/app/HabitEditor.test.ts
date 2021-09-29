@@ -1,10 +1,11 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { when } from 'mobx'
-import HabitEditor, { newHabit } from '../../logic/app/HabitEditor'
 import MockRouter from '../_setup/mock/MockRouter'
-import HabitsHandler, { Habit } from '../../logic/app/HabitsHandler'
 import signInDummyUser from '../_setup/signIn'
+import HabitEditor, { newHabit } from '../../logic/app/HabitEditor'
+import HabitsHandler, { Habit } from '../../logic/app/HabitsHandler'
+import DbHandler from '../../logic/app/DbHandler'
 
 // 🔨
 
@@ -65,7 +66,7 @@ describe('when habits have already been fetched', () => {
     const habitEditor = container.resolve(HabitEditor)
     const createdHabit = habitEditor.habit
     habitEditor.saveAndExit()
-    await when(() => habitsHandler.habits.length === 1)
+    await when(() => container.resolve(DbHandler).isWriteComplete)
     expect(habitsHandler.habits).toEqual([createdHabit])
   })
 
@@ -76,7 +77,7 @@ describe('when habits have already been fetched', () => {
     const updatedHabit = { ...habit!, name: 'Updated name' }
     habitEditor.updateHabit(updatedHabit)
     habitEditor.saveAndExit()
-    await when(() => habitsHandler.habits.length === 1)
+    await when(() => container.resolve(DbHandler).isWriteComplete)
     expect(habitsHandler.habits).toEqual([updatedHabit])
   })
 })
