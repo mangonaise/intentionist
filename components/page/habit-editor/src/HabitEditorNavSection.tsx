@@ -1,7 +1,8 @@
-import { BackIcon } from '@/components/icons'
-import { Box, Button, Flex, IconButton } from '@/components/primitives'
-import { HabitEditorContext } from 'pages/habits/[id]'
+import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
+import { HabitEditorContext } from 'pages/habits/[id]'
+import { Box, Button, Flex, IconButton } from '@/components/primitives'
+import { BackIcon } from '@/components/icons'
 
 const HabitEditorNavSection = () => {
   const editor = useContext(HabitEditorContext)
@@ -14,6 +15,7 @@ const HabitEditorNavSection = () => {
       </Box>
       <Button
         onClick={editor.saveAndExit}
+        disabled={!editor.habit?.name}
         bg="text"
         color="bg"
         reduceHoverOpacity
@@ -26,4 +28,4 @@ const HabitEditorNavSection = () => {
   )
 }
 
-export default HabitEditorNavSection
+export default observer(HabitEditorNavSection)

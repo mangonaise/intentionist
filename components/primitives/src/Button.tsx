@@ -15,6 +15,10 @@ const custom = ({ bg, reduceHoverOpacity }: CustomProps) => ({
   '&:hover': {
     backgroundColor: bg || theme.colors.buttonHighlight,
     opacity: reduceHoverOpacity ? 0.9 : 1
+  },
+  '&:disabled': {
+    opacity: 0.3,
+    cursor: 'default'
   }
 })
 
