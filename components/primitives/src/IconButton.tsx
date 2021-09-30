@@ -10,7 +10,7 @@ interface Props extends ButtonProps {
 
 const iconMargin = '0.8em'
 
-const IconButton = forwardRef(({ icon, right, children, ...props }: Props, ref) => {
+const IconButton = forwardRef(function IconButton({ icon, right, children, ...props }: Props, ref) {
   return (
     <Button {...props}>
       <CenteredFlex flexDirection={right ? 'row-reverse' : 'row'}>
