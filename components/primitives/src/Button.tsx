@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
+import css from '@styled-system/css'
 import { HTMLAttributes } from 'react';
 import { color, ColorProps, flexbox, FlexboxProps, layout, LayoutProps, space, SpaceProps, typography, TypographyProps } from 'styled-system';
-import theme from 'styles/theme';
 
 interface CustomProps extends HTMLAttributes<HTMLButtonElement> { 
   bg?: string,
@@ -10,7 +10,7 @@ interface CustomProps extends HTMLAttributes<HTMLButtonElement> {
 type StyleProps = SpaceProps & FlexboxProps & LayoutProps & TypographyProps & ColorProps
 export type ButtonProps = StyleProps & CustomProps
 
-const Button = styled.button<ButtonProps>(({ bg, reduceHoverOpacity }: ButtonProps) => ({
+const Button = styled.button<ButtonProps>(({ bg, reduceHoverOpacity }: ButtonProps) => (css({
   cursor: 'pointer',
   userSelect: 'none',
   padding: '0.7rem 1rem',
@@ -19,16 +19,16 @@ const Button = styled.button<ButtonProps>(({ bg, reduceHoverOpacity }: ButtonPro
   fontSize: 'inherit',
   fontFamily: 'inherit',
   fontWeight: 450,
-  borderRadius: theme.radii.default,
-  backgroundColor: bg || theme.colors.button,
+  borderRadius: 'default',
+  backgroundColor: bg || 'button',
   '&:hover': {
-    backgroundColor: bg || theme.colors.buttonHighlight,
+    backgroundColor: bg || 'buttonHighlight',
     opacity: reduceHoverOpacity ? 0.9 : 1
   },
   '&:disabled': {
     opacity: 0.3,
     cursor: 'default'
   }
-}), space, layout, flexbox, typography, color)
+})), space, layout, flexbox, typography, color)
 
 export default Button

@@ -1,11 +1,13 @@
 import { Habit } from '@/lib/logic/app/HabitsHandler'
-import { Box, Button, CenteredFlex, Icon, Text } from '@/components/primitives'
+import { Button, CenteredFlex, Icon, Text } from '@/components/primitives'
+import { PencilIcon } from '@/components/icons'
 import NextLink from 'next/link'
 import styled from '@emotion/styled'
-import theme from 'styles/theme'
-import { PencilIcon } from '@/components/icons'
+import css from '@styled-system/css'
 
-const StyledButton = styled(Button)({
+const StyledButton = styled(Button)(css({
+  width: '100%',
+  px: 3,
   transition: 'background-color 150ms',
   backgroundColor: 'transparent',
   textAlign: 'left',
@@ -14,17 +16,17 @@ const StyledButton = styled(Button)({
     transition: 'opacity 150ms'
   },
   '&:hover': {
-    backgroundColor: `${theme.colors.whiteAlpha[5]}`,
+    backgroundColor: 'whiteAlpha.5',
     'svg': {
       opacity: 1
     },
   }
-})
+}))
 
 const EditHabitButton = ({ habit }: { habit: Habit }) => {
   return (
     <NextLink href={`/habits/${habit.id}`} key={habit.id}>
-      <StyledButton width="100%" px={3}>
+      <StyledButton>
         <CenteredFlex justifyContent="flex-start">
           <Text as="span" mr={3} fontSize="1.2rem">{habit.icon}</Text>
           {habit.name}
