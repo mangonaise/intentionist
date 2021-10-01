@@ -22,7 +22,7 @@ const HabitNameInput = () => {
     <StyledInput
       placeholder="Enter habit name"
       value={editor.habit?.name}
-      onChange={(e) => editor.updateHabit({ ...editor.habit!, name: e.target.value })}
+      onChange={(e) => editor.updateHabit({ name: e.target.value })}
       fontSize={["1.5rem", "2.5rem"]}
       fontWeight="semibold"
       pl="0.35em"

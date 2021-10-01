@@ -40,8 +40,9 @@ export default class HabitEditor {
     makeAutoObservable(this)
   }
 
-  public updateHabit = (habit: Habit) => {
-    this.habit = habit
+  public updateHabit = (updates: Partial<Habit>) => {
+    if (!this.habit) throw new Error('Cannot update undefined habit')
+    this.habit = { ...this.habit, ...updates }
   }
 
   public saveAndExit = () => {

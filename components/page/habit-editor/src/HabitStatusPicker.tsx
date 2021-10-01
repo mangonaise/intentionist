@@ -19,7 +19,7 @@ const HabitStatusPicker = () => {
       {buttonData.map((data, index) => (
         <IconButton
           icon={data.icon}
-          onClick={() => editor.updateHabit({ ...editor.habit!, status: data.status})}
+          onClick={() => editor.updateHabit({ status: data.status})}
           flex={['', 1]}
           width={['100%', 'auto']}
           mr={[0, index < 2 ? 3 : 0]}

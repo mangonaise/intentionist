@@ -77,14 +77,13 @@ describe('when habits have already been fetched', () => {
   })
 
   test('updated habit is reflected in HabitsHandler', async () => {
-    const habit = await habitsHandler.setHabit(dummyHabit)
+    await habitsHandler.setHabit(dummyHabit)
     router.setQuery({ id: dummyHabit.id })
     const habitEditor = container.resolve(HabitEditor)
-    const updatedHabit = { ...habit!, name: 'Updated name' }
-    habitEditor.updateHabit(updatedHabit)
+    habitEditor.updateHabit({ name: 'Updated name' })
     habitEditor.saveAndExit()
     await when(() => container.resolve(DbHandler).isWriteComplete)
-    expect(habitsHandler.habits).toEqual([updatedHabit])
+    expect(habitsHandler.habits).toEqual([{ ...dummyHabit, name: 'Updated name' }])
   })
 })
 
