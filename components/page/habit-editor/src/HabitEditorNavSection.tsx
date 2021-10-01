@@ -1,17 +1,19 @@
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { HabitEditorContext } from 'pages/habits/[id]'
-import { Box, Button, Flex, IconButton } from '@/components/primitives'
-import { BackIcon } from '@/components/icons'
+import { Box, Button, Flex, IconButton, Text } from '@/components/primitives'
+import { CloseIcon } from '@/components/icons'
 
 const HabitEditorNavSection = () => {
   const editor = useContext(HabitEditorContext)
 
   return (
     <Flex pb={[3, 4]} borderBottom="solid 1px" borderColor="divider">
-      <IconButton icon={BackIcon} onClick={editor.exit} />
-      <Box as="span" alignSelf="center" ml={4} color="whiteAlpha.60">
-        {editor.isNewHabit ? 'Adding new ' : 'Editing '}habit
+      <IconButton icon={CloseIcon} onClick={editor.exit} />
+      <Box alignSelf="center" ml={4}>
+        <Text as="span" color="whiteAlpha.70">
+          {editor.isNewHabit ? 'Adding new ' : 'Editing '}habit
+        </Text>
       </Box>
       <Button
         onClick={editor.saveAndExit}
