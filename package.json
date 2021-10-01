@@ -15,6 +15,7 @@
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@styled-system/css": "^5.1.5",
+    "emoji-mart": "^3.0.1",
     "firebase": "^9.0.2",
     "lodash": "^4.17.21",
     "mobx": "^6.3.3",
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.15.4",
+    "@types/emoji-mart": "^3.0.6",
     "@types/jest": "^27.0.2",
     "@types/lodash": "^4.14.174",
     "@types/node": "^16.10.1",

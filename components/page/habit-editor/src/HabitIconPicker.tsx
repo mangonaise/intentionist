@@ -1,22 +1,41 @@
-import { CenteredFlex, Text } from '@/components/primitives'
+import type { BaseEmoji } from 'emoji-mart'
+import { observer } from 'mobx-react-lite'
+import { useContext, useState } from 'react'
+import { BlurListener, EmojiPicker } from '@/components/app'
+import { Box, Button, CenteredFlex } from '@/components/primitives'
 import { HabitEditorContext } from 'pages/habits/[id]'
-import { useContext } from 'react'
 
 const HabitIconPicker = () => {
   const editor = useContext(HabitEditorContext)
+  const [showPicker, setShowPicker] = useState(false)
+
+  function handleSelectEmoji(emoji: BaseEmoji) {
+    editor.updateHabit({ icon: emoji.native })
+    setShowPicker(false)
+  }
 
   return (
-    <CenteredFlex
-      minWidth={["3.5rem", "5rem"]}
-      minHeight={["3.5rem", "5rem"]}
-      bg="whiteAlpha.5"
-      borderRadius="default"
-    >
-      <Text as="span" fontSize={["1.5rem", "2rem"]}>
-        {editor.habit?.icon}
-      </Text>
-    </CenteredFlex>
+    <Box position="relative">
+      <BlurListener onBlur={() => setShowPicker(false)}>
+      <Button 
+          onClick={() => setShowPicker(!showPicker)}
+          fontSize={['1.5rem', '2rem']}
+          width={['3.5rem', '5rem']}
+          height={['3.5rem', '5rem']}
+        >
+          <CenteredFlex>
+            {editor.habit?.icon}
+          </CenteredFlex>
+        </Button>
+        <EmojiPicker
+          display={showPicker}
+          label="Select a habit icon"
+          onSelect={handleSelectEmoji}
+          onClose={() => setShowPicker(false)}
+        />
+      </BlurListener>
+    </Box>
   )
 }
 
-export default HabitIconPicker
+export default observer(HabitIconPicker)
