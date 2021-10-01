@@ -17,7 +17,7 @@ const Navbar = () => {
           fontSize={['2rem', '3rem']}
           mr={[4, 5, 6]}
           color={accentColor.current}
-          style={{ transition: 'color 200ms '}}
+          style={{ transition: 'color 250ms'}}
         />
         <Heading as="p" fontSize={['1.5rem', '2rem']} fontWeight={650} letterSpacing="0.03ch">
           intentionist
