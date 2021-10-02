@@ -31,7 +31,6 @@ const EmojiPicker = ({ display, label, onSelect, onClose: forceClose }: Props) =
 
   function handleSelect(emoji: BaseEmoji) {
     onSelect(emoji)
-    console.log(emoji)
   }
 
   if (!display) return null
