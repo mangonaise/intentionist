@@ -1,6 +1,7 @@
 import 'emoji-mart/css/emoji-mart.css'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { BaseEmoji, Picker } from 'emoji-mart'
+import isWindowsOS from '@/lib/logic/utils/isWindowsOS'
 import styled from '@emotion/styled'
 import css from '@styled-system/css'
 
@@ -42,6 +43,7 @@ const EmojiPicker = ({ display, label, onSelect, onClose: forceClose }: Props) =
     >
       <Picker
         onSelect={(emoji: BaseEmoji) => handleSelect(emoji)}
+        native={!isWindowsOS}
         theme="dark"
         set="twitter"
         emojiSize={24}
