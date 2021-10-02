@@ -1,24 +1,30 @@
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { HabitFilterContext } from 'pages/habits'
-import { Button } from '@/components/primitives'
+import { Dropdown } from '@/components/app'
+import { HabitStatus } from '@/lib/logic/app/HabitsHandler'
+
+const dropdownTextMap: { [status in HabitStatus]: string } = {
+  active: 'Active habits',
+  suspended: 'Suspended habits',
+  archived: 'Archived habits'
+}
+
+const statuses = ['active', 'suspended', 'archived'] as HabitStatus[]
 
 const HabitStatusDropdown = () => {
-  const { setFilter } = useContext(HabitFilterContext)
+  const { filter, setFilter } = useContext(HabitFilterContext)
 
   return (
-    <Button
-      as="select"
-      color="gray"
-      ml={3}
-      py={0}
-      flexGrow={[1, 0]}
-      onChange={(e: any) => setFilter(e.target.value)}
-    >
-      <option value={'active'}>Active habits</option>
-      <option value={'suspended'}>Suspended habits</option>
-      <option value={'archived'}>Archived habits</option>
-    </Button>
+    <Dropdown title={dropdownTextMap[filter]} flexGrow={[1, 0]} ml={3}>
+      {statuses.map(status => (
+        <Dropdown.Item
+          key={status}
+          text={dropdownTextMap[status]}
+          action={() => setFilter(status)}
+        />
+      ))}
+    </Dropdown>
   )
 }
 

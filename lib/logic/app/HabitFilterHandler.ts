@@ -5,7 +5,7 @@ import HabitsHandler, { Habit, HabitStatus } from './HabitsHandler'
 @injectable()
 export default class HabitFilterHandler {
   public filteredHabits: Habit[]
-  private filter: HabitStatus = 'active'
+  public filter: HabitStatus = 'active'
   private habitsHandler
 
   constructor(habitsHandler: HabitsHandler) {
