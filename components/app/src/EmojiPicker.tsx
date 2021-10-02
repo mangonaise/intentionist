@@ -1,8 +1,8 @@
 import 'emoji-mart/css/emoji-mart.css'
-import { useLayoutEffect, useRef, useState } from 'react';
-import { BaseEmoji, Picker } from 'emoji-mart';
-import styled from '@emotion/styled';
-import css from '@styled-system/css';
+import { useLayoutEffect, useRef, useState } from 'react'
+import { BaseEmoji, Picker } from 'emoji-mart'
+import styled from '@emotion/styled'
+import css from '@styled-system/css'
 
 interface Props {
   display: boolean,
@@ -30,6 +30,7 @@ const EmojiPicker = ({ display, label, onSelect, onClose: forceClose }: Props) =
 
   function handleSelect(emoji: BaseEmoji) {
     onSelect(emoji)
+    console.log(emoji)
   }
 
   if (!display) return null
@@ -43,14 +44,13 @@ const EmojiPicker = ({ display, label, onSelect, onClose: forceClose }: Props) =
         onSelect={(emoji: BaseEmoji) => handleSelect(emoji)}
         theme="dark"
         set="twitter"
-        emojiSize={20}
-        sheetSize={20}
+        emojiSize={24}
+        sheetSize={32}
         showPreview={false}
         title={label}
         emoji=""
         color="var(--text-color)"
         notFoundEmoji=""
-        autoFocus
         exclude={['recent']}
       />
     </EmojiMartWrapper>
@@ -97,12 +97,23 @@ let EmojiMartWrapper = styled.div(css({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: '20px',
-    minHeight: '20px',
-    borderRadius: '10px'
+    minWidth: '2rem',
+    minHeight: '2rem',
+    border: 'none',
+    backgroundColor: 'bg',
+    borderRadius: '2rem',
+    '&.opened .emoji-mart-skin-swatch': {
+      width: '2rem',
+    },
+    '.emoji-mart-skin-swatch.selected': {
+      width: '2rem'
+    }
+  },
+  '.emoji-mart-skin': {
+    maxWidth: 'none'
   },
   '.emoji-mart-preview': {
-    height: '2.5rem'
+    height: '3rem'
   },
   '.emoji-mart-preview-data': {
     left: '1rem',
