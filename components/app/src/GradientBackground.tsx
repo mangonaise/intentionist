@@ -2,46 +2,45 @@ import { observer } from 'mobx-react-lite'
 import { Box } from '@/components/primitives'
 import accentColor, { AccentColor } from '@/lib/logic/utils/accentColor'
 import theme from 'styles/theme'
-import styled from '@emotion/styled'
 
-interface GradientProps {
-  gradientColor: string,
-  yOffset: number,
-  isActive: boolean
+const gradientData: { [id in AccentColor]: { color: string, opacity: number } } = {
+  tracker: { color: theme.colors.tracker, opacity: 0.45 },
+  journal: { color: theme.colors.journal, opacity: 0.45 },
+  focus: { color: theme.colors.focus, opacity: 0.4 },
+  neutral: { color: '#8a8a8a', opacity: 0.4 },
+  off: { color: 'transparent', opacity: 0 }
 }
-
-const Gradient = styled.div(({ gradientColor, yOffset, isActive }: GradientProps) => ({
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  right: 0,
-  height: '150px',
-  backgroundImage: `linear-gradient(to bottom, ${gradientColor} ${-yOffset}px, transparent 100%)`,
-  opacity: isActive ? 1 : 0,
-  transition: 'opacity 250ms ease-out'
-}))
-
-const gradientData: Array<{ name: AccentColor, color: string, yOffset: number }> = [
-  { name: 'tracker', color: theme.colors.tracker, yOffset: 400 },
-  { name: 'journal', color: theme.colors.journal, yOffset: 375 },
-  { name: 'focus', color: theme.colors.focus, yOffset: 450 },
-  { name: 'neutral', color: theme.colors.text, yOffset: 1000 },
-  { name: 'off', color: 'transparent', yOffset: 0 }
-]
 
 const GradientBackground = () => {
   const activeColor = accentColor.current
 
   return (
-    <Box>
-      {gradientData.map(data => (
-        <Gradient
-          gradientColor={data.color}
-          yOffset={data.yOffset}
-          isActive={data.name === activeColor}
-          key={data.name}
+    <Box
+      position="fixed"
+      top={0}
+      left={0}
+      height="130px"
+      width="100%"
+      opacity={gradientData[activeColor].opacity}
+      style={{ transition: 'opacity 500ms' }}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" height="100%" width="100%">
+        <defs>
+          <linearGradient id="gradient" gradientTransform="rotate(90)">
+            <stop
+              offset="0%"
+              stopColor={gradientData[activeColor].color}
+              style={{ transition: 'stop-color 500ms' }}
+            />
+            <stop offset="100%" stopColor="var(--background-color)" />
+          </linearGradient>
+        </defs>
+        <rect
+          height="100%"
+          width="100%"
+          fill="url('#gradient')"
         />
-      ))}
+      </svg>
     </Box>
   )
 }

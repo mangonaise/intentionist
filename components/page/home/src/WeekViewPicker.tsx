@@ -27,7 +27,7 @@ const WeekViewPicker = () => {
           onClick={() => setView(data.view)}
           flex={1}
           mr={index < 2 ? 3 : 0}
-          bg={data.view === view ? accentColor.current : ''}
+          bg={data.view === view ? data.view : ''}
           style={{ transition: 'var(--focus-transition), background-color 200ms' }}
           key={data.view}
         >

@@ -10,16 +10,16 @@ const Navbar = () => {
   const { profileInfo } = container.resolve(ProfileHandler) 
 
   return (
-    <Box maxWidth="max" margin="auto">
+    <Box maxWidth="max" margin="auto" opacity={.99999}>
       <Flex alignItems="center" mb={[4]} py={[0, 0, 4]}>
         <Icon
           icon={IntentionistIcon}
-          fontSize={['2rem', '3rem']}
-          mr={[4, 5, 6]}
+          fontSize={['2rem', '2.5rem', '3rem']}
+          mr={[4, 4, 6]}
           color={accentColor.current}
-          style={{ transition: 'color 250ms'}}
+          style={{ transition: 'color 500ms'}}
         />
-        <Heading as="p" fontSize={['1.5rem', '2rem']} fontWeight={650} letterSpacing="0.03ch">
+        <Heading as="p" fontSize={['1.5rem', '1.75rem', '2rem']} fontWeight={650} letterSpacing="0.03ch">
           intentionist
         </Heading>
         <Spacer mr="auto" />
