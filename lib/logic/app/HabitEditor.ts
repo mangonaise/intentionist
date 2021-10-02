@@ -45,6 +45,12 @@ export default class HabitEditor {
     this.habit = { ...this.habit, ...updates }
   }
 
+  public deleteHabit = () => {
+    if (!this.habit) throw new Error('Cannot delete undefined habit')
+    this.habitsHandler.deleteHabitById(this.habit.id)
+    this.exit()
+  }
+
   public saveAndExit = () => {
     if (!this.habit) throw new Error('Cannot save undefined habit')
     this.habitsHandler.setHabit(this.habit)

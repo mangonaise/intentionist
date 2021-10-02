@@ -3,6 +3,7 @@ import { useContext } from 'react'
 import { HabitEditorContext } from 'pages/habits/[id]'
 import { Box, Button, Flex, IconButton, Text } from '@/components/primitives'
 import { CloseIcon } from '@/components/icons'
+import { DeleteHabitDropdown } from '..'
 
 const HabitEditorNavSection = () => {
   const editor = useContext(HabitEditorContext)
@@ -26,6 +27,7 @@ const HabitEditorNavSection = () => {
       >
         {editor.isNewHabit ? 'Add' : 'Save'}
       </Button>
+      {!editor.isNewHabit && <DeleteHabitDropdown />}
     </Flex>
   )
 }

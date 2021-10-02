@@ -85,6 +85,15 @@ describe('when habits have already been fetched', () => {
     await when(() => container.resolve(DbHandler).isWriteComplete)
     expect(habitsHandler.habits).toEqual([{ ...dummyHabit, name: 'Updated name' }])
   })
+
+  test('deleted habit is reflected in HabitsHandler', async () => {
+    await habitsHandler.setHabit(dummyHabit)
+    router.setQuery({ id: dummyHabit.id })
+    const habitEditor = container.resolve(HabitEditor)
+    habitEditor.deleteHabit()
+    await when(() => container.resolve(DbHandler).isWriteComplete)
+    expect(habitsHandler.habits).toEqual([])
+  })
 })
 
 test('teardown: router query and habits are reset', () => {

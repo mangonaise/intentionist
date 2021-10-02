@@ -14,7 +14,7 @@ const BlurListener = ({ blurAction, children, ...props }: Props) => {
     await new Promise(resolve => setTimeout(resolve, 0))
     const focusedElement = document.activeElement
     if (focusedElement instanceof HTMLElement) {
-      if (!elementRef.current!.contains(focusedElement)) {
+      if (elementRef.current && !elementRef.current.contains(focusedElement)) {
         blurAction()
       }
     }
