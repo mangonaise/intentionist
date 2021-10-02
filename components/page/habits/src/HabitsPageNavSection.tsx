@@ -8,7 +8,7 @@ const HabitsPageNavSection = () => {
     <Flex
       pb={[0, 4]}
       mb={2}
-      borderBottom="solid 1px"
+      borderBottom="solid 1.5px"
       borderColor={['transparent', 'divider']}
       flexWrap={['wrap', 'nowrap']}
     >

@@ -8,7 +8,7 @@ const HabitEditorNavSection = () => {
   const editor = useContext(HabitEditorContext)
 
   return (
-    <Flex pb={[3, 4]} borderBottom="solid 1px" borderColor="divider">
+    <Flex pb={[3, 4]} borderBottom="solid 1.5px" borderColor="divider">
       <IconButton icon={CloseIcon} onClick={editor.exit} />
       <Box alignSelf="center" ml={4}>
         <Text as="span" color="whiteAlpha.70">
