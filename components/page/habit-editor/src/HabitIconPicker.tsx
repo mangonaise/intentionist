@@ -15,7 +15,7 @@ const HabitIconPicker = () => {
   }
 
   return (
-    <BlurListener onBlur={() => setShowPicker(false)} position="relative">
+    <BlurListener blurAction={() => setShowPicker(false)} position="relative">
       <Button
         onClick={() => setShowPicker(!showPicker)}
         fontSize={['1.5rem', '2rem']}

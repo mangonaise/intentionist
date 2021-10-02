@@ -3,11 +3,11 @@ import { Box } from '@/components/primitives'
 import { BoxProps } from '@/components/primitives/src/Box'
 
 interface Props extends BoxProps {
-  onBlur: () => void,
+  blurAction: () => void,
   children: ReactNode
 }
 
-const BlurListener = ({ onBlur, children, ...props }: Props) => {
+const BlurListener = ({ blurAction, children, ...props }: Props) => {
   const elementRef = useRef<HTMLDivElement>(null)
 
   async function handleFocusChange() {
@@ -15,7 +15,7 @@ const BlurListener = ({ onBlur, children, ...props }: Props) => {
     const focusedElement = document.activeElement
     if (focusedElement instanceof HTMLElement) {
       if (!elementRef.current!.contains(focusedElement)) {
-        onBlur()
+        blurAction()
       }
     }
   }
