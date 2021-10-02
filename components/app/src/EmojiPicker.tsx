@@ -46,7 +46,7 @@ const EmojiPicker = ({ display, label, onSelect, onClose: forceClose }: Props) =
         native={!isWindowsOS}
         theme="dark"
         set="twitter"
-        emojiSize={24}
+        emojiSize={26}
         sheetSize={32}
         showPreview={false}
         title={label}
@@ -109,16 +109,16 @@ let EmojiMartWrapper = styled.div(css({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: '2rem',
-    minHeight: '2rem',
+    minWidth: '2.2rem',
+    minHeight: '2.2rem',
     border: 'none',
     backgroundColor: 'bg',
-    borderRadius: '2rem',
+    borderRadius: '2.2rem',
     '&.opened .emoji-mart-skin-swatch': {
-      width: '2rem',
+      width: '2.2rem',
     },
     '.emoji-mart-skin-swatch.selected': {
-      width: '2rem'
+      width: '2.2rem'
     }
   },
   '.emoji-mart-skin': {
