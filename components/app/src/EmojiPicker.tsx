@@ -88,6 +88,16 @@ let EmojiMartWrapper = styled.div(css({
       backgroundColor: 'bg'
     }
   },
+  '.emoji-mart-emoji': {
+    '&:hover::before': {
+      borderRadius: '4px'
+    },
+    '& span': {
+      display: 'inline-flex !important',
+      justifyContent: 'center',
+      alignItems: 'center'
+    }
+  },
   '.emoji-mart-emoji:focus': {
     borderRadius: '50%',
     transform: 'scale(0.8)',
