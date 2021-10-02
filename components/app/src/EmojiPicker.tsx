@@ -66,78 +66,110 @@ let EmojiMartWrapper = styled.div(css({
     opacity: 0,
     animation: 'fade-in forwards 200ms',
     backgroundColor: 'bg',
+    border: 'solid 2px',
+    borderColor: 'divider',
+    transform: 'translateY(4px)',
     fontFamily: 'inherit',
+
     '@media screen and (max-width: 400px)': {
       width: '100vw !important',
       position: 'fixed',
       left: 0,
       right: 0
     },
-  },
-  '.emoji-mart-search': {
-    zIndex: 5,
-    margin: '6px 0'
-  },
-  '.emoji-mart-category-label': {
-    top: '-2px',
-    paddingTop: '3px',
-    marginBottom: '2px',
-    borderBottom: 'solid 1px #444',
-    backgroundColor: 'bg',
-    '& span': {
-      backgroundColor: 'bg'
-    }
-  },
-  '.emoji-mart-emoji': {
-    '&:hover::before': {
-      borderRadius: '4px'
+
+    '&-bar': {
+      borderColor: 'divider',
+      '&:first-of-type': {
+        borderBottomWidth: '2px'
+      },
+      '&:last-child': {
+        borderTopWidth: '2px'
+      }
     },
-    '& span': {
-      display: 'inline-flex !important',
+
+    '&-search': {
+      zIndex: 5,
+      margin: '6px 0',
+      '& input': {
+        border: 'solid 2px',
+        borderColor: 'divider',
+        backgroundColor: 'whiteAlpha.5',
+      }
+    },
+
+    '&-category-list': {
+      marginRight: '-2px',
+    },
+
+    '&-category-label': {
+      top: '-2px',
+      paddingTop: '3px',
+      marginBottom: '2px',
+      borderBottom: 'solid 1.5px',
+      borderColor: 'divider',
+      backgroundColor: 'bg',
+      '& span': {
+        backgroundColor: 'bg'
+      }
+    },
+
+    '&-emoji': {
+      '&:hover::before': {
+        borderRadius: '4px'
+      },
+      '&:focus': {
+        borderRadius: '50%',
+        transform: 'scale(0.8)',
+        '&:not(:focus-visible)': {
+          transform: 'none'
+        }
+      },
+      '& span': {
+        display: 'inline-flex !important',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }
+    },
+
+    '&-skin-swatches': {
+      display: 'flex',
+      alignItems: 'center',
       justifyContent: 'center',
-      alignItems: 'center'
-    }
-  },
-  '.emoji-mart-emoji:focus': {
-    borderRadius: '50%',
-    transform: 'scale(0.8)',
-    '&:not(:focus-visible)': {
-      transform: 'none'
-    }
-  },
-  '.emoji-mart-skin-swatches': {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: '2.2rem',
-    minHeight: '2.2rem',
-    border: 'none',
-    backgroundColor: 'bg',
-    borderRadius: '2.2rem',
-    '&.opened .emoji-mart-skin-swatch': {
-      width: '2.2rem',
+      minWidth: '2.2rem',
+      minHeight: '2.2rem',
+      border: 'none',
+      backgroundColor: 'bg',
+      borderRadius: '2.2rem',
+      '&.opened .emoji-mart-skin-swatch': {
+        width: '2.2rem',
+      },
+      '.emoji-mart-skin-swatch.selected': {
+        width: '2.2rem'
+      }
     },
-    '.emoji-mart-skin-swatch.selected': {
-      width: '2.2rem'
+
+    '&-skin': {
+      maxWidth: 'none'
+
+    },
+
+    '&-preview': {
+      height: '3rem',
+      '&-data': {
+        left: '1rem',
+      },
+      '&-skins': {
+        right: '1rem'
+      }
+    },
+
+    '&-title-label': {
+      fontSize: '1rem',
+      color: 'whiteAlpha.70',
+      fontWeight: 'normal'
     }
   },
-  '.emoji-mart-skin': {
-    maxWidth: 'none'
-  },
-  '.emoji-mart-preview': {
-    height: '3rem'
-  },
-  '.emoji-mart-preview-data': {
-    left: '1rem',
-  },
-  '.emoji-mart-preview-skins': {
-    right: '1rem'
-  },
-  '.emoji-mart-title-label': {
-    fontSize: '1rem',
-    color: 'whiteAlpha.70',
-    fontWeight: 'normal'
-  }
 }))
 
 export default EmojiPicker
