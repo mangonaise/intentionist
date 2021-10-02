@@ -55,11 +55,11 @@ const Dropdown = ({ title, children, right = 'auto', ...props }: DropdownProps) 
 }
 
 interface ItemProps {
-  text: string,
+  children: ReactNode,
   action: () => void,
 }
 
-const Item = ({ text, action }: ItemProps) => {
+const Item = ({ children, action }: ItemProps) => {
   const { closeDropdown } = useContext(DropdownContext)
 
   function handleClick() {
@@ -69,7 +69,7 @@ const Item = ({ text, action }: ItemProps) => {
 
   return (
     <ItemButton onClick={handleClick}>
-      {text}
+      {children}
     </ItemButton>
   )
 }

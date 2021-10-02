@@ -23,7 +23,7 @@ const DeleteHabitDropdown = () => {
   return (
     <>
       <Dropdown title="" ml={2} right={0}>
-        <Dropdown.Item text="Delete" action={openModal} />
+        <Dropdown.Item action={openModal}>Delete</Dropdown.Item>
       </Dropdown>
       <ModalPopup isOpen={showModal} closeModal={closeModal}>
         <CenteredFlex flexDirection="column">
