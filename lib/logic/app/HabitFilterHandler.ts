@@ -19,7 +19,7 @@ export default class HabitFilterHandler {
     this.filteredHabits = this.getFilteredHabits(filter)
   }
 
-  private getFilteredHabits = (filter: HabitStatus) => {
+  public getFilteredHabits = (filter: HabitStatus) => {
     return this.habitsHandler.habits.filter(habit => habit.status === filter)
   }
 }

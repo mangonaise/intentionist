@@ -1,7 +1,7 @@
 import { BackIcon, PlusIcon } from '@/components/icons'
 import { Flex, IconButton } from '@/components/primitives'
 import NextLink from 'next/link'
-import HabitStatusDropdown from './HabitStatusDropdown'
+import HabitFilterDropdown from './HabitFilterDropdown'
 
 const HabitsPageNavSection = () => {
   return (
@@ -13,7 +13,7 @@ const HabitsPageNavSection = () => {
       flexWrap={['wrap', 'nowrap']}
     >
       <NextLink href="/home"><IconButton icon={BackIcon} /></NextLink>
-      <HabitStatusDropdown />
+      <HabitFilterDropdown />
       <NextLink href="/habits/new">
         <IconButton
           icon={PlusIcon}
