@@ -1,11 +1,13 @@
 import { ReactNode, useRef } from 'react'
+import { Box } from '@/components/primitives'
+import { BoxProps } from '@/components/primitives/src/Box'
 
-interface Props {
+interface Props extends BoxProps {
   onBlur: () => void,
   children: ReactNode
 }
 
-const BlurListener = ({ onBlur, children }: Props) => {
+const BlurListener = ({ onBlur, children, ...props }: Props) => {
   const elementRef = useRef<HTMLDivElement>(null)
 
   async function handleFocusChange() {
@@ -19,9 +21,9 @@ const BlurListener = ({ onBlur, children }: Props) => {
   }
 
   return (
-    <div onBlur={handleFocusChange} ref={elementRef}>
+    <Box onBlur={handleFocusChange} ref={elementRef} {...props}>
       {children}
-    </div>
+    </Box>
   )
 }
 
