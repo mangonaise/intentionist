@@ -44,4 +44,6 @@ const theme = {
   space: ['0', '0.25rem', '0.5rem', '0.75rem', '1rem', '1.25rem', '1.5rem', '1.75rem', '2rem']
 }
 
+export const windowsScrollbarStyle = '::-webkit-scrollbar{width:10px;}::-webkit-scrollbar-track{background:rgba(255,255,255,0.1);}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.3);}::-webkit-scrollbar-thumb:hover{background:rgba(255, 255, 255, 0.5);}'
+
 export default theme
