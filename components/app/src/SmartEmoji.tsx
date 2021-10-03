@@ -3,7 +3,13 @@ import { Emoji, getEmojiDataFromNative } from 'emoji-mart'
 import emojiData from 'emoji-mart/data/all.json'
 import isWindowsOS from '@/lib/logic/utils/isWindowsOS'
 
-const SmartEmoji = ({ nativeEmoji, twemojiSize }: { nativeEmoji: string, twemojiSize: number }) => {
+interface Props {
+  nativeEmoji: string,
+  nativeFontSize?: string,
+  twemojiSize: number
+}
+
+const SmartEmoji = ({ nativeEmoji, nativeFontSize, twemojiSize }: Props) => {
   if (isWindowsOS) {
     const twemoji = getEmojiDataFromNative(nativeEmoji, 'twitter', emojiData)
     return (
@@ -11,7 +17,7 @@ const SmartEmoji = ({ nativeEmoji, twemojiSize }: { nativeEmoji: string, twemoji
     )
   } else {
     return (
-      <Text as="span">
+      <Text as="span" fontSize={nativeFontSize || 'inherit'}>
         {nativeEmoji}
       </Text>
     )
