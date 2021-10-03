@@ -74,7 +74,7 @@ const Item = ({ children, action }: ItemProps) => {
   )
 }
 
-let DropdownContentWrapper = styled(Flex)(css({
+const DropdownContentWrapper = styled(Flex)(css({
   position: 'absolute',
   flexDirection: 'column',
   backgroundColor: 'bg',
@@ -85,12 +85,12 @@ let DropdownContentWrapper = styled(Flex)(css({
   borderRadius: 'default'
 }))
 
-let ExpandIcon = styled(Icon)({
+const ExpandIcon = styled(Icon)({
   marginLeft: 'auto',
   transform: 'scale(1.35) translateY(0.08em)'
 })
 
-let ItemButton = styled(Button)(css({
+const ItemButton = styled(Button)(css({
   textAlign: 'left',
   margin: '-2px',
   py: '0.8em',

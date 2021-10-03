@@ -58,7 +58,7 @@ const EmojiPicker = ({ display, label, onSelect, onClose: forceClose }: Props) =
   )
 }
 
-let EmojiMartWrapper = styled.div(css({
+const EmojiMartWrapper = styled.div(css({
   position: 'absolute',
   zIndex: 1,
   '.emoji-mart': {
