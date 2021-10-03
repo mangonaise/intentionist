@@ -3,6 +3,8 @@ import { grid, GridProps } from 'styled-system';
 
 type StyleProps = GridProps
 
-const Grid = styled.div<StyleProps>(grid)
+const Grid = styled.div<StyleProps>({
+  display: 'grid'
+}, grid)
 
 export default Grid
