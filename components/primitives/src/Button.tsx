@@ -1,13 +1,13 @@
 import styled from '@emotion/styled';
 import css from '@styled-system/css'
 import { HTMLAttributes } from 'react';
-import { color, ColorProps, flexbox, FlexboxProps, layout, LayoutProps, space, SpaceProps, typography, TypographyProps } from 'styled-system';
+import { border, BorderProps, color, ColorProps, flexbox, FlexboxProps, layout, LayoutProps, space, SpaceProps, typography, TypographyProps } from 'styled-system';
 
 interface CustomProps extends HTMLAttributes<HTMLButtonElement> { 
   bg?: string,
   reduceHoverOpacity?: boolean
 }
-type StyleProps = SpaceProps & FlexboxProps & LayoutProps & TypographyProps & ColorProps
+type StyleProps = SpaceProps & FlexboxProps & LayoutProps & TypographyProps & ColorProps & BorderProps
 export type ButtonProps = StyleProps & CustomProps
 
 const Button = styled.button<ButtonProps>(({ bg, reduceHoverOpacity }: ButtonProps) => (css({
@@ -29,6 +29,6 @@ const Button = styled.button<ButtonProps>(({ bg, reduceHoverOpacity }: ButtonPro
     opacity: 0.3,
     cursor: 'default'
   }
-})), space, layout, flexbox, typography, color)
+})), space, layout, flexbox, typography, color, border)
 
 export default Button
