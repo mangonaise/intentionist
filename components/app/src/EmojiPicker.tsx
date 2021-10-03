@@ -149,8 +149,8 @@ let EmojiMartWrapper = styled.div(css({
     },
 
     '&-skin': {
-      maxWidth: 'none'
-
+      maxWidth: 'none',
+      cursor: 'pointer'
     },
 
     '&-preview': {
