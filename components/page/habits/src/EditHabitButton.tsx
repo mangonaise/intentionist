@@ -9,12 +9,10 @@ import { SmartEmoji } from '@/components/app'
 const StyledButton = styled(Button)(css({
   width: '100%',
   px: 3,
-  transition: 'background-color 150ms',
   backgroundColor: 'transparent',
   textAlign: 'left',
   'svg': {
     opacity: 0.25,
-    transition: 'opacity 150ms'
   },
   '&:hover': {
     backgroundColor: 'whiteAlpha.5',
