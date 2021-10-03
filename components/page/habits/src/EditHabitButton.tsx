@@ -4,6 +4,7 @@ import { PencilIcon } from '@/components/icons'
 import NextLink from 'next/link'
 import styled from '@emotion/styled'
 import css from '@styled-system/css'
+import { SmartEmoji } from '@/components/app'
 
 const StyledButton = styled(Button)(css({
   width: '100%',
@@ -28,7 +29,9 @@ const EditHabitButton = ({ habit }: { habit: Habit }) => {
     <NextLink href={`/habits/${habit.id}`} key={habit.id}>
       <StyledButton>
         <CenteredFlex justifyContent="flex-start">
-          <Text as="span" mr={3} fontSize="1.2rem">{habit.icon}</Text>
+          <CenteredFlex mr={3} fontSize="1.2rem">
+            <SmartEmoji nativeEmoji={habit.icon} twemojiSize={22} />
+          </CenteredFlex>
           {habit.name}
           <Icon icon={PencilIcon} ml="auto" pl={2} fontSize="1.5rem" />
         </CenteredFlex>
