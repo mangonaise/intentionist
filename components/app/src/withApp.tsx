@@ -38,7 +38,7 @@ const withApp = (WrappedComponent: () => JSX.Element, accent?: AccentColor) => w
         <GradientBackground />
         <Navbar />
       </FadeIn>
-      <FadeIn opacity={.99999}>
+      <FadeIn>
         <WrappedComponent />
       </FadeIn>
     </>
