@@ -8,7 +8,6 @@ const CalendarIcon = () => (
       rx={2}
       stroke="currentColor"
       strokeWidth={2}
-      fill="none"
     />
     <path d="M3 10l1-3 3-1h10l3 1 1 3H3z" fill="currentColor" />
     <path

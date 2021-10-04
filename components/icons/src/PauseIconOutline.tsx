@@ -10,7 +10,6 @@ const PauseIconOutline = () => {
         stroke="currentColor"
         strokeWidth={2}
         strokeLinecap="round"
-        fill="none"
       />
       <rect
         x={14}
@@ -21,7 +20,6 @@ const PauseIconOutline = () => {
         stroke="currentColor"
         strokeWidth={2}
         strokeLinecap="round"
-        fill="none"
       />
     </>
   )

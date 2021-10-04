@@ -6,7 +6,6 @@ const ExpandUpIcon = () => {
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
-      fill="none"
     />
   )
 }
