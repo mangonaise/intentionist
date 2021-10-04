@@ -13,7 +13,7 @@ const SmartEmoji = ({ nativeEmoji, nativeFontSize, twemojiSize }: Props) => {
   if (isWindowsOS) {
     const twemoji = getEmojiDataFromNative(nativeEmoji, 'twitter', emojiData)
     return (
-      <Emoji emoji={twemoji} size={twemojiSize} set="twitter" sheetSize={32} />
+      <Emoji emoji={twemoji} size={twemojiSize} set="twitter" sheetSize={32} skin={twemoji.skin || undefined} />
     )
   } else {
     return (
