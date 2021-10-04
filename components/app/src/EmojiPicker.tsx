@@ -6,6 +6,7 @@ import { BoxProps } from '@/components/primitives/src/Box'
 import isWindowsOS from '@/lib/logic/utils/isWindowsOS'
 import styled from '@emotion/styled'
 import css from '@styled-system/css'
+import useWindowWidth from '@/lib/hooks/useWindowWidth'
 
 interface Props extends BoxProps {
   isOpen: boolean,
@@ -16,14 +17,15 @@ interface Props extends BoxProps {
 
 const EmojiPicker = ({ isOpen, label, onSelectEmoji, onEscape, ...props }: Props) => {
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const windowWidth = useWindowWidth()
   const [anchorRight, setAnchorRight] = useState(false)
 
   useLayoutEffect(() => {
     if (isOpen) {
       const wrapper = wrapperRef.current!
-      setAnchorRight(wrapper.parentElement!.getBoundingClientRect().left + wrapper.offsetWidth > window.innerWidth)
+      setAnchorRight(wrapper.parentElement!.getBoundingClientRect().left + wrapper.offsetWidth > windowWidth)
     }
-  }, [isOpen])
+  }, [isOpen, windowWidth])
 
   function handleKeyDown(key: string) {
     if (key === 'Escape') {
