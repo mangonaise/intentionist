@@ -30,7 +30,7 @@ const HabitIconPicker = () => {
         display={showPicker}
         label="Select a habit icon"
         onSelect={handleSelectEmoji}
-        onClose={() => setShowPicker(false)}
+        onEscape={() => setShowPicker(false)}
       />
     </BlurListener>
   )

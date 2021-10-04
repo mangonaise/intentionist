@@ -9,23 +9,23 @@ interface Props {
   display: boolean,
   label: string,
   onSelect: (emoji: BaseEmoji) => void,
-  onClose: () => void
+  onEscape: () => void
 }
 
-const EmojiPicker = ({ display, label, onSelect, onClose: forceClose }: Props) => {
+const EmojiPicker = ({ display, label, onSelect, onEscape }: Props) => {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const [anchorRight, setAnchorRight] = useState(false)
 
   useLayoutEffect(() => {
     if (display) {
       const wrapper = wrapperRef.current!
-      setAnchorRight(wrapper.parentElement!.offsetLeft + wrapper.offsetWidth > window.innerWidth)
+      setAnchorRight(wrapper.parentElement!.getBoundingClientRect().left + wrapper.offsetWidth > window.innerWidth)
     }
   }, [display])
 
   function handleKeyDown(key: string) {
     if (key === 'Escape') {
-      forceClose()
+      onEscape()
     }
   }
 
