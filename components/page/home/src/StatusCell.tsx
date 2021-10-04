@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { BlurListener, SmartEmoji } from '@/components/app'
-import { Button, CenteredFlex } from '@/components/primitives'
+import { Button, CenteredFlex, FadeIn } from '@/components/primitives'
 import StatusCellEditor from './status-cell-editor/StatusCellEditor'
 import styled from '@emotion/styled'
 import css from '@styled-system/css'
@@ -34,12 +34,14 @@ const StatusCell = () => {
         <CellButton onClick={toggleEditing} isEditing={isEditing} hasStatus={!!status.length}>
           <CenteredFlex flexWrap="wrap" py="4px">
             {!!status.length && status.map((emoji, index) => (
-              <CenteredFlex p="1px" key={index}>
-                <SmartEmoji nativeEmoji={emoji} nativeFontSize="1.25rem" twemojiSize={18} />
-              </CenteredFlex>
+              <FadeIn time={250} delay={0} key={index}>
+                <CenteredFlex p="1px">
+                  <SmartEmoji nativeEmoji={emoji} nativeFontSize="1.25rem" twemojiSize={18} />
+                </CenteredFlex>
+              </FadeIn>
             ))}
           </CenteredFlex>
-        </CellButton>
+        </CellButton >
         {isEditing && (
           <StatusCellEditor
             status={status}
@@ -47,8 +49,8 @@ const StatusCell = () => {
             onFinishEditing={finishEditing}
           />
         )}
-      </BlurListener>
-    </CenteredFlex>
+      </BlurListener >
+    </CenteredFlex >
   )
 }
 
