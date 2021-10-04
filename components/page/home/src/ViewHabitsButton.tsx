@@ -15,19 +15,26 @@ const ViewHabitsButton = () => {
 }
 
 const StyledButton = styled(IconButton)(css({
+  gridColumn: '1 / -1',
   width: '100%',
   height: 'row',
   padding: 0,
-  paddingLeft: 3,
+  paddingLeft: '0.9rem',
   borderRadius: 0,
   borderBottom: 'solid 1px',
   borderColor: 'grid',
   backgroundColor: 'transparent',
-  gridColumn: '1 / -1',
-  color: '#aaa',
+  color: 'whiteAlpha.60',
+  '& svg': {
+    color: 'text',
+    opacity: 0.6
+  },
   '&:hover': {
     color: 'text',
-    backgroundColor: 'whiteAlpha.5'
+    backgroundColor: 'whiteAlpha.5',
+    '& svg': {
+      opacity: 1
+    },
   }
 }))
 
