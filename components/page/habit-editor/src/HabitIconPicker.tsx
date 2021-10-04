@@ -27,9 +27,9 @@ const HabitIconPicker = () => {
         </CenteredFlex>
       </Button>
       <EmojiPicker
-        display={showPicker}
+        isOpen={showPicker}
         label="Select a habit icon"
-        onSelect={handleSelectEmoji}
+        onSelectEmoji={handleSelectEmoji}
         onEscape={() => setShowPicker(false)}
       />
     </BlurListener>

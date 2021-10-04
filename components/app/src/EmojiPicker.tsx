@@ -1,27 +1,29 @@
 import 'emoji-mart/css/emoji-mart.css'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { BaseEmoji, Picker } from 'emoji-mart'
+import { Box } from '@/components/primitives'
+import { BoxProps } from '@/components/primitives/src/Box'
 import isWindowsOS from '@/lib/logic/utils/isWindowsOS'
 import styled from '@emotion/styled'
 import css from '@styled-system/css'
 
-interface Props {
-  display: boolean,
+interface Props extends BoxProps {
+  isOpen: boolean,
   label: string,
-  onSelect: (emoji: BaseEmoji) => void,
+  onSelectEmoji: (emoji: BaseEmoji) => void,
   onEscape: () => void
 }
 
-const EmojiPicker = ({ display, label, onSelect, onEscape }: Props) => {
+const EmojiPicker = ({ isOpen, label, onSelectEmoji, onEscape, ...props }: Props) => {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const [anchorRight, setAnchorRight] = useState(false)
 
   useLayoutEffect(() => {
-    if (display) {
+    if (isOpen) {
       const wrapper = wrapperRef.current!
       setAnchorRight(wrapper.parentElement!.getBoundingClientRect().left + wrapper.offsetWidth > window.innerWidth)
     }
-  }, [display])
+  }, [isOpen])
 
   function handleKeyDown(key: string) {
     if (key === 'Escape') {
@@ -30,15 +32,16 @@ const EmojiPicker = ({ display, label, onSelect, onEscape }: Props) => {
   }
 
   function handleSelect(emoji: BaseEmoji) {
-    onSelect(emoji)
+    onSelectEmoji(emoji)
   }
 
-  if (!display) return null
+  if (!isOpen) return null
   return (
     <EmojiMartWrapper
       onKeyDown={e => handleKeyDown(e.key)}
       ref={wrapperRef}
-      style={anchorRight ? { right: 0 } : {}}
+      right={anchorRight ? 0 : 'auto'}
+      {...props}
     >
       <Picker
         onSelect={(emoji: BaseEmoji) => handleSelect(emoji)}
@@ -58,7 +61,7 @@ const EmojiPicker = ({ display, label, onSelect, onEscape }: Props) => {
   )
 }
 
-const EmojiMartWrapper = styled.div(css({
+const EmojiMartWrapper = styled(Box)(css({
   position: 'absolute',
   zIndex: 1,
   '.emoji-mart': {
@@ -70,9 +73,12 @@ const EmojiMartWrapper = styled.div(css({
     transform: 'translateY(4px)',
     fontFamily: 'inherit',
 
-    '@media screen and (max-width: 400px)': {
+    '@media screen and (max-width: 600px)': {
       width: '100vw !important',
       position: 'fixed',
+      borderRadius: 0,
+      borderLeft: 'none',
+      borderRight: 'none',
       left: 0,
       right: 0
     },
