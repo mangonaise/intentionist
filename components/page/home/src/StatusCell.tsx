@@ -36,7 +36,7 @@ const StatusCell = () => {
             {!!status.length && status.map((emoji, index) => (
               <FadeIn time={250} delay={0} key={index}>
                 <CenteredFlex p="1px">
-                  <SmartEmoji nativeEmoji={emoji} nativeFontSize="1.25rem" twemojiSize={18} />
+                  <SmartEmoji nativeEmoji={emoji} nativeFontSize="1.15rem" twemojiSize={18} />
                 </CenteredFlex>
               </FadeIn>
             ))}
