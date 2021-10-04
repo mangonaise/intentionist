@@ -5,15 +5,16 @@ import Icon from './Icon'
 
 interface Props extends ButtonProps {
   icon: () => JSX.Element
-  right?: boolean
+  right?: boolean,
+  flexStart?: boolean
 }
 
 const iconMargin = '0.8em'
 
-const IconButton = forwardRef(function IconButton({ icon, right, children, ...props }: Props, ref) {
+const IconButton = forwardRef(function IconButton({ icon, right, flexStart = false, children, ...props }: Props, ref) {
   return (
     <Button {...props}>
-      <CenteredFlex flexDirection={right ? 'row-reverse' : 'row'}>
+      <CenteredFlex flexDirection={right ? 'row-reverse' : 'row'} flexStart={flexStart}>
         <Icon
           icon={icon}
           ml={right && children ? iconMargin : 0}
