@@ -14,6 +14,7 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
     const cellLeftPos = barRef.current.parentElement.getBoundingClientRect().left || 0
     const cellWidth = barRef.current.parentElement.offsetWidth || 0
     const barWidth = barRef.current.offsetWidth
+    const pagePadding = windowWidth > 600 ? 14 : 0
     const proposedXOffset = (cellWidth - barWidth) / 2
 
     if (above) {
@@ -21,9 +22,9 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
       setTop(`calc(${cellTop}px - 8px - 2.5rem)`)
     }
 
-    if (cellLeftPos + proposedXOffset < 14) {
+    if (cellLeftPos + proposedXOffset < pagePadding) {
       setAnchor('left')
-    } else if (cellLeftPos + barWidth + proposedXOffset > windowWidth - 14) {
+    } else if (cellLeftPos + barWidth + proposedXOffset > windowWidth - pagePadding) {
       setAnchor('right')
     } else {
       setXOffset(proposedXOffset)
