@@ -1,6 +1,7 @@
 import { CenteredFlex, Grid } from '@/components/primitives'
 import { Fragment } from 'react'
-import { HabitCell, StatusCell, ViewHabitsButton } from '..'
+import { ViewHabitsButton } from '..'
+import { HabitCell, StatusCell } from './table'
 
 const weekdayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 

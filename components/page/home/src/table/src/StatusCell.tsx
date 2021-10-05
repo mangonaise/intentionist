@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { BlurListener, SmartEmoji } from '@/components/app'
 import { Button, CenteredFlex, FadeIn } from '@/components/primitives'
-import StatusCellEditor from './status-cell-editor/StatusCellEditor'
+import StatusCellEditor from './StatusCellEditor'
 import styled from '@emotion/styled'
 import css from '@styled-system/css'
 
