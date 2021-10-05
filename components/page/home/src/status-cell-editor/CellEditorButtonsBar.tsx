@@ -1,5 +1,5 @@
 import { CenteredFlex } from '@/components/primitives'
-import useWindowWidth from '@/lib/hooks/useWindowWidth'
+import { useWindowWidth } from '@/lib/hooks'
 import { FC, useLayoutEffect, useRef, useState } from 'react'
 
 const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {

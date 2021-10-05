@@ -3,10 +3,10 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { BaseEmoji, Picker } from 'emoji-mart'
 import { Box } from '@/components/primitives'
 import { BoxProps } from '@/components/primitives/src/Box'
+import { useWindowWidth } from '@/lib/hooks'
 import isWindowsOS from '@/lib/logic/utils/isWindowsOS'
 import styled from '@emotion/styled'
 import css from '@styled-system/css'
-import useWindowWidth from '@/lib/hooks/useWindowWidth'
 
 interface Props extends BoxProps {
   isOpen: boolean,
