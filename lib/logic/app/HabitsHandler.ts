@@ -38,7 +38,7 @@ export default class HabitsHandler {
     if (!existingHabit) {
       return await this.addNewHabit(habitToSet)
     }
-    if (isEqual(existingHabit, habitToSet)) return
+    if (isEqual(existingHabit, habitToSet)) return existingHabit
 
     // 💻
     const index = this.habits.indexOf(existingHabit)
@@ -76,6 +76,6 @@ export default class HabitsHandler {
       order: arrayUnion(newHabit.id)
     })
 
-    return newHabit
+    return this.habits[this.habits.length - 1]
   }
 }

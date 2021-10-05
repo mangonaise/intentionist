@@ -98,9 +98,10 @@ describe('behavior', () => {
     expect(await habitsHandler.setHabit(updatedHabit)).toEqual(updatedHabit)
   })
 
-  test('attempting to update a habit without changing anything just returns undefined', async () => {
-    await habitsHandler.setHabit(dummyHabitA)
-    expect(await habitsHandler.setHabit(dummyHabitA)).toBeUndefined()
+  test('attempting to update a habit without changing anything just returns the existing habit', async () => {
+    const firstUpdate = await habitsHandler.setHabit(dummyHabitA)
+    const secondUpdate = await habitsHandler.setHabit(dummyHabitA)
+    expect(secondUpdate === firstUpdate).toBe(true)
   })
 
   test('deleting a habit removes it from local cache and database', async () => {

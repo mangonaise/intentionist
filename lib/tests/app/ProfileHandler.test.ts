@@ -68,6 +68,22 @@ describe('behavior', () => {
     })
     expect(profileHandler.profileInfo?.displayName).toBe('Zoe')
   })
+
+  test('updating profile data returns the new data', async () => {
+    const profileInfo: ProfileInfo = {
+      displayName: 'Pam'
+    }
+    expect(await profileHandler.updateUserProfile(profileInfo)).toEqual(profileInfo)
+  })
+
+  test('attempting to update profile without changing anything just returns the existing profile', async () => {
+    const profileInfo: ProfileInfo = {
+      displayName: 'Arnold'
+    }
+    const firstUpdate = await profileHandler.updateUserProfile(profileInfo)
+    const secondUpdate = await profileHandler.updateUserProfile(profileInfo)
+    expect(firstUpdate === secondUpdate).toBe(true)
+  })
 })
 
 test('teardown: user document is removed after tests', async () => {
