@@ -1,7 +1,7 @@
 import { auth } from '../../firebase';
-import { singleton } from 'tsyringe';
+import { Lifecycle, scoped } from 'tsyringe';
 
-@singleton()
+@scoped(Lifecycle.ContainerScoped)
 export default class AuthUser {
   uid
   displayName

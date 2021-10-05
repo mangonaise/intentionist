@@ -1,7 +1,8 @@
 import '@abraham/reflection'
-import { container } from 'tsyringe'
+import { container, DependencyContainer } from 'tsyringe'
 import signInDummyUser from '@/test-setup/signIn'
-import resetHabits from '@/test-setup/resetHabits'
+import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
+import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import generateHabitId from '@/logic/utils/generateHabitId'
 import HabitFilterHandler from '@/logic/app/HabitFilterHandler'
@@ -9,6 +10,7 @@ import HabitFilterHandler from '@/logic/app/HabitFilterHandler'
 // 🔨
 
 let habitsHandler: HabitsHandler
+let testContainer: DependencyContainer
 
 const activeHabit: Habit = { id: generateHabitId(), name: 'Active habit', icon: '🏃‍♂️', status: 'active' }
 const suspendedHabit: Habit = { id: generateHabitId(), name: 'Suspended habit', icon: '⏸', status: 'suspended' }
@@ -16,11 +18,15 @@ const archivedHabit: Habit = { id: generateHabitId(), name: 'Archived habit', ic
 
 beforeAll(async () => {
   await signInDummyUser()
-  habitsHandler = container.resolve(HabitsHandler)
+})
+
+beforeEach(async () => {
+  testContainer = container.createChildContainer()
+  habitsHandler = await initializeHabitsHandler(testContainer)
 })
 
 afterEach(async () => {
-  await resetHabits()
+  await deleteHabitsDoc()
 })
 
 // 🧪
@@ -30,7 +36,7 @@ test('filters habits correctly', async () => {
   await habitsHandler.setHabit(suspendedHabit)
   await habitsHandler.setHabit(archivedHabit)
 
-  const filterHandler = container.resolve(HabitFilterHandler)
+  const filterHandler = testContainer.resolve(HabitFilterHandler)
   filterHandler.setFilter('archived')
   expect(filterHandler.filteredHabits).toEqual([archivedHabit])
   filterHandler.setFilter('suspended')
@@ -42,9 +48,5 @@ test('filters habits correctly', async () => {
 test('filter defaults to active', async () => {
   await habitsHandler.setHabit(suspendedHabit)
   await habitsHandler.setHabit(archivedHabit)
-  expect(container.resolve(HabitFilterHandler).filteredHabits).toEqual([])
-})
-
-test('teardown: all habits are deleted', async () => {
-  expect(habitsHandler.habits).toEqual([])
+  expect(testContainer.resolve(HabitFilterHandler).filteredHabits).toEqual([])
 })

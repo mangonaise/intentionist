@@ -1,25 +1,21 @@
+import { Lifecycle, scoped } from 'tsyringe'
+import { makeAutoObservable } from 'mobx'
+import { InitialState } from './InitialFetchHandler'
 import DbHandler from './DbHandler'
-import { makeAutoObservable, runInAction } from 'mobx'
-import { singleton } from 'tsyringe'
 
 export type ProfileInfo = {
   displayName: string
 }
 
-@singleton()
+@scoped(Lifecycle.ContainerScoped)
 export default class ProfileHandler {
   private dbHandler: DbHandler
-  public profileInfo: ProfileInfo | null | undefined
+  public profileInfo: ProfileInfo | null
 
-  constructor(dbHandler: DbHandler) {
+  constructor(initialState: InitialState, dbHandler: DbHandler) {
+    this.profileInfo = initialState.userProfile
     this.dbHandler = dbHandler
     makeAutoObservable(this)
-  }
-
-  public fetchUserProfile = async () => {
-    if (this.profileInfo !== undefined) return this.profileInfo
-    const userDoc = await this.dbHandler.getUserDoc()
-    runInAction(() => this.profileInfo = userDoc?.profile || null)
   }
 
   public updateUserProfile = async (info: ProfileInfo) => {

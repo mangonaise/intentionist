@@ -1,14 +1,11 @@
 import { arrayUnion, arrayRemove, deleteField } from '@firebase/firestore'
 import { makeAutoObservable } from 'mobx'
-import { singleton } from 'tsyringe'
+import { Lifecycle, scoped } from 'tsyringe'
+import { InitialState } from './InitialFetchHandler'
 import omit from 'lodash/omit'
 import isEqual from 'lodash/isEqual'
 import DbHandler from './DbHandler'
 
-type HabitsDocumentData = {
-  habits: { [id: string]: HabitProperties },
-  order: string[]
-}
 export type HabitStatus = 'active' | 'suspended' | 'archived'
 export type Habit = { id: string } & HabitProperties
 export type HabitProperties = {
@@ -17,21 +14,23 @@ export type HabitProperties = {
   status: HabitStatus
 }
 
-@singleton()
+@scoped(Lifecycle.ContainerScoped)
 export default class HabitsHandler {
-  public habits: Habit[] = []
-  public hasFetchedHabits = false
+  public habits: Habit[]
   private dbHandler
 
-  constructor(dbHandler: DbHandler) {
+  constructor(initialState: InitialState, dbHandler: DbHandler) {
+    const habitsDoc = initialState.habitsDoc
+    if (habitsDoc === null) {
+      this.habits = []
+    } else {
+      this.habits = habitsDoc.order.map(id => ({
+        id,
+        ...habitsDoc.habits[id]
+      }))
+    }
     this.dbHandler = dbHandler
     makeAutoObservable(this)
-  }
-
-  public fetchHabits = async () => {
-    if (this.hasFetchedHabits) return this.habits
-    const habitsDoc = await this.dbHandler.getUserDoc('data', 'habits')
-    this.handleFetchedHabitsDoc(habitsDoc as HabitsDocumentData | undefined)
   }
 
   public setHabit = async (habitToSet: Habit) => {
@@ -40,7 +39,7 @@ export default class HabitsHandler {
       return await this.addNewHabit(habitToSet)
     }
     if (isEqual(existingHabit, habitToSet)) return
-    
+
     // 💻
     const index = this.habits.indexOf(existingHabit)
     this.habits[index] = habitToSet
@@ -49,14 +48,14 @@ export default class HabitsHandler {
     await this.dbHandler.updateUserDoc('data/habits', {
       habits: { [habitToSet.id]: { ...omit(habitToSet, 'id') } }
     })
-    
+
     return this.habits[index]
   }
-  
+
   public deleteHabitById = async (id: string) => {
     const habitToDelete = this.habits.find(habit => habit.id === id)
     if (!habitToDelete) throw new Error('Cannot delete a habit that does not exist')
-    
+
     // 💻
     this.habits = this.habits.filter(habit => habit !== habitToDelete)
 
@@ -66,11 +65,11 @@ export default class HabitsHandler {
       order: arrayRemove(habitToDelete.id)
     })
   }
-  
+
   private addNewHabit = async (newHabit: Habit) => {
     // 💻
     this.habits.push(newHabit)
-  
+
     // ☁️
     await this.dbHandler.updateUserDoc('data/habits', {
       habits: { [newHabit.id]: { ...omit(newHabit, 'id') } },
@@ -78,14 +77,5 @@ export default class HabitsHandler {
     })
 
     return newHabit
-  }
-
-  private handleFetchedHabitsDoc(docData: HabitsDocumentData | undefined) {
-    this.hasFetchedHabits = true
-    if (!docData) return
-    this.habits = docData.order.map(id => ({
-      id,
-      ...docData.habits[id]
-    }))
   }
 }

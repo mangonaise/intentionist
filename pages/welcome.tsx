@@ -6,30 +6,29 @@ import { LoadingScreen, withAuthUser } from '@/components/app'
 import { FadeIn, Button, CenteredFlex, Flex, Heading, IconButton, Input, Label, Text } from '@/components/primitives'
 import { BackIcon } from '@/components/icons'
 import { handleSignOut } from '@/lib/logic/utils/authUtilities'
-import Head from 'next/head'
-import ProfileHandler from '@/lib/logic/app/ProfileHandler'
 import AuthUser from '@/lib/logic/app/AuthUser'
+import InitialFetchHandler from '@/lib/logic/app/InitialFetchHandler'
+import ProfileHandler from '@/lib/logic/app/ProfileHandler'
+import Head from 'next/head'
 
 const NewUserPage = withAuthUser(observer(() => {
   const router = useRouter()
+  const { initialFetches, hasCompletedInitialFetches } = container.resolve(InitialFetchHandler)
   const [displayName, setDisplayName] = useState(container.resolve(AuthUser).displayName || '')
-  const { profileInfo, fetchUserProfile, updateUserProfile } = container.resolve(ProfileHandler)
 
   useEffect(() => {
-    if (profileInfo === undefined) {
-      fetchUserProfile()
-    } else if (profileInfo) {
+    if (initialFetches.userProfile) {
       router.push('/home')
     } 
-  }, [profileInfo])
+  }, [hasCompletedInitialFetches])
 
   function handleSubmitUser(e: FormEvent<HTMLDivElement>) {
     e.preventDefault()
-    updateUserProfile({ displayName })
+    container.resolve(ProfileHandler).updateUserProfile({ displayName })
   }
 
-  if (profileInfo) return null
-  if (profileInfo === undefined) return <LoadingScreen />
+  if (initialFetches.userProfile) return null
+  if (!hasCompletedInitialFetches) return <LoadingScreen />
   return (
     <FadeIn>
       <Head><title>Welcome</title></Head>

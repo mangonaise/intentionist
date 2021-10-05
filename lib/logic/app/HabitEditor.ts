@@ -16,9 +16,6 @@ export default class HabitEditor {
   private router
 
   constructor(habitsHandler: HabitsHandler, @inject('Router') router: Router) {
-    if (!habitsHandler.hasFetchedHabits) {
-      throw new Error('Cannot edit habit before habits have been fetched')
-    }
     this.habitsHandler = habitsHandler
     this.router = router
 

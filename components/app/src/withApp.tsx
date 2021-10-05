@@ -5,33 +5,33 @@ import { useEffect, useState } from 'react'
 import { LoadingScreen, Navbar, GradientBackground } from '..'
 import { FadeIn } from '@/components/primitives'
 import accentColor, { AccentColor } from '@/lib/logic/utils/accentColor'
+import InitialFetchHandler from '@/lib/logic/app/InitialFetchHandler'
 import ProfileHandler from '@/lib/logic/app/ProfileHandler'
-import HabitsHandler from '@/lib/logic/app/HabitsHandler'
 import withAuthUser from './withAuthUser'
 
 const withApp = (WrappedComponent: () => JSX.Element, accent?: AccentColor) => withAuthUser(observer(() => {
   const router = useRouter()
-  const { profileInfo, fetchUserProfile } = container.resolve(ProfileHandler)
-  const { fetchHabits, hasFetchedHabits } = container.resolve(HabitsHandler)
-  const [fade] = useState(!profileInfo)
+  const { hasCompletedInitialFetches } = container.resolve(InitialFetchHandler)
+  const [profileExists, setProfileExists] = useState(hasCompletedInitialFetches && !!container.resolve(ProfileHandler).profileInfo)
+  const [fade] = useState(!hasCompletedInitialFetches)
 
   useEffect(() => {
-    // Repeated fetches will not call the database
-    fetchUserProfile()
-    fetchHabits()
-
     if (accent) {
       accentColor.set(accent)
     }
   }, [])
 
   useEffect(() => {
-    if (profileInfo === null) {
-      router.push('/welcome')
+    if (hasCompletedInitialFetches) {
+      if (container.resolve(ProfileHandler).profileInfo === null) {
+        router.push('/welcome')
+      } else {
+        setProfileExists(true)
+      }
     }
-  }, [profileInfo])
+  }, [hasCompletedInitialFetches])
 
-  if (!profileInfo || !hasFetchedHabits) return <LoadingScreen />
+  if (!hasCompletedInitialFetches || !profileExists) return <LoadingScreen />
   return (
     <>
       <FadeIn time={fade ? undefined : 0}>
