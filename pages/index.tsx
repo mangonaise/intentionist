@@ -1,7 +1,7 @@
 import type { NextPage } from 'next'
 import { observer } from 'mobx-react-lite'
 import { useRouter } from 'next/dist/client/router'
-import { useEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { LoadingScreen } from '@/components/app'
 import { CenteredFlex, FadeIn, Icon, IconButton } from '@/components/primitives'
 import { IntentionistIcon, GoogleIcon } from '@/components/icons'
@@ -12,7 +12,7 @@ const LandingPage: NextPage = () => {
   const [hide, setHide] = useState(false)
   const router = useRouter()
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (authState.getCachedState()) {
       setHide(true)
       router.push('/home')
