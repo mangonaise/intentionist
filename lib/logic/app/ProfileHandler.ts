@@ -1,8 +1,8 @@
 import { Lifecycle, scoped } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
 import { InitialState } from './InitialFetchHandler'
+import isEqual from 'lodash/isEqual'
 import DbHandler from './DbHandler'
-import { isEqual } from 'lodash'
 
 export type ProfileInfo = {
   displayName: string

@@ -1,6 +1,6 @@
 import '@abraham/reflection'
-import { omit } from 'lodash'
 import { container } from 'tsyringe'
+import omit from 'lodash/omit'
 import signInDummyUser from '@/test-setup/signIn'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
@@ -14,8 +14,6 @@ let dbHandler: DbHandler, habitsHandler: HabitsHandler
 const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '🧪', status: 'active' }
 const dummyHabitB: Habit = { id: generateHabitId(), name: 'Build app', icon: '👨‍💻', status: 'active' }
 const getHabitsDoc = async () => await dbHandler.getUserDoc('data', 'habits')
-
-
 
 beforeAll(async () => {
   await signInDummyUser()
