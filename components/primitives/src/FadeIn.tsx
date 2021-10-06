@@ -1,4 +1,4 @@
-import Box, { BoxProps } from './Box';
+import Box, { BoxProps } from './Box'
 
 interface Props extends BoxProps {
   time?: number,

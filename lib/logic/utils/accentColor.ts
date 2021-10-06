@@ -1,7 +1,7 @@
-import { makeAutoObservable } from 'mobx';
-import { WeekView } from '../app/WeeksHandler';
+import { makeAutoObservable } from 'mobx'
+import { WeekViewMode } from '../app/WeeksHandler'
 
-export type AccentColor = WeekView | 'neutral' | 'off'
+export type AccentColor = WeekViewMode | 'neutral' | 'off'
 
 const accentColor = makeAutoObservable({
   current: 'off' as AccentColor,

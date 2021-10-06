@@ -1,5 +1,5 @@
-import styled from '@emotion/styled';
-import { color, ColorProps, space, SpaceProps, typography, TypographyProps } from 'styled-system';
+import styled from '@emotion/styled'
+import { color, ColorProps, space, SpaceProps, typography, TypographyProps } from 'styled-system'
 
 type StyleProps = SpaceProps & ColorProps & TypographyProps
 

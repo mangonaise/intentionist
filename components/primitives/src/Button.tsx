@@ -1,9 +1,9 @@
-import styled from '@emotion/styled';
+import styled from '@emotion/styled'
 import css from '@styled-system/css'
-import { HTMLAttributes } from 'react';
-import { border, BorderProps, color, ColorProps, flexbox, FlexboxProps, layout, LayoutProps, space, SpaceProps, typography, TypographyProps } from 'styled-system';
+import { HTMLAttributes } from 'react'
+import { border, BorderProps, color, ColorProps, flexbox, FlexboxProps, layout, LayoutProps, space, SpaceProps, typography, TypographyProps } from 'styled-system'
 
-interface CustomProps extends HTMLAttributes<HTMLButtonElement> { 
+interface CustomProps extends HTMLAttributes<HTMLButtonElement> {
   bg?: string,
   reduceHoverOpacity?: boolean
 }

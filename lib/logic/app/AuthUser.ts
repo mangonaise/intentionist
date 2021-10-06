@@ -1,5 +1,5 @@
-import { auth } from '../../firebase';
-import { Lifecycle, scoped } from 'tsyringe';
+import { auth } from '../../firebase'
+import { Lifecycle, scoped } from 'tsyringe'
 
 @scoped(Lifecycle.ContainerScoped)
 export default class AuthUser {

@@ -1,5 +1,5 @@
-import styled from '@emotion/styled';
-import Box from './Box';
+import styled from '@emotion/styled'
+import Box from './Box'
 
 const Flex = styled(Box)({
   display: 'flex'

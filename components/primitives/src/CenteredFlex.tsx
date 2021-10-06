@@ -1,6 +1,6 @@
-import styled from '@emotion/styled';
-import { flex } from 'styled-system';
-import Flex from './Flex';
+import styled from '@emotion/styled'
+import { flex } from 'styled-system'
+import Flex from './Flex'
 
 interface OverrideProps {
   flexStart?: boolean
