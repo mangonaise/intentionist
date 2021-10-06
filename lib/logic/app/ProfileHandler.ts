@@ -14,7 +14,7 @@ export default class ProfileHandler {
   public profileInfo: ProfileInfo | null
 
   constructor(initialState: InitialState, dbHandler: DbHandler) {
-    this.profileInfo = initialState.userProfile
+    this.profileInfo = initialState.data.userProfile
     this.dbHandler = dbHandler
     makeAutoObservable(this)
   }

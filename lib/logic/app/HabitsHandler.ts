@@ -20,7 +20,7 @@ export default class HabitsHandler {
   private dbHandler
 
   constructor(initialState: InitialState, dbHandler: DbHandler) {
-    const habitsDoc = initialState.habitsDoc
+    const habitsDoc = initialState.data.habitsDoc
     if (habitsDoc === null) {
       this.habits = []
     } else {
