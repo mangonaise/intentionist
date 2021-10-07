@@ -1,4 +1,5 @@
-import { format, startOfWeek } from 'date-fns'
+import format from 'date-fns/format'
+import startOfWeek from 'date-fns/startOfWeek'
 
 const YYYYMMDD = 'yyyy-MM-dd'
 
