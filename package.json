@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "emulate": "cd ./firebase && firebase emulators:start",
-    "test": "cd ./firebase && firebase emulators:exec 'jest --runInBand --forceExit'"
+    "test": "cd ./firebase && firebase emulators:exec 'jest --runInBand --forceExit'",
+    "analyze": "cross-env ANALYZE=true next build"
   },
   "dependencies": {
     "@abraham/reflection": "^0.8.0",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.15.4",
+    "@next/bundle-analyzer": "^11.1.2",
     "@types/emoji-mart": "^3.0.6",
     "@types/jest": "^27.0.2",
     "@types/lodash": "^4.14.174",
@@ -40,6 +42,7 @@
     "@types/styled-system": "^5.1.13",
     "@types/styled-system__css": "^5.0.16",
     "babel-plugin-transform-typescript-metadata": "^0.3.2",
+    "cross-env": "^7.0.3",
     "eslint": "7.32.0",
     "eslint-config-next": "11.1.2",
     "jest": "^27.2.1",
