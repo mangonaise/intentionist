@@ -17,7 +17,7 @@ const NewUserPage = withAuthUser(observer(() => {
   const [displayName, setDisplayName] = useState(container.resolve(AuthUser).displayName || '')
 
   useEffect(() => {
-    if (initialFetches.userProfile) {
+    if (initialFetches?.userProfile) {
       router.push('/home')
     } 
   }, [hasCompletedInitialFetches])
@@ -25,9 +25,10 @@ const NewUserPage = withAuthUser(observer(() => {
   function handleSubmitUser(e: FormEvent<HTMLDivElement>) {
     e.preventDefault()
     container.resolve(ProfileHandler).updateUserProfile({ displayName })
+    router.push('/home')
   }
 
-  if (initialFetches.userProfile) return null
+  if (initialFetches?.userProfile) return null
   if (!hasCompletedInitialFetches) return <LoadingScreen />
   return (
     <FadeIn>
