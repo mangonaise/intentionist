@@ -9,7 +9,7 @@ function useMediaQuery<T>(query: string, whenTrue: T, whenFalse: T) {
     handleChange()
     mediaQuery.addEventListener('change', handleChange)
     return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [])
+  }, [query])
 
   return isMatch ? whenTrue : whenFalse
 }

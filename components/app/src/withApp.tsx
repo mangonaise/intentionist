@@ -7,6 +7,7 @@ import { FadeIn } from '@/components/primitives'
 import accentColor, { AccentColor } from '@/lib/logic/utils/accentColor'
 import InitialFetchHandler from '@/lib/logic/app/InitialFetchHandler'
 import ProfileHandler from '@/lib/logic/app/ProfileHandler'
+import useAutorun from '@/lib/hooks/useAutorun'
 import withAuthUser from './withAuthUser'
 
 const withApp = (WrappedComponent: () => JSX.Element, accent?: AccentColor) => withAuthUser(observer(() => {
@@ -21,7 +22,7 @@ const withApp = (WrappedComponent: () => JSX.Element, accent?: AccentColor) => w
     }
   }, [])
 
-  useEffect(() => {
+  useAutorun(() => {
     if (hasCompletedInitialFetches) {
       if (container.resolve(ProfileHandler).profileInfo === null) {
         router.push('/welcome')
@@ -29,7 +30,7 @@ const withApp = (WrappedComponent: () => JSX.Element, accent?: AccentColor) => w
         setProfileExists(true)
       }
     }
-  }, [hasCompletedInitialFetches])
+  })
 
   if (!hasCompletedInitialFetches || !profileExists) return <LoadingScreen />
   return (

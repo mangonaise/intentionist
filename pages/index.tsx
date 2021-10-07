@@ -1,5 +1,6 @@
 import type { NextPage } from 'next'
 import { observer } from 'mobx-react-lite'
+import { autorun } from 'mobx'
 import { useRouter } from 'next/dist/client/router'
 import { useLayoutEffect, useState } from 'react'
 import { authState, signInWithGoogle } from '@/lib/logic/utils/authUtilities'
@@ -16,12 +17,12 @@ const LandingPage: NextPage = () => {
   const [hide, setHide] = useState(false)
   const router = useRouter()
 
-  useLayoutEffect(() => {
-    if (authState.getCachedState()) {
+  useLayoutEffect(() => autorun(() => {
+    if (authState.getCachedState() || authState.current === true) {
       setHide(true)
       router.push('/home')
     }
-  }, [authState.current])
+  }))
 
   if (hide) return <LoadingScreen />
   return (

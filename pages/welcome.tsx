@@ -10,17 +10,18 @@ import AuthUser from '@/lib/logic/app/AuthUser'
 import InitialFetchHandler from '@/lib/logic/app/InitialFetchHandler'
 import ProfileHandler from '@/lib/logic/app/ProfileHandler'
 import Head from 'next/head'
+import useAutorun from '@/lib/hooks/useAutorun'
 
 const NewUserPage = withAuthUser(observer(() => {
   const router = useRouter()
   const { initialFetches, hasCompletedInitialFetches } = container.resolve(InitialFetchHandler)
   const [displayName, setDisplayName] = useState(container.resolve(AuthUser).displayName || '')
 
-  useEffect(() => {
+  useAutorun(() => {
     if (initialFetches?.userProfile) {
       router.push('/home')
-    } 
-  }, [hasCompletedInitialFetches])
+    }
+  })
 
   function handleSubmitUser(e: FormEvent<HTMLDivElement>) {
     e.preventDefault()

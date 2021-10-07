@@ -1,14 +1,14 @@
 import { observer } from 'mobx-react-lite'
-import { useEffect } from 'react'
 import { authState } from '@/lib/logic/utils/authUtilities'
 import { LoadingScreen } from '..'
+import useAutorun from '@/lib/hooks/useAutorun'
 
 const withAuthUser = (WrappedComponent: () => JSX.Element | null) => observer(() => {
-  useEffect(() => {
-    if (!authState.getCachedState()) {
+  useAutorun(() => {
+    if (!authState.getCachedState() || !authState.current) {
       window.location.assign('/')
     }
-  }, [authState.current])
+  })
 
   if (!authState.current) return <LoadingScreen />
   return (
