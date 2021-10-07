@@ -1,5 +1,5 @@
 import { CenteredFlex } from '@/components/primitives'
-import { useMediaQuery } from '@/lib/hooks'
+import useMediaQuery from '@/lib/hooks/useMediaQuery'
 
 const weekdaysLong = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const weekdaysShort = ['M', 'T', 'W', 'T', 'F', 'S', 'S']

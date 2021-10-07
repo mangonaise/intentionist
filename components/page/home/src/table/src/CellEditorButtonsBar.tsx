@@ -1,6 +1,6 @@
-import { CenteredFlex } from '@/components/primitives'
-import { useWindowWidth } from '@/lib/hooks'
 import { FC, useLayoutEffect, useRef, useState } from 'react'
+import { CenteredFlex } from '@/components/primitives'
+import useWindowWidth from '@/lib/hooks/useWindowWidth'
 
 const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
   const barRef = useRef<HTMLDivElement>(null)
@@ -30,7 +30,7 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
       setXOffset(proposedXOffset)
       setAnchor('none')
     }
-  }, [windowWidth])
+  }, [windowWidth, above])
 
   return (
     <CenteredFlex
