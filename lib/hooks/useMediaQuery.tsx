@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 
 function useMediaQuery<T>(query: string, whenTrue: T, whenFalse: T) {
-  const mediaQuery = typeof window !== undefined ? window.matchMedia(query) : null
-  const [isMatch, setIsMatch] = useState(!!mediaQuery?.matches)
+  const [isMatch, setIsMatch] = useState(false)
 
-  useEffect(() => {
-    const handleChange = () => setIsMatch(!!mediaQuery!.matches)
-    mediaQuery!.addEventListener('change', handleChange)
-    return () => mediaQuery!.removeEventListener('change', handleChange)
+  useLayoutEffect(() => {
+    const mediaQuery = window.matchMedia(query)
+    const handleChange = () => setIsMatch(!!mediaQuery.matches)
+    handleChange()
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
 
   return isMatch ? whenTrue : whenFalse
