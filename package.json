@@ -15,6 +15,7 @@
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@styled-system/css": "^5.1.5",
+    "date-fns": "^2.25.0",
     "emoji-mart": "^3.0.1",
     "firebase": "^9.0.2",
     "lodash": "^4.17.21",

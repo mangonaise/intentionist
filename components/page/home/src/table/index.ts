@@ -1,6 +1,6 @@
 export { default as CellEditorButton } from './src/CellEditorButton'
 export { default as CellEditorButtonsBar } from './src/CellEditorButtonsBar'
 export { default as HabitCell } from './src/HabitCell'
-export { default as StatusCell } from './src/StatusCell'
-export { default as StatusCellEditor } from './src/StatusCellEditor'
+export { default as TrackerStatusCell } from './src/TrackerStatusCell'
+export { default as TrackerStatusEditor } from './src/TrackerStatusEditor'
 export { default as WeekdayCells } from './src/WeekdayCells'

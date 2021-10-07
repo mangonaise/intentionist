@@ -1,6 +1,6 @@
 import { Lifecycle, scoped } from 'tsyringe'
 import { makeAutoObservable, runInAction } from 'mobx'
-import { doc, getDoc, setDoc } from '@firebase/firestore'
+import { collection, doc, getDoc, getDocs, query, setDoc, limit, orderBy } from '@firebase/firestore'
 import { db } from '../../firebase'
 import AuthUser from './AuthUser'
 
@@ -24,7 +24,28 @@ export default class DbHandler {
     runInAction(() => this.isWriteComplete = true)
   }
 
+  public getWeekDoc = async (weekStartDate: string) => {
+    return (await getDoc(doc(this.weeksCollectionRef, weekStartDate))).data()
+  }
+
+  public getLatestWeekDoc = async () => {
+    const recent = await getDocs(query(this.weeksCollectionRef, orderBy('startDate', 'desc'), limit(1)))
+    if (recent.size) {
+      return recent.docs[0].data()
+    } else {
+      return null
+    }
+  }
+
+  public updateWeekDoc = async (weekStartDate: string, data: object) => {
+    await this.updateUserDoc(`weeks/${weekStartDate}`, { startDate: weekStartDate, ...data })
+  }
+
   private userDocRef = (...pathSegments: string[]) => {
     return doc(db, 'users', this.uid, ...pathSegments)
+  }
+
+  private get weeksCollectionRef() {
+    return collection(db, 'users', this.uid, 'weeks')
   }
 }

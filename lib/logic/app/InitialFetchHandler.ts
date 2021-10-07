@@ -1,13 +1,15 @@
 import type { HabitProperties } from './HabitsHandler'
+import type { HabitTrackerStatuses } from './WeekHandler'
 import { makeAutoObservable, runInAction } from 'mobx'
 import { Lifecycle, scoped } from 'tsyringe'
 import DbHandler from './DbHandler'
 
-type Fetched<T> = T | null
+export type Fetched<T> = T | null
 
 type InitialFetches = {
   userProfile: Fetched<ProfileInfo>
-  habitsDoc: Fetched<HabitsDocumentData>
+  habitsDoc: Fetched<HabitsDocumentData>,
+  latestWeekDoc: Fetched<WeekDocumentData>
 }
 
 type ProfileInfo = {
@@ -17,6 +19,11 @@ type ProfileInfo = {
 type HabitsDocumentData = {
   habits: { [id: string]: HabitProperties },
   order: string[]
+}
+
+export type WeekDocumentData = {
+  startDate: string,
+  statuses: HabitTrackerStatuses
 }
 
 @scoped(Lifecycle.ContainerScoped)
@@ -34,12 +41,14 @@ export default class InitialFetchHandler {
   private makeInitialFetches = async () => {
     const results = await Promise.all([
       this.fetchUserProfile(),
-      this.fetchHabitsDoc()
+      this.fetchHabitsDoc(),
+      this.fetchLatestWeekDoc()
     ])
     runInAction(() => {
       this.initialFetches = {
         userProfile: results[0],
         habitsDoc: results[1],
+        latestWeekDoc: results[2]
       }
       this.hasCompletedInitialFetches = true
     })
@@ -54,6 +63,11 @@ export default class InitialFetchHandler {
   private fetchHabitsDoc = async () => {
     const habitsDoc = await this.dbHandler.getUserDoc('data', 'habits')
     return habitsDoc ? habitsDoc as HabitsDocumentData : null
+  }
+
+  private fetchLatestWeekDoc = async () => {
+    const weekDoc = await this.dbHandler.getLatestWeekDoc()
+    return weekDoc ? weekDoc as WeekDocumentData : null
   }
 }
 

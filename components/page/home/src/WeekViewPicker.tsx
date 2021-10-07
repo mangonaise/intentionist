@@ -1,33 +1,33 @@
+import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { Flex, IconButton } from '@/components/primitives'
 import { CalendarIcon, JournalIcon, TimerIcon } from '@/components/icons'
-import WeeksHandler, { WeekView } from '@/lib/logic/app/WeeksHandler'
+import WeekHandler, { WeekViewMode } from '@/lib/logic/app/WeekHandler'
 import accentColor from '@/lib/logic/utils/accentColor'
-import { container } from 'tsyringe'
 
-const buttonData: Array<{ view: WeekView, text: string, icon: () => JSX.Element }> = [
+const buttonData: Array<{ view: WeekViewMode, text: string, icon: () => JSX.Element }> = [
   { view: 'tracker', text: 'Habit tracker', icon: CalendarIcon },
   { view: 'journal', text: 'Journal', icon: JournalIcon },
   { view: 'focus', text: 'Focused time', icon: TimerIcon }
 ]
 
-const WeekViewPicker = () => {
-  const { view, setView } = container.resolve(WeeksHandler) 
+const WeekViewModePicker = () => {
+  const { viewMode, setViewMode } = container.resolve(WeekHandler) 
 
   useEffect(() => {
-    accentColor.set(view)
-  }, [view])
+    accentColor.set(viewMode)
+  }, [viewMode])
 
   return (
     <Flex>
       {buttonData.map((data, index) => (
         <IconButton
           icon={data.icon}
-          onClick={() => setView(data.view)}
+          onClick={() => setViewMode(data.view)}
           flex={1}
           mr={index < 2 ? 3 : 0}
-          bg={data.view === view ? data.view : ''}
+          bg={data.view === viewMode ? data.view : ''}
           style={{ transition: 'var(--focus-transition), background-color 200ms' }}
           key={data.view}
         >
@@ -38,4 +38,4 @@ const WeekViewPicker = () => {
   )
 }
 
-export default observer(WeekViewPicker)
+export default observer(WeekViewModePicker)

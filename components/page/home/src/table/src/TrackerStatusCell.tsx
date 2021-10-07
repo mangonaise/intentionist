@@ -1,14 +1,26 @@
-import { useRef, useState } from 'react'
+import { container } from 'tsyringe'
+import { useEffect, useRef, useState } from 'react'
 import { BlurListener, SmartEmoji } from '@/components/app'
 import { Button, CenteredFlex, FadeIn } from '@/components/primitives'
-import StatusCellEditor from './StatusCellEditor'
+import WeekHandler, { WeekdayId } from '@/lib/logic/app/WeekHandler'
+import TrackerStatusEditor from './TrackerStatusEditor'
 import styled from '@emotion/styled'
 import css from '@styled-system/css'
 
-const StatusCell = () => {
+interface TrackerStatusCellProps {
+  initialStatus: string[]
+  habitId: string,
+  weekday: WeekdayId,
+}
+
+const TrackerStatusCell = ({ initialStatus, habitId, weekday }: TrackerStatusCellProps) => {
   const cellRef = useRef<HTMLDivElement>(null!)
-  const [status, setStatus] = useState<string[]>([])
+  const [status, setStatus] = useState<string[]>(initialStatus)
   const [isEditing, setIsEditing] = useState(false)
+
+  useEffect(() => {
+    setStatus(initialStatus)
+  }, [initialStatus])
 
   function toggleEditing() {
     if (isEditing) {
@@ -20,6 +32,7 @@ const StatusCell = () => {
 
   function finishEditing() {
     setIsEditing(false)
+    container.resolve(WeekHandler).setTrackerStatus(habitId, weekday, status)
   }
 
   return (
@@ -43,7 +56,7 @@ const StatusCell = () => {
           </CenteredFlex>
         </CellButton >
         {isEditing && (
-          <StatusCellEditor
+          <TrackerStatusEditor
             status={status}
             onChangeStatus={setStatus}
             onFinishEditing={finishEditing}
@@ -77,4 +90,4 @@ const CellButton = styled(Button)<CellButtonProps>(({ isEditing, hasStatus }: Ce
   }
 })))
 
-export default StatusCell
+export default TrackerStatusCell

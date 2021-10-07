@@ -6,13 +6,13 @@ import CellEditorButtonsBar from './CellEditorButtonsBar'
 
 const palette = ['🌟', '👍', '🙂', '🆗', '🙁']
 
-interface StatusCellEditorProps {
+interface TrackerStatusEditorProps {
   status: string[],
   onChangeStatus: Dispatch<SetStateAction<string[]>>,
   onFinishEditing: () => void
 }
 
-const StatusCellEditor = ({ status, onChangeStatus, onFinishEditing }: StatusCellEditorProps) => {
+const TrackerStatusEditor = ({ status, onChangeStatus, onFinishEditing }: TrackerStatusEditorProps) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
 
   function addEmoji(emoji: string) {
@@ -49,4 +49,4 @@ const StatusCellEditor = ({ status, onChangeStatus, onFinishEditing }: StatusCel
   )
 }
 
-export default StatusCellEditor
+export default TrackerStatusEditor

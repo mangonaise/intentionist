@@ -1,14 +1,15 @@
 import { SmartEmoji } from '@/components/app'
 import { CenteredFlex } from '@/components/primitives'
+import { Habit } from '@/lib/logic/app/HabitsHandler'
 import styled from '@emotion/styled'
 import css from '@styled-system/css'
 
-const HabitCell = () => {
+const HabitCell = ({ habit }: { habit: Habit }) => {
   return (
     <CenteredFlex minHeight="row" borderBottom="solid 1px" borderColor="grid" flexStart pl={2}>
-      <SmartEmoji nativeEmoji="🎯" nativeFontSize="1.25rem" twemojiSize={18} />
+      <SmartEmoji nativeEmoji={habit.icon} nativeFontSize="1.25rem" twemojiSize={18} />
       <CellText>
-        Habit
+        {habit.name}
       </CellText>
     </CenteredFlex>
   )

@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { WeekViewMode } from '../app/WeeksHandler'
+import { WeekViewMode } from '../app/WeekHandler'
 
 export type AccentColor = WeekViewMode | 'neutral' | 'off'
 
