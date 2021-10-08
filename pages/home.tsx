@@ -1,18 +1,19 @@
 import { withApp } from '@/components/app'
-import { WeekTable, WeekViewModePicker } from '@/components/page/home'
+import { WeekDropdown, WeekTable, WeekViewModePicker } from '@/components/page/home'
 import { Box, Spacer } from '@/components/primitives'
 import Head from 'next/head'
 
-const Home = withApp(() => {
+const Home = () => {
   return (
     <Box maxWidth="max" margin="auto">
       <Head><title>Home</title></Head>
       <WeekViewModePicker />
-      <Spacer mb={6} />
+      <Spacer mb={4} />
+      <WeekDropdown />
+      <Spacer mb={4} />
       <WeekTable />
-      <Spacer mb={6} />
     </Box>
   )
-})
+}
 
-export default Home
+export default withApp(Home)

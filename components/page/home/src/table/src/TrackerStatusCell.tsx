@@ -1,5 +1,6 @@
 import { container } from 'tsyringe'
-import { useEffect, useRef, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import { useRef, useState } from 'react'
 import { BlurListener, SmartEmoji } from '@/components/app'
 import { Button, CenteredFlex, FadeIn } from '@/components/primitives'
 import WeekHandler, { WeekdayId } from '@/lib/logic/app/WeekHandler'
@@ -8,31 +9,35 @@ import styled from '@emotion/styled'
 import css from '@styled-system/css'
 
 interface TrackerStatusCellProps {
-  initialStatus: string[]
   habitId: string,
   weekday: WeekdayId,
 }
 
-const TrackerStatusCell = ({ initialStatus, habitId, weekday }: TrackerStatusCellProps) => {
+const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
   const cellRef = useRef<HTMLDivElement>(null!)
-  const [status, setStatus] = useState<string[]>(initialStatus)
   const [isEditing, setIsEditing] = useState(false)
+  const [draft, setDraft] = useState<string[]>([])
 
-  useEffect(() => {
-    setStatus(initialStatus)
-  }, [initialStatus])
+  const { isLoadingWeek, weekInView: { statuses } } = container.resolve(WeekHandler)
+  const status = statuses[habitId]?.[weekday] ?? []
+  const visibleEmojis: string[] = isLoadingWeek ? [] : (isEditing ? draft : status)
 
   function toggleEditing() {
     if (isEditing) {
       finishEditing()
     } else {
-      setIsEditing(true)
+      startEditing()
     }
+  }
+
+  function startEditing() {
+    setDraft(status)
+    setIsEditing(true)
   }
 
   function finishEditing() {
     setIsEditing(false)
-    container.resolve(WeekHandler).setTrackerStatus(habitId, weekday, status)
+    container.resolve(WeekHandler).setTrackerStatus(habitId, weekday, draft)
   }
 
   return (
@@ -44,9 +49,14 @@ const TrackerStatusCell = ({ initialStatus, habitId, weekday }: TrackerStatusCel
       ref={cellRef}
     >
       <BlurListener blurAction={finishEditing} position="relative" height="100%" width="100%">
-        <CellButton onClick={toggleEditing} isEditing={isEditing} hasStatus={!!status.length}>
+        <CellButton
+          onClick={toggleEditing}
+          isEditing={isEditing}
+          isLoading={isLoadingWeek}
+          hasStatus={!!visibleEmojis.length}
+        >
           <CenteredFlex flexWrap="wrap" py="4px">
-            {!!status.length && status.map((emoji, index) => (
+            {visibleEmojis.map((emoji, index) => (
               <FadeIn time={250} delay={0} key={index}>
                 <CenteredFlex p="1px">
                   <SmartEmoji nativeEmoji={emoji} nativeFontSize="1.15rem" twemojiSize={18} />
@@ -57,8 +67,8 @@ const TrackerStatusCell = ({ initialStatus, habitId, weekday }: TrackerStatusCel
         </CellButton >
         {isEditing && (
           <TrackerStatusEditor
-            status={status}
-            onChangeStatus={setStatus}
+            draft={draft}
+            onEditDraft={setDraft}
             onFinishEditing={finishEditing}
           />
         )}
@@ -69,18 +79,23 @@ const TrackerStatusCell = ({ initialStatus, habitId, weekday }: TrackerStatusCel
 
 interface CellButtonProps {
   isEditing: boolean,
+  isLoading: boolean,
   hasStatus: boolean
 }
 
-const CellButton = styled(Button)<CellButtonProps>(({ isEditing, hasStatus }: CellButtonProps) => (css({
+const CellButton = styled(Button)<CellButtonProps>(({ isEditing, isLoading, hasStatus }: CellButtonProps) => (css({
   padding: 0,
   height: '100%',
   width: '100%',
   borderRadius: 0,
-  backgroundColor: isEditing ? 'whiteAlpha.5' : (!!hasStatus ? 'whiteAlpha.3' : 'transparent'),
+  backgroundColor: isLoading ? 'transparent' : (isEditing ? 'whiteAlpha.5' : (hasStatus ? 'whiteAlpha.3' : 'transparent')),
   boxShadow: isEditing ? '0 0 0 2px rgba(255, 255, 255, 0.25) inset' : 'none',
+  pointerEvents: isLoading ? 'none' : 'auto',
   '&:hover': {
     backgroundColor: 'whiteAlpha.5'
+  },
+  '&:not:hover': {
+    transition: 'background-color 100ms'
   },
   '&:focus': {
     boxShadow: '0 0 0 2px var(--focus-color) inset',
@@ -90,4 +105,4 @@ const CellButton = styled(Button)<CellButtonProps>(({ isEditing, hasStatus }: Ce
   }
 })))
 
-export default TrackerStatusCell
+export default observer(TrackerStatusCell)

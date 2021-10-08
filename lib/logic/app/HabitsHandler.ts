@@ -6,6 +6,11 @@ import omit from 'lodash/omit'
 import isEqual from 'lodash/isEqual'
 import DbHandler from './DbHandler'
 
+export type HabitsDocumentData = {
+  habits: { [id: string]: HabitProperties },
+  order: string[]
+}
+
 export type HabitStatus = 'active' | 'suspended' | 'archived'
 export type Habit = { id: string } & HabitProperties
 export type HabitProperties = {

@@ -1,11 +1,16 @@
 import { Lifecycle, scoped } from 'tsyringe'
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import { deleteField } from '@firebase/firestore'
-import { InitialState, WeekDocumentData } from './InitialFetchHandler'
+import { InitialState } from './InitialFetchHandler'
 import { formatFirstDayOfThisWeek } from '../utils/dateUtilities'
 import isEqual from 'lodash/isEqual'
 import DbHandler from './DbHandler'
 import HabitsHandler, { Habit } from './HabitsHandler'
+
+export type WeekDocumentData = {
+  startDate: string,
+  statuses: HabitTrackerStatuses
+}
 
 export type WeekdayId = 0 | 1 | 2 | 3 | 4 | 5 | 6
 export type WeekViewMode = 'tracker' | 'journal' | 'focus'
@@ -16,6 +21,7 @@ export default class WeekHandler {
   public viewMode = 'tracker' as WeekViewMode
   public weekInView: WeekDocumentData
   public habitsInView: Habit[]
+  public isLoadingWeek = false
   private latestWeekInDb
   private dbHandler
   private habitsHandler
@@ -31,6 +37,16 @@ export default class WeekHandler {
 
   public setViewMode = (viewMode: WeekViewMode) => {
     this.viewMode = viewMode
+  }
+
+  public viewWeek = async (startDate: string) => {
+    this.isLoadingWeek = true
+    this.weekInView.startDate = startDate
+    const weekDoc = await this.dbHandler.getWeekDoc(startDate)
+    runInAction(() => {
+      this.weekInView = weekDoc ?? this.generateEmptyWeek(startDate)
+      this.isLoadingWeek = false
+    })
   }
 
   public setTrackerStatus = async (habitId: string, weekday: WeekdayId, emojis: string[]) => {

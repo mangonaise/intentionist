@@ -1,11 +1,12 @@
 import '@abraham/reflection'
 import { container as globalContainer, DependencyContainer } from 'tsyringe'
 import { collection, deleteDoc, getDocs, query } from '@firebase/firestore'
+import { when } from 'mobx'
 import { db } from '@/lib/firebase'
 import { formatFirstDayOfThisWeek } from '@/lib/logic/utils/dateUtilities'
+import WeekHandler, { HabitTrackerStatuses } from '@/lib/logic/app/WeekHandler'
 import AuthUser from '@/lib/logic/app/AuthUser'
 import DbHandler from '@/lib/logic/app/DbHandler'
-import WeekHandler from '@/lib/logic/app/WeekHandler'
 import generateHabitId from '@/lib/logic/utils/generateHabitId'
 import signInDummyUser from '@/test-setup/signIn'
 import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
@@ -15,10 +16,10 @@ import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
 let testContainer: DependencyContainer
 let weekHandler: WeekHandler, dbHandler: DbHandler, authUser: AuthUser
 
-const dummyStatuses = {
-  [generateHabitId()]: { 0: '⭐', 3: '👍' },
-  [generateHabitId()]: { 2: '✨', 6: '🤏' },
-  [generateHabitId()]: { 1: '😄', 4: '👎', 5: '👌' },
+const dummyTrackerStatuses: HabitTrackerStatuses = {
+  [generateHabitId()]: { 0: ['⭐'], 3: ['👍'] },
+  [generateHabitId()]: { 2: ['✨'], 6: ['🤏'] },
+  [generateHabitId()]: { 1: ['😄'], 4: ['👎'], 5: ['👌'] },
 }
 
 async function initializeWeeksHandler() {
@@ -41,7 +42,7 @@ afterEach(async () => {
 // 🧪
 
 describe('initialization', () => {
-  test('if no weeks exist in database, set week in view\'s start date to Monday of this week, and sets tracker statuses to empty object', async () => {
+  test('if no weeks exist in database, set week in view to an empty week starting on this Monday', async () => {
     await initializeWeeksHandler()
     expect(weekHandler.weekInView.startDate).toEqual(formatFirstDayOfThisWeek())
     expect(weekHandler.weekInView.statuses).toEqual({})
@@ -56,9 +57,9 @@ describe('initialization', () => {
   })
 
   test('tracker statuses are correctly placed into week in view\'s local cache', async () => {
-    await dbHandler.updateWeekDoc('2021-09-20', { statuses: dummyStatuses })
+    await dbHandler.updateWeekDoc('2021-09-20', { statuses: dummyTrackerStatuses })
     await initializeWeeksHandler()
-    expect(weekHandler.weekInView.statuses).toEqual(dummyStatuses)
+    expect(weekHandler.weekInView.statuses).toEqual(dummyTrackerStatuses)
   })
 })
 
@@ -120,15 +121,38 @@ describe('behavior', () => {
   test('clearing a tracker status removes the habit\'s corresponding weekday id field, locally and in database', async () => {
     const habitId = generateHabitId()
     await weekHandler.setTrackerStatus(habitId, 0, ['😃'])
-
-    // Cell to be cleared
     await weekHandler.setTrackerStatus(habitId, 1, ['🗑️'])
-    // Clear it
+
     await weekHandler.setTrackerStatus(habitId, 1, [])
 
     const weekDoc = await dbHandler.getWeekDoc(formatFirstDayOfThisWeek())
     expect(weekHandler.weekInView.statuses[habitId][1]).toBeUndefined()
     expect(weekDoc?.statuses[habitId][1]).toBeUndefined()
+  })
+
+  test('switching to a non-existent week will generate an empty week', async () => {
+    await weekHandler.viewWeek('2021-09-27')
+    const { startDate, statuses } = weekHandler.weekInView
+    expect(startDate).toEqual('2021-09-27')
+    expect(statuses).toEqual({})
+  })
+
+  test('switching to a week that exists in database will load that week data', async () => {
+    await dbHandler.updateWeekDoc('2021-09-20', { statuses: dummyTrackerStatuses })
+    await weekHandler.viewWeek('2021-09-20')
+    const { startDate, statuses } = weekHandler.weekInView
+    expect(startDate).toEqual('2021-09-20')
+    expect(statuses).toEqual(dummyTrackerStatuses)
+  })
+
+  test('switching weeks will immediately change week in view\'s start date, but will only update local data after loading is complete', async () => {
+    await dbHandler.updateWeekDoc('2021-09-20', { statuses: dummyTrackerStatuses })
+    await weekHandler.viewWeek('2021-10-04')
+    weekHandler.viewWeek('2021-09-20')
+    expect(weekHandler.weekInView.startDate).toEqual('2021-09-20')
+    expect(weekHandler.weekInView.statuses).toEqual({})
+    await when(() => !weekHandler.isLoadingWeek)
+    expect(weekHandler.weekInView.statuses).toEqual(dummyTrackerStatuses)
   })
 })
 

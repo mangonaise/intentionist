@@ -23,7 +23,7 @@ const Button = styled.button<ButtonProps>(({ bg, reduceHoverOpacity }: ButtonPro
   backgroundColor: bg || 'button',
   '&:hover': {
     backgroundColor: bg || 'buttonHighlight',
-    opacity: reduceHoverOpacity ? 0.9 : 1
+    opacity: reduceHoverOpacity ? 0.9 : undefined
   },
   '&:disabled': {
     opacity: 0.3,

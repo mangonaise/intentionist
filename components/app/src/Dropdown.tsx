@@ -1,6 +1,7 @@
-import { createContext, ReactNode, useContext, useState } from 'react'
+import { createContext, FC, ReactNode, useContext, useState } from 'react'
 import { Button, FadeIn, Flex, Icon } from '@/components/primitives'
 import { BoxProps } from '@/components/primitives/src/Box'
+import { ButtonProps } from '@/components/primitives/src/Button'
 import { BlurListener } from '@/components/app'
 import { ExpandDownIcon, ExpandUpIcon } from '@/components/icons'
 import styled from '@emotion/styled'
@@ -54,12 +55,12 @@ const Dropdown = ({ title, children, right = 'auto', ...props }: DropdownProps) 
   )
 }
 
-interface ItemProps {
+interface ItemProps extends ButtonProps {
   children: ReactNode,
-  action: () => void,
+  action: () => void
 }
 
-const Item = ({ children, action }: ItemProps) => {
+const Item = ({ children, action, ...props }: ItemProps) => {
   const { closeDropdown } = useContext(DropdownContext)
 
   function handleClick() {
@@ -68,7 +69,7 @@ const Item = ({ children, action }: ItemProps) => {
   }
 
   return (
-    <ItemButton onClick={handleClick}>
+    <ItemButton onClick={handleClick} {...props}>
       {children}
     </ItemButton>
   )
@@ -90,7 +91,7 @@ const ExpandIcon = styled(Icon)({
   transform: 'scale(1.35) translateY(0.08em)'
 })
 
-const ItemButton = styled(Button)(css({
+const ItemButton = styled(Button)(props => css({
   textAlign: 'left',
   margin: '-2px',
   py: '0.8em',
@@ -104,7 +105,7 @@ const ItemButton = styled(Button)(css({
     borderBottomRightRadius: 'default'
   },
   '&:not(:hover)': {
-    backgroundColor: 'transparent'
+    backgroundColor: props.bg || 'transparent'
   }
 }))
 

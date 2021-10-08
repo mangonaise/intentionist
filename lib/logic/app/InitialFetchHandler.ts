@@ -1,5 +1,6 @@
-import type { HabitProperties } from './HabitsHandler'
-import type { HabitTrackerStatuses } from './WeekHandler'
+import type { HabitsDocumentData } from './HabitsHandler'
+import type { WeekDocumentData } from './WeekHandler'
+import type { ProfileInfo } from './ProfileHandler'
 import { makeAutoObservable, runInAction } from 'mobx'
 import { Lifecycle, scoped } from 'tsyringe'
 import DbHandler from './DbHandler'
@@ -10,20 +11,6 @@ type InitialFetches = {
   userProfile: Fetched<ProfileInfo>
   habitsDoc: Fetched<HabitsDocumentData>,
   latestWeekDoc: Fetched<WeekDocumentData>
-}
-
-type ProfileInfo = {
-  displayName: string
-}
-
-type HabitsDocumentData = {
-  habits: { [id: string]: HabitProperties },
-  order: string[]
-}
-
-export type WeekDocumentData = {
-  startDate: string,
-  statuses: HabitTrackerStatuses
 }
 
 @scoped(Lifecycle.ContainerScoped)
@@ -67,7 +54,7 @@ export default class InitialFetchHandler {
 
   private fetchLatestWeekDoc = async () => {
     const weekDoc = await this.dbHandler.getLatestWeekDoc()
-    return weekDoc ? weekDoc as WeekDocumentData : null
+    return weekDoc ? weekDoc : null
   }
 }
 

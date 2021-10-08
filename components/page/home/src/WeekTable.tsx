@@ -1,15 +1,18 @@
 import { container } from 'tsyringe'
+import { observer } from 'mobx-react-lite'
 import { Fragment } from 'react'
 import { CenteredFlex, Grid } from '@/components/primitives'
 import { ViewHabitsButton } from '..'
 import { HabitCell, TrackerStatusCell, WeekdayCells } from './table'
 import WeekHandler, { WeekdayId } from '@/lib/logic/app/WeekHandler'
+import styled from '@emotion/styled'
+import css from '@styled-system/css'
 
 const WeekTable = () => {
-  const { habitsInView, weekInView } = container.resolve(WeekHandler)
+  const { habitsInView, isLoadingWeek } = container.resolve(WeekHandler)
 
   return (
-    <Grid gridTemplateColumns="auto repeat(7, minmax(2.5ch, 1fr))" mx={['-1rem', 0]}>
+    <Table isLoading={isLoadingWeek}>
       <CenteredFlex height="row" borderBottom="solid 1px" borderColor="grid"></CenteredFlex>
       <WeekdayCells />
       {habitsInView.map((habit) => (
@@ -19,15 +22,22 @@ const WeekTable = () => {
             <TrackerStatusCell
               habitId={habit.id}
               weekday={weekdayId as WeekdayId}
-              initialStatus={weekInView.statuses[habit.id]?.[weekdayId as WeekdayId] ?? []}
               key={weekdayId}
             />
           ))}
         </Fragment>
       ))}
       <ViewHabitsButton />
-    </Grid>
+    </Table>
   )
 }
 
-export default WeekTable
+
+const Table = styled(Grid)<{ isLoading: boolean }>(({ isLoading }) => css({
+  gridTemplateColumns: 'auto repeat(7, minmax(2.5ch, 1fr))',
+  marginX: ['-1rem', 0],
+  opacity: isLoading ? 0.5 : 1,
+  transition: 'opacity 100ms'
+}))
+
+export default observer(WeekTable)

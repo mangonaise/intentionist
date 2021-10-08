@@ -1,3 +1,5 @@
+import type { Fetched } from './InitialFetchHandler'
+import type { WeekDocumentData } from './WeekHandler'
 import { Lifecycle, scoped } from 'tsyringe'
 import { makeAutoObservable, runInAction } from 'mobx'
 import { collection, doc, getDoc, getDocs, query, setDoc, limit, orderBy } from '@firebase/firestore'
@@ -25,19 +27,19 @@ export default class DbHandler {
   }
 
   public getWeekDoc = async (weekStartDate: string) => {
-    return (await getDoc(doc(this.weeksCollectionRef, weekStartDate))).data()
+    return (await getDoc(doc(this.weeksCollectionRef, weekStartDate))).data() as Fetched<WeekDocumentData>
   }
 
   public getLatestWeekDoc = async () => {
     const recent = await getDocs(query(this.weeksCollectionRef, orderBy('startDate', 'desc'), limit(1)))
     if (recent.size) {
-      return recent.docs[0].data()
+      return recent.docs[0].data() as WeekDocumentData
     } else {
       return null
     }
   }
 
-  public updateWeekDoc = async (weekStartDate: string, data: object) => {
+  public updateWeekDoc = async (weekStartDate: string, data: Partial<WeekDocumentData> | object) => {
     await this.updateUserDoc(`weeks/${weekStartDate}`, { startDate: weekStartDate, ...data })
   }
 

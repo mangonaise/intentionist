@@ -7,31 +7,31 @@ import CellEditorButtonsBar from './CellEditorButtonsBar'
 const palette = ['🌟', '👍', '🙂', '🆗', '🙁']
 
 interface TrackerStatusEditorProps {
-  status: string[],
-  onChangeStatus: Dispatch<SetStateAction<string[]>>,
+  draft: string[],
+  onEditDraft: Dispatch<SetStateAction<string[]>>,
   onFinishEditing: () => void
 }
 
-const TrackerStatusEditor = ({ status, onChangeStatus, onFinishEditing }: TrackerStatusEditorProps) => {
+const TrackerStatusEditor = ({ draft, onEditDraft, onFinishEditing }: TrackerStatusEditorProps) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
 
   function addEmoji(emoji: string) {
-    const newStatus = [...status]
-    newStatus.push(emoji)
-    onChangeStatus(newStatus)
+    const newDraft = [...draft]
+    newDraft.push(emoji)
+    onEditDraft(newDraft)
   }
 
   function backspace() {
-    const newStatus = [...status]
-    newStatus.splice(-1)
-    onChangeStatus(newStatus)
+    const newDraft = [...draft]
+    newDraft.splice(-1)
+    onEditDraft(newDraft)
   }
 
   return (
     <>
       <CellEditorButtonsBar above>
         <CellEditorButton content={SearchIcon} action={() => setShowEmojiPicker(!showEmojiPicker)} invert={showEmojiPicker} />
-        <CellEditorButton content={BackspaceIcon} action={backspace} disabled={!status.length} />
+        <CellEditorButton content={BackspaceIcon} action={backspace} disabled={!draft.length} />
         <CellEditorButton content={CheckIcon} action={onFinishEditing} />
       </CellEditorButtonsBar>
       {!showEmojiPicker && (
