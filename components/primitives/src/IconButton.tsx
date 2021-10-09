@@ -1,7 +1,7 @@
 import { forwardRef, PropsWithChildren } from 'react'
+import exclude from '@/lib/logic/utils/exclude'
 import Button, { ButtonProps } from './Button'
 import Icon from './Icon'
-import omit from 'lodash/omit'
 
 interface Props extends ButtonProps {
   icon: () => JSX.Element
@@ -21,7 +21,7 @@ const IconButton = forwardRef<HTMLButtonElement, PropsWithChildren<Props>>((prop
         alignItems: 'center'
       }}
       ref={ref}
-      {...omit(props, 'icon', 'right')}
+      {...exclude(props, 'icon', 'right')}
     >
       <Icon
         icon={icon}

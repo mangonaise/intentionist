@@ -1,5 +1,5 @@
 import { forwardRef, HTMLProps, PropsWithChildren } from 'react'
-import omit from 'lodash/omit'
+import exclude from '@/lib/logic/utils/exclude'
 
 export interface ButtonProps extends HTMLProps<HTMLButtonElement> {
   hoverEffect?: 'default' | 'none' | 'opacity'
@@ -32,7 +32,7 @@ const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProps>>((pr
       }}
       ref={ref}
       type={props.type as any}
-      {...omit(props, 'hoverEffect')}
+      {...exclude(props, 'hoverEffect')}
     >
       {props.children}
     </button>

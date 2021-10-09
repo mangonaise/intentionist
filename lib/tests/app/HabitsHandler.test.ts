@@ -1,12 +1,12 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
-import omit from 'lodash/omit'
 import signInDummyUser from '@/test-setup/signIn'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
 import DbHandler from '@/logic/app/DbHandler'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import generateHabitId from '@/logic/utils/generateHabitId'
+import exclude from '@/lib/logic/utils/exclude'
 
 // 🔨
 
@@ -34,7 +34,7 @@ describe('initialization', () => {
 
   test('fetched habit is placed in an array in local cache', async () => {
     await dbHandler.updateUserDoc('data/habits', {
-      habits: { [dummyHabitA.id]: { ...omit(dummyHabitA, 'id') } },
+      habits: { [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') } },
       order: [dummyHabitA.id]
     })
     habitsHandler = await initializeHabitsHandler()
@@ -44,8 +44,8 @@ describe('initialization', () => {
   test('fetched habits are ordered correctly', async () => {
     await dbHandler.updateUserDoc('data/habits', {
       habits: {
-        [dummyHabitA.id]: { ...omit(dummyHabitA, 'id') },
-        [dummyHabitB.id]: { ...omit(dummyHabitB, 'id') }
+        [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') },
+        [dummyHabitB.id]: { ...exclude(dummyHabitB, 'id') }
       },
       order: [dummyHabitB.id, dummyHabitA.id]
     })
@@ -68,8 +68,8 @@ describe('behavior', () => {
 
     expect(await getHabitsDoc()).toEqual({
       habits: {
-        [dummyHabitA.id]: { ...omit(dummyHabitA, 'id') },
-        [dummyHabitB.id]: { ...omit(dummyHabitB, 'id') }
+        [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') },
+        [dummyHabitB.id]: { ...exclude(dummyHabitB, 'id') }
       },
       order: [dummyHabitA.id, dummyHabitB.id]
     })

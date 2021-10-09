@@ -2,8 +2,8 @@ import { arrayUnion, arrayRemove, deleteField } from '@firebase/firestore'
 import { makeAutoObservable } from 'mobx'
 import { Lifecycle, scoped } from 'tsyringe'
 import { InitialState } from './InitialFetchHandler'
-import omit from 'lodash/omit'
 import isEqual from 'lodash/isEqual'
+import exclude from '../utils/exclude'
 import DbHandler from './DbHandler'
 
 export type HabitsDocumentData = {
@@ -51,7 +51,7 @@ export default class HabitsHandler {
 
     // ☁️
     await this.dbHandler.updateUserDoc('data/habits', {
-      habits: { [habitToSet.id]: { ...omit(habitToSet, 'id') } }
+      habits: { [habitToSet.id]: { ...exclude(habitToSet, 'id') } }
     })
 
     return this.habits[index]
@@ -77,7 +77,7 @@ export default class HabitsHandler {
 
     // ☁️
     await this.dbHandler.updateUserDoc('data/habits', {
-      habits: { [newHabit.id]: { ...omit(newHabit, 'id') } },
+      habits: { [newHabit.id]: { ...exclude(newHabit, 'id') } },
       order: arrayUnion(newHabit.id)
     })
 
