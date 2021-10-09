@@ -94,14 +94,17 @@ const CellButton: FC<CellButtonProps> = (props) => {
     <Button
       onClick={onClickCell}
       sx={{
+        '--highlight': '0 0 0 2px rgba(255, 255, 255, 0.35) inset',
         padding: 0,
         size: '100%',
         borderRadius: 0,
-        backgroundColor: isLoading ? 'transparent' : (isEditing ? 'whiteAlpha.5' : (hasStatus ? 'whiteAlpha.3' : 'transparent')),
-        boxShadow: isEditing ? '0 0 0 2px rgba(255, 255, 255, 0.25) inset' : 'none',
+        backgroundColor: isEditing ? 'whiteAlpha.8' : (isLoading ? 'transparent' : (hasStatus ? 'whiteAlpha.3' : 'transparent')),
+        boxShadow: isEditing ? 'var(--highlight)' : 'none',
         pointerEvents: isLoading ? 'none' : 'auto',
+        cursor: 'default',
         '&:hover': {
-          backgroundColor: 'whiteAlpha.5'
+          backgroundColor: 'whiteAlpha.8',
+          boxShadow: 'var(--highlight) !important'
         },
         '&:not:hover': {
           transition: 'background-color 100ms'
@@ -109,7 +112,8 @@ const CellButton: FC<CellButtonProps> = (props) => {
         '&:focus': {
           boxShadow: '0 0 0 2px var(--focus-color) inset',
           '&:not(:focus-visible)': {
-            boxShadow: isEditing ? '0 0 0 2px rgba(255, 255, 255, 0.25) inset' : 'none',
+            boxShadow: isEditing ? 'var(--highlight)' : 'none',
+            transition: 'none',
           }
         }
       }}
