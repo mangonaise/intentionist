@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from 'react'
 import { Button, FadeIn, Flex, Icon } from '@/components/primitives'
+import { ButtonProps } from '@/components/primitives/src/Button'
 import { BlurListener } from '@/components/app'
 import { ExpandDownIcon, ExpandUpIcon } from '@/components/icons'
 import { StyledComponent } from '@/components/types/StyledComponent'
@@ -63,16 +64,16 @@ const Dropdown: StyledComponent<DropdownProps> = (props) => {
   )
 }
 
-interface ItemProps {
-  action: () => void
+interface ItemProps extends ButtonProps {
+  itemAction: () => void
 }
 
 const Item: StyledComponent<ItemProps> = (props) => {
-  const { action, children } = props
+  const { itemAction, children } = props
   const { closeDropdown } = useContext(DropdownContext)
 
   function handleClick() {
-    action()
+    itemAction()
     closeDropdown()
   }
 
@@ -93,10 +94,11 @@ const Item: StyledComponent<ItemProps> = (props) => {
           borderBottomRightRadius: 'default'
         },
         '&:not(:hover)': {
-          backgroundColor: 'transparent'
+          backgroundColor: props.hoverEffect ? undefined : 'transparent'
         }
       }}
       className={props.className}
+      hoverEffect={props.hoverEffect}
     >
       {children}
     </Button>

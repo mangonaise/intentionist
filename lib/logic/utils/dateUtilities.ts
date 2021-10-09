@@ -1,4 +1,4 @@
-import lightFormat from 'date-fns/lightFormat'
+import format from 'date-fns/format'
 import startOfWeek from 'date-fns/startOfWeek'
 
 const YYYYMMDD = 'yyyy-MM-dd'
@@ -12,5 +12,5 @@ export function formatFirstDayOfThisWeek() {
 }
 
 export function formatYYYYMMDD(date: Date) {
-  return lightFormat(date, YYYYMMDD)
+  return format(date, YYYYMMDD)
 }
