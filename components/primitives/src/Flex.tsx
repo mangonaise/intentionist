@@ -9,7 +9,7 @@ interface FlexProps extends BoxProps {
   align?: 'stretch' | 'center' | 'flex-start' | 'flex-end' | 'baseline'
 }
 
-const Flex = forwardRef<HTMLDivElement, PropsWithChildren<FlexProps>>((props, ref) => {
+const Flex = forwardRef<HTMLDivElement, PropsWithChildren<FlexProps>>(function Flex(props, ref) {
   const { center, column, flexWrap, justify, align } = props
 
   return (
@@ -28,7 +28,5 @@ const Flex = forwardRef<HTMLDivElement, PropsWithChildren<FlexProps>>((props, re
     </div>
   )
 })
-
-Flex.displayName = 'Flex'
 
 export default Flex

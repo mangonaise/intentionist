@@ -61,7 +61,7 @@ const EmojiPicker: StyledVoidComponent<Props> = ({ isOpen, label, onSelectEmoji,
   )
 }
 
-const EmojiMartWrapper = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
+const EmojiMartWrapper = forwardRef<HTMLDivElement, BoxProps>(function EmojiMartWrapper(props, ref) {
   return (
     <Box
       ref={ref}
@@ -185,7 +185,5 @@ const EmojiMartWrapper = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
     </Box>
   )
 })
-
-EmojiMartWrapper.displayName = 'EmojiMartWrapper'
 
 export default EmojiPicker

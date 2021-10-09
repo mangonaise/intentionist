@@ -5,7 +5,7 @@ export interface ButtonProps extends HTMLProps<HTMLButtonElement> {
   hoverEffect?: 'default' | 'none' | 'opacity'
 }
 
-const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProps>>((props, ref) => {
+const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProps>>(function Button (props, ref) {
   const hoverEffect = props.hoverEffect ?? 'default'
 
   return (
@@ -38,7 +38,5 @@ const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProps>>((pr
     </button>
   )
 })
-
-Button.displayName = 'Button'
 
 export default Button

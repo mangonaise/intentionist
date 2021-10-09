@@ -2,7 +2,7 @@ import { forwardRef, HTMLProps, PropsWithChildren } from 'react'
 
 type LinkProps = HTMLProps<HTMLAnchorElement>
 
-const Link = forwardRef<HTMLAnchorElement, PropsWithChildren<LinkProps>>((props, ref) => {
+const Link = forwardRef<HTMLAnchorElement, PropsWithChildren<LinkProps>>(function Link(props, ref) {
   return (
     <a
       sx={{
@@ -21,7 +21,5 @@ const Link = forwardRef<HTMLAnchorElement, PropsWithChildren<LinkProps>>((props,
     </a>
   )
 })
-
-Link.displayName = 'Link'
 
 export default Link

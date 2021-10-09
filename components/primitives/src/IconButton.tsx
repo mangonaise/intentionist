@@ -10,7 +10,7 @@ interface Props extends ButtonProps {
 
 const iconMargin = '0.8em'
 
-const IconButton = forwardRef<HTMLButtonElement, PropsWithChildren<Props>>((props, ref: any) => {
+const IconButton = forwardRef<HTMLButtonElement, PropsWithChildren<Props>>(function IconButton(props, ref: any) {
   const { icon, right, children } = props
 
   return (
@@ -35,7 +35,5 @@ const IconButton = forwardRef<HTMLButtonElement, PropsWithChildren<Props>>((prop
     </Button>
   )
 })
-
-IconButton.displayName = 'IconButton'
 
 export default IconButton
