@@ -7,23 +7,39 @@ import ProfileHandler from '@/lib/logic/app/ProfileHandler'
 import accentColor from '@/lib/logic/utils/accentColor'
 
 const Navbar = () => {
-  const { profileInfo } = container.resolve(ProfileHandler) 
+  const { profileInfo } = container.resolve(ProfileHandler)
 
   return (
-    <Box maxWidth="max" margin="auto" opacity={.99999}>
-      <Flex alignItems="center" mb={[4]} py={[0, 0, 4]}>
+    <Box
+      sx={{
+        maxWidth: 'max',
+        margin: 'auto',
+        opacity: 0.99999
+      }}
+    >
+      <Flex align="center" sx={{ mb: 4, py: [0, 0, 4] }}>
         <Icon
           icon={IntentionistIcon}
-          fontSize={['2rem', '2.5rem', '3rem']}
-          mr={[4, 4, 6]}
-          color={accentColor.current}
-          style={{ transition: 'color 500ms'}}
+          sx={{
+            fontSize: ['2rem', '2.5rem', '2.5rem'],
+            mr: [4, 4, 6],
+            color: accentColor.current,
+            transition: 'color 500ms',
+            transform: null
+          }}
         />
-        <Heading as="p" fontSize={['1.5rem', '1.75rem', '2rem']} fontWeight={650} letterSpacing="0.03ch">
+        <Heading
+          level={1}
+          sx={{
+            fontSize: ['1.5rem', '1.75rem', '2rem'],
+            fontWeight: 650,
+            letterSpacing: '0.03ch',
+            mr: 'auto'
+          }}
+        >
           intentionist
         </Heading>
-        <Spacer mr="auto" />
-        <Text mr={3} opacity={0.5}>{profileInfo?.displayName}</Text>
+        <Text type="div" sx={{ mr: 3, opacity: 0.5 }}>{profileInfo?.displayName}</Text>
         <IconButton onClick={handleSignOut} icon={BackIcon} />
       </Flex>
     </Box>

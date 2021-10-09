@@ -1,34 +1,44 @@
-import styled from '@emotion/styled'
-import css from '@styled-system/css'
-import { HTMLAttributes } from 'react'
-import { border, BorderProps, color, ColorProps, flexbox, FlexboxProps, layout, LayoutProps, space, SpaceProps, typography, TypographyProps } from 'styled-system'
+import { forwardRef, HTMLProps, PropsWithChildren } from 'react'
+import omit from 'lodash/omit'
 
-interface CustomProps extends HTMLAttributes<HTMLButtonElement> {
-  bg?: string,
-  reduceHoverOpacity?: boolean
+export interface ButtonProps extends HTMLProps<HTMLButtonElement> {
+  hoverEffect?: 'default' | 'none' | 'opacity'
 }
-type StyleProps = SpaceProps & FlexboxProps & LayoutProps & TypographyProps & ColorProps & BorderProps
-export type ButtonProps = StyleProps & CustomProps
 
-const Button = styled.button<ButtonProps>(({ bg, reduceHoverOpacity }: ButtonProps) => (css({
-  cursor: 'pointer',
-  userSelect: 'none',
-  padding: '0.7rem 1rem',
-  border: 'none',
-  color: 'inherit',
-  fontSize: 'inherit',
-  fontFamily: 'inherit',
-  fontWeight: 450,
-  borderRadius: 'default',
-  backgroundColor: bg || 'button',
-  '&:hover': {
-    backgroundColor: bg || 'buttonHighlight',
-    opacity: reduceHoverOpacity ? 0.9 : undefined
-  },
-  '&:disabled': {
-    opacity: 0.3,
-    cursor: 'default'
-  }
-})), space, layout, flexbox, typography, color, border)
+const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProps>>((props, ref) => {
+  const hoverEffect = props.hoverEffect ?? 'default'
+
+  return (
+    <button
+      sx={{
+        cursor: 'pointer',
+        userSelect: 'none',
+        padding: '0.7rem 1rem',
+        border: 'none',
+        color: 'inherit',
+        fontSize: 'inherit',
+        fontFamily: 'inherit',
+        fontWeight: 450,
+        borderRadius: 'default',
+        backgroundColor: 'button',
+        '&:hover': {
+          backgroundColor: hoverEffect === 'default' ? 'buttonHighlight' : undefined,
+          opacity: hoverEffect === 'opacity' ? 0.9 : undefined
+        },
+        '&:disabled': {
+          opacity: 0.3,
+          cursor: 'default'
+        }
+      }}
+      ref={ref}
+      type={props.type as any}
+      {...omit(props, 'hoverEffect')}
+    >
+      {props.children}
+    </button>
+  )
+})
+
+Button.displayName = 'Button'
 
 export default Button

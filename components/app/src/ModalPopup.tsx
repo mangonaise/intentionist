@@ -1,11 +1,10 @@
 import { ReactNode } from 'react'
 import { Global } from '@emotion/react'
+import { css } from '@theme-ui/css'
 import { Icon } from '@/components/primitives'
 import { CloseIcon } from '@/components/icons'
 import Modal from 'react-responsive-modal'
-import theme from 'styles/theme'
 import 'react-responsive-modal/styles.css'
-import css from '@styled-system/css'
 
 interface Props {
   isOpen: boolean,
@@ -20,7 +19,7 @@ const ModalPopup = ({ isOpen, closeModal, children }: Props) => {
         '.react-responsive-modal': {
           '&-modal': {
             backgroundColor: '#292929',
-            borderRadius: theme.radii.default,
+            borderRadius: 'default',
             boxShadow: 'none',
             padding: 0,
             marginBottom: ['15vh', '50vh']
@@ -31,7 +30,7 @@ const ModalPopup = ({ isOpen, closeModal, children }: Props) => {
       <Modal
         open={isOpen}
         onClose={closeModal}
-        closeIcon={<Icon icon={CloseIcon} color="whiteAlpha.40" fontSize="1.3rem" />}
+        closeIcon={<Icon icon={CloseIcon} sx={{ color: 'whiteAlpha.40' }} />}
         center
         classNames={{
           overlay: 'modal-overlay'

@@ -2,7 +2,7 @@ import type { BaseEmoji } from 'emoji-mart'
 import { observer } from 'mobx-react-lite'
 import { useContext, useState } from 'react'
 import { BlurListener, EmojiPicker, SmartEmoji } from '@/components/app'
-import { Button, CenteredFlex } from '@/components/primitives'
+import { Button, Flex } from '@/components/primitives'
 import { HabitEditorContext } from 'pages/habits/[id]'
 
 const HabitIconPicker = () => {
@@ -15,16 +15,17 @@ const HabitIconPicker = () => {
   }
 
   return (
-    <BlurListener blurAction={() => setShowPicker(false)} position="relative">
+    <BlurListener blurAction={() => setShowPicker(false)} sx={{ position: 'relative' }}>
       <Button
         onClick={() => setShowPicker(!showPicker)}
-        fontSize={['1.5rem', '2rem']}
-        width={['3.5rem', '5rem']}
-        height={['3.5rem', '5rem']}
+        sx={{
+          size: ['3.5rem', '5rem'],
+          fontSize: ['1.5rem', '2rem']
+        }}
       >
-        <CenteredFlex>
+        <Flex center>
           <SmartEmoji nativeEmoji={editor.habit?.icon || ''} twemojiSize={28} />
-        </CenteredFlex>
+        </Flex>
       </Button>
       <EmojiPicker
         isOpen={showPicker}

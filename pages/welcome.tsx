@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react-lite'
 import { container } from 'tsyringe'
 import { useRouter } from 'next/dist/client/router'
-import { FormEvent, useEffect, useState } from 'react'
+import { ChangeEvent, FormEvent, useState } from 'react'
 import { LoadingScreen, withAuthUser } from '@/components/app'
-import { FadeIn, Button, CenteredFlex, Flex, Heading, IconButton, Input, Label, Text } from '@/components/primitives'
+import { FadeIn, Button, Flex, Form, Heading, IconButton, Input, Label, Text } from '@/components/primitives'
 import { BackIcon } from '@/components/icons'
 import { handleSignOut } from '@/lib/logic/utils/authUtilities'
 import AuthUser from '@/lib/logic/app/AuthUser'
@@ -23,7 +23,7 @@ const NewUserPage = withAuthUser(observer(() => {
     }
   })
 
-  function handleSubmitUser(e: FormEvent<HTMLDivElement>) {
+  function handleSubmitUser(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     container.resolve(ProfileHandler).updateUserProfile({ displayName })
     router.push('/home')
@@ -35,25 +35,27 @@ const NewUserPage = withAuthUser(observer(() => {
     <FadeIn>
       <Head><title>Welcome</title></Head>
       <IconButton icon={BackIcon} onClick={handleSignOut} />
-      <CenteredFlex flexDirection="column" width={['100%', '25rem']} minHeight="50vh" margin="auto">
-        <Heading as="h1" mb={3}>Hello! 👋</Heading>
-        <Text mb={8} textAlign="center">Welcome to intentionist.</Text>
-        <Flex as="form" flexDirection="column" width="100%" px={4} onSubmit={handleSubmitUser}>
-          <Label htmlFor="name" fontWeight="medium" mb={2} opacity={0.6}>
-            Your name
-          </Label>
-          <Input
-            value={displayName}
-            onChange={e => setDisplayName(e.target.value)}
-            placeholder="Enter your name or a nickname"
-            required
-            type="text"
-            id="name"
-            mb={4}
-          />
-          <Button type="submit">Start</Button>
-        </Flex>
-      </CenteredFlex>
+      <Flex justify="center" column sx={{ width: ['100%', '25rem'], minHeight: '50vh', margin: 'auto', textAlign: 'center' }}>
+        <Heading level={1} sx={{ mb: 3 }}>Hello! 👋</Heading>
+        <Text sx={{ mb: 8 }}>Welcome to intentionist.</Text>
+        <Form onSubmit={handleSubmitUser}>
+          <Flex column sx={{ width: '100%', px: 4 }}>
+            <Label htmlFor="name" sx={{ fontWeight: 'medium', mb: 2, opacity: 0.6, textAlign: 'left' }}>
+              Your name
+            </Label>
+            <Input
+              value={displayName}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setDisplayName(e.target.value)}
+              placeholder="Enter your name or a nickname"
+              required
+              type="text"
+              id="name"
+              sx={{ mb: 4 }}
+            />
+            <Button type="submit">Start</Button>
+          </Flex>
+        </Form>
+      </Flex>
     </FadeIn>
   )
 }))

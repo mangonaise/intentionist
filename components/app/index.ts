@@ -1,6 +1,4 @@
 export { default as BlurListener } from './src/BlurListener'
-export { default as ChevronLeftIcon } from './src/ChevronLeftIcon'
-export { default as ChevronRightIcon } from './src/ChevronRightIcon'
 export { default as Dropdown } from './src/Dropdown'
 export { default as EmojiPicker } from './src/EmojiPicker'
 export { default as GradientBackground } from './src/GradientBackground'

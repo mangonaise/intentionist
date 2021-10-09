@@ -1,26 +1,24 @@
-import styled from '@emotion/styled'
-import { HTMLAttributes } from 'react'
-import { color, ColorProps, space, SpaceProps, typography, TypographyProps } from 'styled-system'
+import { StyledComponent } from '@/components/types/StyledComponent'
 
-interface CustomProps extends HTMLAttributes<HTMLDivElement> {
+interface Props {
   icon: () => JSX.Element
 }
-type StyleProps = SpaceProps & ColorProps & TypographyProps
-type IconProps = CustomProps & StyleProps
 
-const IconWrapper = styled.div<StyleProps>({
-  display: 'inline-flex',
-  verticalAlign: 'bottom'
-}, space, color, typography)
+const Icon: StyledComponent<Props> = (props) => {
+  const IconComponent = props.icon
 
-const Icon = ({ icon, ...props }: IconProps) => {
-  const IconComponent = icon
   return (
-    <IconWrapper {...props}>
+    <div
+      sx={{
+        display: 'inline-flex',
+        transform: 'scale(1.35)'
+      }}
+      className={props.className}
+    >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" fill="none">
         <IconComponent />
       </svg>
-    </IconWrapper>
+    </div>
   )
 }
 

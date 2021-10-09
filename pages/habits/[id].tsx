@@ -14,12 +14,12 @@ const HabitEditorPage = () => {
   return (
     <HabitEditorContext.Provider value={editor}>
       <Head><title>{editor.isNewHabit ? 'Add habit' : 'Edit habit'}</title></Head>
-      <Box maxWidth="habits" margin="auto">
+      <Box sx={{ maxWidth: 'habits', margin: 'auto' }}>
         <HabitEditorNavSection />
         <Spacer mb={[3, 4]} />
         <Flex>
           <HabitIconPicker />
-          <Spacer pr={[2, 3]} />
+          <Spacer mr={[2, 3]} />
           <HabitNameInput />
         </Flex>
         <Spacer mb={[3, 4]} />

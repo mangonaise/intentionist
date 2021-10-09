@@ -1,5 +1,5 @@
 const theme = {
-  breakpoints: ['600px', '1250px',],
+  breakpoints: ['600px', '1250px'],
   colors: {
     text: 'var(--text-color)',
     bg: 'var(--background-color)',

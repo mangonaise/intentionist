@@ -1,30 +1,41 @@
-import { forwardRef } from 'react'
+import { forwardRef, PropsWithChildren } from 'react'
 import Button, { ButtonProps } from './Button'
-import CenteredFlex from './CenteredFlex'
 import Icon from './Icon'
+import omit from 'lodash/omit'
 
 interface Props extends ButtonProps {
   icon: () => JSX.Element
   right?: boolean,
-  flexStart?: boolean
 }
 
 const iconMargin = '0.8em'
 
-const IconButton = forwardRef(function IconButton({ icon, right, flexStart = false, children, ...props }: Props, ref) {
+const IconButton = forwardRef<HTMLButtonElement, PropsWithChildren<Props>>((props, ref: any) => {
+  const { icon, right, children } = props
+
   return (
-    <Button {...props}>
-      <CenteredFlex flexDirection={right ? 'row-reverse' : 'row'} flexStart={flexStart}>
-        <Icon
-          icon={icon}
-          ml={right && children ? iconMargin : 0}
-          mr={!right && children ? iconMargin : 0}
-          style={{ transform: 'translateY(-0.04rem) scale(1.35)' }}
-        />
-        {children}
-      </CenteredFlex>
+    <Button
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
+      ref={ref}
+      {...omit(props, 'icon', 'right')}
+    >
+      <Icon
+        icon={icon}
+        sx={{
+          ml: right && children ? iconMargin : 0,
+          mr: !right && children ? iconMargin : 0,
+          transform: 'translateY(-0.04rem) scale(1.35)'
+        }}
+      />
+      {children}
     </Button>
   )
 })
+
+IconButton.displayName = 'IconButton'
 
 export default IconButton

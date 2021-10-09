@@ -1,18 +1,20 @@
-import Box, { BoxProps } from './Box'
+import { StyledComponent } from '@/components/types/StyledComponent'
 
-interface Props extends BoxProps {
+interface Props {
   time?: number,
   delay?: number
 }
 
-const FadeIn = ({ time = 300, delay = 25, children, ...props }: Props) => {
-  return (
-    <Box
-      {...props}
-      style={time > 0 ? { opacity: 0, animation: `fade-in forwards ${time}ms ${delay}ms` } : {}}
-    >
-      {children}
-    </Box>
-  )
-}
+const FadeIn: StyledComponent<Props> = ({ time = 300, delay = 0, ...props }) => (
+  <div
+    sx={{
+        opacity: time ? 0 : 1,
+        animation: `fade-in forwards ${time}ms ${delay}ms`
+      }}
+    className={props.className}
+  >
+    {props.children}
+  </div>
+)
+
 export default FadeIn

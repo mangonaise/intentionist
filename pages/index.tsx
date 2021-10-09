@@ -5,8 +5,8 @@ import { useRouter } from 'next/dist/client/router'
 import { useLayoutEffect, useState } from 'react'
 import { authState, signInWithGoogle } from '@/lib/logic/utils/authUtilities'
 import LoadingScreen from '@/components/app/src/LoadingScreen'
-import CenteredFlex from '@/components/primitives/src/CenteredFlex'
 import FadeIn from '@/components/primitives/src/FadeIn'
+import Flex from '@/components/primitives/src/Flex'
 import Icon from '@/components/primitives/src/Icon'
 import IconButton from '@/components/primitives/src/IconButton'
 import IntentionistIcon from '@/components/icons/src/IntentionistIcon'
@@ -28,12 +28,12 @@ const LandingPage: NextPage = () => {
   return (
     <FadeIn>
       <Head><title>Intentionist | Social habit tracker and journal</title></Head>
-      <CenteredFlex height="90vh" flexDirection="column">
-        <Icon icon={IntentionistIcon} fontSize="4rem" mb={8} />
+      <Flex column center sx={{ height: '90vh' }}>
+        <Icon icon={IntentionistIcon} sx={{ fontSize: '3rem', mb: 8 }} />
         <IconButton icon={GoogleIcon} onClick={signInWithGoogle}>
           Continue with Google
         </IconButton>
-      </CenteredFlex >
+      </Flex >
     </FadeIn>
   )
 }

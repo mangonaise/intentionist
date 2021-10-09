@@ -1,12 +1,12 @@
-import styled from '@emotion/styled'
-import { grid, GridProps } from 'styled-system'
-import { Box } from '..'
-import { BoxProps } from './Box'
+import { StyledComponent } from '@/components/types/StyledComponent'
 
-type StyleProps = GridProps & BoxProps
-
-const Grid = styled(Box)<StyleProps>({
-  display: 'grid'
-}, grid)
+const Grid: StyledComponent = (props) => (
+  <div
+    sx={{ display: 'grid' }}
+    className={props.className}
+  >
+    {props.children}
+  </div>
+)
 
 export default Grid

@@ -5,7 +5,7 @@ import Head from 'next/head'
 
 const Home = () => {
   return (
-    <Box maxWidth="max" margin="auto">
+    <Box sx={{ maxWidth: 'max', margin: 'auto' }}>
       <Head><title>Home</title></Head>
       <WeekViewModePicker />
       <Spacer mb={4} />

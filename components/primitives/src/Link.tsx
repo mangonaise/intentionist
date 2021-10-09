@@ -1,16 +1,27 @@
-import styled from '@emotion/styled'
-import { typography, TypographyProps } from 'styled-system'
+import { forwardRef, HTMLProps, PropsWithChildren } from 'react'
 
-type StyleProps = TypographyProps
+type LinkProps = HTMLProps<HTMLAnchorElement>
 
-const Link = styled.a<StyleProps>({
-  margin: 0,
-  cursor: 'pointer',
-  color: 'inherit',
-  textDecoration: 'none',
-  '&:hover': {
-    textDecoration: 'underline 2px hsla(0, 0%, 100%, 0.2)'
-  }
-}, typography)
+const Link = forwardRef<HTMLAnchorElement, PropsWithChildren<LinkProps>>((props, ref) => {
+  return (
+    <a
+      sx={{
+        margin: 0,
+        cursor: 'pointer',
+        color: 'inherit',
+        textDecoration: 'none',
+        '&:hover': {
+          textDecoration: 'underline 2px hsla(0, 0%, 100%, 0.2)'
+        }
+      }}
+      ref={ref}
+      {...props}
+    >
+      {props.children}
+    </a>
+  )
+})
+
+Link.displayName = 'Link'
 
 export default Link

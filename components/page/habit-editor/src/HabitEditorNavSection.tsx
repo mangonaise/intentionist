@@ -9,21 +9,23 @@ const HabitEditorNavSection = () => {
   const editor = useContext(HabitEditorContext)
 
   return (
-    <Flex pb={[3, 4]} borderBottom="solid 1.5px" borderColor="divider">
+    <Flex sx={{ pb: [3, 4], borderBottom: 'solid 1.5px', borderColor: 'divider' }}>
       <IconButton icon={CloseIcon} onClick={editor.exit} />
-      <Box alignSelf="center" ml={4}>
-        <Text as="span" color="whiteAlpha.70">
+      <Box sx={{ alignSelf: 'center', ml: 4 }}>
+        <Text type="span" sx={{ color: 'whiteAlpha.70' }}>
           {editor.isNewHabit ? 'Adding new ' : 'Editing '}habit
         </Text>
       </Box>
       <Button
         onClick={editor.saveAndExit}
         disabled={!editor.habit?.name}
-        bg="text"
-        color="bg"
-        reduceHoverOpacity
-        ml="auto"
-        fontWeight="medium"
+        hoverEffect="opacity"
+        sx={{
+          ml: 'auto',
+          bg: 'text',
+          color: 'bg',
+          fontWeight: 'medium'
+        }}
       >
         {editor.isNewHabit ? 'Add' : 'Save'}
       </Button>

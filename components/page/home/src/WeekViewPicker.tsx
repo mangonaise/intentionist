@@ -13,7 +13,7 @@ const buttonData: Array<{ view: WeekViewMode, text: string, icon: () => JSX.Elem
 ]
 
 const WeekViewModePicker = () => {
-  const { viewMode, setViewMode } = container.resolve(WeekHandler) 
+  const { viewMode, setViewMode } = container.resolve(WeekHandler)
 
   useEffect(() => {
     accentColor.set(viewMode)
@@ -21,19 +21,25 @@ const WeekViewModePicker = () => {
 
   return (
     <Flex>
-      {buttonData.map((data, index) => (
-        <IconButton
-          icon={data.icon}
-          onClick={() => setViewMode(data.view)}
-          flex={1}
-          mr={index < 2 ? 3 : 0}
-          bg={data.view === viewMode ? data.view : ''}
-          style={{ transition: 'var(--focus-transition), background-color 200ms' }}
-          key={data.view}
-        >
-          {data.text}
-        </IconButton>
-      ))}
+      {buttonData.map((data, index) => {
+        const isSelected = data.view === viewMode
+        return (
+          <IconButton
+            icon={data.icon}
+            onClick={() => setViewMode(data.view)}
+            hoverEffect={isSelected ? 'none' : 'default'}
+            sx={{
+              flex: 1,
+              mr: index < 2 ? 3 : 0,
+              bg: isSelected ? data.view : undefined,
+              transition: `var(--focus-transition), background-color ${isSelected ? 500 : 150}ms ease-out !important`,
+            }}
+            key={data.view}
+          >
+            {data.text}
+          </IconButton>
+        )
+      })}
     </Flex>
   )
 }

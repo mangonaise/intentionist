@@ -1,12 +1,10 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { useRef, useState } from 'react'
+import { FC, useRef, useState } from 'react'
 import { BlurListener, SmartEmoji } from '@/components/app'
-import { Button, CenteredFlex, FadeIn } from '@/components/primitives'
+import { Button, FadeIn, Flex } from '@/components/primitives'
 import WeekHandler, { WeekdayId } from '@/lib/logic/app/WeekHandler'
 import TrackerStatusEditor from './TrackerStatusEditor'
-import styled from '@emotion/styled'
-import css from '@styled-system/css'
 
 interface TrackerStatusCellProps {
   habitId: string,
@@ -36,34 +34,39 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
   }
 
   function finishEditing() {
-    setIsEditing(false)
-    container.resolve(WeekHandler).setTrackerStatus(habitId, weekday, draft)
+    if (isEditing) {
+      setIsEditing(false)
+      container.resolve(WeekHandler).setTrackerStatus(habitId, weekday, draft)
+    }
   }
 
   return (
-    <CenteredFlex
-      borderBottom="solid 1px"
-      borderLeft="solid 1px"
-      borderColor="grid"
+    <Flex
       onKeyDown={e => e.key === 'Escape' && finishEditing()}
+      center
+      sx={{
+        borderBottom: 'solid 1px',
+        borderLeft: 'solid 1px',
+        borderColor: 'grid'
+      }}
       ref={cellRef}
     >
-      <BlurListener blurAction={finishEditing} position="relative" height="100%" width="100%">
+      <BlurListener blurAction={finishEditing} sx={{ position: 'relative', size: '100%' }}>
         <CellButton
-          onClick={toggleEditing}
+          onClickCell={toggleEditing}
           isEditing={isEditing}
           isLoading={isLoadingWeek}
           hasStatus={!!visibleEmojis.length}
         >
-          <CenteredFlex flexWrap="wrap" py="4px">
+          <Flex center flexWrap sx={{ py: '4px' }}>
             {visibleEmojis.map((emoji, index) => (
-              <FadeIn time={250} delay={0} key={index}>
-                <CenteredFlex p="1px">
+              <FadeIn time={250} key={index}>
+                <Flex center sx={{ p: '1px' }}>
                   <SmartEmoji nativeEmoji={emoji} nativeFontSize="1.15rem" twemojiSize={18} />
-                </CenteredFlex>
+                </Flex>
               </FadeIn>
             ))}
-          </CenteredFlex>
+          </Flex>
         </CellButton >
         {isEditing && (
           <TrackerStatusEditor
@@ -73,36 +76,47 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
           />
         )}
       </BlurListener >
-    </CenteredFlex >
+    </Flex >
   )
 }
 
 interface CellButtonProps {
+  onClickCell: () => void,
   isEditing: boolean,
   isLoading: boolean,
   hasStatus: boolean
 }
 
-const CellButton = styled(Button)<CellButtonProps>(({ isEditing, isLoading, hasStatus }: CellButtonProps) => (css({
-  padding: 0,
-  height: '100%',
-  width: '100%',
-  borderRadius: 0,
-  backgroundColor: isLoading ? 'transparent' : (isEditing ? 'whiteAlpha.5' : (hasStatus ? 'whiteAlpha.3' : 'transparent')),
-  boxShadow: isEditing ? '0 0 0 2px rgba(255, 255, 255, 0.25) inset' : 'none',
-  pointerEvents: isLoading ? 'none' : 'auto',
-  '&:hover': {
-    backgroundColor: 'whiteAlpha.5'
-  },
-  '&:not:hover': {
-    transition: 'background-color 100ms'
-  },
-  '&:focus': {
-    boxShadow: '0 0 0 2px var(--focus-color) inset',
-    '&:not(:focus-visible)': {
-      boxShadow: isEditing ? '0 0 0 2px rgba(255, 255, 255, 0.25) inset' : 'none',
-    }
-  }
-})))
+const CellButton: FC<CellButtonProps> = (props) => {
+  const { onClickCell, isEditing, isLoading, hasStatus, children } = props
+
+  return (
+    <Button
+      onClick={onClickCell}
+      sx={{
+        padding: 0,
+        size: '100%',
+        borderRadius: 0,
+        backgroundColor: isLoading ? 'transparent' : (isEditing ? 'whiteAlpha.5' : (hasStatus ? 'whiteAlpha.3' : 'transparent')),
+        boxShadow: isEditing ? '0 0 0 2px rgba(255, 255, 255, 0.25) inset' : 'none',
+        pointerEvents: isLoading ? 'none' : 'auto',
+        '&:hover': {
+          backgroundColor: 'whiteAlpha.5'
+        },
+        '&:not:hover': {
+          transition: 'background-color 100ms'
+        },
+        '&:focus': {
+          boxShadow: '0 0 0 2px var(--focus-color) inset',
+          '&:not(:focus-visible)': {
+            boxShadow: isEditing ? '0 0 0 2px rgba(255, 255, 255, 0.25) inset' : 'none',
+          }
+        }
+      }}
+    >
+      {children}
+    </Button>
+  )
+}
 
 export default observer(TrackerStatusCell)

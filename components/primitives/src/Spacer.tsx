@@ -1,6 +1,14 @@
-import styled from '@emotion/styled'
-import { space, SpaceProps } from 'styled-system'
+type SpaceProp = string | number | Array<string | number>
 
-const Spacer = styled.div<SpaceProps>(space)
+interface Props {
+  mt?: SpaceProp,
+  mr?: SpaceProp,
+  mb?: SpaceProp,
+  ml?: SpaceProp,
+}
+
+const Spacer = (props: Props) => (
+  <div sx={{ ...props }} />
+)
 
 export default Spacer

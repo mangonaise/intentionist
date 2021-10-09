@@ -1,7 +1,5 @@
 import { SmartEmoji } from '@/components/app'
-import { Button, CenteredFlex, Icon } from '@/components/primitives'
-import styled from '@emotion/styled'
-import css from '@styled-system/css'
+import { Box, Button, Flex, Icon } from '@/components/primitives'
 
 interface CellEditorButtonProps {
   content: string | (() => JSX.Element)
@@ -12,41 +10,26 @@ interface CellEditorButtonProps {
 
 const CellEditorButton = ({ content, action, invert, disabled = false }: CellEditorButtonProps) => {
   return (
-    <EditorButtonWrapper disabled={disabled}>
+    <Box sx={{ mr: '4px', mb: '4px', opacity: 0, animation: 'fade-in forwards 175ms' }}>
       <Button
         onClick={action}
-        width="2.5rem"
-        height="2.5rem"
-        padding={0}
-        bg={invert ? 'var(--text-color) !important' : undefined}
+        hoverEffect={disabled || invert ? 'none' : 'default'}
+        sx={{
+          width: '2.5rem', height: '2.5rem', p: 0, 
+          bg: invert ? 'text' : 'transparent',
+          color: disabled ? '#666' : 'text',
+          cursor: disabled ? 'default' : 'pointer',
+        }}
       >
-        <CenteredFlex>
+        <Flex center>
           {typeof content === 'string'
             ? <SmartEmoji nativeEmoji={content} nativeFontSize="1.25rem" twemojiSize={18} />
-            : <Icon icon={content} fontSize="1.5rem" color={invert ? 'bg' : undefined} />
+            : <Icon icon={content} sx={{ fontSize: '1.15rem', color: invert ? 'bg' : undefined }} />
           }
-        </CenteredFlex>
+        </Flex>
       </Button>
-    </EditorButtonWrapper>
+    </Box>
   )
 }
-
-const EditorButtonWrapper = styled.div<{ disabled: boolean }>(({ disabled }) => css({
-  mb: '4px',
-  mr: '4px',
-  opacity: 0,
-  animation: 'fade-in forwards 175ms',
-  '& button': {
-    backgroundColor: 'transparent',
-    borderRadius: 'default',
-    cursor: disabled ? 'default' : 'pointer',
-    '&, &:hover': {
-      color: disabled ? '#666' : 'text',
-    },
-    '&:hover': {
-      backgroundColor: disabled ? 'transparent' : undefined,
-    }
-  }
-}))
 
 export default CellEditorButton

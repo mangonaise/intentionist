@@ -5,7 +5,7 @@ import useAutorun from '@/lib/hooks/useAutorun'
 
 const withAuthUser = (WrappedComponent: () => JSX.Element | null) => observer(() => {
   useAutorun(() => {
-    if (!authState.getCachedState() || !authState.current) {
+    if (!authState.getCachedState() && !authState.current) {
       window.location.assign('/')
     }
   })

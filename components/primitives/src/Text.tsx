@@ -1,10 +1,24 @@
-import styled from '@emotion/styled'
-import { color, ColorProps, space, SpaceProps, typography, TypographyProps } from 'styled-system'
+import { StyledComponent } from '@/components/types/StyledComponent'
 
-type StyleProps = SpaceProps & ColorProps & TypographyProps
+interface Props {
+  type?: 'p' | 'span' | 'div'
+}
 
-const Text = styled.p<StyleProps>({
-  margin: 0
-}, space, color, typography)
+const Text: StyledComponent<Props> = (props) => {
+  const Component = props.type ?? 'p'
+  return (
+    <Component
+      sx={{
+        margin: 0,
+        '& b': { 
+          fontWeight: 'semibold'
+        }
+      }}
+      className={props.className}
+    >
+      {props.children}
+    </Component>
+  )
+}
 
 export default Text

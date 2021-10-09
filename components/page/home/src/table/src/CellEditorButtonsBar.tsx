@@ -1,5 +1,5 @@
 import { FC, useLayoutEffect, useRef, useState } from 'react'
-import { CenteredFlex } from '@/components/primitives'
+import { Flex } from '@/components/primitives'
 import useWindowWidth from '@/lib/hooks/useWindowWidth'
 
 const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
@@ -33,22 +33,24 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
   }, [windowWidth, above])
 
   return (
-    <CenteredFlex
+    <Flex
+      center
       ref={barRef}
-      zIndex={1}
-      position={'fixed'}
-      flexWrap={anchor === 'none' ? 'nowrap' : 'wrap'}
-      left={anchor === 'left' ? [0, 4] : 'auto'}
-      right={anchor === 'right' ? [0, 4] : 'auto'}
-      top={top}
-      pl="4px"
-      pt="4px"
-      bg="rgba(18, 18, 18, 0.88)"
-      borderRadius="default"
-      style={{ transform: `translateX(${anchor === 'none' ? xOffset : 0}px)` }}
+      sx={{
+        zIndex: 1,
+        position: 'fixed',
+        flexWrap: anchor === 'none' ? 'nowrap' : 'wrap',
+        left: anchor === 'left' ? [0, 4] : 'auto',
+        right: anchor === 'right' ? [0, 4] : 'auto',
+        top: top,
+        pl: '4px', pt: '4px',
+        bg: 'rgba(24, 24, 24, 0.88)',
+        borderRadius: 'default',
+        transform: `translateX(${anchor === 'none' ? xOffset : 0}px)`
+      }}
     >
       {children}
-    </CenteredFlex>
+    </Flex>
   )
 }
 

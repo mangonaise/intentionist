@@ -6,24 +6,28 @@ import HabitFilterDropdown from './HabitFilterDropdown'
 const HabitsPageNavSection = () => {
   return (
     <Flex
-      pb={[0, 4]}
-      mb={2}
-      borderBottom="solid 1.5px"
-      borderColor={['transparent', 'divider']}
-      flexWrap={['wrap', 'nowrap']}
+      sx={{
+        flexWrap: ['wrap', 'nowrap'],
+        pb: [0, 4],
+        mb: 2,
+        borderBottom: 'solid 1.5px',
+        borderColor: ['transparent', 'divider']
+      }}
     >
       <NextLink href="/home"><IconButton icon={BackIcon} /></NextLink>
       <HabitFilterDropdown />
       <NextLink href="/habits/new">
         <IconButton
           icon={PlusIcon}
-          bg="text"
-          color="bg"
-          reduceHoverOpacity
-          ml="auto"
-          mt={[3, 0]}
-          width={['100%', 'auto']}
-          fontWeight="medium"
+          hoverEffect="opacity"
+          sx={{
+            bg: 'text',
+            color: 'bg',
+            ml: 'auto',
+            mt: [3, 0],
+            width: ['100%', 'auto'],
+            fontWeight: 'medium'
+          }}
         >
           Add habit
         </IconButton>

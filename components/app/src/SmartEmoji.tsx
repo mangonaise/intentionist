@@ -19,9 +19,9 @@ const SmartEmoji = ({ nativeEmoji, nativeFontSize, twemojiSize }: Props) => {
     }
   }
   return (
-    <Text as="span" fontSize={nativeFontSize || 'inherit'}>
+    <Text type="span" sx={{ fontSize: nativeFontSize || 'inherit' }}>
       {nativeEmoji}
-    </Text>
+    </Text >
   )
 }
 

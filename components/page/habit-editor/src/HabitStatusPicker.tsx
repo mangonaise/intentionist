@@ -15,24 +15,30 @@ const HabitStatusPicker = () => {
   const editor = useContext(HabitEditorContext)
 
   return (
-    <Flex flexWrap={['wrap', 'nowrap']}>
-      {buttonData.map((data, index) => (
-        <IconButton
-          icon={data.icon}
-          onClick={() => editor.updateHabit({ status: data.status})}
-          flex={['', 1]}
-          width={['100%', 'auto']}
-          mr={[0, index < 2 ? 3 : 0]}
-          mb={[index < 2 ? 2 : 0, 0]}
-          bg={data.status === editor.habit?.status ? 'text' : ''}
-          color={data.status === editor.habit?.status ? 'bg' : 'whiteAlpha.30'}
-          fontWeight="medium"
-          key={data.status}
-        >
-          {data.text}
-          <Spacer mr={['auto', '0']} />
-        </IconButton>
-      ))}
+    <Flex sx={{ flexWrap: ['wrap', 'nowrap'] }}>
+      {buttonData.map((data, index) => {
+        const isSelected = data.status === editor.habit?.status
+        return (
+          <IconButton
+            icon={data.icon}
+            onClick={() => editor.updateHabit({ status: data.status })}
+            hoverEffect={isSelected ? 'none' : 'default'}
+            sx={{
+              flex: [null, 1],
+              width: ['100%', 'auto'],
+              mr: [0, index < 2 ? 3 : 0],
+              mb: [index < 2 ? 2 : 0, 0],
+              bg: isSelected ? 'text' : '',
+              color: isSelected ? 'bg' : 'whiteAlpha.30',
+              fontWeight: "medium"
+            }}
+            key={data.status}
+          >
+            {data.text}
+            <Spacer mr={['auto', '0']} />
+          </IconButton>
+        )
+      })}
     </Flex>
   )
 }

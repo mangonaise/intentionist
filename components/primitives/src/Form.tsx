@@ -1,9 +1,10 @@
 import { StyledComponent } from '@/components/types/StyledComponent'
 import { HTMLProps } from 'react'
 
-const Label: StyledComponent<HTMLProps<HTMLLabelElement>> = (props) => (
-  <label {...props}>
+const Form: StyledComponent<HTMLProps<HTMLFormElement>> = (props) => (
+  <form {...props}>
     {props.children}
-  </label>
+  </form>
 )
-export default Label
+
+export default Form

@@ -12,7 +12,7 @@ const HabitsPage = () => {
   return (
     <HabitFilterContext.Provider value={container.resolve(HabitFilterHandler)}>
       <Head><title>Habits</title></Head>
-      <Box maxWidth="habits" margin="auto">
+      <Box sx={{ maxWidth: 'habits', margin: 'auto' }}>
         <HabitsPageNavSection />
         <FilteredHabitsList />
       </Box>

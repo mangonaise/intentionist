@@ -1,10 +1,22 @@
-import styled from '@emotion/styled'
-import { color, ColorProps, space, SpaceProps, typography, TypographyProps } from 'styled-system'
+import { StyledComponent } from '@/components/types/StyledComponent'
 
-type StyleProps = SpaceProps & ColorProps & TypographyProps
+interface Props {
+  level?: 1 | 2 | 3 | 4 | 5 | 6
+}
 
-const Heading = styled.h2<StyleProps>({
-  margin: 0,
-}, space, color, typography)
+const Heading: StyledComponent<Props> = (props) => {
+  const HeadingLevel = `h${props.level ?? 2}` as keyof JSX.IntrinsicElements
+  return (
+    <HeadingLevel
+      sx={{
+        fontWeight: 'semibold',
+        fontSize: '1.5rem'
+      }}
+      className={props.className}
+    >
+      {props.children}
+    </HeadingLevel>
+  )
+}
 
 export default Heading

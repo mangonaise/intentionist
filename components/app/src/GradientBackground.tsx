@@ -1,5 +1,4 @@
 import { observer } from 'mobx-react-lite'
-import { Box } from '@/components/primitives'
 import accentColor, { AccentColor } from '@/lib/logic/utils/accentColor'
 import theme from 'styles/theme'
 
@@ -15,14 +14,16 @@ const GradientBackground = () => {
   const activeColor = accentColor.current
 
   return (
-    <Box
-      position="fixed"
-      top={0}
-      left={0}
-      height="130px"
-      width="100%"
-      opacity={gradientData[activeColor].opacity}
-      style={{ transition: 'opacity 500ms' }}
+    <div
+      sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        height: '130px',
+        width: '100%',
+        opacity: gradientData[activeColor].opacity,
+        transition: 'opacity 500ms'
+      }}
     >
       <svg xmlns="http://www.w3.org/2000/svg" height="100%" width="100%">
         <defs>
@@ -41,7 +42,7 @@ const GradientBackground = () => {
           fill="url('#gradient')"
         />
       </svg>
-    </Box>
+    </div>
   )
 }
 

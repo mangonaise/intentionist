@@ -1,13 +1,12 @@
-import { ReactNode, useRef } from 'react'
-import { Box } from '@/components/primitives'
-import { BoxProps } from '@/components/primitives/src/Box'
+import { useRef } from 'react'
+import { StyledComponent } from '@/components/types/StyledComponent'
 
-interface Props extends BoxProps {
+interface Props {
   blurAction: () => void,
-  children: ReactNode
 }
 
-const BlurListener = ({ blurAction, children, ...props }: Props) => {
+const BlurListener: StyledComponent<Props> = (props) => {
+  const { blurAction, children } = props
   const elementRef = useRef<HTMLDivElement>(null)
 
   async function handleFocusChange() {
@@ -21,9 +20,9 @@ const BlurListener = ({ blurAction, children, ...props }: Props) => {
   }
 
   return (
-    <Box onBlur={handleFocusChange} ref={elementRef} {...props}>
+    <div onBlur={handleFocusChange} ref={elementRef} className={props.className}>
       {children}
-    </Box>
+    </div>
   )
 }
 
