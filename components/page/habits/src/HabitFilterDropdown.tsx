@@ -26,7 +26,7 @@ const HabitFilterDropdown = () => {
       {statuses.map(status => {
         const count = filteredCounts[status]
         return (
-          <Dropdown.Item action={() => setFilter(status)} key={status}>
+          <Dropdown.Item itemAction={() => setFilter(status)} key={status}>
             <Flex>
               {dropdownTextMap[status]}
               {!!count && (
