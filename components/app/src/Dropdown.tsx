@@ -25,6 +25,7 @@ const Dropdown: StyledComponent<DropdownProps> = (props) => {
     <DropdownContext.Provider value={{ closeDropdown }}>
       <BlurListener
         blurAction={closeDropdown}
+        escapeAction={closeDropdown}
         sx={{ position: 'relative', zIndex: 1, height: 'inherit' }}
         className={props.className}
       >
