@@ -42,7 +42,6 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
 
   return (
     <Flex
-      onKeyDown={e => e.key === 'Escape' && finishEditing()}
       center
       sx={{
         borderBottom: 'solid 1px',
@@ -51,7 +50,11 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
       }}
       ref={cellRef}
     >
-      <BlurListener blurAction={finishEditing} sx={{ position: 'relative', size: '100%' }}>
+      <BlurListener
+        blurAction={finishEditing}
+        escapeAction={finishEditing}
+        sx={{ position: 'relative', size: '100%' }}
+      >
         <CellButton
           onClickCell={toggleEditing}
           isEditing={isEditing}

@@ -3,10 +3,11 @@ import { StyledComponent } from '@/components/types/StyledComponent'
 
 interface Props {
   blurAction: () => void,
+  escapeAction?: () => void
 }
 
 const BlurListener: StyledComponent<Props> = (props) => {
-  const { blurAction, children } = props
+  const { blurAction, escapeAction, children } = props
   const elementRef = useRef<HTMLDivElement>(null)
 
   async function handleFocusChange() {
@@ -20,7 +21,12 @@ const BlurListener: StyledComponent<Props> = (props) => {
   }
 
   return (
-    <div onBlur={handleFocusChange} ref={elementRef} className={props.className}>
+    <div
+      ref={elementRef}
+      onBlur={handleFocusChange}
+      onKeyDown={(e) => e.key === 'Escape' && escapeAction?.()}
+      className={props.className}
+    >
       {children}
     </div>
   )
