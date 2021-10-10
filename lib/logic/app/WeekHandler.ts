@@ -44,6 +44,7 @@ export default class WeekHandler {
   }
 
   public viewWeek = async (startDate: string) => {
+    if (startDate === this.weekInView.startDate) return
     this.isLoadingWeek = true
     this.weekInView.startDate = startDate
     const weekDoc = await this.dbHandler.getWeekDoc(startDate)

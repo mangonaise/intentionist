@@ -164,6 +164,12 @@ describe('switching weeks', () => {
     await when(() => !weekHandler.isLoadingWeek)
     expect(weekHandler.weekInView.statuses).toEqual(dummyTrackerStatuses)
   })
+
+  test('attempting to switch to the same week will not load the week again', async () => {
+    await weekHandler.viewWeek('2021-10-04')
+    weekHandler.viewWeek('2021-10-04')
+    expect(weekHandler.isLoadingWeek).toEqual(false)
+  })
 })
 
 describe('representation of latest week', () => {
