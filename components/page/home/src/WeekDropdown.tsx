@@ -57,7 +57,7 @@ const WeekSelectMenu = () => {
 
   return (
     <Flex column>
-      {!isSameWeek(selectedDate, new Date()) && (
+      {!isSameWeek(selectedDate, new Date(), { weekStartsOn: 1 }) && (
         <>
           <ThisWeekButton />
           <Divider />
