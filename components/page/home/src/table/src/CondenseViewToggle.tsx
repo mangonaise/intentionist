@@ -13,6 +13,7 @@ const CondenseViewToggle = () => {
       {showCondenseViewToggle && (
         <Button
           onClick={() => setCondensedView(!condenseView)}
+          title={condenseView ? 'Empty rows are hidden' : 'Empty rows are visible'}
           sx={{
             position: 'relative',
             size: '100%',
