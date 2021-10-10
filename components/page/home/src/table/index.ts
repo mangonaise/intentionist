@@ -1,5 +1,7 @@
 export { default as CellEditorButton } from './src/CellEditorButton'
 export { default as CellEditorButtonsBar } from './src/CellEditorButtonsBar'
+export { default as CondensedViewAlert } from './src/CondensedViewAlert'
+export { default as CondenseViewToggle } from './src/CondenseViewToggle'
 export { default as HabitCell } from './src/HabitCell'
 export { default as TrackerStatusCell } from './src/TrackerStatusCell'
 export { default as TrackerStatusEditor } from './src/TrackerStatusEditor'

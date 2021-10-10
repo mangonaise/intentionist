@@ -44,7 +44,7 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
     <Flex
       center
       sx={{
-        borderBottom: 'solid 1px',
+        borderTop: 'solid 1px',
         borderLeft: 'solid 1px',
         borderColor: 'grid'
       }}
@@ -103,7 +103,6 @@ const CellButton: FC<CellButtonProps> = (props) => {
         borderRadius: 0,
         backgroundColor: isEditing ? 'whiteAlpha.8' : (isLoading ? 'transparent' : (hasStatus ? 'whiteAlpha.3' : 'transparent')),
         boxShadow: isEditing ? 'var(--highlight)' : 'none',
-        pointerEvents: isLoading ? 'none' : 'auto',
         cursor: 'default',
         '&:hover': {
           backgroundColor: 'whiteAlpha.8',

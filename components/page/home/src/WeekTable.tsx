@@ -1,17 +1,21 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { FC, Fragment } from 'react'
-import { Flex, Grid } from '@/components/primitives'
+import { FC, Fragment, useLayoutEffect } from 'react'
+import { Grid } from '@/components/primitives'
 import { ViewHabitsButton } from '..'
-import { HabitCell, TrackerStatusCell, WeekdayRow } from './table'
+import { CondensedViewAlert, CondenseViewToggle, HabitCell, TrackerStatusCell, WeekdayRow } from './table'
 import WeekHandler, { WeekdayId } from '@/lib/logic/app/WeekHandler'
 
 const WeekTable = () => {
-  const { habitsInView, isLoadingWeek } = container.resolve(WeekHandler)
+  const { habitsInView, refreshHabitsInView } = container.resolve(WeekHandler)
+
+  useLayoutEffect(() => {
+    refreshHabitsInView()
+  }, [])
 
   return (
-    <Table isLoading={isLoadingWeek}>
-      <Flex center sx={{ height: 'row', borderBottom: 'solid 1px', borderColor: 'grid' }} />
+    <Table>
+      <CondenseViewToggle />
       <WeekdayRow />
       {habitsInView.map((habit) => (
         <Fragment key={habit.id}>
@@ -25,24 +29,28 @@ const WeekTable = () => {
           ))}
         </Fragment>
       ))}
+      <CondensedViewAlert />
       <ViewHabitsButton />
     </Table>
   )
 }
 
-const Table: FC<{ isLoading: boolean }> = ({ children, isLoading }) => {
+const Table: FC = observer(({ children }) => {
+  const { isLoadingWeek } = container.resolve(WeekHandler)
+
   return (
     <Grid
       sx={{
         gridTemplateColumns: 'auto repeat(7, minmax(2.5ch, 1fr))',
         marginX: ['-1rem', 0],
-        opacity: isLoading ? 0.5 : 1,
+        opacity: isLoadingWeek ? 0.5 : 1,
+        pointerEvents: isLoadingWeek ? 'none' : 'auto',
         transition: 'opacity 100ms'
       }}
     >
       {children}
     </Grid>
   )
-}
+})
 
 export default observer(WeekTable)

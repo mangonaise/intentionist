@@ -15,6 +15,7 @@ const ViewHabitsButton = () => {
           padding: 0,
           paddingLeft: '0.9rem',
           borderRadius: 0,
+          borderTop: 'solid 1px',
           borderBottom: 'solid 1px',
           borderColor: 'grid',
           backgroundColor: 'transparent',

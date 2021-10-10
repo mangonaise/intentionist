@@ -4,7 +4,16 @@ import { Habit } from '@/lib/logic/app/HabitsHandler'
 
 const HabitCell = ({ habit }: { habit: Habit }) => {
   return (
-    <Flex center justify="flex-start" sx={{ minHeight: 'row', borderBottom: 'solid 1px', borderColor: 'grid', pl: 2 }}>
+    <Flex center justify="flex-start"
+      sx={{
+        minHeight: 'row',
+        pl: 2,
+        borderTop: 'solid 1px',
+        borderColor: 'grid',
+        opacity: 0,
+        animation: 'fade-in forwards 600ms'
+      }}
+    >
       <SmartEmoji nativeEmoji={habit.icon} nativeFontSize="1.25rem" twemojiSize={18} />
       <Text
         type="span"

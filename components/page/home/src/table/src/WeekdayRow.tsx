@@ -12,11 +12,7 @@ const WeekdayRow = () => {
       {weekdayNames.map((day, index) => (
         <Flex
           center
-          sx={{
-            height: 'row',
-            borderBottom: 'solid 1px',
-            borderColor: 'grid'
-          }}
+          sx={{ height: 'row' }}
           key={index}
         >
           {day}

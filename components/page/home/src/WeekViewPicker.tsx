@@ -32,7 +32,7 @@ const WeekViewModePicker = () => {
               flex: 1,
               mr: index < 2 ? 3 : 0,
               bg: isSelected ? data.view : undefined,
-              transition: `var(--focus-transition), background-color ${isSelected ? 250 : 150}ms ease-out !important`,
+              transition: `background-color ${isSelected ? 250 : 150}ms ease-out !important`,
             }}
             key={data.view}
           >
