@@ -1,7 +1,7 @@
 import { StyledComponent } from '@/components/types/StyledComponent'
-import { HTMLProps } from 'react'
+import { ComponentPropsWithoutRef } from 'react'
 
-const Label: StyledComponent<HTMLProps<HTMLLabelElement>> = (props) => (
+const Label: StyledComponent<ComponentPropsWithoutRef<'label'>> = (props) => (
   <label {...props}>
     {props.children}
   </label>

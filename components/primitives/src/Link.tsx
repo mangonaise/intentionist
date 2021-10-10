@@ -1,6 +1,6 @@
-import { forwardRef, HTMLProps, PropsWithChildren } from 'react'
+import { ComponentPropsWithoutRef, forwardRef, PropsWithChildren } from 'react'
 
-type LinkProps = HTMLProps<HTMLAnchorElement>
+type LinkProps = ComponentPropsWithoutRef<'a'>
 
 const Link = forwardRef<HTMLAnchorElement, PropsWithChildren<LinkProps>>(function Link(props, ref) {
   return (

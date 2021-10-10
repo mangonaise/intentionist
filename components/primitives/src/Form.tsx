@@ -1,7 +1,7 @@
 import { StyledComponent } from '@/components/types/StyledComponent'
-import { HTMLProps } from 'react'
+import { ComponentPropsWithoutRef } from 'react'
 
-const Form: StyledComponent<HTMLProps<HTMLFormElement>> = (props) => (
+const Form: StyledComponent<ComponentPropsWithoutRef<'form'>> = (props) => (
   <form {...props}>
     {props.children}
   </form>

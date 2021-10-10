@@ -1,7 +1,7 @@
 import { StyledComponent } from '@/components/types/StyledComponent'
-import { HTMLProps } from 'react'
+import { ComponentPropsWithoutRef } from 'react'
 
-const Input: StyledComponent<HTMLProps<HTMLInputElement>> = (props) => (
+const Input: StyledComponent<ComponentPropsWithoutRef<'input'>> = (props) => (
   <input
     type="text"
     sx={{
