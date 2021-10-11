@@ -94,7 +94,7 @@ const WeekSelectMenu = () => {
           key={index}
         >
           <Flex align="center" sx={{ width: '100%' }}>
-            Mon {format(weekStart, 'd')}
+            Mon {format(weekStart, 'do')}
             {isSameDay(weekStart, selectedDate) && (
               <Icon icon={CheckIcon} sx={{ m: 0, ml: 'auto', fontSize: '1.2rem' }} />
             )}
