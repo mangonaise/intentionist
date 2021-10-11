@@ -9,7 +9,7 @@ import HabitsHandler, { Habit } from './HabitsHandler'
 
 export type WeekDocumentData = {
   startDate: string,
-  statuses: HabitTrackerStatuses
+  statuses?: HabitTrackerStatuses
 }
 
 export type WeekdayId = 0 | 1 | 2 | 3 | 4 | 5 | 6
@@ -34,10 +34,6 @@ export default class WeekHandler {
     this.habitsHandler = habitsHandler
     this.latestWeekStartDate = initialAppState.data.latestWeekDoc?.startDate ?? thisWeekStartDate
     this.weekInView = initialAppState.data.latestWeekDoc ?? this.generateEmptyWeek(thisWeekStartDate)
-
-    // TODO: When different view modes are implemented, make sure none of the data properties can be undefined
-    this.weekInView.statuses = this.weekInView.statuses ?? {}
-
     this.habitsInView = this.refreshHabitsInView()
     makeAutoObservable(this)
   }
@@ -84,6 +80,7 @@ export default class WeekHandler {
   }
 
   public setTrackerStatus = async (habitId: string, weekday: WeekdayId, emojis: string[]) => {
+    if (!this.weekInView.statuses) this.weekInView.statuses = {}
     const existingStatus = this.weekInView.statuses[habitId]?.[weekday]
     const newStatus = emojis.length ? emojis : undefined
     if (isEqual(existingStatus, newStatus)) {
@@ -107,6 +104,8 @@ export default class WeekHandler {
   }
 
   private clearTrackerStatus = async (habitId: string, weekday: WeekdayId) => {
+    if (!this.weekInView.statuses) throw new Error('No statuses to clear')
+
     // 💻
     delete this.weekInView.statuses[habitId][weekday]
     const noTrackerStatusesRemaining = (Object.keys(this.weekInView.statuses[habitId]).length === 0)
@@ -130,8 +129,7 @@ export default class WeekHandler {
     }
 
     return {
-      startDate,
-      statuses: {}
+      startDate
     }
   }
 }

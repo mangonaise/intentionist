@@ -17,7 +17,7 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
   const [draft, setDraft] = useState<string[]>([])
 
   const { isLoadingWeek, weekInView: { statuses } } = container.resolve(WeekHandler)
-  const status = statuses[habitId]?.[weekday] ?? []
+  const status = statuses?.[habitId]?.[weekday] ?? []
   const visibleEmojis: string[] = isLoadingWeek ? [] : (isEditing ? draft : status)
 
   function toggleEditing() {

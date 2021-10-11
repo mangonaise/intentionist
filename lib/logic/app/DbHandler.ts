@@ -27,7 +27,7 @@ export default class DbHandler {
   }
 
   public getWeekDoc = async (weekStartDate: string) => {
-    return (await getDoc(doc(this.weeksCollectionRef, weekStartDate))).data() as Fetched<WeekDocumentData>
+    return ((await getDoc(doc(this.weeksCollectionRef, weekStartDate))).data() ?? null) as Fetched<WeekDocumentData>
   }
 
   public getLatestWeekDoc = async () => {
