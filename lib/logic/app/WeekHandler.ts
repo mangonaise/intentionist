@@ -33,7 +33,7 @@ export default class WeekHandler {
     this.dbHandler = dbHandler
     this.habitsHandler = habitsHandler
     this.latestWeekStartDate = initialAppState.data.latestWeekDoc?.startDate ?? thisWeekStartDate
-    this.weekInView = initialAppState.data.latestWeekDoc ?? this.generateEmptyWeek(thisWeekStartDate)
+    this.weekInView = initialAppState.data.latestWeekDoc ?? { startDate: thisWeekStartDate }
     this.habitsInView = this.refreshHabitsInView()
     makeAutoObservable(this)
   }
@@ -49,7 +49,11 @@ export default class WeekHandler {
     this.weekInView.startDate = startDate
     const weekDoc = await this.dbHandler.getWeekDoc(startDate)
     runInAction(() => {
-      this.weekInView = weekDoc ?? this.generateEmptyWeek(startDate)
+      if (new Date(startDate) > new Date(this.latestWeekStartDate)) {
+        this.latestWeekStartDate = startDate
+        this.dbHandler.updateWeekDoc(startDate, {})
+      }
+      this.weekInView = weekDoc ?? { startDate }
       this.condenseView =
         startDate !== this.latestWeekStartDate
         && this.habitsHandler.habits.filter((habit) => habit.status === 'active').length > 0
@@ -120,16 +124,5 @@ export default class WeekHandler {
         [habitId]: noTrackerStatusesRemaining ? deleteField() : { [weekday]: deleteField() }
       }
     })
-  }
-
-  private generateEmptyWeek = (startDate: string): WeekDocumentData => {
-    if (new Date(startDate) > new Date(this.latestWeekStartDate)) {
-      this.latestWeekStartDate = startDate
-      this.dbHandler.updateWeekDoc(startDate, {})
-    }
-
-    return {
-      startDate
-    }
   }
 }
