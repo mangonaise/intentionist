@@ -9,6 +9,7 @@ const Heading: StyledComponent<Props> = (props) => {
   return (
     <HeadingLevel
       sx={{
+        margin: 0,
         fontWeight: 'semibold',
         fontSize: '1.5rem'
       }}

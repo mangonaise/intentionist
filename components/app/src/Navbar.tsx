@@ -14,15 +14,14 @@ const Navbar = () => {
       sx={{
         maxWidth: 'max',
         margin: 'auto',
-        mt: '-0.5rem',
         opacity: 0.99999
       }}
     >
-      <Flex align="center" sx={{ mb: 2, py: [0, 0, 4] }}>
+      <Flex align="center" sx={{ mb: 4, py: [0, 0, 4] }}>
         <Icon
           icon={IntentionistIcon}
           sx={{
-            fontSize: ['2rem', '2rem', '2.5rem'],
+            fontSize: ['1.6rem', '2rem', '2.4rem'],
             ml: 2,
             mr: [4, 4, 6],
             color: accentColor.current,
