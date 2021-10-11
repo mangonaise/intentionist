@@ -1,5 +1,5 @@
 import { withApp } from '@/components/app'
-import { WeekDropdown, WeekTable, WeekViewModePicker } from '@/components/page/home'
+import { NewWeekPrompt, WeekDropdown, WeekTable, WeekViewModePicker } from '@/components/page/home'
 import { Box, Spacer } from '@/components/primitives'
 import Head from 'next/head'
 
@@ -8,9 +8,10 @@ const Home = () => {
     <Box sx={{ maxWidth: 'max', margin: 'auto' }}>
       <Head><title>Home</title></Head>
       <WeekViewModePicker />
-      <Spacer mb={4} />
+      <Spacer mb={3} />
+      <NewWeekPrompt />
       <WeekDropdown />
-      <Spacer mb={4} />
+      <Spacer mb={3} />
       <WeekTable />
     </Box>
   )

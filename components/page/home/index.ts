@@ -1,3 +1,4 @@
+export { default as NewWeekPrompt } from './src/NewWeekPrompt'
 export { default as ViewHabitsButton } from './src/ViewHabitsButton'
 export { default as WeekDropdown } from './src/WeekDropdown'
 export { default as WeekTable } from './src/WeekTable'

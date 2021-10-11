@@ -5,13 +5,14 @@ import { Dropdown } from '@/components/app'
 import { Box, Flex, Icon, IconButton, Spacer, Text } from '@/components/primitives'
 import { ArrowRightIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon } from '@/components/icons'
 import { addMonths, eachWeekOfInterval, endOfMonth, format, isFuture, isSameDay, isSameMonth, isSameWeek, startOfMonth, subWeeks } from 'date-fns'
-import { formatFirstDayOfThisWeek, formatYYYYMMDD, getFirstDayOfThisWeek } from '@/lib/logic/utils/dateUtilities'
+import { formatFirstDayOfThisWeek, formatYYYYMMDD } from '@/lib/logic/utils/dateUtilities'
+import NewWeekPromptHandler from '@/lib/logic/app/NewWeekPromptHandler'
 import WeekHandler from '@/lib/logic/app/WeekHandler'
 import accentColor from '@/lib/logic/utils/accentColor'
 
 const WeekDropdown = observer(() => {
   const { startDate } = container.resolve(WeekHandler).weekInView
-  const thisWeekStartDate = getFirstDayOfThisWeek()
+  const { thisWeekStartDate } = container.resolve(NewWeekPromptHandler)
 
   let title: string
   if (startDate === formatYYYYMMDD(thisWeekStartDate)) {

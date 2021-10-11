@@ -1,6 +1,6 @@
 import '@abraham/reflection'
 import { container as globalContainer, DependencyContainer } from 'tsyringe'
-import { collection, deleteDoc, doc, getDoc, getDocs, query } from '@firebase/firestore'
+import { collection, doc, getDoc, getDocs, query } from '@firebase/firestore'
 import { when } from 'mobx'
 import { db } from '@/lib/firebase'
 import { formatFirstDayOfThisWeek, formatYYYYMMDD, getFirstDayOfThisWeek } from '@/lib/logic/utils/dateUtilities'
@@ -13,6 +13,7 @@ import generateHabitId from '@/lib/logic/utils/generateHabitId'
 import signInDummyUser from '@/test-setup/signIn'
 import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
+import deleteWeeks from '../_setup/deleteWeeks'
 
 // 🔨
 
@@ -38,8 +39,7 @@ beforeAll(async () => {
 })
 
 afterEach(async () => {
-  const weekDocs = await getDocs(query(collection(db, 'users', authUser.uid, 'weeks')))
-  weekDocs.forEach(async (doc) => await deleteDoc(doc.ref))
+  await deleteWeeks()
   await deleteHabitsDoc()
 })
 

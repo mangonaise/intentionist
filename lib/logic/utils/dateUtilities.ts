@@ -1,3 +1,4 @@
+import addWeeks from 'date-fns/addWeeks'
 import format from 'date-fns/format'
 import startOfWeek from 'date-fns/startOfWeek'
 
@@ -5,6 +6,10 @@ const YYYYMMDD = 'yyyy-MM-dd'
 
 export function getFirstDayOfThisWeek() {
   return startOfWeek(new Date(), { weekStartsOn: 1 })
+}
+
+export function getFirstDayOfNextWeek() {
+  return startOfWeek(addWeeks(new Date(), 1), { weekStartsOn: 1 })
 }
 
 export function formatFirstDayOfThisWeek() {
