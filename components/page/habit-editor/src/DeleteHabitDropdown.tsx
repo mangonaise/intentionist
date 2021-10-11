@@ -34,7 +34,7 @@ const DeleteHabitDropdown = () => {
               bg: 'whiteAlpha.5',
               borderRadius: 'default',
               p: 4, mb: 4,
-              fontWeight: 300,
+              fontWeight: 'thin',
               textAlign: 'center',
               lineHeight: 1.5
             }}>
