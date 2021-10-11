@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import { container } from 'tsyringe'
-import { Box, Flex, Heading, Icon, IconButton, Spacer, Text } from '@/components/primitives'
+import { Box, Flex, Heading, Icon, IconButton, Text } from '@/components/primitives'
 import { BackIcon, IntentionistIcon } from '@/components/icons'
 import { handleSignOut } from '@/lib/logic/utils/authUtilities'
 import ProfileHandler from '@/lib/logic/app/ProfileHandler'
@@ -14,14 +14,16 @@ const Navbar = () => {
       sx={{
         maxWidth: 'max',
         margin: 'auto',
+        mt: '-0.5rem',
         opacity: 0.99999
       }}
     >
-      <Flex align="center" sx={{ mb: 4, py: [0, 0, 4] }}>
+      <Flex align="center" sx={{ mb: 2, py: [0, 0, 4] }}>
         <Icon
           icon={IntentionistIcon}
           sx={{
-            fontSize: ['2rem', '2.5rem', '2.5rem'],
+            fontSize: ['2rem', '2rem', '2.5rem'],
+            ml: 2,
             mr: [4, 4, 6],
             color: accentColor.current,
             transition: 'color 500ms',
