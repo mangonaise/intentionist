@@ -61,6 +61,13 @@ describe('initialization', () => {
     expect(weekHandler.weekInView.startDate).toEqual(newerWeek)
   })
 
+  test('if initializing with a week document that is missing statuses*, the missing data will be set locally to empty object', async () => {
+    // TODO: * This will need to be updated when journal entries and time tracking are added 
+    await dbHandler.updateWeekDoc(formatFirstDayOfThisWeek(), {})
+    await initializeWeekHandler()
+    expect(weekHandler.weekInView.statuses).toEqual({})
+  })
+
   test('tracker statuses are correctly placed into week in view\'s local cache', async () => {
     await dbHandler.updateWeekDoc('2021-09-20', { statuses: dummyTrackerStatuses })
     await initializeWeekHandler()
@@ -259,7 +266,7 @@ describe('displaying correct habits', () => {
     expect(weekHandler.condenseView).toEqual(false)
     expect(weekHandler.showCondenseViewToggle).toEqual(false)
   })
-  
+
   test('when viewing previous weeks with no data, if condensed view is disabled, only active habits are shown', async () => {
     await weekHandler.viewWeek('2021-09-27')
     weekHandler.setCondensedView(false)

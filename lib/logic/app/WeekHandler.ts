@@ -34,13 +34,17 @@ export default class WeekHandler {
     this.habitsHandler = habitsHandler
     this.latestWeekStartDate = initialAppState.data.latestWeekDoc?.startDate ?? thisWeekStartDate
     this.weekInView = initialAppState.data.latestWeekDoc ?? this.generateEmptyWeek(thisWeekStartDate)
+
+    // TODO: When different view modes are implemented, make sure none of the data properties can be undefined
+    this.weekInView.statuses = this.weekInView.statuses ?? {}
+
     this.habitsInView = this.refreshHabitsInView()
     makeAutoObservable(this)
   }
 
   public setViewMode = (viewMode: WeekViewMode) => {
     this.viewMode = viewMode
-    // TODO: When different modes are implemented, test that correct habits are in view and that condense toggle visibility is correctly set
+    // TODO: When different view modes are implemented, test that correct habits are in view and that condense toggle visibility is correctly set
   }
 
   public viewWeek = async (startDate: string) => {
@@ -64,7 +68,7 @@ export default class WeekHandler {
   }
 
   public refreshHabitsInView = () => {
-    // TODO: When different modes are implemented, change viewData based on the current view mode
+    // TODO: When different view modes are implemented, change viewData based on the current view mode
     const viewData = this.weekInView.statuses ?? {}
     const habitsWithData = Object.keys(viewData)
     const habitHasData = (habit: Habit) => habitsWithData.includes(habit.id)
