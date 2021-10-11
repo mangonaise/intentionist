@@ -1,6 +1,7 @@
 import { SmartEmoji } from '@/components/app'
-import { Flex, Text } from '@/components/primitives'
+import { Flex, Link } from '@/components/primitives'
 import { Habit } from '@/lib/logic/app/HabitsHandler'
+import NextLink from 'next/link'
 
 const HabitCell = ({ habit }: { habit: Habit }) => {
   return (
@@ -15,18 +16,20 @@ const HabitCell = ({ habit }: { habit: Habit }) => {
       }}
     >
       <SmartEmoji nativeEmoji={habit.icon} nativeFontSize="1.25rem" twemojiSize={18} />
-      <Text
-        type="span"
-        sx={{
-          maxWidth: 'min(30vw, 50ch)',
-          marginLeft: 2,
-          paddingY: '2px',
-          paddingRight: ['0.6em', 3],
-          overflowWrap: 'break-word'
-        }}
-      >
-        {habit.name}
-      </Text>
+      <NextLink href={`/habits/${habit.id}?returnHome=true`} >
+        <Link
+          sx={{
+            width: '100%',
+            maxWidth: 'min(30vw, 50ch)',
+            marginLeft: 2,
+            paddingY: '2px',
+            paddingRight: ['0.6em', 3],
+            overflowWrap: 'break-word'
+          }}
+        >
+          {habit.name}
+        </Link>
+      </NextLink>
     </Flex>
   )
 }

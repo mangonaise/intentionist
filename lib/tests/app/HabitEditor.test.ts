@@ -96,6 +96,14 @@ describe('when habits have already been fetched', () => {
     expect(habitsHandler.habits).toEqual([{ ...dummyHabit, name: 'Updated name' }])
   })
 
+  test('on exit, return to app home page if query param returnHome is true', async () => {
+    await habitsHandler.setHabit(dummyHabit)
+    router.setQuery({ id: dummyHabit.id, returnHome: 'true' })
+    startHabitEditor()
+    habitEditor.exit()
+    expect(router.push).toHaveBeenCalledWith('/home')
+  })
+
   test('deleted habit is reflected in HabitsHandler', async () => {
     await habitsHandler.setHabit(dummyHabit)
     router.setQuery({ id: dummyHabit.id })

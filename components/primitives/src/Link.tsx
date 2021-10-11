@@ -11,7 +11,7 @@ const Link = forwardRef<HTMLAnchorElement, PropsWithChildren<LinkProps>>(functio
         color: 'inherit',
         textDecoration: 'none',
         '&:hover': {
-          textDecoration: 'underline 2px hsla(0, 0%, 100%, 0.2)'
+          textDecoration: 'underline 2px hsla(0, 0%, 100%, 0.3)'
         }
       }}
       ref={ref}
