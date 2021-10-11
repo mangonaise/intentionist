@@ -4,7 +4,7 @@ import { collection, deleteDoc, getDocs, query } from '@firebase/firestore'
 import { when } from 'mobx'
 import { db } from '@/lib/firebase'
 import { formatFirstDayOfThisWeek, formatYYYYMMDD, getFirstDayOfThisWeek } from '@/lib/logic/utils/dateUtilities'
-import { addWeeks } from 'date-fns'
+import { addWeeks, isMonday } from 'date-fns'
 import WeekHandler, { HabitTrackerStatuses } from '@/lib/logic/app/WeekHandler'
 import AuthUser from '@/lib/logic/app/AuthUser'
 import DbHandler from '@/lib/logic/app/DbHandler'
@@ -48,6 +48,7 @@ afterEach(async () => {
 describe('initialization', () => {
   test('if no weeks exist in database, set week in view to an empty week starting on this Monday', async () => {
     await initializeWeekHandler()
+    expect(isMonday(new Date(weekHandler.weekInView.startDate))).toEqual(true)
     expect(weekHandler.weekInView.startDate).toEqual(formatFirstDayOfThisWeek())
     expect(weekHandler.weekInView.statuses).toEqual({})
   })
@@ -72,7 +73,7 @@ describe('updating data', () => {
     await initializeWeekHandler()
   })
 
-  test('setting data on an empty week will automatically add the start date to the document', async () => {
+  test('setting any data on an empty week will automatically add the start date to the document', async () => {
     const weekStartDate = formatFirstDayOfThisWeek()
     await weekHandler.setTrackerStatus(generateHabitId(), 0, ['🌱'])
     const weekDoc = await dbHandler.getWeekDoc(weekStartDate)
@@ -140,11 +141,23 @@ describe('switching weeks', () => {
     await initializeWeekHandler()
   })
 
-  test('switching to a non-existent week will generate an empty week', async () => {
+  test('switching to a non-existent week in the past will generate an empty week locally but does not create a document in the database', async () => {
     await weekHandler.viewWeek('2021-09-27')
     const { startDate, statuses } = weekHandler.weekInView
     expect(startDate).toEqual('2021-09-27')
     expect(statuses).toEqual({})
+    expect(await dbHandler.getWeekDoc('2021-09-27')).toBeUndefined()
+  })
+
+  test('switching to the new latest week will generate an empty week locally and also create a document in the database', async () => {
+    const newWeekStartDate = formatYYYYMMDD(addWeeks(getFirstDayOfThisWeek(), 1))
+    await weekHandler.viewWeek(newWeekStartDate)
+    const { startDate, statuses } = weekHandler.weekInView
+    expect(startDate).toEqual(newWeekStartDate)
+    expect(statuses).toEqual({})
+    expect(await dbHandler.getWeekDoc(newWeekStartDate)).toEqual({
+      startDate: newWeekStartDate
+    })
   })
 
   test('switching to a week that exists in database will load that week data', async () => {

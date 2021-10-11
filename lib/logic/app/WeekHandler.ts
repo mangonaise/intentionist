@@ -122,6 +122,7 @@ export default class WeekHandler {
   private generateEmptyWeek = (startDate: string): WeekDocumentData => {
     if (new Date(startDate) > new Date(this.latestWeekStartDate)) {
       this.latestWeekStartDate = startDate
+      this.dbHandler.updateWeekDoc(startDate, {})
     }
 
     return {
