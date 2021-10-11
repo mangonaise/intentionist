@@ -7,19 +7,19 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
   const windowWidth = useWindowWidth()
   const [anchor, setAnchor] = useState<'none' | 'left' | 'right'>('none')
   const [xOffset, setXOffset] = useState(0)
-  const [top, setTop] = useState('auto')
+  const [bottom, setBottom] = useState('auto')
 
   useLayoutEffect(() => {
     if (!barRef.current || !barRef.current.parentElement) return
-    const cellLeftPos = barRef.current.parentElement.getBoundingClientRect().left || 0
-    const cellWidth = barRef.current.parentElement.offsetWidth || 0
+    const cellLeftPos = barRef.current.parentElement.getBoundingClientRect().left
+    const cellWidth = barRef.current.parentElement.offsetWidth
     const barWidth = barRef.current.offsetWidth
     const pagePadding = windowWidth > 600 ? 14 : 0
     const proposedXOffset = (cellWidth - barWidth) / 2
 
     if (above) {
-      const cellTop = barRef.current.parentElement.getBoundingClientRect().top || 0
-      setTop(`calc(${cellTop}px - 8px - 2.5rem)`)
+      const cellHeight = barRef.current.parentElement.offsetHeight
+      setBottom(`calc(${cellHeight}px)`)
     }
 
     if (cellLeftPos + proposedXOffset < pagePadding) {
@@ -30,7 +30,7 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
       setXOffset(proposedXOffset)
       setAnchor('none')
     }
-  }, [windowWidth, above])
+  }, [windowWidth, above, children])
 
   return (
     <Flex
@@ -38,11 +38,11 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
       ref={barRef}
       sx={{
         zIndex: 1,
-        position: 'fixed',
+        position: 'absolute',
         flexWrap: anchor === 'none' ? 'nowrap' : 'wrap',
         left: anchor === 'left' ? [0, 4] : 'auto',
         right: anchor === 'right' ? [0, 4] : 'auto',
-        top: top,
+        bottom: bottom,
         pl: '4px', pt: '4px',
         bg: 'rgba(24, 24, 24, 0.88)',
         borderRadius: 'default',
