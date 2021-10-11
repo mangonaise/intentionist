@@ -35,11 +35,11 @@ const withApp = (WrappedComponent: () => JSX.Element, accent?: AccentColor) => w
   if (!hasCompletedInitialFetches || !profileExists) return <LoadingScreen />
   return (
     <>
-      <FadeIn time={fade ? undefined : 0} delay={25}>
+      <FadeIn time={fade ? 500 : 0} delay={100}>
         <GradientBackground />
         <Navbar />
       </FadeIn>
-      <FadeIn delay={25}>
+      <FadeIn time={300} delay={25}>
         <WrappedComponent />
       </FadeIn>
     </>

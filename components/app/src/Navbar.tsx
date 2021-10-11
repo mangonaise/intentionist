@@ -25,7 +25,7 @@ const Navbar = () => {
             ml: 2,
             mr: [4, 4, 6],
             color: accentColor.current,
-            transition: 'color 500ms',
+            transition: 'color 400ms',
             transform: null
           }}
         />
