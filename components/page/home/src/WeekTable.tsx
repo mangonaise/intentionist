@@ -11,7 +11,7 @@ const WeekTable = () => {
 
   useLayoutEffect(() => {
     refreshHabitsInView()
-  }, [])
+  }, [refreshHabitsInView])
 
   return (
     <Table>
