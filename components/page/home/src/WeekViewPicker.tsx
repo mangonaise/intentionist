@@ -1,10 +1,11 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
-import { Flex, IconButton } from '@/components/primitives'
+import { Flex, IconButton, Text } from '@/components/primitives'
 import { CalendarIcon, JournalIcon, TimerIcon } from '@/components/icons'
 import WeekHandler, { WeekViewMode } from '@/lib/logic/app/WeekHandler'
 import accentColor from '@/lib/logic/utils/accentColor'
+import useMediaQuery from '@/lib/hooks/useMediaQuery'
 
 const buttonData: Array<{ view: WeekViewMode, text: string, icon: () => JSX.Element }> = [
   { view: 'tracker', text: 'Habit tracker', icon: CalendarIcon },
@@ -14,6 +15,8 @@ const buttonData: Array<{ view: WeekViewMode, text: string, icon: () => JSX.Elem
 
 const WeekViewModePicker = () => {
   const { viewMode, setViewMode } = container.resolve(WeekHandler)
+
+  const isSmallScreen = useMediaQuery('(max-width: 500px)', true, false)
 
   useEffect(() => {
     accentColor.set(viewMode)
@@ -36,7 +39,7 @@ const WeekViewModePicker = () => {
             }}
             key={data.view}
           >
-            {data.text}
+            {!isSmallScreen && data.text}
           </IconButton>
         )
       })}
