@@ -66,6 +66,7 @@ const EmojiMartWrapper = forwardRef<HTMLDivElement, BoxProps>(function EmojiMart
     <Box
       ref={ref}
       onKeyDown={props.onKeyDown}
+      className={props.className}
       sx={{
         position: 'absolute',
         zIndex: 1,
