@@ -7,7 +7,7 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
   const windowWidth = useWindowWidth()
   const [anchor, setAnchor] = useState<'none' | 'left' | 'right'>('none')
   const [xOffset, setXOffset] = useState(0)
-  const [bottom, setBottom] = useState('auto')
+  const [yOffset, setYOffset] = useState(0)
 
   useLayoutEffect(() => {
     if (!barRef.current || !barRef.current.parentElement) return
@@ -19,7 +19,7 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
 
     if (above) {
       const cellHeight = barRef.current.parentElement.offsetHeight
-      setBottom(`calc(${cellHeight}px)`)
+      setYOffset(cellHeight)
     }
 
     if (cellLeftPos + proposedXOffset < pagePadding) {
@@ -38,15 +38,14 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
       ref={barRef}
       sx={{
         zIndex: 1,
-        position: 'absolute',
+        position: 'fixed',
         flexWrap: anchor === 'none' ? 'nowrap' : 'wrap',
         left: anchor === 'left' ? [0, 4] : 'auto',
         right: anchor === 'right' ? [0, 4] : 'auto',
-        bottom: bottom,
         pl: '4px', pt: '4px',
         bg: 'rgba(24, 24, 24, 0.88)',
         borderRadius: 'default',
-        transform: `translateX(${anchor === 'none' ? xOffset : 0}px)`
+        transform: `translateX(${anchor === 'none' ? xOffset : 0}px) translateY(${above ? `calc(${-yOffset}px - 3rem - 2px)` : 0})`
       }}
     >
       {children}
