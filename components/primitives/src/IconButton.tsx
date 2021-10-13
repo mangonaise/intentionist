@@ -2,6 +2,7 @@ import { forwardRef, PropsWithChildren } from 'react'
 import exclude from '@/lib/logic/utils/exclude'
 import Button, { ButtonProps } from './Button'
 import Icon from './Icon'
+import Text from './Text'
 
 interface Props extends ButtonProps {
   icon: () => JSX.Element
@@ -31,7 +32,9 @@ const IconButton = forwardRef<HTMLButtonElement, PropsWithChildren<Props>>(funct
           transform: 'translateY(-0.04rem) scale(1.35)'
         }}
       />
-      {children}
+      <Text type="span" sx={{ height: '1rem', lineHeight: '1rem' }}>
+        {children}
+      </Text>
     </Button>
   )
 })

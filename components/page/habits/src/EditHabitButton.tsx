@@ -22,8 +22,8 @@ const EditHabitButton = ({ habit }: { habit: Habit }) => {
         }}
       >
         <Flex center justify="flex-start">
-          <Flex center sx={{ mr: 3, fontSize: '1.2rem' }}>
-            <SmartEmoji nativeEmoji={habit.icon} twemojiSize={22} />
+          <Flex center sx={{ mr: [3, 4], fontSize: '1.15rem', width: '1.15rem' }}>
+            <SmartEmoji nativeEmoji={habit.icon} twemojiSize={20} />
           </Flex>
           {habit.name}
           <Icon icon={PencilIcon} sx={{ ml: 'auto', pl: 2, fontSize: '1.1rem' }} />

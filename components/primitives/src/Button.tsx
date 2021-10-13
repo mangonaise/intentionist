@@ -15,12 +15,13 @@ const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProps>>(fun
       sx={{
         cursor: 'pointer',
         userSelect: 'none',
-        padding: '0.7rem 1rem',
+        padding: '0.75rem 1rem',
         border: 'none',
         color: 'inherit',
         fontSize: 'inherit',
         fontFamily: 'inherit',
         fontWeight: 450,
+        lineHeight: '1rem',
         borderRadius: 'default',
         backgroundColor: 'button',
         '&:hover': {

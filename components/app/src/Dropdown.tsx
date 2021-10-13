@@ -38,7 +38,7 @@ const Dropdown: StyledComponent<DropdownProps> = (props) => {
             icon={isOpen ? ExpandUpIcon : ExpandDownIcon}
             sx={{
               pl: title ? '0.8em' : 0,
-              transform: 'translateY(0.08em)'
+              transform: 'scale(1.1)'
             }}
           />
         </Button>
