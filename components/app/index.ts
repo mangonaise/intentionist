@@ -1,5 +1,6 @@
 export { default as BlurListener } from './src/BlurListener'
 export { default as Dropdown } from './src/Dropdown'
+export { default as EmojiButton } from './src/EmojiButton'
 export { default as EmojiPicker } from './src/EmojiPicker'
 export { default as GradientBackground } from './src/GradientBackground'
 export { default as LoadingScreen } from './src/LoadingScreen'
