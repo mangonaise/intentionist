@@ -17,7 +17,7 @@ const Navbar = () => {
         opacity: 0.99999
       }}
     >
-      <Flex align="center" sx={{ mb: 4, py: [0, 0, 4] }}>
+      <Flex align="center" sx={{ mb: 4, py: [0, 2, 4] }}>
         <Icon
           icon={IntentionistIcon}
           sx={{
