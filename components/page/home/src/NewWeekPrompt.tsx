@@ -38,7 +38,7 @@ const NewWeekPrompt = () => {
       <Seedling />
       <Flex column justify="center" sx={{ flexGrow: 1, ml: [0, 4], mt: [2, 0], textAlign: ['center', 'left'] }}>
         <Heading level={3} sx={{ fontSize: '1.4rem', mb: 1 }}>It's a new week</Heading>
-        <Text sx={{ fontWeight: 'thin', opacity: 0.6 }}>
+        <Text sx={{ fontWeight: 'light', opacity: 0.6 }}>
           You haven't started tracking the week beginning on <b>{format(thisWeekStartDate, 'EEEE, MMMM d')}</b>.
         </Text>
       </Flex>
