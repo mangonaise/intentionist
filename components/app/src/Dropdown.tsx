@@ -37,6 +37,7 @@ const Dropdown: StyledComponent<DropdownProps> = (props) => {
           <Icon
             icon={isOpen ? ExpandUpIcon : ExpandDownIcon}
             sx={{
+              marginLeft: 'auto',
               pl: title ? '0.8em' : 0,
               transform: 'scale(1.1)'
             }}
