@@ -14,7 +14,7 @@ const Navbar = () => {
       sx={{
         maxWidth: 'max',
         margin: 'auto',
-        opacity: 0.99999
+        isolation: 'isolate'
       }}
     >
       <Flex align="center" sx={{ mb: 4, py: [0, 2, 4] }}>
