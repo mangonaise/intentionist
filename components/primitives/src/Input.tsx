@@ -12,7 +12,11 @@ const Input: StyledComponent<ComponentPropsWithoutRef<'input'>> = (props) => (
       color: 'text',
       background: 'rgba(255, 255, 255, 0.02)',
       border: 'solid 2px rgba(255, 255, 255, 0.25)',
-      borderRadius: 'default'
+      borderRadius: 'default',
+      '&:focus': {
+        boxShadow: 'none',
+        borderColor: 'whiteAlpha.60'
+      }
     }}
     {...props}
   />

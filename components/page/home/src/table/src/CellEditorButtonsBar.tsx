@@ -45,7 +45,7 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
         pl: '4px', pt: '4px',
         bg: 'rgba(24, 24, 24, 0.88)',
         borderRadius: 'default',
-        transform: `translateX(${anchor === 'none' ? xOffset : 0}px) translateY(${above ? `calc(${-yOffset}px - 3rem - 2px)` : 0})`
+        transform: `translateX(${anchor === 'none' ? xOffset : 0}px) translateY(${above ? `calc(${-yOffset}px - 3rem - 1px)` : 0})`
       }}
     >
       {children}

@@ -23,7 +23,7 @@ const CondensedViewAlert = () => {
       }}
     >
       <Icon icon={UpLeftArrowIcon} sx={{ mx: 6, transform: 'scale(1.8)' }} />
-      <Text type="p" sx={{ color: accentColor.current, fontWeight: 'semibold', mt: 5, transition: 'color 250ms' }}>
+      <Text type="p" sx={{ color: accentColor.current, fontWeight: 'semibold', mt: 5 }}>
         Empty rows are currently hidden. Unhide them to make changes.
       </Text>
     </Flex>

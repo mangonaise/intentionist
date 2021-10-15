@@ -44,9 +44,16 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
     <Flex
       center
       sx={{
-        borderTop: 'solid 1px',
+        position: 'relative',
         borderLeft: 'solid 1px',
-        borderColor: 'grid'
+        borderColor: 'grid',
+        '::before': {
+          position: 'absolute',
+          content: '""',
+          inset: 0,
+          borderTop: 'solid 1px',
+          borderColor: 'grid'
+        }
       }}
       ref={cellRef}
     >
@@ -97,13 +104,12 @@ const CellButton: FC<CellButtonProps> = (props) => {
     <Button
       onClick={onClickCell}
       sx={{
-        '--highlight': '0 0 0 2px rgba(255, 255, 255, 0.35) inset',
+        '--highlight': '0 0 0 2px #747474 inset',
         padding: 0,
         size: '100%',
         borderRadius: 0,
         backgroundColor: isEditing ? 'whiteAlpha.8' : (isLoading ? 'transparent' : (hasStatus ? 'whiteAlpha.3' : 'transparent')),
         boxShadow: isEditing ? 'var(--highlight)' : 'none',
-        cursor: 'default',
         '&:hover': {
           backgroundColor: 'whiteAlpha.8',
           boxShadow: 'var(--highlight) !important'

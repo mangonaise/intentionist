@@ -3,11 +3,11 @@ import { observer } from 'mobx-react-lite'
 import { FC, Fragment, useLayoutEffect } from 'react'
 import { Grid } from '@/components/primitives'
 import { ViewHabitsButton } from '..'
-import { CondensedViewAlert, CondenseViewToggle, HabitCell, TrackerStatusCell, WeekdayRow } from './table'
-import WeekHandler, { WeekdayId } from '@/lib/logic/app/WeekHandler'
+import { CondensedViewAlert, CondenseViewToggle, HabitCell, TrackerStatusCell, JournalCell, WeekTableTitleRow } from './table'
+import WeekHandler, { WeekdayId, WeekViewMode } from '@/lib/logic/app/WeekHandler'
 
 const WeekTable = () => {
-  const { habitsInView, refreshHabitsInView } = container.resolve(WeekHandler)
+  const { habitsInView, viewMode, refreshHabitsInView } = container.resolve(WeekHandler)
 
   useLayoutEffect(() => {
     refreshHabitsInView()
@@ -16,17 +16,22 @@ const WeekTable = () => {
   return (
     <Table>
       <CondenseViewToggle />
-      <WeekdayRow />
+      <WeekTableTitleRow />
       {habitsInView.map((habit) => (
         <Fragment key={habit.id}>
           <HabitCell habit={habit} />
-          {Array.from({ length: 7 }).map((_, weekdayId) => (
-            <TrackerStatusCell
-              habitId={habit.id}
-              weekday={weekdayId as WeekdayId}
-              key={weekdayId}
-            />
-          ))}
+          {viewMode === 'tracker' ?
+            Array.from({ length: 7 }).map((_, weekdayId) => (
+              <TrackerStatusCell
+                habitId={habit.id}
+                weekday={weekdayId as WeekdayId}
+                key={weekdayId}
+              />
+            ))
+            : viewMode === 'journal' ? (
+              <JournalCell habitId={habit.id} />
+            ) : <div />
+          }
         </Fragment>
       ))}
       <CondensedViewAlert />
@@ -36,12 +41,17 @@ const WeekTable = () => {
 }
 
 const Table: FC = observer(({ children }) => {
-  const { isLoadingWeek } = container.resolve(WeekHandler)
+  const { viewMode, isLoadingWeek } = container.resolve(WeekHandler)
+  const templateColumnsMap: { [key in WeekViewMode]: string } = {
+    tracker: 'auto repeat(7, minmax(2.5ch, 1fr))',
+    journal: 'auto 1fr',
+    focus: 'auto 1fr'
+  }
 
   return (
     <Grid
       sx={{
-        gridTemplateColumns: 'auto repeat(7, minmax(2.5ch, 1fr))',
+        gridTemplateColumns: templateColumnsMap[viewMode],
         marginX: ['-1rem', 0],
         opacity: isLoadingWeek ? 0.5 : 1,
         pointerEvents: isLoadingWeek ? 'none' : 'auto',

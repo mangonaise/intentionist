@@ -38,7 +38,7 @@ const CondenseViewToggle = () => {
           <Flex center>
             <Icon
               icon={condenseView ? EyeHiddenIcon : EyeIcon}
-              sx={{ transform: 'scale(1.75)', '& svg': { transition: 'color 250ms' }}}
+              sx={{ transform: 'scale(1.75)', '& svg': { transition: 'color 150ms' }}}
             />
           </Flex>
         </Button>
