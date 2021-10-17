@@ -13,6 +13,7 @@ import exclude from '@/lib/logic/utils/exclude'
 let dbHandler: DbHandler, habitsHandler: HabitsHandler
 const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '🧪', status: 'active' }
 const dummyHabitB: Habit = { id: generateHabitId(), name: 'Build app', icon: '👨‍💻', status: 'active' }
+const dummyHabitC: Habit = { id: generateHabitId(), name: 'Fix bugs', icon: '🐛', status: 'active' }
 const getHabitsDoc = async () => await dbHandler.getUserDoc('data', 'habits')
 
 beforeAll(async () => {
@@ -53,6 +54,18 @@ describe('initialization', () => {
     expect(habitsHandler.habits).toEqual([dummyHabitB, dummyHabitA])
   })
 
+  test('if habit ids are missing from the fetched habit order, they are placed at the end of the local habits array', async () => {
+    await dbHandler.updateUserDoc('data/habits', {
+      habits: {
+        [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') },
+        [dummyHabitB.id]: { ...exclude(dummyHabitB, 'id') },
+        [dummyHabitC.id]: { ...exclude(dummyHabitC, 'id') }
+      },
+      order: [dummyHabitC.id, dummyHabitB.id]
+    })
+    habitsHandler = await initializeHabitsHandler()
+    expect(habitsHandler.habits).toEqual([dummyHabitC, dummyHabitB, dummyHabitA])
+  })
 })
 
 describe('behavior', () => {
@@ -103,7 +116,6 @@ describe('behavior', () => {
   })
 
   test('reordering habits updates the local cache and database correctly', async () => {
-    const dummyHabitC: Habit = { id: generateHabitId(), name: 'Reorder habits', icon: '🔁', status: 'active' }
     const a = await habitsHandler.setHabit(dummyHabitA)
     const b = await habitsHandler.setHabit(dummyHabitB)
     const c = await habitsHandler.setHabit(dummyHabitC)

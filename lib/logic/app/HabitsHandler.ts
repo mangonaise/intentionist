@@ -1,7 +1,7 @@
 import { arrayUnion } from '@firebase/firestore'
 import { makeAutoObservable } from 'mobx'
 import { Lifecycle, scoped } from 'tsyringe'
-import { InitialState } from './InitialFetchHandler'
+import { Fetched, InitialState } from './InitialFetchHandler'
 import isEqual from 'lodash/isEqual'
 import exclude from '../utils/exclude'
 import DbHandler, { HABITS } from './DbHandler'
@@ -26,15 +26,7 @@ export default class HabitsHandler {
   private dbHandler
 
   constructor(initialState: InitialState, dbHandler: DbHandler) {
-    const habitsDoc = initialState.data.habitsDoc
-    if (habitsDoc === null) {
-      this.habits = []
-    } else {
-      this.habits = habitsDoc.order.map(id => ({
-        id,
-        ...habitsDoc.habits[id]
-      }))
-    }
+    this.habits = this.processFetchedHabits(initialState.data.habitsDoc)
     this.dbHandler = dbHandler
     makeAutoObservable(this)
   }
@@ -94,5 +86,23 @@ export default class HabitsHandler {
     })
 
     return this.habits[this.habits.length - 1]
+  }
+
+  private processFetchedHabits = (habitsDoc: Fetched<HabitsDocumentData>): Habit[] => {
+    if (!habitsDoc) return []
+
+    const habitIds = Object.keys(habitsDoc.habits)
+    const order = habitsDoc.order
+
+    for (const habitId of habitIds) {
+      if (!order.includes(habitId)) {
+        order.push(habitId)
+      }
+    }
+
+    return order.map(id => ({
+      id,
+      ...habitsDoc.habits[id]
+    }))
   }
 }
