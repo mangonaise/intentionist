@@ -52,7 +52,7 @@ const Table: FC = observer(({ children }) => {
     <Grid
       sx={{
         gridTemplateColumns: templateColumnsMap[viewMode],
-        marginX: ['-1rem', 0],
+        marginX: ['-0.5rem', 0],
         opacity: isLoadingWeek ? 0.5 : 1,
         pointerEvents: isLoadingWeek ? 'none' : 'auto',
         transition: 'opacity 100ms'

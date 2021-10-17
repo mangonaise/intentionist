@@ -1,6 +1,7 @@
 @font-face {
   font-family: 'Inter';
   src: url('/fonts/Inter-var.woff2') format('woff2');
+  font-style: normal;
   font-weight: 1 999;
   font-display: swap;
 }
@@ -22,7 +23,7 @@
 html,
 body {
   height: 100%;
-  padding: 0.5rem;
+  padding: 0.25rem;
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, "Helvetica Neue", sans-serif;
   color: var(--text-color);

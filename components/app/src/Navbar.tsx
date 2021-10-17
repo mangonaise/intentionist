@@ -17,11 +17,11 @@ const Navbar = () => {
         isolation: 'isolate'
       }}
     >
-      <Flex align="center" sx={{ mb: 4, py: [0, 2, 4] }}>
+      <Flex align="center" sx={{ mb: 4, pt: [0, 1, 4], pb: [0, 0, 4] }}>
         <Icon
           icon={IntentionistIcon}
           sx={{
-            fontSize: ['1.6rem', '2rem', '2.4rem'],
+            fontSize: ['1.6rem', '1.8rem', '2.4rem'],
             ml: 2,
             mr: [4, 4, 6],
             color: accentColor.current,

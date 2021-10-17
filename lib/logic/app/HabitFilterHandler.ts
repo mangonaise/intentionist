@@ -11,10 +11,10 @@ export default class HabitFilterHandler {
   constructor(habitsHandler: HabitsHandler) {
     this.habitsHandler = habitsHandler
     this.filteredHabits = this.getFilteredHabits(this.filter)
-    makeAutoObservable(this) 
+    makeAutoObservable(this)
   }
 
-  public setFilter = (filter: HabitStatus) => { 
+  public setFilter = (filter: HabitStatus) => {
     this.filter = filter
     this.filteredHabits = this.getFilteredHabits(filter)
   }
