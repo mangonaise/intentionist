@@ -215,6 +215,14 @@ describe('behavior', () => {
     })
   })
 
+  test('creating a journal entry sets the startDate field in the corresponding week document', async () => {
+    router.setQuery({ id: 'new', habitId: dummyHabit.id })
+    startJournalEntryEditor()
+    await journalEntryEditor.finishEditing()
+    const weekDoc = await dbHandler.getWeekDoc(journalEntryEditor.entry!.weekStartDate)
+    expect(weekDoc?.startDate).toEqual(journalEntryEditor.entry!.weekStartDate)
+  })
+
   test('deleting an entry removes the corresponding journal entry document from the database', async () => {
     await dbHandler.updateJournalEntry(dummyJournalEntryA)
     router.setQuery({ id: dummyJournalEntryA.id })

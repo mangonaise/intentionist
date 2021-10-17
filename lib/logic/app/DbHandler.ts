@@ -60,6 +60,7 @@ export default class DbHandler {
     const batch = writeBatch(db)
     batch.set(this.userDocRef(JOURNAL, entry.id), entry, { merge: true })
     batch.set(this.userDocRef(WEEKS, entry.weekStartDate), {
+      startDate: entry.weekStartDate,
       journalEntries: { [entry.habitId]: arrayUnion(entry.id) },
       journalMetadata: { [entry.id]: { title: entry.title, icon: entry.icon } }
     }, { merge: true })
