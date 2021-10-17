@@ -102,6 +102,16 @@ describe('behavior', () => {
     expect(secondUpdate === firstUpdate).toBe(true)
   })
 
+  test('reordering habits updates the local cache and database correctly', async () => {
+    const dummyHabitC: Habit = { id: generateHabitId(), name: 'Reorder habits', icon: '🔁', status: 'active' }
+    const a = await habitsHandler.setHabit(dummyHabitA)
+    const b = await habitsHandler.setHabit(dummyHabitB)
+    const c = await habitsHandler.setHabit(dummyHabitC)
+    await habitsHandler.reorderHabits(a, c)
+    expect(habitsHandler.habits).toEqual([b, c, a])
+    expect((await getHabitsDoc())?.order).toEqual([b.id, c.id, a.id])
+  })
+
   test('deleting a habit removes it from local cache and database', async () => {
     await habitsHandler.setHabit(dummyHabitA)
     await habitsHandler.setHabit(dummyHabitB)

@@ -5,6 +5,7 @@ import { InitialState } from './InitialFetchHandler'
 import isEqual from 'lodash/isEqual'
 import exclude from '../utils/exclude'
 import DbHandler from './DbHandler'
+import arrayMove from '../utils/arrayMove'
 
 export type HabitsDocumentData = {
   habits: { [id: string]: HabitProperties },
@@ -68,6 +69,20 @@ export default class HabitsHandler {
     await this.dbHandler.updateUserDoc('data/habits', {
       habits: { [habitToDelete.id]: deleteField() },
       order: arrayRemove(habitToDelete.id)
+    })
+  }
+
+  public reorderHabits = async (habitToMove: Habit, habitToTakePositionOf: Habit) => {
+    const oldIndex = this.habits.indexOf(habitToMove)
+    const newIndex = this.habits.indexOf(habitToTakePositionOf)
+    if (oldIndex < 0 || newIndex < 0 || oldIndex === newIndex) return
+
+    // 💻
+    this.habits = arrayMove(this.habits, oldIndex, newIndex)
+
+    // ☁️
+    await this.dbHandler.updateUserDoc('data/habits', {
+      order: this.habits.map((habit) => habit.id)
     })
   }
 

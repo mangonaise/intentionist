@@ -23,6 +23,7 @@ const Flex = forwardRef<HTMLDivElement, PropsWithChildren<FlexProps>>(function F
       }}
       ref={ref}
       className={props.className}
+      style={props.style}
     >
       {props.children}
     </div>

@@ -22,4 +22,8 @@ export default class HabitFilterHandler {
   public getFilteredHabits = (filter: HabitStatus) => {
     return this.habitsHandler.habits.filter(habit => habit.status === filter)
   }
+
+  public refresh = () => {
+    this.filteredHabits = this.getFilteredHabits(this.filter)
+  }
 }
