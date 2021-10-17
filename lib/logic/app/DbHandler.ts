@@ -3,10 +3,11 @@ import type { WeekDocumentData } from './WeekHandler'
 import type { JournalEntryDocumentData } from './JournalEntryEditor'
 import { Lifecycle, scoped } from 'tsyringe'
 import { makeAutoObservable, runInAction } from 'mobx'
-import { collection, doc, getDoc, getDocs, query, setDoc, limit, orderBy, writeBatch, arrayUnion, arrayRemove, deleteField } from '@firebase/firestore'
+import { collection, doc, getDoc, getDocs, query, setDoc, limit, orderBy, writeBatch, arrayUnion, arrayRemove, deleteField, where, deleteDoc } from '@firebase/firestore'
 import { db } from '../../firebase'
 import AuthUser from './AuthUser'
 
+export const HABITS = 'data/habits'
 const WEEKS = 'weeks'
 const USERS = 'users'
 const JOURNAL = 'journal'
@@ -55,6 +56,7 @@ export default class DbHandler {
   }
 
   public updateJournalEntry = async (entry: JournalEntryDocumentData) => {
+    this.isWriteComplete = false
     const batch = writeBatch(db)
     batch.set(this.userDocRef(JOURNAL, entry.id), entry, { merge: true })
     batch.set(this.userDocRef(WEEKS, entry.weekStartDate), {
@@ -62,6 +64,7 @@ export default class DbHandler {
       journalMetadata: { [entry.id]: { title: entry.title, icon: entry.icon } }
     }, { merge: true })
     await batch.commit()
+    runInAction(() => this.isWriteComplete = true)
   }
 
   public deleteJournalEntry = async (entry: JournalEntryDocumentData) => {
@@ -76,11 +79,38 @@ export default class DbHandler {
     runInAction(() => this.isWriteComplete = true)
   }
 
+  public deleteHabit = async (habitId: string) => {
+    this.isWriteComplete = false
+    const deleteDataPromise = this.updateUserDoc(HABITS, {
+      habits: { [habitId]: deleteField() },
+      order: arrayRemove(habitId)
+    })
+    const deleteJournalEntriesPromise = this.deleteJournalEntriesWithHabitId(habitId)
+    await Promise.all([
+      deleteDataPromise,
+      deleteJournalEntriesPromise
+    ])
+    runInAction(() => this.isWriteComplete = true)
+  }
+
+  private deleteJournalEntriesWithHabitId = async (habitId: string) => {
+    const entryDocs = await getDocs(query(this.journalCollectionRef, where('habitId', '==', habitId)))
+    let deleteEntryPromises: Promise<void>[] = []
+    entryDocs.forEach((doc) => {
+      deleteEntryPromises.push(deleteDoc(doc.ref))
+    })
+    await Promise.all(deleteEntryPromises)
+  }
+
   private userDocRef = (...pathSegments: string[]) => {
     return doc(db, USERS, this.uid, ...pathSegments)
   }
 
   private get weeksCollectionRef() {
     return collection(db, USERS, this.uid, WEEKS)
+  }
+
+  private get journalCollectionRef() {
+    return collection(db, USERS, this.uid, JOURNAL)
   }
 }

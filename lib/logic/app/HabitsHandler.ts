@@ -1,10 +1,10 @@
-import { arrayUnion, arrayRemove, deleteField } from '@firebase/firestore'
+import { arrayUnion } from '@firebase/firestore'
 import { makeAutoObservable } from 'mobx'
 import { Lifecycle, scoped } from 'tsyringe'
 import { InitialState } from './InitialFetchHandler'
 import isEqual from 'lodash/isEqual'
 import exclude from '../utils/exclude'
-import DbHandler from './DbHandler'
+import DbHandler, { HABITS } from './DbHandler'
 import arrayMove from '../utils/arrayMove'
 
 export type HabitsDocumentData = {
@@ -51,7 +51,7 @@ export default class HabitsHandler {
     this.habits[index] = habitToSet
 
     // ☁️
-    await this.dbHandler.updateUserDoc('data/habits', {
+    await this.dbHandler.updateUserDoc(HABITS, {
       habits: { [habitToSet.id]: { ...exclude(habitToSet, 'id') } }
     })
 
@@ -66,10 +66,7 @@ export default class HabitsHandler {
     this.habits = this.habits.filter(habit => habit !== habitToDelete)
 
     // ☁️
-    await this.dbHandler.updateUserDoc('data/habits', {
-      habits: { [habitToDelete.id]: deleteField() },
-      order: arrayRemove(habitToDelete.id)
-    })
+    await this.dbHandler.deleteHabit(id)
   }
 
   public reorderHabits = async (habitToMove: Habit, habitToTakePositionOf: Habit) => {
@@ -81,7 +78,7 @@ export default class HabitsHandler {
     this.habits = arrayMove(this.habits, oldIndex, newIndex)
 
     // ☁️
-    await this.dbHandler.updateUserDoc('data/habits', {
+    await this.dbHandler.updateUserDoc(HABITS, {
       order: this.habits.map((habit) => habit.id)
     })
   }
@@ -91,7 +88,7 @@ export default class HabitsHandler {
     this.habits.push(newHabit)
 
     // ☁️
-    await this.dbHandler.updateUserDoc('data/habits', {
+    await this.dbHandler.updateUserDoc(HABITS, {
       habits: { [newHabit.id]: { ...exclude(newHabit, 'id') } },
       order: arrayUnion(newHabit.id)
     })

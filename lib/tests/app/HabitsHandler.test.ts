@@ -126,6 +126,17 @@ describe('behavior', () => {
       order: [dummyHabitB.id]
     })
   })
+
+  test('deleting a habit removes associated journal entries from database', async () => {
+    await habitsHandler.setHabit(dummyHabitA)
+    await dbHandler.updateUserDoc('journal/a1', { habitId: dummyHabitA.id })
+    await dbHandler.updateUserDoc('journal/a2', { habitId: dummyHabitA.id })
+    await dbHandler.updateUserDoc('journal/b1', { habitId: dummyHabitB.id })
+    await habitsHandler.deleteHabitById(dummyHabitA.id)
+    expect(await dbHandler.getJournalEntryDoc('a1')).toBeNull()
+    expect(await dbHandler.getJournalEntryDoc('a2')).toBeNull()
+    expect(await dbHandler.getJournalEntryDoc('b1')).not.toBeNull()
+  })
 })
 
 test('habits doc removed after tests', async () => {
