@@ -1,6 +1,7 @@
 import { withApp } from '@/components/app'
 import { NewWeekPrompt, WeekDropdown, WeekTable, WeekViewModePicker } from '@/components/page/home'
-import { Box, Spacer } from '@/components/primitives'
+import { Box, Flex, Spacer } from '@/components/primitives'
+import OpenFocusButton from '@/components/page/home/src/OpenFocusButton'
 import Head from 'next/head'
 
 const Home = () => {
@@ -10,7 +11,10 @@ const Home = () => {
       <WeekViewModePicker />
       <Spacer mb={3} />
       <NewWeekPrompt />
-      <WeekDropdown />
+      <Flex sx={{ flexWrap: ['wrap', 'nowrap'] }}>
+        <WeekDropdown />
+        <OpenFocusButton />
+      </Flex>
       <Spacer mb={3} />
       <WeekTable />
     </Box>
