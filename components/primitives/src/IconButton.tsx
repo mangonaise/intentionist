@@ -20,6 +20,7 @@ const IconButton = forwardRef<HTMLButtonElement, PropsWithChildren<Props>>(funct
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        flexDirection: right ? 'row-reverse' : 'row',
         paddingX: children ? undefined: '0.8rem'
       }}
       ref={ref}
