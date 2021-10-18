@@ -19,9 +19,6 @@ const HabitNameInput = () => {
         '&:not(:focus, :hover)': {
           borderColor: 'transparent',
           backgroundColor: 'transparent'
-        },
-        '&:focus': {
-          borderColor: 'transparent'
         }
       }}
     />
