@@ -24,7 +24,7 @@ const WeekDropdown = observer(() => {
   }
 
   return (
-    <Dropdown title={title} sx={{ width: 'fit-content' }}>
+    <Dropdown title={title} sx={{ width: ['100%', 'fit-content'] }}>
       <WeekSelectMenu />
     </Dropdown>
   )
