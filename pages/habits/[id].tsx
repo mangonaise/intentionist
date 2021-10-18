@@ -16,17 +16,17 @@ const HabitEditorPage = () => {
       <Head><title>{editor.isNewHabit ? 'Add habit' : 'Edit habit'}</title></Head>
       <Box sx={{ maxWidth: 'habits', margin: 'auto' }}>
         <HabitEditorNavSection />
-        <Spacer mb={[3, 4]} />
+        <Spacer mb={3} />
         <Flex>
           <HabitIconPicker />
           <Spacer mr={[2, 3]} />
           <HabitNameInput />
         </Flex>
-        <Spacer mb={[3, 4]} />
+        <Spacer mb={3} />
         {!editor.isNewHabit && <>
           <HabitStatusPicker />
-          <Spacer mb={[3, 4]} />
         </>}
+        <Spacer mb={[4, 8]} />
         <EmojiPaletteEditor />
       </Box>
     </HabitEditorContext.Provider>

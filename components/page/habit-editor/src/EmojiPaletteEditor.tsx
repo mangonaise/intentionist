@@ -8,11 +8,11 @@ import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifi
 import { CSS } from '@dnd-kit/utilities'
 import { EmojiButton } from '@/components/app'
 import { CloseIcon, DragHandleIcon, InfoIcon, PlusIcon } from '@/components/icons'
-import { Box, Flex, Heading, Icon, IconButton, Text } from '@/components/primitives'
+import { Box, Flex, Heading, IconButton } from '@/components/primitives'
 import { HabitEditorContext } from 'pages/habits/[id]'
+import { ThemeUIStyleObject } from '@theme-ui/css'
 import HabitEditor from '@/lib/logic/app/HabitEditor'
 import arrayMove from '@/lib/logic/utils/arrayMove'
-import { ThemeUIStyleObject } from '@theme-ui/css'
 
 const PaletteEditorContext = createContext<PaletteEditor>(null!)
 
@@ -34,13 +34,7 @@ const EmojiPaletteEditor = observer(() => {
 
 const EditorWrapper = observer(({ isVisible }: { isVisible: boolean }) => {
   return (
-    <Box
-      sx={{
-        mt: [4, 6],
-        opacity: isVisible ? 1 : 0,
-        transition: 'opacity 350ms 500ms'
-      }}
-    >
+    <Box sx={{ opacity: isVisible ? 1 : 0, transition: 'opacity 350ms 500ms' }}>
       <HeadingSection />
       <EmojiList />
     </Box>
@@ -51,7 +45,7 @@ const HeadingSection = () => {
   const { addEmoji } = useContext(PaletteEditorContext)
 
   return (
-    <Flex align="center" sx={{ mb: [3, 4], pb: [3, 4], borderBottom: 'solid 1.5px', borderColor: 'divider' }}>
+    <Flex align="center" sx={{ mb: 3, pb: [3, 4], borderBottom: 'solid 1.5px', borderColor: 'divider' }}>
       <IconButton icon={PlusIcon} onClick={addEmoji} sx={{ mr: 3, p: '0.7rem' }} />
       <Heading level={3} sx={{ fontSize: ['1.25rem', '1.5rem'], fontWeight: 'medium' }}>
         Quick palette

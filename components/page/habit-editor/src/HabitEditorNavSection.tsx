@@ -16,7 +16,7 @@ const HabitEditorNavSection = () => {
         sx={{
           color: 'whiteAlpha.70',
           alignSelf: 'center',
-          transform: editor.isNewHabit ? null : ['translateY(0.25rem)', 'translateY(0.4rem)']
+          transform: editor.isNewHabit ? null : ['translateY(0.25rem)', 'translateY(0.45rem)']
         }}
       >
         {editor.isNewHabit ? 'Adding new ' : 'Editing '}habit
