@@ -2,7 +2,7 @@ import { container } from 'tsyringe'
 import { createContext, useState } from 'react'
 import { withApp } from '@/components/app'
 import { Box, Flex, Spacer } from '@/components/primitives'
-import { HabitEditorNavSection, HabitIconPicker, HabitNameInput, HabitStatusPicker } from '@/components/page/habit-editor'
+import { EmojiPaletteEditor, HabitEditorNavSection, HabitIconPicker, HabitNameInput, HabitStatusPicker } from '@/components/page/habit-editor'
 import HabitEditor from '@/lib/logic/app/HabitEditor'
 import Head from 'next/head'
 
@@ -23,7 +23,11 @@ const HabitEditorPage = () => {
           <HabitNameInput />
         </Flex>
         <Spacer mb={[3, 4]} />
-        {!editor.isNewHabit && <HabitStatusPicker />}
+        {!editor.isNewHabit && <>
+          <HabitStatusPicker />
+          <Spacer mb={[3, 4]} />
+        </>}
+        <EmojiPaletteEditor />
       </Box>
     </HabitEditorContext.Provider>
   )

@@ -81,6 +81,7 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
         {isEditing && (
           <TrackerStatusEditor
             draft={draft}
+            habitId={habitId}
             onEditDraft={setDraft}
             onFinishEditing={finishEditing}
           />

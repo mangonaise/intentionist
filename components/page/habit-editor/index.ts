@@ -1,4 +1,5 @@
 export { default as DeleteHabitDropdown } from './src/DeleteHabitDropdown'
+export { default as EmojiPaletteEditor } from './src/EmojiPaletteEditor'
 export { default as HabitEditorNavSection } from './src/HabitEditorNavSection'
 export { default as HabitIconPicker } from './src/HabitIconPicker'
 export { default as HabitNameInput } from './src/HabitNameInput'

@@ -14,11 +14,11 @@ interface Props {
   label: string
 }
 
-const EmojiButton = ({ value, onChangeEmoji: onSelectEmoji, buttonSize, emojiFontSize, twemojiSize, label }: Props) => {
+const EmojiButton = ({ value, onChangeEmoji, buttonSize, emojiFontSize, twemojiSize, label }: Props) => {
   const [showPicker, setShowPicker] = useState(false)
 
   function handleSelectEmoji(emoji: BaseEmoji) {
-    onSelectEmoji(emoji.native)
+    onChangeEmoji(emoji.native)
     setShowPicker(false)
   }
 

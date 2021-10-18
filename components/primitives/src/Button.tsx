@@ -26,7 +26,7 @@ const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProps>>(fun
         backgroundColor: 'button',
         '&:hover': {
           backgroundColor: hoverEffect === 'default' ? 'buttonHighlight' : undefined,
-          opacity: hoverEffect === 'opacity' ? 0.9 : undefined
+          opacity: hoverEffect === 'opacity' ? 0.85 : undefined
         },
         '&:disabled': {
           opacity: 0.3,

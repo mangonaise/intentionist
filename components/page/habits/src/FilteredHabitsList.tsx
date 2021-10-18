@@ -94,30 +94,37 @@ const SortableHabitButton = ({ habit, isAnythingDragging }: { habit: Habit, isAn
         }}
         {...listeners} {...attributes}
       />
-      <NextLink href={`/habits/${habit.id}`} key={habit.id}>
-        <Button
-          hoverEffect={isAnythingDragging ? 'none' : 'default'}
-          sx={{
-            width: '100%', px: 3,
-            backgroundColor: 'transparent',
-            textAlign: 'left',
-            'svg': { opacity: 0.25, },
-            '&:hover svg': {
-              opacity: isAnythingDragging ? undefined : 1
-            }
-          }}
-        >
-          <Flex center justify="flex-start" sx={{ maxWidth: '100%', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
-            <Flex center sx={{ mr: [3, 4], fontSize: '1.15rem', width: '1.15rem' }}>
-              <SmartEmoji nativeEmoji={habit.icon} twemojiSize={20} />
-            </Flex>
-            {habit.name}
-            <Icon icon={PencilIcon} sx={{ ml: 'auto', pl: 2, fontSize: '1.1rem' }} />
-          </Flex>
-        </Button>
-      </NextLink>
+      <div sx={{ pointerEvents: isAnythingDragging ? 'none' : 'auto', width: '100%' }}>
+        <HabitLink habit={habit} />
+      </div>
     </Flex>
   )
 }
+
+const HabitLink = observer(({ habit }: { habit: Habit }) => {
+  return (
+    <NextLink href={`/habits/${habit.id}`}>
+      <Button
+        sx={{
+          width: '100%', px: 3,
+          backgroundColor: 'transparent',
+          textAlign: 'left',
+          'svg': { opacity: 0.25, },
+          '&:hover svg': {
+            opacity: 1
+          }
+        }}
+      >
+        <Flex center justify="flex-start" sx={{ maxWidth: '100%', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
+          <Flex center sx={{ mr: [3, 4], fontSize: '1.15rem', width: '1.15rem' }}>
+            <SmartEmoji nativeEmoji={habit.icon} twemojiSize={20} />
+          </Flex>
+          {habit.name}
+          <Icon icon={PencilIcon} sx={{ ml: 'auto', pl: 2, fontSize: '1.1rem' }} />
+        </Flex>
+      </Button>
+    </NextLink>
+  )
+})
 
 export default observer(FilteredHabitsList)

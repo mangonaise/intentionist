@@ -66,7 +66,8 @@ export default class HabitEditor {
       id: generateHabitId(),
       name: '',
       icon: '🙂',
-      status: 'active'
+      status: 'active',
+      palette: ['⭐', '👍', '🤏']
     } as Habit
   }
 }

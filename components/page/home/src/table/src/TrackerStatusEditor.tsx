@@ -1,19 +1,21 @@
+import { container } from 'tsyringe'
 import { EmojiPicker } from '@/components/app'
 import { BackspaceIcon, CheckIcon, SearchIcon } from '@/components/icons'
 import { Dispatch, SetStateAction, useState } from 'react'
 import CellEditorButton from './CellEditorButton'
 import CellEditorButtonsBar from './CellEditorButtonsBar'
-
-const palette = ['🌟', '👍', '🙂', '🆗', '🙁']
+import HabitsHandler from '@/lib/logic/app/HabitsHandler'
 
 interface TrackerStatusEditorProps {
   draft: string[],
+  habitId: string
   onEditDraft: Dispatch<SetStateAction<string[]>>,
   onFinishEditing: () => void
 }
 
-const TrackerStatusEditor = ({ draft, onEditDraft, onFinishEditing }: TrackerStatusEditorProps) => {
+const TrackerStatusEditor = ({ draft, habitId, onEditDraft, onFinishEditing }: TrackerStatusEditorProps) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const [palette] = useState(getHabitPalette(habitId))
 
   function addEmoji(emoji: string) {
     const newDraft = [...draft]
@@ -34,7 +36,7 @@ const TrackerStatusEditor = ({ draft, onEditDraft, onFinishEditing }: TrackerSta
         <CellEditorButton content={BackspaceIcon} action={backspace} disabled={!draft.length} />
         <CellEditorButton content={CheckIcon} action={onFinishEditing} />
       </CellEditorButtonsBar>
-      {!showEmojiPicker && (
+      {!showEmojiPicker && !!palette.length && (
         <CellEditorButtonsBar>
           {palette.map((emoji, index) => <CellEditorButton key={index} content={emoji} action={() => addEmoji(emoji)} />)}
         </CellEditorButtonsBar>
@@ -47,6 +49,12 @@ const TrackerStatusEditor = ({ draft, onEditDraft, onFinishEditing }: TrackerSta
       />
     </>
   )
+}
+
+function getHabitPalette(habitId: string) {
+  const allHabits = container.resolve(HabitsHandler).habits
+  const habit = allHabits.find((habit) => habit.id === habitId)
+  return habit?.palette ?? []
 }
 
 export default TrackerStatusEditor
