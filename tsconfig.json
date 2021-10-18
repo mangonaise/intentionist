@@ -21,7 +21,8 @@
       "@/components/*": ["components/*"],
       "@/lib/*": ["lib/*"],
       "@/logic/*": ["lib/logic/*"],
-      "@/test-setup/*": ["lib/tests/_setup/*"]
+      "@/test-setup/*": ["lib/tests/_setup/*"],
+      "@/public/*": ["public/*"]
     }
   },
   "include": [

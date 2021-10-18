@@ -7,12 +7,13 @@ import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalList
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
 import { EmojiButton } from '@/components/app'
-import { CloseIcon, DragHandleIcon, InfoIcon, PlusIcon } from '@/components/icons'
-import { Box, Flex, Heading, IconButton } from '@/components/primitives'
+import { CloseIcon, DragHandleIcon, PlusIcon } from '@/components/icons'
+import { Box, Flex, Heading, IconButton, Spacer } from '@/components/primitives'
 import { HabitEditorContext } from 'pages/habits/[id]'
 import { ThemeUIStyleObject } from '@theme-ui/css'
 import HabitEditor from '@/lib/logic/app/HabitEditor'
 import arrayMove from '@/lib/logic/utils/arrayMove'
+import EmojiPaletteInfo from './EmojiPaletteInfo'
 
 const PaletteEditorContext = createContext<PaletteEditor>(null!)
 
@@ -50,7 +51,8 @@ const HeadingSection = () => {
       <Heading level={3} sx={{ fontSize: ['1.25rem', '1.5rem'], fontWeight: 'medium' }}>
         Quick palette
       </Heading>
-      <IconButton disabled icon={InfoIcon} sx={{ ml: 'auto', p: '0.7rem', bg: 'transparent' }} />
+      <Spacer ml="auto" />
+      <EmojiPaletteInfo />
     </Flex>
   )
 }

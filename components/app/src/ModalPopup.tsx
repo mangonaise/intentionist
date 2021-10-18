@@ -22,7 +22,16 @@ const ModalPopup = ({ isOpen, closeModal, children }: Props) => {
             borderRadius: 'default',
             boxShadow: 'none',
             padding: 0,
-            marginBottom: ['15vh', '50vh']
+            top: '10%',
+            transform: 'scale(0.99)',
+            '@keyframes in': {
+              '0%': { opacity: 0, transform: 'scale(0.925)' },
+              '100%': { opacity: 1, transform: 'scale(0.99)' }
+            },
+            '@keyframes out': {
+              '0%': { opacity: 1, transform: 'scale(0.99)' },
+              '100%': { opacity: 0, transform: 'scale(0.925)' }
+            }
           }
         }
       })}
@@ -31,10 +40,12 @@ const ModalPopup = ({ isOpen, closeModal, children }: Props) => {
         open={isOpen}
         onClose={closeModal}
         closeIcon={<Icon icon={CloseIcon} sx={{ color: 'whiteAlpha.40' }} />}
-        center
+        animationDuration={250}
         classNames={{
-          overlay: 'modal-overlay'
-        }}>
+          modalAnimationIn: 'in',
+          modalAnimationOut: 'out'
+        }}
+      >
         {children}
       </Modal>
     </>
