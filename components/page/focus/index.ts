@@ -1,3 +1,5 @@
 export { default as FocusTimer } from './src/FocusTimer'
-export { default as TimerAdjustButtons } from './src/TimerAdjustButtons'
+export { default as TimerControls } from './src/TimerControls'
+export { default as TimerDurationButtons } from './src/TimerDurationButtons'
 export { default as TimerProgress } from './src/TimerProgress'
+export { default as TimerStatusText } from './src/TimerProgress'

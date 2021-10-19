@@ -1,4 +1,4 @@
-import { ActiveIcon, ArchiveIcon, PauseIconOutline } from '@/components/icons'
+import { ActiveIcon, ArchiveIcon, PauseOutlineIcon } from '@/components/icons'
 import { Flex, IconButton, Spacer } from '@/components/primitives'
 import { HabitStatus } from '@/lib/logic/app/HabitsHandler'
 import { observer } from 'mobx-react-lite'
@@ -7,7 +7,7 @@ import { useContext } from 'react'
 
 const buttonData: Array<{ status: HabitStatus, text: string, icon: () => JSX.Element }> = [
   { status: 'active', text: 'Active', icon: ActiveIcon },
-  { status: 'suspended', text: 'Suspended', icon: PauseIconOutline },
+  { status: 'suspended', text: 'Suspended', icon: PauseOutlineIcon },
   { status: 'archived', text: 'Archived', icon: ArchiveIcon }
 ]
 
