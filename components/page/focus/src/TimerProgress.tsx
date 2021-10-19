@@ -32,18 +32,7 @@ const TimerProgress = () => {
 }
 
 const ProgressCircle = observer(() => {
-  const { progress, duration } = useContext(FocusTimerContext)
-
-  const timeRemaining = duration - progress
-  const hours = Math.floor(timeRemaining / 3600)
-  const minutes = Math.floor(timeRemaining / 60) % 60
-  const seconds = timeRemaining % 60
-
-  const segments = [minutes, seconds]
-    .map((value) => value < 10 ? '0' + value : value)
-  if (hours) segments.unshift(hours)
-
-  const formattedTime = segments.join(':')
+  const { progress, duration, status } = useContext(FocusTimerContext)
 
   return (
     <ProgressBar
@@ -60,16 +49,38 @@ const ProgressCircle = observer(() => {
       pointerStrokeColor="var(--pointer-stroke-color)"
     >
       <Flex column align="center" sx={{ position: 'absolute' }}>
-        <Text
-          type="div"
-          sx={{ mb: 2, fontSize: ['2.75rem', '4rem'], fontWeight: 'semibold', fontVariantNumeric: 'tabular-nums' }}
-        >
-          {formattedTime}
-        </Text>
+        <ProgressText timeRemaining={duration - progress} isFinished={status === 'finished'} />
         <TimerControls />
       </Flex>
     </ProgressBar>
   )
 })
+
+const ProgressText = ({ timeRemaining, isFinished }: { timeRemaining: number, isFinished: boolean }) => {
+  const hours = Math.floor(timeRemaining / 3600)
+  const minutes = Math.floor(timeRemaining / 60) % 60
+  const seconds = timeRemaining % 60
+
+  const segments = [minutes, seconds]
+    .map((value) => value < 10 ? '0' + value : value)
+  if (hours) segments.unshift(hours)
+
+  const formattedTime = segments.join(':')
+
+  return (
+    <Text
+      type="div"
+      sx={{
+        marginBottom: 2,
+        fontSize: ['2.75rem', '4rem'],
+        fontWeight: 'semibold',
+        fontVariantNumeric: 'tabular-nums',
+        animation: isFinished ? 'fade-in infinite alternate 850ms ease-in-out' : null
+      }}
+    >
+      {formattedTime}
+    </Text>
+  )
+}
 
 export default TimerProgress
