@@ -9,6 +9,7 @@ const TimerProgress = () => {
       sx={{
         width: '100%',
         '.RCP': {
+          '--pointer-stroke-color': ['var(--background-color)', '#1f1f1f'],
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -31,7 +32,8 @@ const TimerProgress = () => {
         trackStrokeWidth={6}
         pointerFillColor="var(--focus-accent-color)"
         pointerRadius={7}
-        pointerStrokeWidth={0}
+        pointerStrokeWidth={3}
+        pointerStrokeColor="var(--pointer-stroke-color)"
       >
         <Flex column align="center" sx={{ position: 'absolute' }}>
           <Text
