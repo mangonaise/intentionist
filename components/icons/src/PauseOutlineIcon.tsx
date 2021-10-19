@@ -1,4 +1,4 @@
-const PauseIconOutline = () => {
+const PauseOutlineIcon = () => {
   return (
     <>
       <rect
@@ -25,4 +25,4 @@ const PauseIconOutline = () => {
   )
 }
 
-export default PauseIconOutline
+export default PauseOutlineIcon

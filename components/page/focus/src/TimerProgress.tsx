@@ -1,5 +1,8 @@
-import { PlayIcon } from '@/components/icons'
-import { Flex, IconButton, Text } from '@/components/primitives'
+import { observer } from 'mobx-react-lite'
+import { useContext } from 'react'
+import { Flex, Text } from '@/components/primitives'
+import { FocusTimerContext } from 'pages/focus'
+import TimerControls from './TimerControls'
 import ProgressBar from 'react-customizable-progressbar'
 
 const TimerProgress = () => {
@@ -23,40 +26,50 @@ const TimerProgress = () => {
         }
       }}
     >
-      <ProgressBar
-        progress={0}
-        radius={100}
-        strokeColor="var(--focus-accent-color)"
-        strokeWidth={6}
-        trackStrokeColor="var(--focus-timer-track-color)"
-        trackStrokeWidth={6}
-        pointerFillColor="var(--focus-accent-color)"
-        pointerRadius={7}
-        pointerStrokeWidth={3}
-        pointerStrokeColor="var(--pointer-stroke-color)"
-      >
-        <Flex column align="center" sx={{ position: 'absolute' }}>
-          <Text
-            type="div"
-            sx={{ fontSize: ['3rem', '4rem'], fontWeight: 'semibold', mb: 2 }}
-          >
-            25:00
-          </Text>
-          <IconButton
-            icon={PlayIcon}
-            hoverEffect="opacity"
-            sx={{
-              size: ['3.5rem', '4rem'],
-              borderRadius: '50%',
-              backgroundColor: 'text',
-              color: 'bg',
-              fontSize: '1.75rem'
-            }}
-          />
-        </Flex>
-      </ProgressBar>
+      <ProgressCircle />
     </Flex>
   )
 }
+
+const ProgressCircle = observer(() => {
+  const { progress, duration } = useContext(FocusTimerContext)
+
+  const timeRemaining = duration - progress
+  const hours = Math.floor(timeRemaining / 3600)
+  const minutes = Math.floor(timeRemaining / 60) % 60
+  const seconds = timeRemaining % 60
+
+  const segments = [minutes, seconds]
+    .map((value) => value < 10 ? '0' + value : value)
+  if (hours) segments.unshift(hours)
+
+  const formattedTime = segments.join(':')
+
+  return (
+    <ProgressBar
+      progress={progress / (duration || 1)}
+      steps={1}
+      radius={100}
+      strokeColor="var(--focus-accent-color)"
+      strokeWidth={6}
+      trackStrokeColor="var(--focus-timer-track-color)"
+      trackStrokeWidth={6}
+      pointerFillColor="var(--focus-accent-color)"
+      pointerRadius={7}
+      pointerStrokeWidth={3}
+      pointerStrokeColor="var(--pointer-stroke-color)"
+    >
+      <Flex column align="center" sx={{ position: 'absolute' }}>
+        <Text
+          type="div"
+          sx={{ mb: 2, fontSize: ['2.75rem', '4rem'], fontWeight: 'semibold', fontVariantNumeric: 'tabular-nums' }}
+        >
+          {formattedTime}
+        </Text>
+        <TimerControls />
+      </Flex>
+    </ProgressBar>
+  )
+})
 
 export default TimerProgress
