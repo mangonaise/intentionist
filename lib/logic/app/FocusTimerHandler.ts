@@ -30,7 +30,7 @@ export default class FocusTimerHandler {
   public getTimeSpentThisWeek = (weekday: WeekdayId) => {
     if (!this.selectedHabit) return 0
     if (this.weekHandler.weekInView.startDate === formatFirstDayOfThisWeek()) {
-      return this.weekHandler.weekInView?.times?.[this.selectedHabit.id][weekday] ?? 0
+      return this.weekHandler.weekInView?.times?.[this.selectedHabit.id]?.[weekday] ?? 0
     }
     return 0
   }
