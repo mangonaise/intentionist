@@ -5,7 +5,7 @@ import formatSeconds from '@/lib/logic/utils/formatSeconds'
 
 const FocusedTimeRow = ({ habitId }: { habitId: string }) => {
   return (
-    <Flex center sx={{ borderTop: 'solid 1px', borderLeft: 'solid 1px', borderColor: 'grid' }}>
+    <Flex center sx={{ borderTop: 'solid 1px', borderColor: 'grid' }}>
       {Array.from({ length: 7 }).map((_, weekdayId) => (
         <TimeCell habitId={habitId} weekday={weekdayId as WeekdayId} key={weekdayId} />
       ))}
