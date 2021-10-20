@@ -8,7 +8,7 @@ import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@/components/icons'
 import WeekHandler, { JournalEntryMetadata } from '@/lib/logic/app/WeekHandler'
 import NextLink from 'next/link'
 
-const JournalCell = ({ habitId }: { habitId: string }) => {
+const JournalRow = ({ habitId }: { habitId: string }) => {
   const { isLoadingWeek, getJournalEntryDataForHabit } = container.resolve(WeekHandler)
   const cellEntriesData = isLoadingWeek ? [] : getJournalEntryDataForHabit(habitId)
 
@@ -155,4 +155,4 @@ const AddEntryButton = ({ habitId }: { habitId: string }) => {
   )
 }
 
-export default observer(JournalCell)
+export default observer(JournalRow)

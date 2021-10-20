@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { FC, Fragment, useLayoutEffect } from 'react'
 import { Grid } from '@/components/primitives'
 import { ViewHabitsButton } from '..'
-import { CondensedViewAlert, CondenseViewToggle, HabitCell, TrackerStatusCell, JournalCell, WeekTableTitleRow } from './table'
+import { CondensedViewAlert, CondenseViewToggle, FocusedTimeRow, HabitCell, TrackerStatusCell, JournalRow, WeekTableTitleRow } from './table'
 import WeekHandler, { WeekdayId, WeekViewMode } from '@/lib/logic/app/WeekHandler'
 
 const WeekTable = () => {
@@ -13,6 +13,23 @@ const WeekTable = () => {
     refreshHabitsInView()
   }, [refreshHabitsInView])
 
+  function getRowContent(habitId: string) {
+    switch (viewMode) {
+      case 'tracker':
+        return Array.from({ length: 7 }).map((_, weekdayId) => (
+          <TrackerStatusCell
+            habitId={habitId}
+            weekday={weekdayId as WeekdayId}
+            key={weekdayId}
+          />
+        ))
+      case 'journal':
+        return <JournalRow habitId={habitId} />
+      case 'focus':
+        return <FocusedTimeRow habitId={habitId} />
+    }
+  }
+
   return (
     <Table>
       <CondenseViewToggle />
@@ -20,18 +37,7 @@ const WeekTable = () => {
       {habitsInView.map((habit) => (
         <Fragment key={habit.id}>
           <HabitCell habit={habit} />
-          {viewMode === 'tracker' ?
-            Array.from({ length: 7 }).map((_, weekdayId) => (
-              <TrackerStatusCell
-                habitId={habit.id}
-                weekday={weekdayId as WeekdayId}
-                key={weekdayId}
-              />
-            ))
-            : viewMode === 'journal' ? (
-              <JournalCell habitId={habit.id} />
-            ) : <div />
-          }
+          {getRowContent(habit.id)}
         </Fragment>
       ))}
       <CondensedViewAlert />
