@@ -1,17 +1,22 @@
 import { Lifecycle, scoped } from 'tsyringe'
-import { makeAutoObservable, runInAction, toJS } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import { deleteField } from '@firebase/firestore'
 import { InitialState } from './InitialFetchHandler'
 import { formatFirstDayOfThisWeek } from '../utils/dateUtilities'
-import isEqual from 'lodash/isEqual'
-import DbHandler from './DbHandler'
 import HabitsHandler, { Habit } from './HabitsHandler'
+import DbHandler from './DbHandler'
+import isEqual from 'lodash/isEqual'
 
 export type WeekDocumentData = {
   startDate: string,
   statuses?: {
     [habitId: string]: {
       [day in WeekdayId]?: string[]
+    }
+  },
+  times?: {
+    [habitId: string]: {
+      [day in WeekdayId]?: number
     }
   }
   journalEntries?: {
@@ -82,18 +87,7 @@ export default class WeekHandler {
   }
 
   public refreshHabitsInView = () => {
-    const viewDataMap: { [key in WeekViewMode]: { [key: string]: any } } = {
-      tracker: this.weekInView.statuses ?? {},
-      journal: this.weekInView.journalEntries ?? {},
-      focus: {}
-    }
-    const habitsWithData = Object.keys(viewDataMap[this.viewMode])
-      .filter((habitId) => {
-        const habitData = viewDataMap[this.viewMode][habitId]
-        return habitData.length === undefined || habitData.length > 0
-      })
-
-    const habitHasData = (habit: Habit) => habitsWithData.includes(habit.id)
+    const habitHasData = (habit: Habit) => this.getHabitIdsWithData().includes(habit.id)
     this.habitsInView = this.habitsHandler.habits
       .filter((habit) => this.condenseView ? habitHasData(habit) : (habit.status === 'active' || habitHasData(habit)))
 
@@ -180,5 +174,24 @@ export default class WeekHandler {
       data.push({ entryId, metadata })
     }
     return data
+  }
+
+  public setFocusedTimeLocally = (habitId: string, day: WeekdayId, time: number) => {
+    this.weekInView.times = this.weekInView.times ?? {}
+    this.weekInView.times[habitId] = this.weekInView.times[habitId] ?? {}
+    this.weekInView.times[habitId][day] = time
+  }
+
+  private getHabitIdsWithData = () => {
+    const viewDataMap: { [key in WeekViewMode]: { [key: string]: any } } = {
+      tracker: this.weekInView.statuses ?? {},
+      journal: this.weekInView.journalEntries ?? {},
+      focus: this.weekInView.times ?? {}
+    }
+    return Object.keys(viewDataMap[this.viewMode])
+      .filter((habitId) => {
+        const habitData = viewDataMap[this.viewMode][habitId]
+        return habitData.length === undefined || habitData.length > 0
+      })
   }
 }
