@@ -16,7 +16,7 @@ const TimerControls = () => {
 }
 
 const PlayPauseButton = observer(() => {
-  const { status, startTimer, pauseTimer, duration } = useContext(FocusTimerContext)
+  const { status, startTimer, pauseTimer, duration, activeHabits } = useContext(FocusTimerContext)
 
   if (status === 'finished') return null
 
@@ -34,7 +34,7 @@ const PlayPauseButton = observer(() => {
     <TimerControlButton
       onClick={handleClick}
       icon={icon}
-      disabled={!duration}
+      disabled={!duration || !activeHabits.length}
       sx={{ '& svg': { position: 'relative', left: icon === PlayIcon ? '5%' : null } }}
     />
   )

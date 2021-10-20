@@ -6,8 +6,8 @@ import { ExpandDownIcon, ExpandUpIcon } from '@/components/icons'
 import { StyledComponent } from '@/components/types/StyledComponent'
 
 interface DropdownProps {
-  title: string,
-  right?: number | 'auto' | Array<number | 'auto'>
+  title: string | JSX.Element,
+  right?: number | 'auto' | Array<number | 'auto'>,
 }
 
 const DropdownContext = createContext<DropdownContextValue>(null!)
@@ -31,7 +31,7 @@ const Dropdown: StyledComponent<DropdownProps> = (props) => {
       >
         <Button
           onClick={() => setIsOpen(!isOpen)}
-          sx={{ width: '100%', height: '100%', display: 'flex', textAlign: 'left', px: title ? undefined : 3 }}
+          sx={{ width: '100%', height: '100%', display: 'flex', textAlign: 'left', alignItems: 'center', px: title ? undefined : 3 }}
         >
           {title}
           <Icon

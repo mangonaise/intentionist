@@ -1,3 +1,5 @@
+export { default as TimerDailyTimeText } from './src/TimerDailyTimeText'
+export { default as FocusHabitDropdown } from './src/FocusHabitDropdown'
 export { default as FocusTimer } from './src/FocusTimer'
 export { default as TimerControls } from './src/TimerControls'
 export { default as TimerDurationButtons } from './src/TimerDurationButtons'
