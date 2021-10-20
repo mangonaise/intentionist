@@ -237,19 +237,43 @@ describe('updating local journal entry metadata', () => {
   })
 })
 
-describe('updating local focused times', () => {
+describe('updating focused times', () => {
   beforeEach(async () => {
     await initializeWeekHandler()
   })
 
-  test('setting focused time correctly updates the local cache', () => {
+  test('setting focused time updates the local cache and database correctly', async () => {
+    await weekHandler.viewWeek('2021-10-04')
     const habitId = generateHabitId()
-    weekHandler.setFocusedTimeLocally(habitId, 2, 5000)
-    weekHandler.setFocusedTimeLocally(habitId, 4, 10000)
+
+    await weekHandler.setFocusedTime(habitId, 2, 5000)
+    await weekHandler.setFocusedTime(habitId, 4, 10000)
+
     expect(weekHandler.weekInView.times?.[habitId]).toEqual({
       2: 5000,
       4: 10000
     })
+
+    const weekDoc = await dbHandler.getWeekDoc('2021-10-04')
+    expect(weekDoc?.times).toEqual({
+      [habitId]: {
+        2: 5000,
+        4: 10000
+      }
+    })
+  })
+
+  test('adding focused time correctly updates the local cache and database correctly', async () => {
+    await weekHandler.viewWeek('2021-10-04')
+    const habitId = generateHabitId()
+
+    await weekHandler.addFocusedTime(habitId, 3, 400)
+    await weekHandler.addFocusedTime(habitId, 3, 600)
+
+    expect(weekHandler.weekInView.times?.[habitId]).toEqual({ 3: 1000 })
+
+    const weekDoc = await dbHandler.getWeekDoc('2021-10-04')
+    expect(weekDoc?.times).toEqual({ [habitId]: { 3: 1000 } })
   })
 })
 
