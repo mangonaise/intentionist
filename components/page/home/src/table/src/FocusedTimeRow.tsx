@@ -24,7 +24,8 @@ const TimeCell = ({ habitId, weekday }: { habitId: string, weekday: WeekdayId })
         flex: 1,
         height: '100%',
         borderLeft: 'solid 1px',
-        borderColor: 'grid'
+        borderColor: 'grid',
+        backgroundColor: time ? 'whiteAlpha.3' : null
       }}
     >
       {!!time && formatSeconds(time)}
