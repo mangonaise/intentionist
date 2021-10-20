@@ -24,9 +24,7 @@ export default class NewWeekPromptHandler {
   public checkIsNewWeek = () => {
     this.thisWeekStartDate = getFirstDayOfThisWeek()
     const nextWeekStartDate = getFirstDayOfNextWeek()
-    if (new Date(this.weekHandler.latestWeekStartDate) < this.thisWeekStartDate) {
-      this.showPrompt = true
-    }
+    this.showPrompt = new Date(this.weekHandler.latestWeekStartDate) < this.thisWeekStartDate
 
     if (this.promptTimeout) clearTimeout(this.promptTimeout)
 
