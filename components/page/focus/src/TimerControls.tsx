@@ -2,7 +2,9 @@ import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { Flex, IconButton } from '@/components/primitives'
 import { PauseFillIcon, PlayIcon, StopIcon } from '@/components/icons'
+import { ButtonProps } from '@/components/primitives/src/Button'
 import { FocusTimerContext } from 'pages/focus'
+import exclude from '@/lib/logic/utils/exclude'
 
 const TimerControls = () => {
   return (
@@ -29,19 +31,11 @@ const PlayPauseButton = observer(() => {
   const icon = status === 'playing' ? PauseFillIcon : PlayIcon
 
   return (
-    <IconButton
-      icon={icon}
+    <TimerControlButton
       onClick={handleClick}
-      hoverEffect="opacity"
+      icon={icon}
       disabled={!duration}
-      sx={{
-        size: ['3.5rem', '4rem'],
-        borderRadius: '50%',
-        backgroundColor: 'text',
-        color: 'bg',
-        fontSize: '2rem',
-        '& svg': { position: 'relative', left: icon === PlayIcon ? '5%' : null }
-      }}
+      sx={{ '& svg': { position: 'relative', left: icon === PlayIcon ? '5%' : null } }}
     />
   )
 })
@@ -52,20 +46,30 @@ const StopButton = observer(() => {
   if (status === 'not started') return null
 
   return (
-    <IconButton
-      icon={StopIcon}
+    <TimerControlButton
       onClick={stopTimer}
-      hoverEffect="opacity"
-      sx={{
-        marginLeft: status === 'finished' ? 0 : [3, 4],
-        size: ['3.5rem', '4rem'],
-        borderRadius: '50%',
-        backgroundColor: 'text',
-        color: 'bg',
-        fontSize: '2rem'
-      }}
+      icon={StopIcon}
+      sx={{ marginLeft: status === 'finished' ? 0 : [3, 4] }}
     />
   )
 })
+
+interface TimerControlButtonProps extends ButtonProps { icon: () => JSX.Element }
+const TimerControlButton = (props: TimerControlButtonProps) => {
+  return (
+    <IconButton
+      icon={props.icon}
+      sx={{
+        size: ['3.5rem', '4rem'],
+        borderRadius: '50%',
+        color: 'bg',
+        backgroundColor: 'text',
+        '& svg': { transform: 'scale(1.8)' }
+      }}
+      hoverEffect="opacity"
+      {...exclude(props, 'icon')}
+    />
+  )
+}
 
 export default TimerControls
