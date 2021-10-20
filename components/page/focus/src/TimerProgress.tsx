@@ -4,6 +4,7 @@ import { Flex, Text } from '@/components/primitives'
 import { FocusTimerContext } from 'pages/focus'
 import TimerControls from './TimerControls'
 import ProgressBar from 'react-customizable-progressbar'
+import formatSeconds from '@/lib/logic/utils/formatSeconds'
 
 const TimerProgress = () => {
   return (
@@ -57,16 +58,6 @@ const ProgressCircle = observer(() => {
 })
 
 const ProgressText = ({ timeRemaining, isFinished }: { timeRemaining: number, isFinished: boolean }) => {
-  const hours = Math.floor(timeRemaining / 3600)
-  const minutes = Math.floor(timeRemaining / 60) % 60
-  const seconds = timeRemaining % 60
-
-  const segments = [minutes, seconds]
-    .map((value) => value < 10 ? '0' + value : value)
-  if (hours) segments.unshift(hours)
-
-  const formattedTime = segments.join(':')
-
   return (
     <Text
       type="div"
@@ -78,7 +69,7 @@ const ProgressText = ({ timeRemaining, isFinished }: { timeRemaining: number, is
         animation: isFinished ? 'fade-in infinite alternate 850ms ease-in-out' : null
       }}
     >
-      {formattedTime}
+      {formatSeconds(timeRemaining)}
     </Text>
   )
 }
