@@ -1,6 +1,6 @@
 import { Lifecycle, scoped } from 'tsyringe'
 import { makeAutoObservable, runInAction } from 'mobx'
-import { deleteField } from '@firebase/firestore'
+import { deleteField, increment } from '@firebase/firestore'
 import { InitialState } from './InitialFetchHandler'
 import { formatFirstDayOfThisWeek } from '../utils/dateUtilities'
 import HabitsHandler, { Habit } from './HabitsHandler'
@@ -176,10 +176,32 @@ export default class WeekHandler {
     return data
   }
 
-  public setFocusedTimeLocally = (habitId: string, day: WeekdayId, time: number) => {
+  public setFocusedTime = async (habitId: string, day: WeekdayId, time: number) => {
+    if (this.weekInView.times?.[habitId]?.[day] === time) return
+
+    // 💻
     this.weekInView.times = this.weekInView.times ?? {}
     this.weekInView.times[habitId] = this.weekInView.times[habitId] ?? {}
     this.weekInView.times[habitId][day] = time
+
+    // ☁️
+    await this.dbHandler.updateWeekDoc(this.weekInView.startDate, { times: this.weekInView.times })
+  }
+
+  public addFocusedTime = async (habitId: string, day: WeekdayId, time: number) => {
+    if (time === 0) return
+
+    // 💻
+    this.weekInView.times = this.weekInView.times ?? {}
+    this.weekInView.times[habitId] = this.weekInView.times[habitId] ?? {}
+    this.weekInView.times[habitId][day] = (this.weekInView.times[habitId][day] ?? 0) + time
+
+    // ☁️
+    await this.dbHandler.updateWeekDoc(this.weekInView.startDate, {
+      times: {
+        [habitId]: { [day]: increment(time) }
+      }
+    })
   }
 
   private getHabitIdsWithData = () => {
