@@ -8,9 +8,11 @@ import WeekHandler from '@/lib/logic/app/WeekHandler'
 import generateHabitId from '@/lib/logic/utils/generateHabitId'
 import getCurrentWeekdayId from '@/lib/logic/utils/getCurrentWeekdayId'
 import DbHandler from '@/lib/logic/app/DbHandler'
+import MockDate from 'mockdate'
 import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
 import signInDummyUser from '@/test-setup/signIn'
 import deleteWeeks from '@/test-setup/deleteWeeks'
+import addWeeks from 'date-fns/addWeeks'
 
 // 🔨
 
@@ -134,6 +136,7 @@ describe('behavior', () => {
     })
 
     afterEach(async () => {
+      jest.useRealTimers()
       weekHandler.weekInView.times = {}
       await deleteWeeks()
     })
@@ -184,6 +187,26 @@ describe('behavior', () => {
       expect(weekHandler.weekInView.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(3000)
       const weekDoc = await container.resolve(DbHandler).getWeekDoc(formatFirstDayOfThisWeek())
       expect(weekDoc?.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(3000)
+    })
+
+    test('after progress is saved, reports the correct amount of time spent on a habit on the current day', () => {
+      timerHandler.selectHabit(dummyHabit)
+      timerHandler.setDuration(300)
+      timerHandler.startTimer()
+      jest.runAllTimers()
+      expect(timerHandler.getTimeSpentThisWeek(getCurrentWeekdayId())).toEqual(300)
+    })
+
+    test('if the present week is ahead of the latest week with data, report that no time was spent, regardless of data in the latest week', async () => {
+      timerHandler.selectHabit(dummyHabit)
+      timerHandler.setDuration(2500)
+      timerHandler.startTimer()
+      jest.runAllTimers()
+      jest.useRealTimers()
+
+      expect(timerHandler.getTimeSpentThisWeek(getCurrentWeekdayId())).toEqual(2500)
+      MockDate.set(addWeeks(new Date(), 1))
+      expect(timerHandler.getTimeSpentThisWeek(getCurrentWeekdayId())).toEqual(0)
     })
   })
 })

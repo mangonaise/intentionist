@@ -6,9 +6,9 @@ import formatSeconds from '@/lib/logic/utils/formatSeconds'
 import useCurrentDay from '@/lib/hooks/useCurrentDay'
 
 const TimerDailyTimeText = () => {
-  const { getTimeAtWeekday } = useContext(FocusTimerContext)
+  const { getTimeSpentThisWeek } = useContext(FocusTimerContext)
   const { weekdayId, weekdayName } = useCurrentDay()
-  const time = getTimeAtWeekday(weekdayId)
+  const time = getTimeSpentThisWeek(weekdayId)
 
   return (
     <Text type="span" sx={{ fontWeight: 'light' }}>
