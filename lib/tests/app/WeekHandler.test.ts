@@ -106,6 +106,22 @@ describe('initialization', () => {
       [dummyEntryDataB.entryId]: dummyEntryDataB.metadata
     })
   })
+
+  test(`focused times are correctly placed into week in view's local cache`, async () => {
+    const habitIdA = generateHabitId()
+    const habitIdB = generateHabitId()
+    await dbHandler.updateWeekDoc('2021-10-18', {
+      times: {
+        [habitIdA]: { 0: 1500, 3: 6000 },
+        [habitIdB]: { 1: 600, 6: 4500 }
+      }
+    })
+    await initializeWeekHandler()
+    expect(weekHandler.weekInView.times).toEqual({
+      [habitIdA]: { 0: 1500, 3: 6000 },
+      [habitIdB]: { 1: 600, 6: 4500 }
+    })
+  })
 })
 
 describe('updating tracker statuses', () => {
@@ -217,6 +233,22 @@ describe('updating local journal entry metadata', () => {
     })
     expect(weekHandler.weekInView.journalMetadata).toEqual({
       [dummyEntryDataB.entryId]: dummyEntryDataB.metadata
+    })
+  })
+})
+
+describe('updating local focused times', () => {
+  beforeEach(async () => {
+    await initializeWeekHandler()
+  })
+
+  test('setting focused time correctly updates the local cache', () => {
+    const habitId = generateHabitId()
+    weekHandler.setFocusedTimeLocally(habitId, 2, 5000)
+    weekHandler.setFocusedTimeLocally(habitId, 4, 10000)
+    expect(weekHandler.weekInView.times?.[habitId]).toEqual({
+      2: 5000,
+      4: 10000
     })
   })
 })
