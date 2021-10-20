@@ -31,7 +31,7 @@ const EditorNavSection = () => {
       >
         Done
       </IconButton>
-      <Dropdown title="" right={0} sx={{ ml: 'auto', right: 0 }}>
+      <Dropdown title="" right={0} sx={{ ml: 'auto' }}>
         <Dropdown.Item itemAction={editor.deleteEntry}>Delete entry</Dropdown.Item>
       </Dropdown>
     </Flex>
