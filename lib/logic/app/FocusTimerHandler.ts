@@ -26,10 +26,10 @@ export default class FocusTimerHandler {
     makeAutoObservable(this)
   }
 
-  public getTimeSpentThisWeek = (weekday: WeekdayId) => {
+  public getTimeSpentThisWeek = (period: WeekdayId | 'all') => {
     if (!this.selectedHabit) return 0
     if (this.weekHandler.weekInView.startDate === formatFirstDayOfThisWeek()) {
-      return this.weekHandler.weekInView?.times?.[this.selectedHabit.id]?.[weekday] ?? 0
+      return this.weekHandler.getFocusedTime(this.selectedHabit.id, period === 'all' ? 'week' : period)
     }
     return 0
   }

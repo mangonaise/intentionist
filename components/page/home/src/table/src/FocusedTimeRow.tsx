@@ -14,8 +14,8 @@ const FocusedTimeRow = ({ habitId }: { habitId: string }) => {
 }
 
 const TimeCell = ({ habitId, weekday }: { habitId: string, weekday: WeekdayId }) => {
-  const { weekInView: { times } } = container.resolve(WeekHandler)
-  const time = times?.[habitId]?.[weekday] ?? 0
+  const { getFocusedTime } = container.resolve(WeekHandler)
+  const time = getFocusedTime(habitId, weekday)
 
   return (
     <Flex

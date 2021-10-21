@@ -6,6 +6,7 @@ import { formatFirstDayOfThisWeek } from '../utils/dateUtilities'
 import HabitsHandler, { Habit } from './HabitsHandler'
 import DbHandler from './DbHandler'
 import isEqual from 'lodash/isEqual'
+import sum from 'lodash/sum'
 
 export type WeekDocumentData = {
   startDate: string,
@@ -202,6 +203,16 @@ export default class WeekHandler {
         [habitId]: { [day]: increment(time) }
       }
     })
+  }
+
+  public getFocusedTime= (habitId: string, period: WeekdayId | 'week') => {
+    if (period === 'week') {
+      if (!this.weekInView.times?.[habitId]) return 0
+      const times = Object.values(this.weekInView.times[habitId])
+      return sum(times)
+    } else {
+      return this.weekInView.times?.[habitId]?.[period] ?? 0
+    }
   }
 
   private getHabitIdsWithData = () => {
