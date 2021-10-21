@@ -30,7 +30,8 @@ const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProps>>(fun
         },
         '&:disabled': {
           opacity: 0.3,
-          cursor: 'default'
+          cursor: 'default',
+          pointerEvents: 'none'
         }
       }}
       ref={ref}

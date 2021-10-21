@@ -14,12 +14,10 @@ const FocusHabitDropdown = () => {
     selectHabit(habit)
   }
 
-  const disable = status !== 'not started'
-
   return (
     <Dropdown
       title={<DropdownTitle selectedHabit={selectedHabit} />}
-      sx={{ pointerEvents: disable ? 'none' : 'auto', opacity: disable ? 0.75 : 1 }}
+      disabled={status !== 'not started'}
     >
       {activeHabits.map((habit) => (
         <Dropdown.Item itemAction={() => handleSelectHabit(habit)} key={habit.id}>

@@ -8,13 +8,14 @@ import { StyledComponent } from '@/components/types/StyledComponent'
 interface DropdownProps {
   title: string | JSX.Element,
   right?: number | 'auto' | Array<number | 'auto'>,
+  disabled?: boolean
 }
 
 const DropdownContext = createContext<DropdownContextValue>(null!)
 type DropdownContextValue = { closeDropdown: () => void }
 
 const Dropdown: StyledComponent<DropdownProps> = (props) => {
-  const { title, right, children } = props
+  const { title, right, disabled, children } = props
   const [isOpen, setIsOpen] = useState(false)
 
   function closeDropdown() {
@@ -31,7 +32,16 @@ const Dropdown: StyledComponent<DropdownProps> = (props) => {
       >
         <Button
           onClick={() => setIsOpen(!isOpen)}
-          sx={{ width: '100%', height: '100%', display: 'flex', textAlign: 'left', alignItems: 'center', px: title ? undefined : 3 }}
+          disabled={disabled}
+          sx={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            textAlign: 'left',
+            alignItems: 'center',
+            paddingX: title ? undefined : 3,
+            '&:disabled': { opacity: 0.75 }
+          }}
         >
           {title}
           <Icon
