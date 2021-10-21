@@ -14,7 +14,7 @@ export default class FocusTimerHandler {
   public duration = 1500
   public progress = 0
   public status: TimerStatus = 'not started'
-  private weekdayId: WeekdayId = 0
+  public weekdayId: WeekdayId = 0
   private countdownInterval?: NodeJS.Timeout
   private endSound?: HTMLAudioElement
   private weekHandler

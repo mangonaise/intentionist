@@ -1,8 +1,7 @@
 import { differenceInMilliseconds, startOfTomorrow } from 'date-fns'
 import { useEffect, useState } from 'react'
 import getCurrentWeekdayId from '../logic/utils/getCurrentWeekdayId'
-
-const weekdayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+import getWeekdayName from '../logic/utils/getWeekdayName'
 
 export default function useCurrentDay() {
   const [weekdayId, setWeekdayId] = useState(getCurrentWeekdayId())
@@ -16,6 +15,6 @@ export default function useCurrentDay() {
 
   return {
     weekdayId,
-    weekdayName: weekdayNames[weekdayId] 
+    weekdayName: getWeekdayName(weekdayId)
   }
 }
