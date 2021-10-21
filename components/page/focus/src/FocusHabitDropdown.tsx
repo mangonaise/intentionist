@@ -18,6 +18,7 @@ const FocusHabitDropdown = () => {
     <Dropdown
       title={<DropdownTitle selectedHabit={selectedHabit} />}
       disabled={status !== 'not started'}
+      sx={{ width: ['100%', 'auto'] }}
     >
       {activeHabits.map((habit) => (
         <Dropdown.Item itemAction={() => handleSelectHabit(habit)} key={habit.id}>
