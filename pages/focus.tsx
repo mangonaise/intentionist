@@ -1,14 +1,16 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { createContext, useEffect, useState } from 'react'
-import { withApp } from '@/components/app'
-import { Flex, Heading, IconButton } from '@/components/primitives'
-import { FocusTimer } from '@/components/page/focus'
-import { BackIcon } from '@/components/icons'
+import WeekHandler from '@/lib/logic/app/WeekHandler'
 import FocusTimerHandler from '@/lib/logic/app/FocusTimerHandler'
+import FocusTimer from '@/components/page/focus/FocusTimer'
+import withApp from '@/components/app/withApp'
+import Flex from '@/components/primitives/Flex'
+import Heading from '@/components/primitives/Heading'
+import IconButton from '@/components/primitives/IconButton'
+import BackIcon from '@/components/icons/BackIcon'
 import NextLink from 'next/link'
 import Head from 'next/head'
-import WeekHandler from '@/lib/logic/app/WeekHandler'
 
 export const FocusTimerContext = createContext<FocusTimerHandler>(null!)
 

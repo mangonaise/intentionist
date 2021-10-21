@@ -1,9 +1,15 @@
 import { container } from 'tsyringe'
 import { createContext, useState } from 'react'
-import { withApp } from '@/components/app'
-import { Box, Flex, Spacer } from '@/components/primitives'
-import { EmojiPaletteEditor, HabitEditorNavSection, HabitIconPicker, HabitNameInput, HabitStatusPicker } from '@/components/page/habit-editor'
 import HabitEditor from '@/lib/logic/app/HabitEditor'
+import withApp from '@/components/app/withApp'
+import EmojiPaletteEditor from '@/components/page/habit-editor/EmojiPaletteEditor'
+import HabitEditorNavSection from '@/components/page/habit-editor/HabitEditorNavSection'
+import HabitIconPicker from '@/components/page/habit-editor/HabitIconPicker'
+import HabitNameInput from '@/components/page/habit-editor/HabitNameInput'
+import HabitStatusPicker from '@/components/page/habit-editor/HabitStatusPicker'
+import Box from '@/components/primitives/Box'
+import Flex from '@/components/primitives/Flex'
+import Spacer from '@/components/primitives/Spacer'
 import Head from 'next/head'
 
 export const HabitEditorContext = createContext<HabitEditor>(null!)
