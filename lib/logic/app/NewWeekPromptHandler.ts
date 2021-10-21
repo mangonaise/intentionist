@@ -18,7 +18,7 @@ export default class NewWeekPromptHandler {
 
   public trackNewWeek = () => {
     this.weekHandler.viewWeek(formatFirstDayOfThisWeek())
-    this.showPrompt = false
+    this.hidePrompt()
   }
 
   public checkIsNewWeek = () => {
@@ -33,5 +33,9 @@ export default class NewWeekPromptHandler {
     }, differenceInMilliseconds(nextWeekStartDate, new Date()))
 
     return { thisWeekStartDate: this.thisWeekStartDate }
+  }
+
+  public hidePrompt = () => {
+    this.showPrompt = false
   }
 }

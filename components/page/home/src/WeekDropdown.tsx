@@ -107,6 +107,13 @@ const WeekSelectMenu = () => {
 }
 
 const ThisWeekButton = () => {
+  const { hidePrompt: hideNewWeekPrompt } = container.resolve(NewWeekPromptHandler)
+
+  function handleViewThisWeek() {
+    container.resolve(WeekHandler).viewWeek(formatFirstDayOfThisWeek())
+    hideNewWeekPrompt()
+  }
+
   return (
     <Box sx={{ p: 2, pb: 'calc(0.5rem + 1px)', textAlign: 'center', }}>
       <Dropdown.Item
@@ -118,7 +125,7 @@ const ThisWeekButton = () => {
           borderRadius: 'default',
         }}
         hoverEffect="opacity"
-        itemAction={() => container.resolve(WeekHandler).viewWeek(formatFirstDayOfThisWeek())}
+        itemAction={handleViewThisWeek}
       >
         <Flex center>
           View this week
