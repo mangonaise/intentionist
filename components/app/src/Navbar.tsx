@@ -17,7 +17,7 @@ const Navbar = () => {
         isolation: 'isolate'
       }}
     >
-      <Flex align="center" sx={{ mb: 4, pt: [0, 1, 4], pb: [0, 0, 4] }}>
+      <Flex align="center" sx={{ mb: [3, 4], pt: [0, 1, 4], pb: [0, 0, 4] }}>
         <Icon
           icon={IntentionistIcon}
           sx={{
