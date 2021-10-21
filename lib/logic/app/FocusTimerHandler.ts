@@ -1,11 +1,14 @@
 import { makeAutoObservable, runInAction } from 'mobx'
-import { injectable } from 'tsyringe'
+import { inject, injectable } from 'tsyringe'
 import { formatFirstDayOfThisWeek } from '../utils/dateUtilities'
+import Router from '../types/router'
 import HabitsHandler, { Habit } from './HabitsHandler'
 import WeekHandler, { WeekdayId } from './WeekHandler'
 import getCurrentWeekdayId from '../utils/getCurrentWeekdayId'
 
 export type TimerStatus = 'not started' | 'playing' | 'paused' | 'finished'
+
+type QueryParams = { habitId: string }
 
 @injectable()
 export default class FocusTimerHandler {
@@ -19,10 +22,17 @@ export default class FocusTimerHandler {
   private endSound?: HTMLAudioElement
   private weekHandler
 
-  constructor(habitsHandler: HabitsHandler, weekHandler: WeekHandler) {
+  constructor(habitsHandler: HabitsHandler, weekHandler: WeekHandler, @inject('Router') router: Router) {
     this.weekHandler = weekHandler
     this.activeHabits = habitsHandler.habits.filter((habit) => habit.status === 'active')
+
+    const query = router.query as QueryParams
+    if (query.habitId) {
+      this.selectedHabit = habitsHandler.habits.find((habit) => habit.id === query.habitId)
+    }
+
     this.ensureViewingLatestWeek()
+
     makeAutoObservable(this)
   }
 

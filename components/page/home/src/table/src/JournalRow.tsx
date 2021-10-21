@@ -140,8 +140,9 @@ const AddEntryButton = ({ habitId }: { habitId: string }) => {
         icon={PlusIcon}
         sx={{
           height: '100%',
+          width: '2.25rem',
           marginLeft: 'auto',
-          marginY: '-2px',
+          paddingY: 0,
           paddingX: '0.6rem',
           color: 'journal',
           backgroundColor: 'transparent',

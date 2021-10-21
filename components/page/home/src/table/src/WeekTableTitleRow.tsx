@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { isSameDay } from 'date-fns'
 import { Flex } from '@/components/primitives'
 import useMediaQuery from '@/lib/hooks/useMediaQuery'
-import WeekHandler from '@/lib/logic/app/WeekHandler'
+import WeekHandler, { WeekViewMode } from '@/lib/logic/app/WeekHandler'
 import NewWeekPromptHandler from '@/lib/logic/app/NewWeekPromptHandler'
 import useCurrentDay from '@/lib/hooks/useCurrentDay'
 
@@ -13,22 +13,44 @@ const weekdaysShort = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 const WeekTableTitleRow = () => {
   const { viewMode } = container.resolve(WeekHandler)
 
-  switch (viewMode) {
-    case 'tracker':
-      return <WeekdayLabels />
-    case 'journal':
-      return (
-        <Flex center sx={{ height: 'row' }}>
-          Entries
-        </Flex>
-      )
-    case 'focus':
-      return (
-        <Flex sx={{ height: 'row' }}>
-          <WeekdayLabels />
-        </Flex>
-      )
+  const map: { [viewMode in WeekViewMode]: JSX.Element } = {
+    'tracker': <TrackerTitleRow />,
+    'journal': <JournalTitleRow />,
+    'focus': <FocusTitleRow />
   }
+
+  return map[viewMode]
+}
+
+const TrackerTitleRow = () => {
+  return <WeekdayLabels />
+}
+
+const JournalTitleRow = () => {
+  return (
+    <Flex center sx={{ height: 'row' }}>
+      Entries
+    </Flex>
+  )
+}
+
+const FocusTitleRow = () => {
+  return (
+    <Flex sx={{ height: 'row' }}>
+      <WeekdayLabels />
+      <Flex
+        center
+        sx={{
+          height: 'row',
+          flex: 1,
+          color: 'focus',
+          fontWeight: 'medium',
+          marginRight: '2.25rem'
+        }}>
+        Week total
+      </Flex>
+    </Flex>
+  )
 }
 
 const WeekdayLabels = observer(() => {

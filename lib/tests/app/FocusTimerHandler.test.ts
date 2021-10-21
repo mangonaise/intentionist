@@ -2,26 +2,35 @@ import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { subWeeks } from 'date-fns'
 import { formatFirstDayOfThisWeek, formatYYYYMMDD, getFirstDayOfThisWeek } from '@/lib/logic/utils/dateUtilities'
-import { Habit } from '@/lib/logic/app/HabitsHandler'
+import HabitsHandler, { Habit } from '@/lib/logic/app/HabitsHandler'
 import FocusTimerHandler from '@/lib/logic/app/FocusTimerHandler'
 import WeekHandler from '@/lib/logic/app/WeekHandler'
 import generateHabitId from '@/lib/logic/utils/generateHabitId'
 import getCurrentWeekdayId from '@/lib/logic/utils/getCurrentWeekdayId'
 import DbHandler from '@/lib/logic/app/DbHandler'
 import MockDate from 'mockdate'
+import MockRouter from '@/test-setup/mock/MockRouter'
 import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
 import signInDummyUser from '@/test-setup/signIn'
 import deleteWeeks from '@/test-setup/deleteWeeks'
+import deleteHabitsDoc from '../_setup/deleteHabitsDoc'
 import addWeeks from 'date-fns/addWeeks'
 
 // 🔨
 
-let timerHandler: FocusTimerHandler
+const router = container.resolve(MockRouter)
+container.register('Router', { useValue: router })
+
+let timerHandler: FocusTimerHandler, habitsHandler: HabitsHandler
 const dummyHabit: Habit = { id: generateHabitId(), name: 'Focus timer test habit', icon: '⏲', status: 'active' }
 
 beforeAll(async () => {
   await signInDummyUser()
-  await initializeHabitsHandler(container)
+  habitsHandler = await initializeHabitsHandler(container)
+})
+
+afterAll(async () => {
+  await deleteHabitsDoc()
 })
 
 // 🧪
@@ -37,6 +46,19 @@ describe('initialization', () => {
   test('status is initially set to "not started"', () => {
     timerHandler = container.resolve(FocusTimerHandler)
     expect(timerHandler.status).toEqual('not started')
+  })
+
+  test('if query parameter habitId is supplied, initialize with the corresponding habit already selected', async () => {
+    await habitsHandler.setHabit(dummyHabit)
+    router.setQuery({ habitId: dummyHabit.id })
+    timerHandler = container.resolve(FocusTimerHandler)
+    expect(timerHandler.selectedHabit).toEqual(dummyHabit)
+  })
+
+  test('if no habitId is supplied in query, the initially selected habit is undefined', () => {
+    router.setQuery({})
+    timerHandler = container.resolve(FocusTimerHandler)
+    expect(timerHandler.selectedHabit).toBeUndefined()
   })
 })
 
@@ -62,12 +84,14 @@ describe('behavior', () => {
   })
 
   test('after starting the timer, status is set to "playing"', () => {
+    timerHandler.selectHabit(dummyHabit)
     timerHandler.setDuration(300)
     timerHandler.startTimer()
     expect(timerHandler.status).toEqual('playing')
   })
 
   test('progress is equal to the time elapsed since the timer started in seconds', () => {
+    timerHandler.selectHabit(dummyHabit)
     timerHandler.setDuration(1500)
     timerHandler.startTimer()
     jest.advanceTimersByTime(60000)
@@ -75,6 +99,7 @@ describe('behavior', () => {
   })
 
   test('when the timer completes, status is set to "finished"', () => {
+    timerHandler.selectHabit(dummyHabit)
     timerHandler.setDuration(300)
     timerHandler.startTimer()
     jest.runAllTimers()
@@ -82,6 +107,7 @@ describe('behavior', () => {
   })
 
   test('when the timer completes, progress is equal to duration', () => {
+    timerHandler.selectHabit(dummyHabit)
     timerHandler.setDuration(600)
     timerHandler.startTimer()
     jest.runAllTimers()
@@ -97,6 +123,7 @@ describe('behavior', () => {
   })
 
   test('when the timer is paused, progress is equal to how many seconds have elapsed so far', () => {
+    timerHandler.selectHabit(dummyHabit)
     timerHandler.setDuration(600)
     timerHandler.startTimer()
     jest.advanceTimersByTime(300000)
@@ -105,6 +132,7 @@ describe('behavior', () => {
   })
 
   test('when the timer is paused, the timeout is cleared', () => {
+    timerHandler.selectHabit(dummyHabit)
     timerHandler.setDuration(600)
     timerHandler.startTimer()
     jest.advanceTimersByTime(300000)
@@ -131,8 +159,15 @@ describe('behavior', () => {
   describe('saving progress', () => {
     let weekHandler: WeekHandler
 
+    beforeAll(async () => {
+      weekHandler = container.resolve(WeekHandler)
+      weekHandler.weekInView.times = {}
+      await deleteWeeks()
+    })
+
     beforeEach(() => {
       weekHandler = container.resolve(WeekHandler)
+      weekHandler.weekInView.times = {}
     })
 
     afterEach(async () => {
