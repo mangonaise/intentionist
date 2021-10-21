@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useContext, useEffect } from 'react'
 import { Dropdown, SmartEmoji } from '@/components/app'
-import { Flex, Spacer } from '@/components/primitives'
+import { Flex, Spacer, Text } from '@/components/primitives'
 import { Habit } from '@/lib/logic/app/HabitsHandler'
 import { FocusTimerContext } from 'pages/focus'
 
@@ -33,22 +33,26 @@ const FocusHabitDropdown = () => {
 }
 
 const DropdownTitle = ({ selectedHabit }: { selectedHabit: Habit | undefined }) => {
-  if (!selectedHabit) return null
-
   return (
     <Flex align="center">
-      <Flex center sx={{ transform: 'scale(1.3)' }}>
-        <SmartEmoji nativeEmoji={selectedHabit.icon} nativeFontSize="1rem" twemojiSize={14} />
-      </Flex>
-      <Spacer mr={4} />
-      {selectedHabit.name}
+      {selectedHabit
+        ? <>
+          <Flex center sx={{ transform: 'scale(1.3)' }}>
+            <SmartEmoji nativeEmoji={selectedHabit.icon} nativeFontSize="1rem" twemojiSize={14} />
+          </Flex>
+          <Spacer mr={4} />
+          {selectedHabit.name}
+        </>
+        : <Text type="span" sx={{ color: 'focus', fontWeight: 'semibold', filter: 'brightness(1.2)' }}>
+          No habit selected
+        </Text>}
     </Flex>
   )
 }
 
 const NoActiveHabitsWarning = () => {
   return (
-    <Flex center sx={{ fontWeight: 'medium', color: 'focus', filter: 'brightness(1.2)'}}>
+    <Flex center sx={{ fontWeight: 'medium', color: 'focus', filter: 'brightness(1.2)' }}>
       You have no active habits to focus on.
     </Flex>
   )

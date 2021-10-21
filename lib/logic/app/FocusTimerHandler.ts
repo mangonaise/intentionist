@@ -22,7 +22,6 @@ export default class FocusTimerHandler {
   constructor(habitsHandler: HabitsHandler, weekHandler: WeekHandler) {
     this.weekHandler = weekHandler
     this.activeHabits = habitsHandler.habits.filter((habit) => habit.status === 'active')
-    if (this.activeHabits.length) this.selectedHabit = this.activeHabits[0]
     this.ensureViewingLatestWeek()
     makeAutoObservable(this)
   }
@@ -48,6 +47,7 @@ export default class FocusTimerHandler {
   }
 
   public startTimer = () => {
+    if (!this.selectedHabit) return
     if (this.status === 'not started') {
       this.progress = 0
       const weekStartDate = formatFirstDayOfThisWeek()

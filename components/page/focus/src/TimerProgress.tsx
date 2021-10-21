@@ -33,7 +33,7 @@ const TimerProgress = () => {
 }
 
 const ProgressCircle = observer(() => {
-  const { progress, duration, status } = useContext(FocusTimerContext)
+  const { progress, duration, status, selectedHabit } = useContext(FocusTimerContext)
 
   return (
     <ProgressBar
@@ -51,7 +51,7 @@ const ProgressCircle = observer(() => {
     >
       <Flex column align="center" sx={{ position: 'absolute' }}>
         <ProgressText timeRemaining={duration - progress} isFinished={status === 'finished'} />
-        <TimerControls />
+        {!!selectedHabit ? <TimerControls /> : <SelectHabitText />}
       </Flex>
     </ProgressBar>
   )
@@ -71,6 +71,14 @@ const ProgressText = ({ timeRemaining, isFinished }: { timeRemaining: number, is
     >
       {formatSeconds(timeRemaining, 'digital')}
     </Text>
+  )
+}
+
+const SelectHabitText = () => {
+  return (
+    <Flex align="center" sx={{ color: 'focus', fontWeight: 'medium', height: ['3.5rem', '4rem'] }}>
+      Select a habit to focus on
+    </Flex>
   )
 }
 
