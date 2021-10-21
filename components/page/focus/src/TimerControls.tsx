@@ -1,9 +1,10 @@
 import { observer } from 'mobx-react-lite'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { Flex, IconButton } from '@/components/primitives'
 import { PauseFillIcon, PlayIcon, StopIcon } from '@/components/icons'
 import { ButtonProps } from '@/components/primitives/src/Button'
 import { FocusTimerContext } from 'pages/focus'
+import TimerConfirmNewWeekModal from './TimerConfirmNewWeekModal'
 import exclude from '@/lib/logic/utils/exclude'
 
 const TimerControls = () => {
@@ -16,27 +17,39 @@ const TimerControls = () => {
 }
 
 const PlayPauseButton = observer(() => {
-  const { status, startTimer, pauseTimer, duration, selectedHabit, activeHabits } = useContext(FocusTimerContext)
+  const { status, startTimer, pauseTimer, duration, selectedHabit, activeHabits, getIsUntrackedWeek } = useContext(FocusTimerContext)
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
 
   if (status === 'finished') return null
 
   function handleClick() {
-    if (status === 'not started' || status === 'paused') {
-      startTimer()
-    } else if (status === 'playing') {
-      pauseTimer()
+    if (status === 'not started' && getIsUntrackedWeek()) {
+      setIsConfirmModalOpen(true)
+    } else {
+      if (status === 'not started' || status === 'paused') {
+        startTimer()
+      } else if (status === 'playing') {
+        pauseTimer()
+      }
     }
   }
 
   const icon = status === 'playing' ? PauseFillIcon : PlayIcon
 
   return (
-    <TimerControlButton
-      onClick={handleClick}
-      icon={icon}
-      disabled={!duration || !activeHabits.length || !selectedHabit}
-      sx={{ '& svg': { position: 'relative', left: icon === PlayIcon ? '5%' : null } }}
-    />
+    <>
+      <TimerControlButton
+        onClick={handleClick}
+        icon={icon}
+        disabled={!duration || !activeHabits.length || !selectedHabit}
+        sx={{ '& svg': { position: 'relative', left: icon === PlayIcon ? '5%' : null } }}
+      />
+      <TimerConfirmNewWeekModal
+        isOpen={isConfirmModalOpen}
+        onCloseModal={() => setIsConfirmModalOpen(false)}
+        onConfirmStart={startTimer}
+      />
+    </>
   )
 })
 

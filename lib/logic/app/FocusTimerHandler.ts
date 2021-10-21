@@ -35,6 +35,10 @@ export default class FocusTimerHandler {
 
     makeAutoObservable(this)
   }
+  
+  public getIsUntrackedWeek = () => {
+    return formatFirstDayOfThisWeek() !== this.weekHandler.weekInView.startDate
+  }
 
   public getTimeSpentThisWeek = (period: WeekdayId | 'all') => {
     if (!this.selectedHabit) return 0
@@ -61,7 +65,7 @@ export default class FocusTimerHandler {
     if (this.status === 'not started') {
       this.progress = 0
       const weekStartDate = formatFirstDayOfThisWeek()
-      if (weekStartDate !== this.weekHandler.weekInView.startDate) {
+      if (this.getIsUntrackedWeek()) {
         this.weekHandler.viewWeek(weekStartDate)
       }
     }
