@@ -2,13 +2,13 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useContext, useLayoutEffect, useRef } from 'react'
 import { isSameDay } from 'date-fns'
-import { ColumnsDisplayContext as ColumnsDisplayHandlerContext } from '../../WeekTable'
 import { Dropdown } from '@/components/app'
 import { Flex } from '@/components/primitives'
+import { ColumnsDisplayContext } from '../../WeekTable'
 import { weekdayNames } from '@/lib/logic/utils/_consts'
-import useMediaQuery from '@/lib/hooks/useMediaQuery'
 import WeekHandler, { WeekdayId, WeekViewMode } from '@/lib/logic/app/WeekHandler'
 import NewWeekPromptHandler from '@/lib/logic/app/NewWeekPromptHandler'
+import useMediaQuery from '@/lib/hooks/useMediaQuery'
 import useCurrentDay from '@/lib/hooks/useCurrentDay'
 import useElementWidth from '@/lib/hooks/useElementWidth'
 import getCurrentWeekdayId from '@/lib/logic/utils/getCurrentWeekdayId'
@@ -41,12 +41,12 @@ const JournalTitleRow = () => {
 }
 
 const FocusTitleRow = observer(() => {
-  const { collapseColumns, setCollapseColumns: setIsCondensed } = useContext(ColumnsDisplayHandlerContext)
+  const { collapseColumns, setCollapseColumns } = useContext(ColumnsDisplayContext)
   const rowWrapperRef = useRef<HTMLDivElement>(null!)
   const width = useElementWidth(rowWrapperRef)
 
   useLayoutEffect(() => {
-    setIsCondensed(width < 680)
+    setCollapseColumns(width < 680)
   }, [width])
 
   return (
@@ -73,7 +73,7 @@ const FocusTitleRow = observer(() => {
 })
 
 const FocusWeekdayDropdown = observer(() => {
-  const { weekdayId, setWeekdayId } = useContext(ColumnsDisplayHandlerContext)
+  const { weekdayId, setWeekdayId } = useContext(ColumnsDisplayContext)
   const dayNames = useMediaQuery<string[]>('(max-width: 500px)', weekdaysShort, weekdayNames)
 
   useLayoutEffect(() => {
