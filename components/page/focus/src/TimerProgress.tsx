@@ -19,7 +19,7 @@ const TimerProgress = () => {
           alignItems: 'center',
           maxWidth: '100%',
           maxHeight: 'min-content',
-          width: '400px !important',
+          width: '425px !important',
           '& svg': {
             width: '100%',
             height: '100%'
