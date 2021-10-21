@@ -1,15 +1,15 @@
 import debounce from 'lodash/debounce'
-import { useEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 
-function useWindowWidth(delay = 500) {
+function useWindowWidth() {
   const [width, setWidth] = useState(window.innerWidth)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleResize = () => setWidth(window.innerWidth)
-    const debouncedHandleResize = debounce(handleResize, delay)
+    const debouncedHandleResize = debounce(handleResize, 500)
     window.addEventListener('resize', debouncedHandleResize)
     return () => window.removeEventListener('resize', debouncedHandleResize)
-  }, [delay])
+  }, [])
 
   return width
 }

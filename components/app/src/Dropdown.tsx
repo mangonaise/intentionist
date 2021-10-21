@@ -60,6 +60,7 @@ const Dropdown: StyledComponent<DropdownProps> = (props) => {
               flexDirection: 'column',
               backgroundColor: 'bg',
               width: 'max-content',
+              minWidth: '100%',
               transform: 'translateY(4px)',
               border: 'solid 2px',
               borderColor: 'divider',

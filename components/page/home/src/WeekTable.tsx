@@ -1,13 +1,25 @@
 import { container } from 'tsyringe'
+import { makeAutoObservable } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import { FC, Fragment, useLayoutEffect } from 'react'
+import { createContext, FC, Fragment, useLayoutEffect, useRef } from 'react'
 import { Grid } from '@/components/primitives'
 import { ViewHabitsButton } from '..'
-import { CondensedViewAlert, CondenseViewToggle, FocusedTimeRow, HabitCell, TrackerStatusCell, JournalRow, WeekTableTitleRow } from './table'
+import { CondensedViewAlert, CondenseViewToggle, FocusedTimeRow, HabitCell, TrackerStatusCell, JournalRow, WeekTableColumnTitles } from './table'
 import WeekHandler, { WeekdayId, WeekViewMode } from '@/lib/logic/app/WeekHandler'
+
+class ColumnsDisplayHandler {
+  weekdayId = 0 as WeekdayId
+  collapseColumns = false
+  constructor() { makeAutoObservable(this) }
+  public setWeekdayId = (weekday: WeekdayId) => { this.weekdayId = weekday }
+  public setCollapseColumns = (collapse: boolean) => { this.collapseColumns = collapse }
+}
+
+export const ColumnsDisplayContext = createContext<ColumnsDisplayHandler>(null!)
 
 const WeekTable = () => {
   const { habitsInView, viewMode, refreshHabitsInView } = container.resolve(WeekHandler)
+  const columnsDisplayHandler = useRef(new ColumnsDisplayHandler())
 
   useLayoutEffect(() => {
     refreshHabitsInView()
@@ -31,18 +43,20 @@ const WeekTable = () => {
   }
 
   return (
-    <Table>
-      <CondenseViewToggle />
-      <WeekTableTitleRow />
-      {habitsInView.map((habit) => (
-        <Fragment key={habit.id}>
-          <HabitCell habit={habit} />
-          {getRowContent(habit.id)}
-        </Fragment>
-      ))}
-      <CondensedViewAlert />
-      <ViewHabitsButton />
-    </Table>
+    <ColumnsDisplayContext.Provider value={columnsDisplayHandler.current}>
+      <Table>
+        <CondenseViewToggle />
+        <WeekTableColumnTitles />
+        {habitsInView.map((habit) => (
+          <Fragment key={habit.id}>
+            <HabitCell habit={habit} />
+            {getRowContent(habit.id)}
+          </Fragment>
+        ))}
+        <CondensedViewAlert />
+        <ViewHabitsButton />
+      </Table>
+    </ColumnsDisplayContext.Provider>
   )
 }
 

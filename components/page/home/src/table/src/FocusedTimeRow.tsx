@@ -1,23 +1,29 @@
 import { container } from 'tsyringe'
+import { observer } from 'mobx-react-lite'
+import { useContext } from 'react'
 import { Flex, IconButton } from '@/components/primitives'
 import { TimerIcon } from '@/components/icons'
+import { ColumnsDisplayContext } from '../../WeekTable'
 import formatSeconds from '@/lib/logic/utils/formatSeconds'
 import WeekHandler, { WeekdayId } from '@/lib/logic/app/WeekHandler'
 import NextLink from 'next/link'
 
-const FocusedTimeRow = ({ habitId }: { habitId: string }) => {
+const FocusedTimeRow = observer(({ habitId }: { habitId: string }) => {
   const { getFocusedTime } = container.resolve(WeekHandler)
+  const { collapseColumns, weekdayId } = useContext(ColumnsDisplayContext)
 
   return (
     <Flex center sx={{ borderTop: 'solid 1px', borderColor: 'grid' }}>
-      {Array.from({ length: 7 }).map((_, weekdayId) => (
-        <TimeCell time={getFocusedTime(habitId, weekdayId as WeekdayId)} key={weekdayId} />
-      ))}
+      {collapseColumns
+        ? <TimeCell time={getFocusedTime(habitId, weekdayId)} />
+        : Array.from({ length: 7 }).map((_, weekdayId) => (
+          <TimeCell time={getFocusedTime(habitId, weekdayId as WeekdayId)} key={weekdayId} />
+        ))}
       <TimeCell isSum time={getFocusedTime(habitId, 'week')} />
       <OpenTimerButton habitId={habitId} />
     </Flex>
   )
-}
+})
 
 const TimeCell = ({ time, isSum }: { time: number, isSum?: boolean }) => {
   const sumStyle = isSum ? {

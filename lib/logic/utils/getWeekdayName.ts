@@ -1,6 +1,5 @@
 import { WeekdayId } from '../app/WeekHandler'
-
-const weekdayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+import { weekdayNames } from './_consts'
 
 export default function getWeekdayName(weekdayId: WeekdayId) {
   return weekdayNames[weekdayId]

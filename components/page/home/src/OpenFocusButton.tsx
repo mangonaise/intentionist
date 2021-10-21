@@ -46,6 +46,7 @@ const OpenFocusButton = () => {
               content: '""',
               position: 'absolute',
               inset: 0,
+              borderRadius: 'inherit',
               backgroundColor: 'focus',
               opacity: 0.1
             }
