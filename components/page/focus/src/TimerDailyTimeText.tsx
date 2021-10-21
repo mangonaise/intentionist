@@ -13,7 +13,7 @@ const TimerDailyTimeText = () => {
   return (
     <Text type="span" sx={{ fontWeight: 'light' }}>
       <Text type="span" sx={{ fontWeight: 'medium' }}>
-        {time ? formatSeconds(time) : 'No focused time'}
+        {time ? formatSeconds(time, 'letters') : 'No focused time'}
       </Text>
       {` on ${weekdayName}`}
     </Text>

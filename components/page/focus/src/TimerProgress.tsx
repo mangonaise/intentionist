@@ -69,7 +69,7 @@ const ProgressText = ({ timeRemaining, isFinished }: { timeRemaining: number, is
         animation: isFinished ? 'fade-in infinite alternate 850ms ease-in-out' : null
       }}
     >
-      {formatSeconds(timeRemaining)}
+      {formatSeconds(timeRemaining, 'digital')}
     </Text>
   )
 }

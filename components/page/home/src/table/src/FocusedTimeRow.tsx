@@ -28,10 +28,9 @@ const TimeCell = ({ habitId, weekday }: { habitId: string, weekday: WeekdayId })
         backgroundColor: time ? 'whiteAlpha.3' : null
       }}
     >
-      {!!time && formatSeconds(time)}
+      {!!time && formatSeconds(time, 'letters')}
     </Flex>
   )
-
 }
 
 export default FocusedTimeRow
