@@ -6,7 +6,7 @@ import { Habit } from '@/lib/logic/app/HabitsHandler'
 import { FocusTimerContext } from 'pages/focus'
 
 const FocusHabitDropdown = () => {
-  const { activeHabits, selectHabit, selectedHabit } = useContext(FocusTimerContext)
+  const { activeHabits, selectHabit, selectedHabit, status } = useContext(FocusTimerContext)
 
   if (!activeHabits.length) return <NoActiveHabitsWarning />
 
@@ -14,9 +14,12 @@ const FocusHabitDropdown = () => {
     selectHabit(habit)
   }
 
+  const disable = status !== 'not started'
+
   return (
     <Dropdown
       title={<DropdownTitle selectedHabit={selectedHabit} />}
+      sx={{ pointerEvents: disable ? 'none' : 'auto', opacity: disable ? 0.75 : 1 }}
     >
       {activeHabits.map((habit) => (
         <Dropdown.Item itemAction={() => handleSelectHabit(habit)} key={habit.id}>
