@@ -2,9 +2,10 @@ import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { Flex, Text } from '@/components/primitives'
 import { FocusTimerContext } from 'pages/focus'
+import formatSeconds from '@/lib/logic/utils/formatSeconds'
 import TimerControls from './TimerControls'
 import ProgressBar from 'react-customizable-progressbar'
-import formatSeconds from '@/lib/logic/utils/formatSeconds'
+import Head from 'next/head'
 
 const TimerProgress = () => {
   return (
@@ -50,27 +51,33 @@ const ProgressCircle = observer(() => {
       pointerStrokeColor="var(--pointer-stroke-color)"
     >
       <Flex column align="center" sx={{ position: 'absolute' }}>
-        <ProgressText timeRemaining={duration - progress} isFinished={status === 'finished'} />
+        <ProgressText />
         {!!selectedHabit ? <TimerControls /> : <SelectHabitText />}
       </Flex>
     </ProgressBar>
   )
 })
 
-const ProgressText = ({ timeRemaining, isFinished }: { timeRemaining: number, isFinished: boolean }) => {
+const ProgressText = () => {
+  const { progress, duration, status } = useContext(FocusTimerContext)
+  const formattedTimeRemaining = formatSeconds(duration - progress, 'digital')
+
   return (
-    <Text
-      type="div"
-      sx={{
-        marginBottom: 2,
-        fontSize: ['2.75rem', '4rem'],
-        fontWeight: 'semibold',
-        fontVariantNumeric: 'tabular-nums',
-        animation: isFinished ? 'fade-in infinite alternate 850ms ease-in-out' : null
-      }}
-    >
-      {formatSeconds(timeRemaining, 'digital')}
-    </Text>
+    <>
+      <Head>{status !== 'not started' && <title>{formattedTimeRemaining}</title>}</Head>
+      <Text
+        type="div"
+        sx={{
+          marginBottom: 2,
+          fontSize: ['2.75rem', '4rem'],
+          fontWeight: 'semibold',
+          fontVariantNumeric: 'tabular-nums',
+          animation: status === 'finished' ? 'fade-in infinite alternate 850ms ease-in-out' : null
+        }}
+      >
+        {formattedTimeRemaining}
+      </Text>
+    </>
   )
 }
 
