@@ -26,17 +26,23 @@ const FocusPage = observer(() => {
     <FocusTimerContext.Provider value={timerHandler}>
       <Flex column sx={{ maxWidth: '500px', margin: 'auto', pointerEvents: isLoadingWeek ? 'none' : null }}>
         <Head><title>Focus</title></Head>
-        <Flex align="center" sx={{ mb: [2, 3] }}>
-          <NextLink href="/home">
-            <IconButton icon={BackIcon} sx={{ mr: 3 }} />
-          </NextLink>
-          <Heading level={2}>Focus</Heading>
-        </Flex>
+        <NavSection />
         <FocusTimer />
       </Flex>
     </FocusTimerContext.Provider>
 
   )
 })
+
+const NavSection = () => {
+  return (
+    <Flex align="center" sx={{ mb: [2, 3], pb: [2, 0], borderBottom: ['solid 1.5px', 'none'], borderColor: 'divider' }}>
+      <NextLink href="/home">
+        <IconButton icon={BackIcon} sx={{ mr: 3 }} />
+      </NextLink>
+      <Heading level={2} sx={{ fontSize: ['1.2rem', '1.5rem']}}>Focus</Heading>
+    </Flex>
+  )
+}
 
 export default withApp(FocusPage, 'focus')

@@ -12,6 +12,7 @@ const FocusTimer = () => {
       sx={{
         width: '100%',
         padding: [1, 4],
+        paddingTop: [0, null],
         backgroundColor: ['transparent', 'whiteAlpha.3'],
         borderRadius: 'default'
       }}
