@@ -39,7 +39,7 @@ const TimerDailyTimeText = () => {
           padding: 0,
           textDecoration: 'underline 2px',
           textDecorationColor: 'whiteAlpha.20',
-          fontWeight: 'light',
+          fontWeight: 'normal',
           '&:hover': {
             textDecorationColor: 'whiteAlpha.50'
           }
@@ -48,7 +48,7 @@ const TimerDailyTimeText = () => {
         {period === 'day' ? weekdayName : 'This week'}
       </Button>
       <Box sx={{ bg: 'whiteAlpha.30', size: '3px', borderRadius: '50%', mx: 2 }} />
-      <Text type="span" sx={{ fontWeight: 'medium', fontVariantNumeric: 'tabular-nums' }}>
+      <Text type="span" sx={{ fontVariantNumeric: 'tabular-nums' }}>
         {time ? formatSeconds(time, 'letters') : 'No focused time'}
       </Text>
     </Flex>

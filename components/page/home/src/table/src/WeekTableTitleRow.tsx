@@ -44,8 +44,9 @@ const FocusTitleRow = () => {
           height: 'row',
           flex: 1,
           color: 'focus',
-          fontWeight: 'medium',
-          marginRight: '2.25rem'
+          fontWeight: 'semibold',
+          marginRight: '2.25rem',
+          filter: 'brightness(1.2)'
         }}>
         Week total
       </Flex>

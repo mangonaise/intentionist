@@ -20,6 +20,12 @@ const FocusedTimeRow = ({ habitId }: { habitId: string }) => {
 }
 
 const TimeCell = ({ time, isSum }: { time: number, isSum?: boolean }) => {
+  const sumStyle = isSum ? {
+    color: 'focus',
+    fontWeight: 'medium',
+    filter: 'brightness(1.2)'
+  } : {}
+
   return (
     <Flex
       center
@@ -29,8 +35,7 @@ const TimeCell = ({ time, isSum }: { time: number, isSum?: boolean }) => {
         borderLeft: 'solid 1px',
         borderColor: 'grid',
         backgroundColor: time ? 'whiteAlpha.3' : null,
-        color: isSum ? 'focus' : null,
-        fontWeight: isSum ? 'medium' : null
+        ...sumStyle
       }}
     >
       {!!time && formatSeconds(time, 'letters')}
