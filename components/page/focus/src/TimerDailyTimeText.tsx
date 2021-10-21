@@ -13,7 +13,11 @@ const TimerDailyTimeText = () => {
 
   const weekdayIdToDisplay = status === 'not started' ? todayId : timerWeekdayId
   const weekdayName = getWeekdayName(weekdayIdToDisplay)
-  const time = getTimeSpentThisWeek(period === 'day' ? weekdayIdToDisplay : 'all') + progress
+
+  let time = getTimeSpentThisWeek(period === 'day' ? weekdayIdToDisplay : 'all')
+  if (status === 'playing' || status === 'paused') {
+    time += progress
+  }
 
   function togglePeriod() {
     setPeriod(period === 'day' ? 'week' : 'day')
