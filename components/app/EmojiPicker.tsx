@@ -141,6 +141,7 @@ const StyleWrapper: FC = ({ children }) => {
             }
           }
         },
+
         '.emoji-mart': {
           opacity: 0,
           animation: 'fade-in forwards 750ms',
@@ -163,6 +164,10 @@ const StyleWrapper: FC = ({ children }) => {
 
           '&-anchors': {
             padding: 0,
+          },
+
+          '&-anchor-bar': {
+           borderRadius: '99px'
           },
 
           '&-search': {
