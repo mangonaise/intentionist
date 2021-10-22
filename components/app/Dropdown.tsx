@@ -7,12 +7,14 @@ import Icon from '@/components/primitives/Icon'
 import ExpandUpIcon from '@/components/icons/ExpandUpIcon'
 import ExpandDownIcon from '@/components/icons/ExpandDownIcon'
 import FocusTrap from 'focus-trap-react'
+import Text from '../primitives/Text'
 
 interface DropdownProps {
   title?: string | JSX.Element,
   anchorRight?: boolean,
   noGap?: boolean,
   disabled?: boolean,
+  menuMaxWidth?: string | string[],
   className?: string,
   children: ReactNode
 }
@@ -30,12 +32,10 @@ const Dropdown = (props: DropdownProps) => {
 
   function openDropdown() {
     setIsOpen(true)
-    document.body.style.overflow = 'hidden'
   }
 
   function closeDropdown() {
     setIsOpen(false)
-    document.body.style.overflow = 'unset'
   }
 
   const contextValue: DropdownContextValue = {
@@ -81,7 +81,7 @@ const DropdownButton = () => {
         '&:disabled': { opacity: 0.75 }
       }}
     >
-      <Flex align="center">
+      <Flex align="center" sx={{ textAlign: 'left', wordBreak: 'break-word' }}>
         {title}
         <Icon
           icon={isOpen ? ExpandUpIcon : ExpandDownIcon}
@@ -93,7 +93,7 @@ const DropdownButton = () => {
 }
 
 const DropdownMenu = () => {
-  const { closeDropdown, children, noGap, anchorRight } = useContext(DropdownContext)
+  const { closeDropdown, children, noGap, anchorRight, menuMaxWidth } = useContext(DropdownContext)
 
   return (
     <FocusTrap focusTrapOptions={{
@@ -107,11 +107,13 @@ const DropdownMenu = () => {
           zIndex: 1,
           backgroundColor: 'bg',
           width: 'max-content',
+          maxWidth: menuMaxWidth,
           minWidth: '100%',
           transform: noGap ? null : 'translateY(4px)',
           border: 'solid 2px',
           borderColor: 'divider',
           borderRadius: 'default',
+          wordBreak: 'break-word',
           opacity: 0,
           animation: 'fade-in forwards 200ms'
         }}>
@@ -139,7 +141,7 @@ const Item: StyledComponent<ItemProps> = (props) => {
       onClick={handleClick}
       sx={{
         margin: '-2px',
-        py: '0.8em',
+        paddingY: '0.8em',
         textAlign: 'left',
         borderRadius: '0',
         '&:first-of-type': {
