@@ -20,7 +20,7 @@ const JournalRow = ({ habitId }: { habitId: string }) => {
   return (
     <Flex
       align="center"
-      sx={{ borderTop: 'solid 1px', borderLeft: 'solid 1px', borderColor: 'grid', }}
+      sx={{ borderTop: 'solid 1px', borderLeft: 'solid 1px', borderColor: 'grid' }}
     >
       {cellEntriesData.length > 0 && <JournalEntryPreview cellEntriesData={cellEntriesData} />}
       <AddEntryButton habitId={habitId} />
@@ -68,10 +68,8 @@ const JournalEntryPreview = ({ cellEntriesData }: { cellEntriesData: Array<{ ent
         <Text
           type="span"
           sx={{
-            maxWidth: 'inherit',
             paddingLeft: [2, 3],
-            paddingY: '-2px',
-            flexGrow: 1,
+            paddingY: '2px',
             overflowWrap: 'break-word',
             wordBreak: 'break-word',
             textAlign: 'left'

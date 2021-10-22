@@ -3,6 +3,7 @@ import { makeAutoObservable } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { createContext, FC, Fragment, useLayoutEffect, useRef } from 'react'
 import WeekHandler, { WeekdayId, WeekViewMode } from '@/lib/logic/app/WeekHandler'
+import useMediaQuery from '@/lib/hooks/useMediaQuery'
 import Grid from '@/components/primitives/Grid'
 import CondensedViewAlert from './table/CondensedViewAlert'
 import CondenseViewToggle from './table/CondenseViewToggle'
@@ -16,9 +17,11 @@ import ViewHabitsButton from './ViewHabitsButton'
 class ColumnsDisplayHandler {
   weekdayId = 0 as WeekdayId
   collapseColumns = false
+  showHabitNames = true
   constructor() { makeAutoObservable(this) }
   public setWeekdayId = (weekday: WeekdayId) => { this.weekdayId = weekday }
   public setCollapseColumns = (collapse: boolean) => { this.collapseColumns = collapse }
+  public setShowHabitNames = (show: boolean) => { this.showHabitNames = show }
 }
 
 export const ColumnsDisplayContext = createContext<ColumnsDisplayHandler>(null!)
@@ -26,10 +29,15 @@ export const ColumnsDisplayContext = createContext<ColumnsDisplayHandler>(null!)
 const WeekTable = () => {
   const { habitsInView, viewMode, refreshHabitsInView } = container.resolve(WeekHandler)
   const columnsDisplayHandler = useRef(new ColumnsDisplayHandler())
+  const showHabitNames = useMediaQuery('(max-width: 500px)', false, true)
 
   useLayoutEffect(() => {
     refreshHabitsInView()
   }, [refreshHabitsInView])
+
+  useLayoutEffect(() => {
+    columnsDisplayHandler.current.setShowHabitNames(showHabitNames)
+  }, [showHabitNames])
 
   function getRowContent(habitId: string) {
     switch (viewMode) {

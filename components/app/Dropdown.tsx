@@ -30,7 +30,6 @@ const Dropdown: StyledComponent<DropdownProps> = (props) => {
       <BlurListener
         blurAction={closeDropdown}
         escapeAction={closeDropdown}
-        sx={{ position: 'relative', zIndex: 1, height: 'inherit' }}
         className={props.className}
       >
         <Button
@@ -57,7 +56,7 @@ const Dropdown: StyledComponent<DropdownProps> = (props) => {
           />
         </Button>
         {isOpen && (
-          <FadeIn time={200}>
+          <FadeIn time={200} sx={{ zIndex: 1, position: 'relative' }}>
             <Flex sx={{
               position: 'absolute',
               flexDirection: 'column',
@@ -97,9 +96,9 @@ const Item: StyledComponent<ItemProps> = (props) => {
     <Button
       onClick={handleClick}
       sx={{
-        textAlign: 'left',
         margin: '-2px',
         py: '0.8em',
+        textAlign: 'left',
         borderRadius: '0',
         '&:first-of-type': {
           borderTopLeftRadius: 'default',
