@@ -1,5 +1,6 @@
 import type { StyledVoidComponent } from '@/components/types/StyledVoidComponent'
 import 'emoji-mart/css/emoji-mart.css'
+import 'react-responsive-modal/styles.css'
 import isWindowsOS from '@/lib/logic/utils/isWindowsOS'
 import { FC } from 'react'
 import { Global } from '@emotion/react'
