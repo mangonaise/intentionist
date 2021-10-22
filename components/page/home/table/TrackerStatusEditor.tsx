@@ -44,7 +44,7 @@ const TrackerStatusEditor = ({ draft, habitId, onEditDraft, onFinishEditing }: T
         <CellEditorButton content={BackspaceIcon} action={backspace} disabled={!draft.length} />
         <CellEditorButton content={CheckIcon} action={onFinishEditing} />
       </CellEditorButtonsBar>
-      {!showEmojiPicker && !!palette.length && (
+      {!!palette.length && (
         <CellEditorButtonsBar>
           {palette.map((emoji, index) => <CellEditorButton key={index} content={emoji} action={() => addEmoji(emoji)} />)}
         </CellEditorButtonsBar>
