@@ -20,6 +20,7 @@
     "date-fns": "^2.25.0",
     "emoji-mart": "^3.0.1",
     "firebase": "^9.0.2",
+    "focus-trap-react": "^8.8.2",
     "lodash": "^4.17.21",
     "mobx": "^6.3.3",
     "mobx-react-lite": "^3.2.1",
