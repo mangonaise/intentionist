@@ -33,9 +33,13 @@ export default class FocusTimerHandler {
 
     this.ensureViewingLatestWeek()
 
+    if (typeof window !== 'undefined') {
+      this.endSound = new Audio('/audio/timer1.mp3')
+    }
+
     makeAutoObservable(this)
   }
-  
+
   public getIsUntrackedWeek = () => {
     return formatFirstDayOfThisWeek() !== this.weekHandler.weekInView.startDate
   }
@@ -107,10 +111,7 @@ export default class FocusTimerHandler {
   }
 
   private playEndSound = () => {
-    if (typeof window === 'undefined') return
-    if (!this.endSound) {
-      this.endSound = new Audio('/audio/timer1.mp3')
-    }
+    if (!this.endSound) return
     this.endSound.currentTime = 0
     this.endSound.play()
     this.endSound.loop = true
