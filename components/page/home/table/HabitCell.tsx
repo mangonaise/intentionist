@@ -39,7 +39,7 @@ const HabitCellWithName = ({ habit }: { habit: Habit }) => {
         animation: 'fade-in forwards 600ms',
       }}
     >
-      <HabitCellIcon habitIcon={habit.icon}/>
+      <HabitCellIcon habitIcon={habit.icon} />
       <NextLink href={`/habits/${habit.id}?returnHome=true`}>
         <Link
           sx={{
@@ -66,18 +66,21 @@ const HabitCellWithoutName = ({ habit }: { habit: Habit }) => {
   }, [])
 
   return (
-    <Dropdown title={<HabitCellIcon habitIcon={habit.icon} />} sx={{
-      size: '100%',
-      '& > button': {
-        paddingY: 0,
-        paddingX: 3,
-        background: 'none',
-        borderRadius: 0
-      }
-    }}>
+    <Dropdown
+      noGap
+      title={<HabitCellIcon habitIcon={habit.icon} />}
+      sx={{
+        size: '100%',
+        '& > button': {
+          paddingY: 0,
+          paddingX: 3,
+          background: 'none',
+          borderRadius: 0
+        }
+      }}>
       <Dropdown.Item
         itemAction={() => router.push(`/habits/${habit.id}?returnHome=true`)}
-        sx={{ maxWidth: '100vw'}}
+        sx={{ maxWidth: '100vw' }}
       >
         {habit.name}
       </Dropdown.Item>

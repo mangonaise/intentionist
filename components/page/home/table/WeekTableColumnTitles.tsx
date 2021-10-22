@@ -82,6 +82,7 @@ const FocusWeekdayDropdown = observer(() => {
 
   return (
     <Dropdown
+      noGap
       title={dayNames[weekdayId]}
       sx={{
         zIndex: 0,

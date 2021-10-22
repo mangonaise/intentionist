@@ -11,6 +11,7 @@ import BlurListener from './BlurListener'
 interface DropdownProps {
   title: string | JSX.Element,
   right?: number | 'auto' | Array<number | 'auto'>,
+  noGap?: boolean,
   disabled?: boolean
 }
 
@@ -18,7 +19,7 @@ const DropdownContext = createContext<DropdownContextValue>(null!)
 type DropdownContextValue = { closeDropdown: () => void }
 
 const Dropdown: StyledComponent<DropdownProps> = (props) => {
-  const { title, right, disabled, children } = props
+  const { title, right, noGap, disabled, children } = props
   const [isOpen, setIsOpen] = useState(false)
 
   function closeDropdown() {
@@ -63,7 +64,7 @@ const Dropdown: StyledComponent<DropdownProps> = (props) => {
               backgroundColor: 'bg',
               width: 'max-content',
               minWidth: '100%',
-              transform: 'translateY(4px)',
+              transform: noGap ? null : 'translateY(4px)',
               border: 'solid 2px',
               borderColor: 'divider',
               borderRadius: 'default',
