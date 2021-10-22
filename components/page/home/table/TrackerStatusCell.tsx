@@ -45,7 +45,7 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
 
   function handleBlur() {
     // ! Hack until I implement focus trapping
-    if (!document.getElementsByClassName('emoji-mart').length) {
+    if (!document.getElementById('emoji-picker')) {
       finishEditing()
     }
   }

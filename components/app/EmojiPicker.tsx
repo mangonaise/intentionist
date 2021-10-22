@@ -2,7 +2,7 @@ import type { StyledVoidComponent } from '@/components/types/StyledVoidComponent
 import 'emoji-mart/css/emoji-mart.css'
 import 'react-responsive-modal/styles.css'
 import isWindowsOS from '@/lib/logic/utils/isWindowsOS'
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Global } from '@emotion/react'
 import { css } from '@theme-ui/css'
 import { BaseEmoji, Picker } from 'emoji-mart'
@@ -10,6 +10,7 @@ import Heading from '@/components/primitives/Heading'
 import Flex from '@/components/primitives/Flex'
 import Text from '@/components/primitives/Text'
 import IconButton from '@/components/primitives/IconButton'
+import Box from '@/components/primitives/Box'
 import CloseIcon from '@/components/icons/CloseIcon'
 import Modal from 'react-responsive-modal'
 
@@ -21,10 +22,6 @@ interface Props {
 }
 
 const EmojiPicker: StyledVoidComponent<Props> = ({ isOpen, label, onSelectEmoji, onClosePicker }) => {
-  function handleSelect(emoji: BaseEmoji) {
-    onSelectEmoji(emoji)
-  }
-
   return (
     <Modal
       open={isOpen}
@@ -33,11 +30,11 @@ const EmojiPicker: StyledVoidComponent<Props> = ({ isOpen, label, onSelectEmoji,
         modalAnimationIn: 'in',
         modalAnimationOut: 'out'
       }}
-      animationDuration={300}
+      animationDuration={250}
       showCloseIcon={false}
     >
       <StyleWrapper>
-        <Flex column sx={{ margin: 'auto' }}>
+        <Flex column sx={{ margin: 'auto', width: '594px' }}>
           <Flex align="center">
             <Heading
               level={3}
@@ -63,24 +60,47 @@ const EmojiPicker: StyledVoidComponent<Props> = ({ isOpen, label, onSelectEmoji,
           >
             {label}
           </Text>
-          <Picker
-            onSelect={(emoji: BaseEmoji) => handleSelect(emoji)}
-            native={!isWindowsOS}
-            theme="dark"
-            set="twitter"
-            emojiSize={26}
-            sheetSize={32}
-            perLine={15}
-            showPreview={false}
-            title={'Skin tone'}
-            emoji=""
-            color="var(--text-color)"
-            notFoundEmoji=""
-            exclude={['recent']}
-          />
+          <PickerWrapper onSelectEmoji={onSelectEmoji} />
         </Flex>
       </StyleWrapper>
     </Modal>
+  )
+}
+
+const PickerWrapper = ({ onSelectEmoji }: { onSelectEmoji: (emoji: BaseEmoji) => void }) => {
+  const [show, setShow] = useState(false)
+
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      setShow(true)
+    }, 260)
+    return () => clearTimeout(delay)
+  }, [])
+
+  function handleSelect(emoji: BaseEmoji) {
+    onSelectEmoji(emoji)
+  }
+
+  return (
+    <Box id="emoji-picker">
+      {show && (
+        <Picker
+          onSelect={(emoji: BaseEmoji) => handleSelect(emoji)}
+          native={!isWindowsOS}
+          theme="dark"
+          set="twitter"
+          emojiSize={26}
+          sheetSize={32}
+          perLine={15}
+          showPreview={false}
+          title={'Skin tone'}
+          emoji=""
+          color="var(--text-color)"
+          notFoundEmoji=""
+          exclude={['recent']}
+        />
+      )}
+    </Box>
   )
 }
 
@@ -127,7 +147,7 @@ const StyleWrapper: FC = ({ children }) => {
         },
         '.emoji-mart': {
           opacity: 0,
-          animation: 'fade-in forwards 550ms 400ms',
+          animation: 'fade-in forwards 750ms',
           backgroundColor: 'transparent',
           border: 'none',
           transform: 'translateY(4px)',
