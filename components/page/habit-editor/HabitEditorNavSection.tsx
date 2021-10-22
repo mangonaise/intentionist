@@ -12,7 +12,7 @@ const HabitEditorNavSection = () => {
   const editor = useContext(HabitEditorContext)
 
   return (
-    <Flex sx={{ pb: [3, 4], borderBottom: 'solid 1.5px', borderColor: 'divider' }}>
+    <Flex sx={{ pb: 3, borderBottom: 'solid 1.5px', borderColor: 'divider' }}>
       {editor.isNewHabit && <IconButton icon={CloseIcon} onClick={editor.exit} sx={{ mr: [2, 3, 4] }} />}
       <Text
         type="span"
