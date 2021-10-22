@@ -33,7 +33,7 @@ const EmojiPicker = ({ isOpen, label, onSelectEmoji, onClosePicker }: Props) => 
       showCloseIcon={false}
     >
       <StyleWrapper>
-        <Flex column sx={{ margin: 'auto', width: '594px' }}>
+        <Flex column sx={{ margin: 'auto' }}>
           <Flex align="center">
             <Heading
               level={3}
@@ -78,7 +78,7 @@ const PickerWrapper = ({ onSelectEmoji }: { onSelectEmoji: (emoji: BaseEmoji) =>
   }
 
   return (
-    <Box id="emoji-picker">
+    <Box id="emoji-picker" sx={{ width: ['auto', 'min(594px, 95vw)'], height: '400px' }}>
       {show && (
         <Picker
           onSelect={(emoji: BaseEmoji) => handleSelect(emoji)}
@@ -128,7 +128,7 @@ const StyleWrapper: FC = ({ children }) => {
             margin: 0,
             backgroundColor: 'transparent',
             boxShadow: 'none',
-            paddingX: 4,
+            paddingX: 3,
             paddingY: 3,
             transform: 'scale(1)',
             '@keyframes in': {
@@ -264,7 +264,7 @@ const StyleWrapper: FC = ({ children }) => {
               left: 0
             },
             '&-skins': {
-              right: '1rem'
+              right: 0
             }
           },
 
