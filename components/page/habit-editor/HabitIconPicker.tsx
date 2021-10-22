@@ -13,7 +13,7 @@ const HabitIconPicker = () => {
       buttonSize={['3.5rem', '5rem']}
       emojiFontSize={['1.5rem', '2rem']}
       twemojiSize={28}
-      label="Select a habit icon"
+      label="as your habit's icon"
     />
   )
 }

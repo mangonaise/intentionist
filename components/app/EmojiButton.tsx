@@ -24,7 +24,7 @@ const EmojiButton = ({ value, onChangeEmoji, buttonSize, emojiFontSize, twemojiS
   }
 
   return (
-    <BlurListener blurAction={() => setShowPicker(false)} sx={{ position: 'relative' }}>
+    <>
       <Button
         onClick={() => setShowPicker(!showPicker)}
         sx={{
@@ -38,11 +38,11 @@ const EmojiButton = ({ value, onChangeEmoji, buttonSize, emojiFontSize, twemojiS
       </Button>
       <EmojiPicker
         isOpen={showPicker}
+        onClosePicker={() => setShowPicker(false)}
         label={label}
         onSelectEmoji={handleSelectEmoji}
-        onEscape={() => setShowPicker(false)}
       />
-    </BlurListener>
+    </>
   )
 }
 

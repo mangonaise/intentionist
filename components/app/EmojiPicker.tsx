@@ -1,96 +1,141 @@
 import type { StyledVoidComponent } from '@/components/types/StyledVoidComponent'
 import 'emoji-mart/css/emoji-mart.css'
-import { forwardRef, useLayoutEffect, useRef, useState } from 'react'
-import { BaseEmoji, Picker } from 'emoji-mart'
-import useWindowWidth from '@/lib/hooks/useWindowWidth'
 import isWindowsOS from '@/lib/logic/utils/isWindowsOS'
-import Box, { BoxProps } from '@/components/primitives/Box'
+import { FC } from 'react'
+import { Global } from '@emotion/react'
+import { css } from '@theme-ui/css'
+import { BaseEmoji, Picker } from 'emoji-mart'
+import Heading from '@/components/primitives/Heading'
+import Flex from '@/components/primitives/Flex'
+import Text from '@/components/primitives/Text'
+import IconButton from '@/components/primitives/IconButton'
+import CloseIcon from '@/components/icons/CloseIcon'
+import Modal from 'react-responsive-modal'
 
 interface Props {
   isOpen: boolean,
   label: string,
+  onClosePicker: () => void,
   onSelectEmoji: (emoji: BaseEmoji) => void,
-  onEscape: () => void
 }
 
-const EmojiPicker: StyledVoidComponent<Props> = ({ isOpen, label, onSelectEmoji, onEscape, className }) => {
-  const wrapperRef = useRef<HTMLDivElement>(null)
-  const windowWidth = useWindowWidth()
-  const [anchorRight, setAnchorRight] = useState(false)
-
-  useLayoutEffect(() => {
-    if (isOpen) {
-      const wrapper = wrapperRef.current!
-      setAnchorRight(wrapper.parentElement!.getBoundingClientRect().left + wrapper.offsetWidth > windowWidth)
-    }
-  }, [isOpen, windowWidth])
-
-  function handleKeyDown(key: string) {
-    if (key === 'Escape') {
-      onEscape()
-    }
-  }
-
+const EmojiPicker: StyledVoidComponent<Props> = ({ isOpen, label, onSelectEmoji, onClosePicker }) => {
   function handleSelect(emoji: BaseEmoji) {
     onSelectEmoji(emoji)
   }
 
-  if (!isOpen) return null
   return (
-    <EmojiMartWrapper
-      onKeyDown={e => handleKeyDown(e.key)}
-      sx={{ right: anchorRight ? 0 : 'auto' }}
-      ref={wrapperRef}
-      className={className}
+    <Modal
+      open={isOpen}
+      onClose={onClosePicker}
+      classNames={{
+        modalAnimationIn: 'in',
+        modalAnimationOut: 'out'
+      }}
+      animationDuration={300}
+      showCloseIcon={false}
     >
-      <Picker
-        onSelect={(emoji: BaseEmoji) => handleSelect(emoji)}
-        native={!isWindowsOS}
-        theme="dark"
-        set="twitter"
-        emojiSize={26}
-        sheetSize={32}
-        showPreview={false}
-        title={label}
-        emoji=""
-        color="var(--text-color)"
-        notFoundEmoji=""
-        exclude={['recent']}
-      />
-    </EmojiMartWrapper>
+      <StyleWrapper>
+        <Flex column sx={{ margin: 'auto' }}>
+          <Flex align="center">
+            <Heading
+              level={3}
+              sx={{
+                textShadow: 'var(--text-shadow)',
+                fontSize: ['1.5rem', '1.8rem']
+              }}
+            >
+              Choose an emoji
+            </Heading>
+            <IconButton
+              onClick={onClosePicker}
+              icon={CloseIcon}
+              sx={{
+                ml: 'auto',
+                bg: 'transparent'
+              }}
+            />
+          </Flex>
+          <Text
+            type="span"
+            sx={{ textShadow: 'var(--text-shadow)', fontSize: '1.1rem', opacity: 0.8 }}
+          >
+            {label}
+          </Text>
+          <Picker
+            onSelect={(emoji: BaseEmoji) => handleSelect(emoji)}
+            native={!isWindowsOS}
+            theme="dark"
+            set="twitter"
+            emojiSize={26}
+            sheetSize={32}
+            perLine={15}
+            showPreview={false}
+            title={'Skin tone'}
+            emoji=""
+            color="var(--text-color)"
+            notFoundEmoji=""
+            exclude={['recent']}
+          />
+        </Flex>
+      </StyleWrapper>
+    </Modal>
   )
 }
 
-const EmojiMartWrapper = forwardRef<HTMLDivElement, BoxProps>(function EmojiMartWrapper(props, ref) {
+const StyleWrapper: FC = ({ children }) => {
   return (
-    <Box
-      ref={ref}
-      onKeyDown={props.onKeyDown}
-      className={props.className}
-      sx={{
-        position: 'absolute',
-        zIndex: 1,
+    <>
+      {children}
+      <Global styles={css({
+        ':root': {
+          '--text-shadow': 'black 1px 1px 4px',
+        },
+        '::-webkit-scrollbar-track': {
+          background: 'none',
+        },
+        '::-webkit-scrollbar-thumb': {
+          borderRadius: '999px'
+        },
+        '.react-responsive-modal': {
+          '&-overlay': {
+            backgroundColor: 'rgba(0, 0, 0, 0.85)'
+          },
+          '&-modal': {
+            maxWidth: '100vw',
+            position: ['fixed', 'relative'],
+            top: ['auto', '10%'],
+            bottom: [0, null],
+            left: [0, null],
+            right: [0, null],
+            margin: 0,
+            backgroundColor: 'transparent',
+            boxShadow: 'none',
+            paddingX: 4,
+            paddingY: 3,
+            transform: 'scale(1)',
+            '@keyframes in': {
+              '0%': { opacity: 0, transform: 'translateY(50px)' },
+              '100%': { opacity: 1 }
+            },
+            '@keyframes out': {
+              '0%': { opacity: 1 },
+              '100%': { opacity: 0, transform: 'translateY(15px)' }
+            }
+          }
+        },
         '.emoji-mart': {
           opacity: 0,
-          animation: 'fade-in forwards 200ms',
-          backgroundColor: 'bg',
-          border: 'solid 2px',
-          borderColor: 'divider',
+          animation: 'fade-in forwards 550ms 400ms',
+          backgroundColor: 'transparent',
+          border: 'none',
           transform: 'translateY(4px)',
           fontFamily: 'inherit',
-
-          '@media screen and (max-width: 600px)': {
-            width: '100vw !important',
-            position: 'fixed',
-            borderRadius: 0,
-            borderLeft: 'none',
-            borderRight: 'none',
-            left: 0,
-            right: 0
-          },
+          maxWidth: '100%',
 
           '&-bar': {
-            borderColor: 'divider',
+            backgroundColor: 'transparent',
+            border: 'none',
             '&:first-of-type': {
               borderBottomWidth: '2px'
             },
@@ -99,47 +144,76 @@ const EmojiMartWrapper = forwardRef<HTMLDivElement, BoxProps>(function EmojiMart
             }
           },
 
+          '&-anchors': {
+            padding: 0,
+          },
+
           '&-search': {
             zIndex: 5,
             margin: '6px 0',
+            padding: 0,
             '& input': {
-              border: 'solid 2px',
-              borderColor: 'divider',
-              backgroundColor: 'whiteAlpha.5',
+              paddingX: 0,
+              border: 'none',
+              borderBottom: 'solid 2px',
+              borderColor: 'rgba(255, 255, 255, 0.4) !important',
+              borderRadius: 0,
+              backgroundColor: 'transparent !important',
+              textShadow: 'var(--text-shadow)',
+              '&::placeholder': {
+                color: 'text',
+                textShadow: 'var(--text-shadow)',
+              },
+              '&:focus': {
+                boxShadow: 'none',
+                borderColor: 'white !important'
+              }
+            },
+
+            '&-icon': {
+              right: '2px'
             }
           },
 
+          '&-scroll': {
+            paddingLeft: 0,
+          },
+
           '&-category-list': {
-            marginRight: '-2px',
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            '.emoji-mart-emoji': {
+              padding: '4px',
+              '&:hover::before': {
+                borderRadius: '4px'
+              },
+              '&:focus': {
+                borderRadius: 'default',
+                transform: 'scale(0.8)',
+                '&:not(:focus-visible)': {
+                  transform: 'none'
+                }
+              },
+              '& span': {
+                display: 'inline-flex !important',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }
+            },
           },
 
           '&-category-label': {
             top: '-2px',
             paddingTop: '3px',
             marginBottom: '2px',
-            borderBottom: 'solid 1.5px',
-            borderColor: 'divider',
-            backgroundColor: 'bg',
+            border: 'none',
+            backgroundColor: 'transparent',
             '& span': {
-              backgroundColor: 'bg'
-            }
-          },
-
-          '&-emoji': {
-            '&:hover::before': {
-              borderRadius: '4px'
-            },
-            '&:focus': {
-              borderRadius: 'default',
-              transform: 'scale(0.8)',
-              '&:not(:focus-visible)': {
-                transform: 'none'
-              }
-            },
-            '& span': {
-              display: 'inline-flex !important',
-              justifyContent: 'center',
-              alignItems: 'center'
+              backgroundColor: 'rgba(0, 0, 0, 0) !important',
+              textShadow: 'black 1px 1px 4px, black 1px 1px 4px',
+              borderRadius: '3px',
+              paddingLeft: 0,
             }
           },
 
@@ -152,6 +226,7 @@ const EmojiMartWrapper = forwardRef<HTMLDivElement, BoxProps>(function EmojiMart
             border: 'none',
             backgroundColor: 'bg',
             borderRadius: '2.2rem',
+            background: 'none !important',
             '&.opened .emoji-mart-skin-swatch': {
               width: '2.2rem',
             },
@@ -168,7 +243,8 @@ const EmojiMartWrapper = forwardRef<HTMLDivElement, BoxProps>(function EmojiMart
           '&-preview': {
             height: '3rem',
             '&-data': {
-              left: '1rem',
+              opacity: 0.8,
+              left: 0
             },
             '&-skins': {
               right: '1rem'
@@ -181,10 +257,9 @@ const EmojiMartWrapper = forwardRef<HTMLDivElement, BoxProps>(function EmojiMart
             fontWeight: 'normal'
           }
         },
-      }}>
-      {props.children}
-    </Box>
+      })} />
+    </>
   )
-})
+}
 
 export default EmojiPicker

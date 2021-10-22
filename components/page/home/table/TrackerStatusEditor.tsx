@@ -1,5 +1,6 @@
 import { container } from 'tsyringe'
 import { Dispatch, SetStateAction, useState } from 'react'
+import { BaseEmoji } from 'emoji-mart'
 import HabitsHandler from '@/lib/logic/app/HabitsHandler'
 import CellEditorButton from './CellEditorButton'
 import CellEditorButtonsBar from './CellEditorButtonsBar'
@@ -31,10 +32,15 @@ const TrackerStatusEditor = ({ draft, habitId, onEditDraft, onFinishEditing }: T
     onEditDraft(newDraft)
   }
 
+  function handleEmojiPickerResult(emoji: BaseEmoji) {
+    addEmoji(emoji.native)
+    setShowEmojiPicker(false)
+  }
+
   return (
     <>
       <CellEditorButtonsBar above>
-        <CellEditorButton content={SearchIcon} action={() => setShowEmojiPicker(!showEmojiPicker)} invert={showEmojiPicker} />
+        <CellEditorButton content={SearchIcon} action={() => setShowEmojiPicker(!showEmojiPicker)} />
         <CellEditorButton content={BackspaceIcon} action={backspace} disabled={!draft.length} />
         <CellEditorButton content={CheckIcon} action={onFinishEditing} />
       </CellEditorButtonsBar>
@@ -45,9 +51,9 @@ const TrackerStatusEditor = ({ draft, habitId, onEditDraft, onFinishEditing }: T
       )}
       <EmojiPicker
         isOpen={showEmojiPicker}
-        label="Choose a status"
-        onSelectEmoji={(emoji) => addEmoji(emoji.native)}
-        onEscape={() => { }}
+        label="as your habit's daily status"
+        onSelectEmoji={handleEmojiPickerResult}
+        onClosePicker={() => setShowEmojiPicker(false)}
       />
     </>
   )

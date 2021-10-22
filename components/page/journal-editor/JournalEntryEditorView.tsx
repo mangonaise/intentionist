@@ -28,7 +28,7 @@ const JournalEntryIconPicker = observer(() => {
       buttonSize={['3rem', '3.5rem']}
       emojiFontSize={['1.25rem', '1.5rem']}
       twemojiSize={22}
-      label="Select journal entry icon"
+      label="as your journal entry's icon"
     />
   )
 })

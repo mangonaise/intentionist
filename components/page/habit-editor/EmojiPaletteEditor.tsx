@@ -163,7 +163,7 @@ const EmojiPickerButton = observer(({ id }: { id: string }) => {
   return (
     <EmojiButton
       value={emoji}
-      label="Add emoji to palette"
+      label="to add to your quick palette"
       buttonSize={"2.8rem"}
       emojiFontSize="1.2rem"
       twemojiSize={18}

@@ -43,6 +43,13 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
     }
   }
 
+  function handleBlur() {
+    // ! Hack until I implement focus trapping
+    if (!document.getElementsByClassName('emoji-mart').length) {
+      finishEditing()
+    }
+  }
+
   return (
     <Flex
       center
@@ -61,8 +68,8 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
       ref={cellRef}
     >
       <BlurListener
-        blurAction={finishEditing}
-        escapeAction={finishEditing}
+        blurAction={handleBlur}
+        escapeAction={handleBlur}
         sx={{ position: 'relative', size: '100%' }}
       >
         <CellButton
