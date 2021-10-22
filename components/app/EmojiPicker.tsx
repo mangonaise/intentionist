@@ -1,4 +1,3 @@
-import type { StyledVoidComponent } from '@/components/types/StyledVoidComponent'
 import 'emoji-mart/css/emoji-mart.css'
 import 'react-responsive-modal/styles.css'
 import isWindowsOS from '@/lib/logic/utils/isWindowsOS'
@@ -21,7 +20,7 @@ interface Props {
   onSelectEmoji: (emoji: BaseEmoji) => void,
 }
 
-const EmojiPicker: StyledVoidComponent<Props> = ({ isOpen, label, onSelectEmoji, onClosePicker }) => {
+const EmojiPicker = ({ isOpen, label, onSelectEmoji, onClosePicker }: Props) => {
   return (
     <Modal
       open={isOpen}
@@ -38,10 +37,7 @@ const EmojiPicker: StyledVoidComponent<Props> = ({ isOpen, label, onSelectEmoji,
           <Flex align="center">
             <Heading
               level={3}
-              sx={{
-                textShadow: 'var(--text-shadow)',
-                fontSize: ['1.5rem', '1.8rem']
-              }}
+              sx={{ textShadow: 'var(--text-shadow)', fontSize: ['1.5rem', '1.8rem'] }}
             >
               Choose an emoji
             </Heading>
