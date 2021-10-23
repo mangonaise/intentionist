@@ -4,7 +4,6 @@ import Button from '@/components/primitives/Button'
 import Flex from '@/components/primitives/Flex'
 import EmojiPicker from './EmojiPicker'
 import SmartEmoji from './SmartEmoji'
-import BlurListener from './BlurListener'
 
 interface Props {
   value: string,
