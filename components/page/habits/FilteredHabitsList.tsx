@@ -1,12 +1,12 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { useContext, useState } from 'react'
-import { DragEndEvent, DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors, } from '@dnd-kit/core'
+import { forwardRef, useContext, useState } from 'react'
+import { DraggableSyntheticListeners, DragStartEvent, DragEndEvent, DragOverlay, DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors, } from '@dnd-kit/core'
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy, } from '@dnd-kit/sortable'
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
-import HabitsHandler, { Habit } from '@/lib/logic/app/HabitsHandler'
 import { HabitFilterContext } from 'pages/habits'
+import HabitsHandler, { Habit } from '@/lib/logic/app/HabitsHandler'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Button from '@/components/primitives/Button'
 import Flex from '@/components/primitives/Flex'
@@ -19,7 +19,13 @@ import NextLink from 'next/link'
 const FilteredHabitsList = () => {
   const { filteredHabits, refresh } = useContext(HabitFilterContext)
   const { habits, reorderHabits } = container.resolve(HabitsHandler)
-  const [isAnythingDragging, setIsAnythingDragging] = useState(false)
+  const [draggedHabitId, setDraggedHabitId] = useState<string | null>(null)
+
+  const [habitsMap] = useState(habits.reduce<{ [habitId: string]: Habit }>((map, habit) => {
+    map[habit.id] = habit
+    return map
+  }, {}))
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(TouchSensor),
@@ -32,9 +38,8 @@ const FilteredHabitsList = () => {
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onDragCancel={() => setIsAnythingDragging(false)}
-      onDragStart={() => setIsAnythingDragging(true)}
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
     >
       <SortableContext
@@ -42,11 +47,18 @@ const FilteredHabitsList = () => {
         strategy={verticalListSortingStrategy}
       >
         <div>
-          {filteredHabits.map(habit => <SortableHabitButton habit={habit} isAnythingDragging={isAnythingDragging} key={habit.id} />)}
+          {filteredHabits.map(habit => <SortableHabit habit={habit} key={habit.id} />)}
         </div>
       </SortableContext>
+      <DragOverlay>
+        {!!draggedHabitId && <HabitWrapper isDragOverlay habit={habitsMap[draggedHabitId]} />}
+      </DragOverlay>
     </DndContext>
   )
+
+  function handleDragStart(event: DragStartEvent) {
+    setDraggedHabitId(event.active.id)
+  }
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
@@ -58,11 +70,11 @@ const FilteredHabitsList = () => {
         refresh()
       }
     }
-    setIsAnythingDragging(false)
+    setDraggedHabitId(null)
   }
 }
 
-const SortableHabitButton = ({ habit, isAnythingDragging }: { habit: Habit, isAnythingDragging: boolean }) => {
+const SortableHabit = ({ habit }: { habit: Habit }) => {
   const {
     attributes,
     listeners,
@@ -78,32 +90,70 @@ const SortableHabitButton = ({ habit, isAnythingDragging }: { habit: Habit, isAn
   }
 
   return (
-    <Flex
+    <HabitWrapper
       ref={setNodeRef}
+      style={style}
+      attributes={attributes}
+      listeners={listeners}
+      habit={habit}
+      isDragging={isDragging}
+    />
+  )
+}
+
+interface HabitWrapperProps extends DragHandleProps {
+  habit: Habit,
+  isDragging?: boolean,
+  style?: {
+    transform: string | undefined
+    transition: string | undefined
+  }
+}
+
+const HabitWrapper = forwardRef(function HabitWrapper(props: HabitWrapperProps, ref: any) {
+  const { habit, isDragging, isDragOverlay, style, listeners, attributes } = props
+
+  return (
+    <Flex
+      ref={ref}
       sx={{
+        opacity: isDragging ? 0 : 1,
         borderRadius: 'default',
         marginBottom: 1,
-        backgroundColor: isDragging ? 'whiteAlpha.20' : 'transparent'
+        backgroundColor: isDragOverlay ? 'whiteAlpha.20' : 'transparent'
       }}
       style={style}
     >
-      <IconButton
-        icon={DragHandleIcon}
-        hoverEffect="none"
-        sx={{
-          paddingX: 2,
-          backgroundColor: 'transparent',
-          color: isDragging ? 'whiteAlpha.100' : 'whiteAlpha.30',
-          touchAction: 'none'
-        }}
-        {...listeners} {...attributes}
-      />
-      <div sx={{ pointerEvents: isAnythingDragging ? 'none' : 'auto', width: '100%' }}>
+      <DragHandle listeners={listeners} attributes={attributes} isDragOverlay={isDragOverlay} />
+      <div sx={{ pointerEvents: isDragOverlay ? 'none' : 'auto', width: '100%' }}>
         <HabitLink habit={habit} />
       </div>
     </Flex>
   )
+})
+
+interface DragHandleProps {
+  isDragOverlay?: boolean,
+  listeners?: DraggableSyntheticListeners,
+  attributes?: any
 }
+
+const DragHandle = observer(({ isDragOverlay, listeners, attributes }: DragHandleProps) => {
+  return (
+    <IconButton
+      icon={DragHandleIcon}
+      hoverEffect="none"
+      sx={{
+        paddingX: 2,
+        backgroundColor: 'transparent',
+        color: isDragOverlay ? 'whiteAlpha.100' : 'whiteAlpha.30',
+        touchAction: 'none'
+      }}
+      {...listeners}
+      {...attributes}
+    />
+  )
+})
 
 const HabitLink = observer(({ habit }: { habit: Habit }) => {
   return (
