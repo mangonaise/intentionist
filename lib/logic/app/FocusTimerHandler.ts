@@ -103,6 +103,11 @@ export default class FocusTimerHandler {
     this.endSound?.pause()
   }
 
+  public exitTimer = () => {
+    this.clearCountdownInterval()
+    this.endSound?.pause()
+  }
+
   private handleTimerEnd = () => {
     this.saveProgress()
     this.clearCountdownInterval()

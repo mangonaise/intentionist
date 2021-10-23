@@ -18,8 +18,12 @@ const FocusPage = observer(() => {
   const { isLoadingWeek } = container.resolve(WeekHandler)
   const [timerHandler, setTimerHandler] = useState<FocusTimerHandler | undefined>()
 
+  // Using useEffect instead of immediately creating the timer instance solves a cryptic error.
+  // This works fine. I'd like to figure out the exact source of the error eventually, although it isn't urgent.
   useEffect(() => {
-    setTimerHandler(container.resolve(FocusTimerHandler))
+    const timerHandlerInstance = container.resolve(FocusTimerHandler)
+    setTimerHandler(timerHandlerInstance)
+    return () => timerHandlerInstance.exitTimer()
   }, [])
 
   if (!timerHandler) return <></>
@@ -32,7 +36,6 @@ const FocusPage = observer(() => {
         <FocusTimer />
       </Flex>
     </FocusTimerContext.Provider>
-
   )
 })
 
