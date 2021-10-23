@@ -58,7 +58,8 @@ const HabitCellWithName = ({ habit }: { habit: Habit }) => {
               marginLeft: 3,
               paddingY: '2px',
               paddingRight: ['0.6em', 3],
-              overflowWrap: 'break-word'
+              overflowWrap: 'break-word',
+              textAlign: 'left'
             }}
           >
             {habit.name}
