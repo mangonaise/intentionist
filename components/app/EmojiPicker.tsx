@@ -229,6 +229,7 @@ const StyleWrapper: FC = ({ children }) => {
             top: '-2px',
             paddingTop: '3px',
             marginBottom: '2px',
+            width: 'fit-content',
             border: 'none',
             backgroundColor: 'transparent',
             '& span': {
