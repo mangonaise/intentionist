@@ -6,20 +6,22 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
   const barRef = useRef<HTMLDivElement>(null)
   const windowWidth = useWindowWidth()
   const [anchor, setAnchor] = useState<'none' | 'left' | 'right'>('none')
-  const [xOffset, setXOffset] = useState(0)
-  const [yOffset, setYOffset] = useState(0)
+  const [translateX, setTranslateX] = useState('0')
+  const [translateY, setTranslateY] = useState('0')
 
   useLayoutEffect(() => {
     if (!barRef.current || !barRef.current.parentElement) return
     const cellLeftPos = barRef.current.parentElement.getBoundingClientRect().left
     const cellWidth = barRef.current.parentElement.offsetWidth
+    const cellHeight = barRef.current.parentElement.offsetHeight
     const barWidth = barRef.current.offsetWidth
     const pagePadding = windowWidth > 600 ? 7 : 0
     const proposedXOffset = (cellWidth - barWidth) / 2
 
     if (above) {
-      const cellHeight = barRef.current.parentElement.offsetHeight
-      setYOffset(cellHeight)
+      setTranslateY(`calc(-3rem - 1px)`)
+    } else {
+      setTranslateY(`${cellHeight}px`)
     }
 
     if (cellLeftPos + proposedXOffset < pagePadding) {
@@ -27,7 +29,7 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
     } else if (cellLeftPos + barWidth + proposedXOffset > windowWidth - pagePadding) {
       setAnchor('right')
     } else {
-      setXOffset(proposedXOffset)
+      setTranslateX(`${proposedXOffset}px`)
       setAnchor('none')
     }
   }, [windowWidth, above, children])
@@ -45,7 +47,7 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
         pl: '4px', pt: '4px',
         bg: 'rgba(24, 24, 24, 0.88)',
         borderRadius: 'default',
-        transform: `translateX(${anchor === 'none' ? xOffset : 0}px) translateY(${above ? `calc(${-yOffset}px - 3rem - 1px)` : 0})`
+        transform: `translateX(${translateX}) translateY(${translateY})`
       }}
     >
       {children}

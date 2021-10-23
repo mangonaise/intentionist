@@ -5,31 +5,33 @@ import HabitsHandler from '@/lib/logic/app/HabitsHandler'
 import CellEditorButton from './CellEditorButton'
 import CellEditorButtonsBar from './CellEditorButtonsBar'
 import EmojiPicker from '@/components/app/EmojiPicker'
+import Box from '@/components/primitives/Box'
 import BackspaceIcon from '@/components/icons/BackspaceIcon'
 import CheckIcon from '@/components/icons/CheckIcon'
 import SearchIcon from '@/components/icons/SearchIcon'
+import FocusTrap from 'focus-trap-react'
 
 interface TrackerStatusEditorProps {
-  draft: string[],
+  status: string[],
   habitId: string
-  onEditDraft: Dispatch<SetStateAction<string[]>>,
-  onFinishEditing: () => void
+  onEditStatus: Dispatch<SetStateAction<string[]>>,
+  closeEditor: () => void
 }
 
-const TrackerStatusEditor = ({ draft, habitId, onEditDraft, onFinishEditing }: TrackerStatusEditorProps) => {
+const TrackerStatusEditor = ({ status, habitId, onEditStatus, closeEditor }: TrackerStatusEditorProps) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const [palette] = useState(getHabitPalette(habitId))
 
   function addEmoji(emoji: string) {
-    const newDraft = [...draft]
+    const newDraft = [...status]
     newDraft.push(emoji)
-    onEditDraft(newDraft)
+    onEditStatus(newDraft)
   }
 
   function backspace() {
-    const newDraft = [...draft]
+    const newDraft = [...status]
     newDraft.splice(-1)
-    onEditDraft(newDraft)
+    onEditStatus(newDraft)
   }
 
   function handleEmojiPickerResult(emoji: BaseEmoji) {
@@ -38,24 +40,30 @@ const TrackerStatusEditor = ({ draft, habitId, onEditDraft, onFinishEditing }: T
   }
 
   return (
-    <>
-      <CellEditorButtonsBar above>
-        <CellEditorButton content={SearchIcon} action={() => setShowEmojiPicker(!showEmojiPicker)} />
-        <CellEditorButton content={BackspaceIcon} action={backspace} disabled={!draft.length} />
-        <CellEditorButton content={CheckIcon} action={onFinishEditing} />
-      </CellEditorButtonsBar>
-      {!!palette.length && (
-        <CellEditorButtonsBar>
-          {palette.map((emoji, index) => <CellEditorButton key={index} content={emoji} action={() => addEmoji(emoji)} />)}
+    <FocusTrap paused={showEmojiPicker} focusTrapOptions={{
+      clickOutsideDeactivates: true,
+      onDeactivate: closeEditor
+    }}>
+      <Box sx={{ position: 'absolute', size: '100%' }}>
+        <Box onClick={closeEditor} sx={{ position: 'absolute', size: '100%' }} />
+        <CellEditorButtonsBar above>
+          <CellEditorButton content={SearchIcon} action={() => setShowEmojiPicker(!showEmojiPicker)} />
+          <CellEditorButton content={BackspaceIcon} action={backspace} disabled={!status.length} />
+          <CellEditorButton content={CheckIcon} action={closeEditor} />
         </CellEditorButtonsBar>
-      )}
-      <EmojiPicker
-        isOpen={showEmojiPicker}
-        label="as your habit's daily status"
-        onSelectEmoji={handleEmojiPickerResult}
-        onClosePicker={() => setShowEmojiPicker(false)}
-      />
-    </>
+        {!!palette.length && (
+          <CellEditorButtonsBar>
+            {palette.map((emoji, index) => <CellEditorButton key={index} content={emoji} action={() => addEmoji(emoji)} />)}
+          </CellEditorButtonsBar>
+        )}
+        <EmojiPicker
+          isOpen={showEmojiPicker}
+          label="as your habit's daily status"
+          onSelectEmoji={handleEmojiPickerResult}
+          onClosePicker={() => setShowEmojiPicker(false)}
+        />
+      </Box>
+    </FocusTrap>
   )
 }
 

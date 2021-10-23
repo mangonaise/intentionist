@@ -1,9 +1,8 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { FC, useRef, useState } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 import WeekHandler, { WeekdayId } from '@/lib/logic/app/WeekHandler'
 import TrackerStatusEditor from './TrackerStatusEditor'
-import BlurListener from '@/components/app/BlurListener'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Button from '@/components/primitives/Button'
 import FadeIn from '@/components/primitives/FadeIn'
@@ -15,40 +14,34 @@ interface TrackerStatusCellProps {
 }
 
 const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
-  const cellRef = useRef<HTMLDivElement>(null!)
-  const [isEditing, setIsEditing] = useState(false)
-  const [draft, setDraft] = useState<string[]>([])
-
   const { isLoadingWeek, weekInView: { statuses } } = container.resolve(WeekHandler)
-  const status = statuses?.[habitId]?.[weekday] ?? []
-  const visibleEmojis: string[] = isLoadingWeek ? [] : (isEditing ? draft : status)
+  const [isEditing, setIsEditing] = useState(false)
+  const [status, setStatus] = useState<string[]>(statuses?.[habitId]?.[weekday] ?? [])
+  const [shouldSaveStatus, setShouldSaveStatus] = useState(false)
+  const cellRef = useRef<HTMLDivElement>(null!)
 
-  function toggleEditing() {
-    if (isEditing) {
-      finishEditing()
-    } else {
-      startEditing()
-    }
-  }
+  const visibleEmojis = isLoadingWeek ? [] : status
 
   function startEditing() {
-    setDraft(status)
     setIsEditing(true)
   }
 
   function finishEditing() {
-    if (isEditing) {
-      setIsEditing(false)
-      container.resolve(WeekHandler).setTrackerStatus(habitId, weekday, draft)
-    }
+    setIsEditing(false)
+    setShouldSaveStatus(true)
   }
 
-  function handleBlur() {
-    // ! Hack until I implement focus trapping
-    if (!document.getElementById('emoji-picker')) {
-      finishEditing()
-    }
+  function saveDraft() {
+    container.resolve(WeekHandler).setTrackerStatus(habitId, weekday, status)
   }
+
+  // Save status in an effect because the draft editor is closed by the focus trap, which doesn't have access to current state
+  useEffect(() => {
+    if (shouldSaveStatus) {
+      saveDraft()
+      setShouldSaveStatus(false)
+    }
+  }, [shouldSaveStatus])
 
   return (
     <Flex
@@ -62,41 +55,36 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
           content: '""',
           inset: 0,
           borderTop: 'solid 1px',
-          borderColor: 'grid'
+          borderColor: 'grid',
+          zIndex: -1
         }
       }}
       ref={cellRef}
     >
-      <BlurListener
-        blurAction={handleBlur}
-        escapeAction={handleBlur}
-        sx={{ position: 'relative', size: '100%' }}
+      <CellButton
+        onClickCell={startEditing}
+        isEditing={isEditing}
+        isLoading={isLoadingWeek}
+        hasStatus={!!visibleEmojis.length}
       >
-        <CellButton
-          onClickCell={toggleEditing}
-          isEditing={isEditing}
-          isLoading={isLoadingWeek}
-          hasStatus={!!visibleEmojis.length}
-        >
-          <Flex center flexWrap sx={{ py: '4px' }}>
-            {visibleEmojis.map((emoji, index) => (
-              <FadeIn time={250} key={index}>
-                <Flex center sx={{ p: '1px' }}>
-                  <SmartEmoji nativeEmoji={emoji} nativeFontSize="1.15rem" twemojiSize={18} />
-                </Flex>
-              </FadeIn>
-            ))}
-          </Flex>
-        </CellButton >
-        {isEditing && (
-          <TrackerStatusEditor
-            draft={draft}
-            habitId={habitId}
-            onEditDraft={setDraft}
-            onFinishEditing={finishEditing}
-          />
-        )}
-      </BlurListener >
+        <Flex center flexWrap sx={{ py: '4px' }}>
+          {visibleEmojis.map((emoji, index) => (
+            <FadeIn time={250} key={index}>
+              <Flex center sx={{ p: '1px' }}>
+                <SmartEmoji nativeEmoji={emoji} nativeFontSize="1.15rem" twemojiSize={18} />
+              </Flex>
+            </FadeIn>
+          ))}
+        </Flex>
+      </CellButton >
+      {isEditing && (
+        <TrackerStatusEditor
+          status={status}
+          habitId={habitId}
+          onEditStatus={setStatus}
+          closeEditor={finishEditing}
+        />
+      )}
     </Flex >
   )
 }
