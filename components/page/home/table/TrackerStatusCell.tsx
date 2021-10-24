@@ -1,6 +1,6 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import WeekHandler, { WeekdayId } from '@/lib/logic/app/WeekHandler'
 import TrackerStatusEditor from './TrackerStatusEditor'
 import SmartEmoji from '@/components/app/SmartEmoji'
@@ -18,8 +18,6 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
   const [isEditing, setIsEditing] = useState(false)
   const [status, setStatus] = useState<string[]>(statuses?.[habitId]?.[weekday] ?? [])
   const [shouldSaveStatus, setShouldSaveStatus] = useState(false)
-  const cellRef = useRef<HTMLDivElement>(null!)
-
   const visibleEmojis = isLoadingWeek ? [] : status
 
   function startEditing() {
@@ -59,7 +57,6 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
           zIndex: -1
         }
       }}
-      ref={cellRef}
     >
       <CellButton
         onClickCell={startEditing}
