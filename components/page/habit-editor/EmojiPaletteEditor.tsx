@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react-lite'
 import { makeAutoObservable } from 'mobx'
 import { nanoid } from 'nanoid'
-import { createContext, useContext, useState } from 'react'
-import { DragEndEvent, DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors, } from '@dnd-kit/core'
+import { createContext, forwardRef, useContext, useState } from 'react'
+import { DragStartEvent, DragEndEvent, DndContext, DragOverlay, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors, } from '@dnd-kit/core'
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy, } from '@dnd-kit/sortable'
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
@@ -12,13 +12,13 @@ import HabitEditor from '@/lib/logic/app/HabitEditor'
 import arrayMove from '@/lib/logic/utils/arrayMove'
 import EmojiPaletteInfo from './EmojiPaletteInfo'
 import EmojiButton from '@/components/app/EmojiButton'
+import DragHandle, { DragHandleProps } from '@/components/app/DragHandle'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
 import Heading from '@/components/primitives/Heading'
 import IconButton from '@/components/primitives/IconButton'
 import Spacer from '@/components/primitives/Spacer'
 import CloseIcon from '@/components/icons/CloseIcon'
-import DragHandleIcon from '@/components/icons/DragHandleIcon'
 import PlusIcon from '@/components/icons/PlusIcon'
 
 const PaletteEditorContext = createContext<PaletteEditor>(null!)
@@ -52,7 +52,7 @@ const HeadingSection = () => {
   const { addEmoji } = useContext(PaletteEditorContext)
 
   return (
-    <Flex align="center" sx={{ mb: 3, pb: [3, 4], borderBottom: 'solid 1.5px', borderColor: 'divider' }}>
+    <Flex align="center" sx={{ mb: 3, pb: 3, borderBottom: 'solid 1.5px', borderColor: 'divider' }}>
       <IconButton icon={PlusIcon} onClick={addEmoji} sx={{ mr: 3, p: '0.7rem' }} />
       <Heading level={3} sx={{ fontSize: ['1.25rem', '1.5rem'], fontWeight: 'medium' }}>
         Quick palette
@@ -65,7 +65,7 @@ const HeadingSection = () => {
 
 const EmojiList = observer(() => {
   const { paletteData, reorderPalette } = useContext(PaletteEditorContext)
-  const [isAnythingDragging, setIsAnythingDragging] = useState(false)
+  const [draggedEmojiId, setDraggedEmojiId] = useState<string | null>(null)
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(TouchSensor),
@@ -79,8 +79,7 @@ const EmojiList = observer(() => {
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
-      onDragCancel={() => setIsAnythingDragging(false)}
-      onDragStart={() => setIsAnythingDragging(true)}
+      onDragStart={handleDragStart}
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
     >
       <SortableContext
@@ -89,11 +88,18 @@ const EmojiList = observer(() => {
         strategy={verticalListSortingStrategy}
       >
         <div>
-          {paletteData.map(data => <SortableEmoji id={data.id} isAnythingDragging={isAnythingDragging} key={data.id} />)}
+          {paletteData.map(data => <SortableEmoji id={data.id} key={data.id} />)}
         </div>
       </SortableContext>
+      <DragOverlay>
+        {!!draggedEmojiId && <EmojiWrapper isDragOverlay id={draggedEmojiId} />}
+      </DragOverlay>
     </DndContext>
   )
+
+  function handleDragStart(event: DragStartEvent) {
+    setDraggedEmojiId(event.active.id)
+  }
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
@@ -105,11 +111,11 @@ const EmojiList = observer(() => {
       const newIndex = paletteData.indexOf(itemToTakePlaceOf)
       reorderPalette(oldIndex, newIndex)
     }
-    setIsAnythingDragging(false)
+    setDraggedEmojiId(null)
   }
 })
 
-const SortableEmoji = ({ id, isAnythingDragging }: { id: string, isAnythingDragging: boolean }) => {
+const SortableEmoji = ({ id }: { id: string }) => {
   let {
     attributes,
     listeners,
@@ -124,26 +130,44 @@ const SortableEmoji = ({ id, isAnythingDragging }: { id: string, isAnythingDragg
     transition,
   }
 
-  const pointerEvents: ThemeUIStyleObject = { pointerEvents: isAnythingDragging ? 'none' : 'auto' }
+  return (
+    <EmojiWrapper
+      id={id}
+      ref={setNodeRef}
+      style={style}
+      attributes={attributes}
+      listeners={listeners}
+      isDragging={isDragging}
+    />
+  )
+}
+
+interface EmojiWrapperProps extends DragHandleProps {
+  id: string,
+  isDragging?: boolean,
+  style?: {
+    transform: string | undefined
+    transition: string | undefined
+  }
+}
+
+const EmojiWrapper = forwardRef(function EmojiWrapper(props: EmojiWrapperProps, ref: any) {
+  const { id, isDragging, isDragOverlay, style, listeners, attributes } = props
+
+  const pointerEvents: ThemeUIStyleObject = { pointerEvents: isDragOverlay ? 'none' : 'auto' }
 
   return (
     <Flex
-      ref={setNodeRef}
-      sx={{ width: 'fit-content', marginBottom: 2, }}
+      ref={ref}
+      sx={{
+        width: 'fit-content',
+        marginBottom: 2,
+        opacity: isDragging ? 0 : 1
+      }}
       style={style}
     >
-      <Flex sx={{ borderRadius: 'default', bg: isDragging ? 'whiteAlpha.20' : 'transparent' }}>
-        <IconButton
-          icon={DragHandleIcon}
-          hoverEffect="none"
-          sx={{
-            paddingX: 2,
-            backgroundColor: 'transparent',
-            color: isDragging ? 'whiteAlpha.100' : 'whiteAlpha.30',
-            touchAction: 'none'
-          }}
-          {...listeners} {...attributes}
-        />
+      <Flex sx={{ borderRadius: 'default', bg: isDragOverlay ? 'whiteAlpha.20' : 'transparent' }}>
+        <DragHandle listeners={listeners} attributes={attributes} isDragOverlay={isDragOverlay} />
         <Box sx={pointerEvents}>
           <EmojiPickerButton id={id} />
         </Box>
@@ -153,7 +177,7 @@ const SortableEmoji = ({ id, isAnythingDragging }: { id: string, isAnythingDragg
       </Box>
     </Flex>
   )
-}
+})
 
 const EmojiPickerButton = observer(({ id }: { id: string }) => {
   const { paletteData, changeEmoji } = useContext(PaletteEditorContext)

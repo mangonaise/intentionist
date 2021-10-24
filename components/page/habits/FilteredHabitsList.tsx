@@ -1,18 +1,17 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { forwardRef, useContext, useState } from 'react'
-import { DraggableSyntheticListeners, DragStartEvent, DragEndEvent, DragOverlay, DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors, } from '@dnd-kit/core'
+import { DragStartEvent, DragEndEvent, DragOverlay, DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors, } from '@dnd-kit/core'
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy, } from '@dnd-kit/sortable'
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
 import { HabitFilterContext } from 'pages/habits'
 import HabitsHandler, { Habit } from '@/lib/logic/app/HabitsHandler'
+import DragHandle, { DragHandleProps } from '@/components/app/DragHandle'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Button from '@/components/primitives/Button'
 import Flex from '@/components/primitives/Flex'
 import Icon from '@/components/primitives/Icon'
-import IconButton from '@/components/primitives/IconButton'
-import DragHandleIcon from '@/components/icons/DragHandleIcon'
 import PencilIcon from '@/components/icons/PencilIcon'
 import NextLink from 'next/link'
 
@@ -91,11 +90,11 @@ const SortableHabit = ({ habit }: { habit: Habit }) => {
 
   return (
     <HabitWrapper
+      habit={habit}
       ref={setNodeRef}
       style={style}
       attributes={attributes}
       listeners={listeners}
-      habit={habit}
       isDragging={isDragging}
     />
   )
@@ -117,10 +116,10 @@ const HabitWrapper = forwardRef(function HabitWrapper(props: HabitWrapperProps, 
     <Flex
       ref={ref}
       sx={{
-        opacity: isDragging ? 0 : 1,
-        borderRadius: 'default',
         marginBottom: 1,
-        backgroundColor: isDragOverlay ? 'whiteAlpha.20' : 'transparent'
+        backgroundColor: isDragOverlay ? 'whiteAlpha.20' : 'transparent',
+        borderRadius: 'default',
+        opacity: isDragging ? 0 : 1
       }}
       style={style}
     >
@@ -129,29 +128,6 @@ const HabitWrapper = forwardRef(function HabitWrapper(props: HabitWrapperProps, 
         <HabitLink habit={habit} />
       </div>
     </Flex>
-  )
-})
-
-interface DragHandleProps {
-  isDragOverlay?: boolean,
-  listeners?: DraggableSyntheticListeners,
-  attributes?: any
-}
-
-const DragHandle = observer(({ isDragOverlay, listeners, attributes }: DragHandleProps) => {
-  return (
-    <IconButton
-      icon={DragHandleIcon}
-      hoverEffect="none"
-      sx={{
-        paddingX: 2,
-        backgroundColor: 'transparent',
-        color: isDragOverlay ? 'whiteAlpha.100' : 'whiteAlpha.30',
-        touchAction: 'none'
-      }}
-      {...listeners}
-      {...attributes}
-    />
   )
 })
 
