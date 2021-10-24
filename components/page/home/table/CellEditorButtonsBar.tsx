@@ -8,6 +8,7 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
   const [anchor, setAnchor] = useState<'none' | 'left' | 'right'>('none')
   const [translateX, setTranslateX] = useState('0')
   const [translateY, setTranslateY] = useState('0')
+  const [scrollOffset, setScrollOffset] = useState(0)
 
   useLayoutEffect(() => {
     if (!barRef.current || !barRef.current.parentElement) return
@@ -34,6 +35,15 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
     }
   }, [windowWidth, above, children])
 
+  useLayoutEffect(() => {
+    function handleScroll() {
+      setScrollOffset(document.documentElement.scrollTop)
+    }
+    handleScroll()
+    document.addEventListener('scroll', handleScroll)
+    return () => document.removeEventListener('scroll', handleScroll)
+  }, [])
+
   return (
     <Flex
       center
@@ -47,7 +57,7 @@ const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
         pl: '4px', pt: '4px',
         bg: 'rgba(24, 24, 24, 0.88)',
         borderRadius: 'default',
-        transform: `translateX(${translateX}) translateY(${translateY})`
+        transform: `translateX(${translateX}) translateY(calc(${translateY} - ${scrollOffset}px))`
       }}
     >
       {children}
