@@ -21,6 +21,11 @@ interface Props {
 }
 
 const EmojiPicker = ({ isOpen, label, onSelectEmoji, onClosePicker }: Props) => {
+  function handleSelectEmoji(emoji: BaseEmoji) {
+    onSelectEmoji(emoji)
+    onClosePicker()
+  }
+
   return (
     <Modal
       open={isOpen}
@@ -56,7 +61,7 @@ const EmojiPicker = ({ isOpen, label, onSelectEmoji, onClosePicker }: Props) => 
           >
             {label}
           </Text>
-          <PickerWrapper onSelectEmoji={onSelectEmoji} />
+          <PickerWrapper onSelectEmoji={handleSelectEmoji} />
         </Flex>
       </StyleWrapper>
     </Modal>

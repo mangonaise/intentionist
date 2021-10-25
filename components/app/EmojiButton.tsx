@@ -18,7 +18,6 @@ const EmojiButton = ({ value, onChangeEmoji, buttonSize, emojiSizeRem, label }: 
 
   function handleSelectEmoji(emoji: BaseEmoji) {
     onChangeEmoji(emoji.native)
-    setShowPicker(false)
   }
 
   return (

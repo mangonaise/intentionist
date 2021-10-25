@@ -36,7 +36,6 @@ const TrackerStatusEditor = ({ draft, onEditDraft, habitId, closeEditor }: Track
 
   function handleEmojiPickerResult(emoji: BaseEmoji) {
     addEmoji(emoji.native)
-    setShowEmojiPicker(false)
   }
 
   return (
