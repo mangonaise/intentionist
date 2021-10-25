@@ -15,7 +15,6 @@ import IconButton from '@/components/primitives/IconButton'
 import Spacer from '@/components/primitives/Spacer'
 import Text from '@/components/primitives/Text'
 import ArrowRightIcon from '@/components/icons/ArrowRightIcon'
-import CheckIcon from '@/components/icons/CheckIcon'
 import ChevronLeftIcon from '@/components/icons/ChevronLeftIcon'
 import ChevronRightIcon from '@/components/icons/ChevronRightIcon'
 import SmartEmoji from '@/components/app/SmartEmoji'
@@ -114,6 +113,7 @@ interface WeekButtonProps {
 const WeekButton = observer(({ weekStart, selectedDate, onSelectWeek }: WeekButtonProps) => {
   const { iconsCache, cacheIconsInYear } = container.resolve(WeekIconsHandler)
   const { yyyy, mmdd } = separateYYYYfromMMDD(formatYYYYMMDD(weekStart))
+  const isSelectedDate = isSameDay(weekStart, selectedDate)
   const weekIcon = iconsCache[yyyy]?.[mmdd]
   cacheIconsInYear(yyyy)
 
@@ -123,15 +123,21 @@ const WeekButton = observer(({ weekStart, selectedDate, onSelectWeek }: WeekButt
       sx={{ ':first-of-type': { borderTopLeftRadius: 0, borderTopRightRadius: 0 } }}
     >
       <Flex align="center" sx={{ width: '100%' }}>
-        Mon {format(weekStart, 'do')}
-        {isSameDay(weekStart, selectedDate)
-          ? <Icon icon={CheckIcon} sx={{ m: 0, ml: 'auto', fontSize: '1.2rem' }} />
-          : !!weekIcon && (
-            <Box sx={{ transform: 'scale(1.5)', ml: 'auto', mr: 1 }}>
-              <SmartEmoji nativeEmoji={weekIcon} rem={0.8} />
-            </Box>
-          )
-        }
+        <Text
+          type="span"
+          sx={isSelectedDate ? {
+            color: accentColor.current,
+            // fontWeight: 'semibold',
+            filter: 'brightness(1.2)'
+          } : {}}
+        >
+          Mon {format(weekStart, 'do')}
+        </Text>
+        {!!weekIcon && (
+          <Box sx={{ transform: 'scale(1.5)', ml: 'auto', mr: 1 }}>
+            <SmartEmoji nativeEmoji={weekIcon} rem={0.8} />
+          </Box>
+        )}
       </Flex>
     </Dropdown.Item>
   )
