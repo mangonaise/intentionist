@@ -21,7 +21,7 @@ const IconAndTitle = () => {
 
   return (
     <Flex align="center">
-      <SmartEmoji nativeEmoji={entryData.icon} nativeFontSize="2rem" twemojiSize={32} />
+      <SmartEmoji nativeEmoji={entryData.icon} rem={1.85} />
       <Heading
         level={2}
         sx={{

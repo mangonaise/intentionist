@@ -70,7 +70,7 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
           {visibleEmojis.map((emoji, index) => (
             <FadeIn time={isEditing ? 250 : 0} key={index}>
               <Flex center sx={{ p: '1px' }}>
-                <SmartEmoji nativeEmoji={emoji} nativeFontSize="1.15rem" twemojiSize={18} />
+                <SmartEmoji nativeEmoji={emoji} rem={1.2} />
               </Flex>
             </FadeIn>
           ))}

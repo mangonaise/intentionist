@@ -27,7 +27,7 @@ const FocusHabitDropdown = () => {
       {activeHabits.map((habit) => (
         <Dropdown.Item itemAction={() => handleSelectHabit(habit)} key={habit.id}>
           <Flex align="center">
-            <SmartEmoji nativeEmoji={habit.icon} nativeFontSize="1.2rem" twemojiSize={18} />
+            <SmartEmoji nativeEmoji={habit.icon} rem={1.2} />
             <Spacer mr={3} />
             {habit.name}
           </Flex>
@@ -42,8 +42,8 @@ const DropdownTitle = ({ selectedHabit }: { selectedHabit: Habit | undefined }) 
     <Flex align="center">
       {selectedHabit
         ? <>
-          <Flex center sx={{ transform: 'scale(1.3)' }}>
-            <SmartEmoji nativeEmoji={selectedHabit.icon} nativeFontSize="1rem" twemojiSize={14} />
+          <Flex center sx={{ transform: 'scale(1.2)' }}>
+            <SmartEmoji nativeEmoji={selectedHabit.icon} rem={1} />
           </Flex>
           <Spacer mr={4} />
           {selectedHabit.name}

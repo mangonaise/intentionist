@@ -102,7 +102,7 @@ const HabitCellWithoutName = ({ habit }: { habit: Habit }) => {
 }
 
 const HabitCellIcon = ({ habitIcon }: { habitIcon: string }) => {
-  return <SmartEmoji nativeEmoji={habitIcon} nativeFontSize="1.2rem" twemojiSize={18} />
+  return <SmartEmoji nativeEmoji={habitIcon} rem={1.2} />
 }
 
 export default HabitCell

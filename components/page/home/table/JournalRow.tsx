@@ -64,7 +64,7 @@ const JournalEntryPreview = ({ cellEntriesData }: { cellEntriesData: Array<{ ent
           borderRadius: 0
         }}
       >
-        <SmartEmoji nativeEmoji={viewedEntryData.metadata.icon} nativeFontSize="1.25rem" twemojiSize={18} />
+        <SmartEmoji nativeEmoji={viewedEntryData.metadata.icon} rem={1.2} />
         <Text
           type="span"
           sx={{

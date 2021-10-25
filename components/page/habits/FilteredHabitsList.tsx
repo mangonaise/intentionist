@@ -146,8 +146,8 @@ const HabitLink = observer(({ habit }: { habit: Habit }) => {
         }}
       >
         <Flex center justify="flex-start" sx={{ maxWidth: '100%', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
-          <Flex center sx={{ mr: [3, 4], fontSize: '1.15rem', width: '1.15rem' }}>
-            <SmartEmoji nativeEmoji={habit.icon} twemojiSize={20} />
+          <Flex center sx={{ mr: [3, 4], width: '1.3rem' }}>
+            <SmartEmoji nativeEmoji={habit.icon} rem={1.3} />
           </Flex>
           {habit.name}
           <Icon icon={PencilIcon} sx={{ ml: 'auto', pl: 2, fontSize: '1.1rem' }} />

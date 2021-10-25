@@ -5,14 +5,14 @@ import Text from '@/components/primitives/Text'
 
 interface Props {
   nativeEmoji: string,
-  nativeFontSize?: string,
-  twemojiSize: number
+  rem: number
 }
 
-const SmartEmoji = ({ nativeEmoji, nativeFontSize, twemojiSize }: Props) => {
+const SmartEmoji = ({ nativeEmoji, rem }: Props) => {
   if (isWindowsOS) {
     const twemoji = getEmojiDataFromNative(nativeEmoji, 'twitter', emojiData)
     if (twemoji) {
+      const twemojiSize = rem * 14
       return (
         <Text type="span" sx={{ height: `${twemojiSize}px`}}>
           <Emoji emoji={twemoji} size={twemojiSize} set="twitter" sheetSize={32} skin={twemoji.skin || undefined} />
@@ -21,7 +21,7 @@ const SmartEmoji = ({ nativeEmoji, nativeFontSize, twemojiSize }: Props) => {
     }
   }
   return (
-    <Text type="span" sx={{ fontSize: nativeFontSize || 'inherit' }}>
+    <Text type="span" sx={{ fontSize: `${rem}rem` || 'inherit' }}>
       {nativeEmoji}
     </Text >
   )

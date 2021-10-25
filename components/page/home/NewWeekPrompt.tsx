@@ -12,7 +12,7 @@ import format from 'date-fns/format'
 
 const NewWeekPrompt = () => {
   const { checkIsNewWeek, showPrompt, thisWeekStartDate, trackNewWeek } = container.resolve(NewWeekPromptHandler)
-  
+
   useEffect(() => {
     checkIsNewWeek()
   }, [checkIsNewWeek])
@@ -77,7 +77,7 @@ const Seedling = () => {
         }
       }}
     >
-      <SmartEmoji nativeEmoji="🌱" nativeFontSize="1.8rem" twemojiSize={25} />
+      <SmartEmoji nativeEmoji="🌱" rem={1.8} />
     </Flex>
   )
 }

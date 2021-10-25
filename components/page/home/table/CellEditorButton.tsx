@@ -26,7 +26,7 @@ const CellEditorButton = ({ content, action, invert, disabled = false }: CellEdi
       >
         <Flex center>
           {typeof content === 'string'
-            ? <SmartEmoji nativeEmoji={content} nativeFontSize="1.25rem" twemojiSize={18} />
+            ? <SmartEmoji nativeEmoji={content} rem={1.25} />
             : <Icon icon={content} sx={{ fontSize: '1.15rem', color: invert ? 'bg' : undefined }} />
           }
         </Flex>

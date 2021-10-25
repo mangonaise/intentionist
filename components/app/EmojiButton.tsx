@@ -9,12 +9,11 @@ interface Props {
   value: string,
   onChangeEmoji: (nativeEmoji: string) => void,
   buttonSize: string | string[]
-  emojiFontSize: string | string[]
-  twemojiSize: number,
+  emojiSizeRem: number
   label: string
 }
 
-const EmojiButton = ({ value, onChangeEmoji, buttonSize, emojiFontSize, twemojiSize, label }: Props) => {
+const EmojiButton = ({ value, onChangeEmoji, buttonSize, emojiSizeRem, label }: Props) => {
   const [showPicker, setShowPicker] = useState(false)
 
   function handleSelectEmoji(emoji: BaseEmoji) {
@@ -26,13 +25,10 @@ const EmojiButton = ({ value, onChangeEmoji, buttonSize, emojiFontSize, twemojiS
     <>
       <Button
         onClick={() => setShowPicker(!showPicker)}
-        sx={{
-          size: buttonSize,
-          fontSize: emojiFontSize
-        }}
+        sx={{ size: buttonSize }}
       >
         <Flex center>
-          <SmartEmoji nativeEmoji={value} twemojiSize={twemojiSize} />
+          <SmartEmoji nativeEmoji={value} rem={emojiSizeRem} />
         </Flex>
       </Button>
       <EmojiPicker

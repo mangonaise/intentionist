@@ -189,8 +189,7 @@ const EmojiPickerButton = observer(({ id }: { id: string }) => {
       value={emoji}
       label="to add to your quick palette"
       buttonSize={"2.8rem"}
-      emojiFontSize="1.2rem"
-      twemojiSize={18}
+      emojiSizeRem={1.2}
       onChangeEmoji={(emoji) => { changeEmoji(id, emoji) }}
     />
   )

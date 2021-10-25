@@ -26,8 +26,7 @@ const JournalEntryIconPicker = observer(() => {
       value={entryData.icon}
       onChangeEmoji={(emoji) => editor.updateEntry('icon', emoji)}
       buttonSize={['3rem', '3.5rem']}
-      emojiFontSize={['1.25rem', '1.5rem']}
-      twemojiSize={22}
+      emojiSizeRem={1.5}
       label="as your journal entry's icon"
     />
   )

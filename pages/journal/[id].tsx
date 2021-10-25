@@ -46,7 +46,7 @@ const DateAndHabit = () => {
         {format(new Date(entryData.date), 'dd MMM yyyy')} in
       </Text>
       <Flex center sx={{ maxWidth: '100%' }}>
-        <SmartEmoji nativeEmoji={habit.icon} nativeFontSize="1rem" twemojiSize={16} />
+        <SmartEmoji nativeEmoji={habit.icon} rem={1.2} />
         <Text type="span" sx={{ ml: 2, opacity: 0.5, maxWidth: '100%', overflowWrap: 'break-word' }}>
           {habit.name}
         </Text>

@@ -11,8 +11,7 @@ const HabitIconPicker = () => {
       value={editor.habit?.icon || ''}
       onChangeEmoji={(emoji) => editor.updateHabit({ icon: emoji })}
       buttonSize={['3.5rem', '5rem']}
-      emojiFontSize={['1.5rem', '2rem']}
-      twemojiSize={28}
+      emojiSizeRem={2}
       label="as your habit's icon"
     />
   )
