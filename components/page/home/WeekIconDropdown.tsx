@@ -12,7 +12,7 @@ import Flex from '@/components/primitives/Flex'
 import PencilIcon from '@/components/icons/PencilIcon'
 
 const WeekIconDropdown = observer(() => {
-  const { weekInView: { icon } } = container.resolve(WeekHandler)
+  const { weekInView: { icon }, isLoadingWeek } = container.resolve(WeekHandler)
   const { setIcon, removeIcon } = container.resolve(WeekIconsHandler)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
 
@@ -22,7 +22,7 @@ const WeekIconDropdown = observer(() => {
 
   return (
     <>
-      <Dropdown title={<DropdownTitle />} anchorRight={[true, false]}>
+      <Dropdown title={<DropdownTitle />} anchorRight={[true, false]} disabled={isLoadingWeek}>
         <Dropdown.Item itemAction={() => setShowEmojiPicker(true)}>
           {!!icon ? 'Change' : 'Add'} week icon
         </Dropdown.Item>
@@ -35,7 +35,7 @@ const WeekIconDropdown = observer(() => {
       <EmojiPicker
         isOpen={showEmojiPicker}
         onClosePicker={() => setShowEmojiPicker(false)}
-        label="as this week's icon"
+        label="as your week's icon"
         onSelectEmoji={handleSelectEmoji}
       />
     </>
@@ -43,7 +43,7 @@ const WeekIconDropdown = observer(() => {
 })
 
 const DropdownTitle = observer(() => {
-  const { weekInView: { icon }, isLoadingWeek } = container.resolve(WeekHandler)
+  const { weekInView: { icon } } = container.resolve(WeekHandler)
 
   if (icon) {
     return (
@@ -53,7 +53,7 @@ const DropdownTitle = observer(() => {
     )
   }
 
-  return <Icon icon={PencilIcon} sx={{ opacity: isLoadingWeek ? 0.2 : 1 }} />
+  return <Icon icon={PencilIcon} />
 })
 
 export default WeekIconDropdown

@@ -19,3 +19,8 @@ export function formatFirstDayOfThisWeek() {
 export function formatYYYYMMDD(date: Date) {
   return format(date, YYYYMMDD)
 }
+
+export function separateYYYYfromMMDD(formattedDate: string) {
+  const [yyyy, mmdd] = formattedDate.split(/-(.+)/)
+  return { yyyy, mmdd }
+}

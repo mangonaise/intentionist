@@ -2,9 +2,10 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { FC, useState } from 'react'
 import { addMonths, eachWeekOfInterval, endOfMonth, format, isFuture, isSameDay, isSameMonth, isSameWeek, startOfMonth, subWeeks } from 'date-fns'
-import { formatFirstDayOfThisWeek, formatYYYYMMDD } from '@/lib/logic/utils/dateUtilities'
+import { formatFirstDayOfThisWeek, formatYYYYMMDD, separateYYYYfromMMDD } from '@/lib/logic/utils/dateUtilities'
 import NewWeekPromptHandler from '@/lib/logic/app/NewWeekPromptHandler'
 import WeekHandler from '@/lib/logic/app/WeekHandler'
+import WeekIconsHandler from '@/lib/logic/app/WeekIconsHandler'
 import accentColor from '@/lib/logic/utils/accentColor'
 import Dropdown from '@/components/app/Dropdown'
 import Box from '@/components/primitives/Box'
@@ -17,6 +18,7 @@ import ArrowRightIcon from '@/components/icons/ArrowRightIcon'
 import CheckIcon from '@/components/icons/CheckIcon'
 import ChevronLeftIcon from '@/components/icons/ChevronLeftIcon'
 import ChevronRightIcon from '@/components/icons/ChevronRightIcon'
+import SmartEmoji from '@/components/app/SmartEmoji'
 
 const WeekDropdown = observer(() => {
   const { startDate } = container.resolve(WeekHandler).weekInView
@@ -45,8 +47,8 @@ const WeekSelectMenu = () => {
   const [displayedWeeks, setDisplayedWeeks] = useState(getWeeksInMonth(displayedMonth))
   const [isDisplayingCurrentMonth, setIsDisplayingCurrentMonth] = useState(isSameMonth(displayedMonth, new Date()))
 
-  function handleSelectWeek(startDate: Date) {
-    weekHandler.viewWeek(formatYYYYMMDD(startDate))
+  function handleSelectWeek(startDate: Date, cachedIcon?: string) {
+    weekHandler.viewWeek(formatYYYYMMDD(startDate), cachedIcon)
   }
 
   function changeDisplayedMonth(delta: 1 | -1) {
@@ -68,7 +70,7 @@ const WeekSelectMenu = () => {
     <Flex column>
       {!isSameWeek(selectedDate, new Date(), { weekStartsOn: 1 }) && (
         <>
-          <ThisWeekButton />
+          <ViewThisWeekButton />
           <Divider />
         </>
       )}
@@ -97,24 +99,45 @@ const WeekSelectMenu = () => {
       <Divider />
       <Spacer mt='1px' />
       {displayedWeeks.map((weekStart, index) => (
-        <Dropdown.Item
-          itemAction={() => handleSelectWeek(weekStart)}
-          sx={{ ':first-of-type': { borderTopLeftRadius: 0, borderTopRightRadius: 0 } }}
-          key={index}
-        >
-          <Flex align="center" sx={{ width: '100%' }}>
-            Mon {format(weekStart, 'do')}
-            {isSameDay(weekStart, selectedDate) && (
-              <Icon icon={CheckIcon} sx={{ m: 0, ml: 'auto', fontSize: '1.2rem' }} />
-            )}
-          </Flex>
-        </Dropdown.Item>
+        <WeekButton weekStart={weekStart} selectedDate={selectedDate} onSelectWeek={handleSelectWeek} key={index} />
       ))}
     </Flex>
   )
 }
 
-const ThisWeekButton = () => {
+interface WeekButtonProps {
+  weekStart: Date,
+  selectedDate: Date,
+  onSelectWeek: (startDate: Date, cachedIcon: string) => void
+}
+
+const WeekButton = observer(({ weekStart, selectedDate, onSelectWeek }: WeekButtonProps) => {
+  const { iconsCache, cacheIconsInYear } = container.resolve(WeekIconsHandler)
+  const { yyyy, mmdd } = separateYYYYfromMMDD(formatYYYYMMDD(weekStart))
+  const weekIcon = iconsCache[yyyy]?.[mmdd]
+  cacheIconsInYear(yyyy)
+
+  return (
+    <Dropdown.Item
+      itemAction={() => onSelectWeek(weekStart, weekIcon)}
+      sx={{ ':first-of-type': { borderTopLeftRadius: 0, borderTopRightRadius: 0 } }}
+    >
+      <Flex align="center" sx={{ width: '100%' }}>
+        Mon {format(weekStart, 'do')}
+        {isSameDay(weekStart, selectedDate)
+          ? <Icon icon={CheckIcon} sx={{ m: 0, ml: 'auto', fontSize: '1.2rem' }} />
+          : !!weekIcon && (
+            <Box sx={{ transform: 'scale(1.5)', ml: 'auto', mr: 1 }}>
+              <SmartEmoji nativeEmoji={weekIcon} rem={0.8} />
+            </Box>
+          )
+        }
+      </Flex>
+    </Dropdown.Item>
+  )
+})
+
+const ViewThisWeekButton = () => {
   const { hidePrompt: hideNewWeekPrompt } = container.resolve(NewWeekPromptHandler)
 
   function handleViewThisWeek() {

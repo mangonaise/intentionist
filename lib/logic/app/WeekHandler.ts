@@ -64,10 +64,11 @@ export default class WeekHandler {
     this.refreshHabitsInView()
   }
 
-  public viewWeek = async (startDate: string) => {
+  public viewWeek = async (startDate: string, cachedIcon?: string) => {
     if (startDate === this.weekInView.startDate) return
     this.isLoadingWeek = true
     this.weekInView = { startDate }
+    if (cachedIcon) this.weekInView.icon = cachedIcon
     await when(() => this.dbHandler.isWriteComplete)
     const weekDoc = await this.dbHandler.getWeekDoc(startDate)
     runInAction(() => {

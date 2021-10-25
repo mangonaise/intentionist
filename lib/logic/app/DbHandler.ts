@@ -2,13 +2,15 @@ import type { Fetched } from './InitialFetchHandler'
 import type { WeekDocumentData } from './WeekHandler'
 import type { JournalEntryDocumentData } from './JournalEntryEditor'
 import { Lifecycle, scoped } from 'tsyringe'
-import { makeAutoObservable, runInAction } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { collection, doc, getDoc, getDocs, query, setDoc, limit, orderBy, writeBatch, arrayUnion, arrayRemove, deleteField, where, deleteDoc } from '@firebase/firestore'
 import { db } from '../../firebase'
+import { separateYYYYfromMMDD } from '../utils/dateUtilities'
 import AuthUser from './AuthUser'
 
 export const HABITS = 'data/habits'
 const WEEKS = 'weeks'
+const WEEK_ICONS = 'weekIcons'
 const USERS = 'users'
 const JOURNAL = 'journal'
 
@@ -29,11 +31,15 @@ export default class DbHandler {
   public updateUserDoc = async (path: string, data: object) => {
     this.isWriteComplete = false
     await setDoc(this.userDocRef(path), data, { merge: true })
-    runInAction(() => this.isWriteComplete = true)
+    this.completeWrite()
   }
 
   public getWeekDoc = async (weekStartDate: string) => {
     const weekDoc = await this.getUserDoc(WEEKS, weekStartDate) ?? null
+    if (weekDoc && !weekDoc.startDate) {
+      console.error('The week document is missing a startDate. This is a bug.')
+      weekDoc.startDate = weekStartDate
+    }
     return weekDoc as Fetched<WeekDocumentData>
   }
 
@@ -48,6 +54,38 @@ export default class DbHandler {
 
   public updateWeekDoc = async (weekStartDate: string, data: Partial<WeekDocumentData> | object) => {
     await this.updateUserDoc(`${WEEKS}/${weekStartDate}`, { startDate: weekStartDate, ...data })
+  }
+
+  public getWeekIconsDoc = async (year: string) => {
+    const iconsDoc = await this.getUserDoc(WEEK_ICONS, year) ?? null
+    return iconsDoc
+  }
+
+  public updateWeekIcon = async (weekStartDate: string, icon: string) => {
+    this.isWriteComplete = false
+    const { yyyy, mmdd } = separateYYYYfromMMDD(weekStartDate)
+    const batch = writeBatch(db)
+    batch.set(this.userDocRef(WEEKS, weekStartDate), {
+      icon,
+      startDate: weekStartDate
+    }, { merge: true })
+    batch.set(this.userDocRef(WEEK_ICONS, yyyy), { [mmdd]: icon }, { merge: true })
+    await batch.commit()
+    this.completeWrite()
+  }
+
+  public removeWeekIcon = async (weekStartDate: string) => {
+    this.isWriteComplete = false
+    const { yyyy, mmdd } = separateYYYYfromMMDD(weekStartDate)
+    const batch = writeBatch(db)
+    batch.set(this.userDocRef(WEEKS, weekStartDate), {
+      icon: deleteField()
+    }, { merge: true })
+    batch.set(this.userDocRef(WEEK_ICONS, yyyy), {
+      [mmdd]: deleteField()
+    }, { merge: true })
+    await batch.commit()
+    this.completeWrite()
   }
 
   public getJournalEntryDoc = async (entryId: string) => {
@@ -65,7 +103,7 @@ export default class DbHandler {
       journalMetadata: { [entry.id]: { title: entry.title, icon: entry.icon } }
     }, { merge: true })
     await batch.commit()
-    runInAction(() => this.isWriteComplete = true)
+    this.completeWrite()
   }
 
   public deleteJournalEntry = async (entry: JournalEntryDocumentData) => {
@@ -77,7 +115,7 @@ export default class DbHandler {
       journalMetadata: { [entry.id]: deleteField() }
     }, { merge: true })
     await batch.commit()
-    runInAction(() => this.isWriteComplete = true)
+    this.completeWrite()
   }
 
   public deleteHabit = async (habitId: string) => {
@@ -91,7 +129,7 @@ export default class DbHandler {
       deleteDataPromise,
       deleteJournalEntriesPromise
     ])
-    runInAction(() => this.isWriteComplete = true)
+    this.completeWrite()
   }
 
   private deleteJournalEntriesWithHabitId = async (habitId: string) => {
@@ -101,6 +139,10 @@ export default class DbHandler {
       deleteEntryPromises.push(deleteDoc(doc.ref))
     })
     await Promise.all(deleteEntryPromises)
+  }
+
+  private completeWrite = () => {
+    this.isWriteComplete = true
   }
 
   private userDocRef = (...pathSegments: string[]) => {
