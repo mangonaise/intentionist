@@ -127,7 +127,6 @@ const WeekButton = observer(({ weekStart, selectedDate, onSelectWeek }: WeekButt
           type="span"
           sx={isSelectedDate ? {
             color: accentColor.current,
-            // fontWeight: 'semibold',
             filter: 'brightness(1.2)'
           } : {}}
         >
