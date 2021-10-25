@@ -25,11 +25,16 @@ afterEach(async () => {
   await deleteHabitsDoc()
 })
 
+async function initialize() {
+  const testContainer = container.createChildContainer()
+  habitsHandler = await initializeHabitsHandler(testContainer)
+}
+
 // 🧪
 
 describe('initialization', () => {
   test('if no data exists in database, local cache will be set to empty array', async () => {
-    habitsHandler = await initializeHabitsHandler()
+    await initialize()
     expect(habitsHandler.habits).toEqual([])
   })
 
@@ -38,7 +43,7 @@ describe('initialization', () => {
       habits: { [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') } },
       order: [dummyHabitA.id]
     })
-    habitsHandler = await initializeHabitsHandler()
+    await initialize()
     expect(habitsHandler.habits).toEqual([dummyHabitA])
   })
 
@@ -50,7 +55,7 @@ describe('initialization', () => {
       },
       order: [dummyHabitB.id, dummyHabitA.id]
     })
-    habitsHandler = await initializeHabitsHandler()
+    await initialize()
     expect(habitsHandler.habits).toEqual([dummyHabitB, dummyHabitA])
   })
 
@@ -63,14 +68,14 @@ describe('initialization', () => {
       },
       order: [dummyHabitC.id, dummyHabitB.id]
     })
-    habitsHandler = await initializeHabitsHandler()
+    await initialize()
     expect(habitsHandler.habits).toEqual([dummyHabitC, dummyHabitB, dummyHabitA])
   })
 })
 
 describe('behavior', () => {
   beforeEach(async () => {
-    habitsHandler = await initializeHabitsHandler()
+    await initialize()
   })
 
   test('adding habits updates local cache and database correctly', async () => {

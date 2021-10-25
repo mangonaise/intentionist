@@ -7,11 +7,10 @@ import Icon from '@/components/primitives/Icon'
 import ExpandUpIcon from '@/components/icons/ExpandUpIcon'
 import ExpandDownIcon from '@/components/icons/ExpandDownIcon'
 import FocusTrap from 'focus-trap-react'
-import Text from '../primitives/Text'
 
 interface DropdownProps {
   title?: string | JSX.Element,
-  anchorRight?: boolean,
+  anchorRight?: boolean | boolean[],
   noGap?: boolean,
   disabled?: boolean,
   menuMaxWidth?: string | string[],
@@ -85,7 +84,7 @@ const DropdownButton = () => {
         {title}
         <Icon
           icon={isOpen ? ExpandUpIcon : ExpandDownIcon}
-          sx={{ ml: 'auto', pl: title ? '0.8em' : 0, transform: 'scale(1.1)' }}
+          sx={{ ml: 'auto', pl: title ? '0.6em' : 0, transform: 'scale(1.1)' }}
         />
       </Flex>
     </Button>
@@ -95,6 +94,17 @@ const DropdownButton = () => {
 const DropdownMenu = () => {
   const { closeDropdown, children, noGap, anchorRight, menuMaxWidth } = useContext(DropdownContext)
 
+  let positionRight: Array<0 | 'auto'>
+  if (!anchorRight) {
+    positionRight = ['auto']
+  }
+  else if (anchorRight === true) {
+    positionRight = [0]
+  }
+  else {
+    positionRight = anchorRight.map((anchor) => anchor ? 0 : 'auto')
+  }
+
   return (
     <FocusTrap focusTrapOptions={{
       onDeactivate: closeDropdown,
@@ -103,7 +113,7 @@ const DropdownMenu = () => {
       <Flex column
         sx={{
           position: 'absolute',
-          right: anchorRight ? 0 : 'auto',
+          right: positionRight,
           zIndex: 1,
           backgroundColor: 'bg',
           width: 'max-content',

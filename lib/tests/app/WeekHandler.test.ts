@@ -122,6 +122,14 @@ describe('initialization', () => {
       [habitIdB]: { 1: 600, 6: 4500 }
     })
   })
+
+  test(`week icon is correctly placed into week in view's local cache`, async () => {
+    await dbHandler.updateWeekDoc('2021-10-25',  {
+      icon: '⭐'
+    })
+    await initializeWeekHandler()
+    expect(weekHandler.weekInView.icon).toEqual('⭐')
+  })
 })
 
 describe('updating tracker statuses', () => {

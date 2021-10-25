@@ -10,6 +10,7 @@ import sum from 'lodash/sum'
 
 export type WeekDocumentData = {
   startDate: string,
+  icon?: string | null,
   statuses?: {
     [habitId: string]: {
       [day in WeekdayId]?: string[]
