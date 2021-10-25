@@ -12,26 +12,26 @@ import SearchIcon from '@/components/icons/SearchIcon'
 import FocusTrap from 'focus-trap-react'
 
 interface TrackerStatusEditorProps {
-  status: string[],
+  draft: string[],
+  onEditDraft: Dispatch<SetStateAction<string[]>>,
   habitId: string
-  onEditStatus: Dispatch<SetStateAction<string[]>>,
   closeEditor: () => void
 }
 
-const TrackerStatusEditor = ({ status, habitId, onEditStatus, closeEditor }: TrackerStatusEditorProps) => {
+const TrackerStatusEditor = ({ draft, onEditDraft, habitId, closeEditor }: TrackerStatusEditorProps) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const [palette] = useState(getHabitPalette(habitId))
 
   function addEmoji(emoji: string) {
-    const newDraft = [...status]
+    const newDraft = [...draft]
     newDraft.push(emoji)
-    onEditStatus(newDraft)
+    onEditDraft(newDraft)
   }
 
   function backspace() {
-    const newDraft = [...status]
+    const newDraft = [...draft]
     newDraft.splice(-1)
-    onEditStatus(newDraft)
+    onEditDraft(newDraft)
   }
 
   function handleEmojiPickerResult(emoji: BaseEmoji) {
@@ -45,10 +45,9 @@ const TrackerStatusEditor = ({ status, habitId, onEditStatus, closeEditor }: Tra
       onDeactivate: closeEditor
     }}>
       <Box sx={{ position: 'absolute', size: '100%' }}>
-        <Box onClick={closeEditor} sx={{ position: 'absolute', size: '100%' }} />
         <CellEditorButtonsBar above>
           <CellEditorButton content={SearchIcon} action={() => setShowEmojiPicker(!showEmojiPicker)} />
-          <CellEditorButton content={BackspaceIcon} action={backspace} disabled={!status.length} />
+          <CellEditorButton content={BackspaceIcon} action={backspace} disabled={!draft.length} />
           <CellEditorButton content={CheckIcon} action={closeEditor} />
         </CellEditorButtonsBar>
         {!!palette.length && (
@@ -62,6 +61,7 @@ const TrackerStatusEditor = ({ status, habitId, onEditStatus, closeEditor }: Tra
           onSelectEmoji={handleEmojiPickerResult}
           onClosePicker={() => setShowEmojiPicker(false)}
         />
+        <Box onClick={closeEditor} sx={{ position: 'absolute', size: '100%' }} />
       </Box>
     </FocusTrap>
   )

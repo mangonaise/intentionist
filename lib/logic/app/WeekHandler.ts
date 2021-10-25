@@ -122,7 +122,7 @@ export default class WeekHandler {
     // ☁️
     await this.dbHandler.updateWeekDoc(this.weekInView.startDate, { statuses: this.weekInView.statuses })
 
-    return this.weekInView.statuses[habitId][weekday]
+    return this.weekInView.statuses?.[habitId]?.[weekday]
   }
 
   private clearTrackerStatus = async (habitId: string, weekday: WeekdayId) => {

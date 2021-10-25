@@ -15,31 +15,33 @@ interface TrackerStatusCellProps {
 
 const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
   const { isLoadingWeek, weekInView: { statuses } } = container.resolve(WeekHandler)
+  const status = statuses?.[habitId]?.[weekday] ?? []
   const [isEditing, setIsEditing] = useState(false)
-  const [status, setStatus] = useState<string[]>(statuses?.[habitId]?.[weekday] ?? [])
-  const [shouldSaveStatus, setShouldSaveStatus] = useState(false)
-  const visibleEmojis = isLoadingWeek ? [] : status
+  const [draft, setDraft] = useState(status)
+  const [shouldSaveDraft, setShouldSaveDraft] = useState(false)
+  const visibleEmojis = isLoadingWeek ? [] : (isEditing ? draft : status)
 
   function startEditing() {
+    setDraft(status)
     setIsEditing(true)
   }
 
   function finishEditing() {
     setIsEditing(false)
-    setShouldSaveStatus(true)
+    setShouldSaveDraft(true)
   }
 
   function saveDraft() {
-    container.resolve(WeekHandler).setTrackerStatus(habitId, weekday, status)
+    container.resolve(WeekHandler).setTrackerStatus(habitId, weekday, draft)
   }
 
   // Save status in an effect because the draft editor is closed by the focus trap, which doesn't have access to current state
   useEffect(() => {
-    if (shouldSaveStatus) {
+    if (shouldSaveDraft) {
       saveDraft()
-      setShouldSaveStatus(false)
+      setShouldSaveDraft(false)
     }
-  }, [shouldSaveStatus])
+  }, [shouldSaveDraft])
 
   return (
     <Flex
@@ -66,7 +68,7 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
       >
         <Flex center flexWrap sx={{ py: '4px' }}>
           {visibleEmojis.map((emoji, index) => (
-            <FadeIn time={250} key={index}>
+            <FadeIn time={isEditing ? 250 : 0} key={index}>
               <Flex center sx={{ p: '1px' }}>
                 <SmartEmoji nativeEmoji={emoji} nativeFontSize="1.15rem" twemojiSize={18} />
               </Flex>
@@ -76,9 +78,9 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
       </CellButton >
       {isEditing && (
         <TrackerStatusEditor
-          status={status}
+          draft={draft}
           habitId={habitId}
-          onEditStatus={setStatus}
+          onEditDraft={setDraft}
           closeEditor={finishEditing}
         />
       )}
