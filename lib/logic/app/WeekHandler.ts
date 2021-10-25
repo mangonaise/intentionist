@@ -1,5 +1,5 @@
 import { Lifecycle, scoped } from 'tsyringe'
-import { makeAutoObservable, runInAction } from 'mobx'
+import { makeAutoObservable, runInAction, when } from 'mobx'
 import { deleteField, increment } from '@firebase/firestore'
 import { InitialState } from './InitialFetchHandler'
 import { formatFirstDayOfThisWeek } from '../utils/dateUtilities'
@@ -67,6 +67,7 @@ export default class WeekHandler {
     if (startDate === this.weekInView.startDate) return
     this.isLoadingWeek = true
     this.weekInView = { startDate }
+    await when(() => this.dbHandler.isWriteComplete)
     const weekDoc = await this.dbHandler.getWeekDoc(startDate)
     runInAction(() => {
       if (new Date(startDate) > new Date(this.latestWeekStartDate)) {
@@ -205,7 +206,7 @@ export default class WeekHandler {
     })
   }
 
-  public getFocusedTime= (habitId: string, period: WeekdayId | 'week') => {
+  public getFocusedTime = (habitId: string, period: WeekdayId | 'week') => {
     if (period === 'week') {
       if (!this.weekInView.times?.[habitId]) return 0
       const times = Object.values(this.weekInView.times[habitId])
