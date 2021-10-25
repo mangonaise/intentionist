@@ -14,16 +14,23 @@ import FadeIn from '@/components/primitives/FadeIn'
 import Flex from '@/components/primitives/Flex'
 import Spacer from '@/components/primitives/Spacer'
 import Text from '@/components/primitives/Text'
+import Head from 'next/head'
 
 export const JournalContext = createContext<{ editor: JournalEntryEditor, entryData: JournalEntryDocumentData }>(null!)
 
 const JournalEntryPage = observer(() => {
   const [editor] = useState(container.resolve(JournalEntryEditor))
 
-  if (!editor.entry) return <LoadingScreen />
+  if (!editor.entry) return (
+    <>
+      <Head><title>...</title></Head>
+      <LoadingScreen />
+    </>
+  )
 
   return (
     <JournalContext.Provider value={{ editor, entryData: editor.entry }}>
+      <Head><title>{editor.entry.title || 'New journal entry'}</title></Head>
       <FadeIn sx={{ maxWidth: '750px', margin: 'auto' }}>
         <JournalEntryNavSection />
         <Spacer mb={[4, 6]} />
