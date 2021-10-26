@@ -39,7 +39,7 @@ const theme = {
     bold: 700
   },
   radii: {
-    default: '6px'
+    default: '4px'
   },
   sizes: {
     max: '1200px',
