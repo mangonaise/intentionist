@@ -116,7 +116,7 @@ const HabitWrapper = forwardRef(function HabitWrapper(props: HabitWrapperProps, 
     <Flex
       ref={ref}
       sx={{
-        marginBottom: 1,
+        marginBottom: 2,
         backgroundColor: isDragOverlay ? 'whiteAlpha.20' : 'transparent',
         borderRadius: 'default',
         opacity: isDragging ? 0 : 1

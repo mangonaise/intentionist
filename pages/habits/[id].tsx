@@ -25,10 +25,10 @@ const HabitEditorPage = () => {
         <Spacer mb={3} />
         <Flex>
           <HabitIconPicker />
-          <Spacer mr={[2, 3]} />
+          <Spacer mr={2} />
           <HabitNameInput />
         </Flex>
-        <Spacer mb={3} />
+        <Spacer mb={2} />
         {!editor.isNewHabit && <>
           <HabitStatusPicker />
         </>}

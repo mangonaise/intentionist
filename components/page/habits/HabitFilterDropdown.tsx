@@ -23,7 +23,7 @@ const HabitFilterDropdown = () => {
   })
 
   return (
-    <Dropdown title={dropdownTextMap[filter]} sx={{ flexGrow: [1, 0], ml: 3 }} >
+    <Dropdown title={dropdownTextMap[filter]} sx={{ flexGrow: [1, 0] }} >
       {statuses.map(status => {
         const count = filteredCounts[status]
         return (

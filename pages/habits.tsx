@@ -6,6 +6,7 @@ import FilteredHabitsList from '@/components/page/habits/FilteredHabitsList'
 import HabitsPageNavSection from '@/components/page/habits/HabitsPageNavSection'
 import Box from '@/components/primitives/Box'
 import Head from 'next/head'
+import Spacer from '@/components/primitives/Spacer'
 
 export const HabitFilterContext = createContext<HabitFilterHandler>(null!)
 
@@ -15,6 +16,7 @@ const HabitsPage = () => {
       <Head><title>Habits</title></Head>
       <Box sx={{ maxWidth: 'habits', margin: 'auto' }}>
         <HabitsPageNavSection />
+        <Spacer mb={3} />
         <FilteredHabitsList />
       </Box>
     </HabitFilterContext.Provider>

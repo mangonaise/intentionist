@@ -15,17 +15,17 @@ const Home = () => {
     <Box sx={{ maxWidth: 'max', margin: 'auto' }}>
       <Head><title>Home</title></Head>
       <WeekViewModePicker />
-      <Spacer mb={3} />
+      <Spacer mb={2} />
       <NewWeekPrompt />
       <Flex sx={{ flexWrap: ['wrap', 'nowrap'] }}>
         <Flex sx={{ width: ['100%', 'fit-content'] }}>
           <WeekDropdown />
-          <Spacer mr={3} />
+          <Spacer mr={2} />
           <WeekIconDropdown />
         </Flex>
         <OpenFocusButton />
       </Flex>
-      <Spacer mb={3} />
+      <Spacer mb={4} />
       <WeekTable />
     </Box>
   )

@@ -41,7 +41,7 @@ const FocusPage = observer(() => {
 
 const NavSection = () => {
   return (
-    <Flex align="center" sx={{ mb: [2, 3], pb: [2, 0], borderBottom: ['solid 1.5px', 'none'], borderColor: 'divider' }}>
+    <Flex align="center" sx={{ mb: 2, pb: [2, 0], borderBottom: ['solid 1.5px', 'none'], borderColor: 'divider' }}>
       <NextLink href="/home">
         <IconButton icon={BackIcon} sx={{ mr: 3 }} />
       </NextLink>

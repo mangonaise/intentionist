@@ -36,8 +36,8 @@ const WeekViewModePicker = () => {
             hoverEffect={isSelected ? 'none' : 'default'}
             sx={{
               flex: 1,
-              mr: index < 2 ? 3 : 0,
-              bg: isSelected ? data.view : undefined,
+              mr: index < 2 ? 2 : 0,
+              bg: isSelected ? data.view : null,
               transition: `background-color ${isSelected ? 250 : 150}ms ease-out !important`,
             }}
             key={data.view}

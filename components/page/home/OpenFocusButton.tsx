@@ -14,10 +14,10 @@ const OpenFocusButton = () => {
   return (
     <Box
       sx={{
-        ml: [0, 3],
-        mt: [3, 0],
         flex: [null, 1],
         width: ['100%', 'auto'],
+        mt: [2, 0],
+        ml: [0, 2],
         opacity: 0,
         animation: 'fade-in forwards 400ms 150ms',
       }}

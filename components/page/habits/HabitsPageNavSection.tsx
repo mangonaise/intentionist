@@ -4,6 +4,7 @@ import IconButton from '@/components/primitives/IconButton'
 import BackIcon from '@/components/icons/BackIcon'
 import PlusIcon from '@/components/icons/PlusIcon'
 import NextLink from 'next/link'
+import Spacer from '@/components/primitives/Spacer'
 
 const HabitsPageNavSection = () => {
   return (
@@ -11,12 +12,12 @@ const HabitsPageNavSection = () => {
       sx={{
         flexWrap: ['wrap', 'nowrap'],
         pb: [0, 3],
-        mb: 2,
         borderBottom: 'solid 1.5px',
         borderColor: ['transparent', 'divider']
       }}
     >
       <NextLink href="/home"><IconButton icon={BackIcon} /></NextLink>
+      <Spacer ml={2} />
       <HabitFilterDropdown />
       <NextLink href="/habits/new">
         <IconButton
@@ -26,7 +27,7 @@ const HabitsPageNavSection = () => {
             bg: 'text',
             color: 'bg',
             ml: 'auto',
-            mt: [3, 0],
+            mt: [2, 0],
             width: ['100%', 'auto'],
             fontWeight: 'medium'
           }}

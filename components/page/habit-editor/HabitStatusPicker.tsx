@@ -30,7 +30,7 @@ const HabitStatusPicker = () => {
             sx={{
               flex: [null, 1],
               width: ['100%', 'auto'],
-              mr: [0, index < 2 ? 3 : 0],
+              mr: [0, index < 2 ? 2 : 0],
               mb: [index < 2 ? 2 : 0, 0],
               bg: isSelected ? 'text' : '',
               color: isSelected ? 'bg' : 'whiteAlpha.30',
