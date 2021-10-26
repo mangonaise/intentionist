@@ -16,6 +16,12 @@ const buttonData: Array<{ view: WeekViewMode, text: string, icon: () => JSX.Elem
   { view: 'focus', text: 'Focused time', icon: TimerIcon }
 ]
 
+const borderOffsets = {
+  'tracker': '0',
+  'journal': 'calc(100% / 3)',
+  'focus': 'calc(100% / 3 * 2)'
+}
+
 const WeekViewModePicker = () => {
   const { viewMode, setViewMode } = container.resolve(WeekHandler)
 
@@ -26,19 +32,54 @@ const WeekViewModePicker = () => {
   }, [viewMode])
 
   return (
-    <Flex>
-      {buttonData.map((data, index) => {
+    <Flex
+      sx={{
+        position: 'relative',
+        '&::after': {
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+          left: borderOffsets[viewMode],
+          width: 'calc(100% / 3)',
+          bottom: '-2px',
+          content: '""',
+          borderBottom: 'solid 2px',
+          borderBottomColor: viewMode,
+          transition: 'border-color 300ms, left 300ms cubic-bezier(0, 0, 0.15, 1.0)'
+        }
+      }}
+    >
+      {buttonData.map((data) => {
         const isSelected = data.view === viewMode
         return (
           <IconButton
             icon={data.icon}
             onClick={() => setViewMode(data.view)}
-            hoverEffect={isSelected ? 'none' : 'default'}
+            hoverEffect="none"
             sx={{
               flex: 1,
-              mr: index < 2 ? 2 : 0,
-              bg: isSelected ? data.view : null,
-              transition: `background-color ${isSelected ? 250 : 150}ms ease-out !important`,
+              position: 'relative',
+              paddingBottom: 4,
+              paddingTop: 2,
+              color: isSelected ? data.view : 'text',
+              filter: 'brightness(1.5)',
+              backgroundColor: 'transparent',
+              borderBottom: 'solid 2px transparent',
+              borderRadius: 0,
+              fontWeight: 'medium',
+              transition: `color 350ms`,
+              '&::after': {
+                position: 'absolute',
+                inset: 0,
+                content: '""',
+                bottom: '-4px',
+                borderBottom: 'solid 2px',
+                borderColor: isSelected ? 'whiteAlpha.25' : 'whiteAlpha.10',
+                transition: 'border-color 150ms'
+              },
+              '&:hover::after': {
+                borderColor: isSelected ? null : 'whiteAlpha.25'
+              }
             }}
             key={data.view}
           >
