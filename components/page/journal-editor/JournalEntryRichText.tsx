@@ -49,7 +49,10 @@ const EntryContent = observer(() => {
         preserveWhitespace
         formats={formats}
         modules={{
-          toolbar: ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block', { 'header': [1, 2, 3, false] }]
+          toolbar: ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block', { 'header': [1, 2, 3, false] }],
+          clipboard: {
+            matchVisual: false
+          }
         }}
         value={content}
         onChange={handleChange}
