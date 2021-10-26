@@ -74,61 +74,71 @@ const EntryContent = observer(() => {
 
 const GlobalStyles = () => {
   return (
-    <Global styles={css({
-      '.ql': {
-        '&-editor': {
-          cursor: 'inherit',
+    <>
+      <Global styles={css({
+        '@font-face': {
           fontFamily: 'Inter',
-          fontSize: '14px',
-          fontWeight: 'light',
-          minHeight: '50vh',
-          padding: 0,
-          '&:focus': {
-            boxShadow: 'none',
-          },
-          '& blockquote': {
-            borderLeftColor: '#555 !important'
-          },
-          '& strong, h1, h2, h3': {
-            fontWeight: '600'
-          }
+          fontStyle: 'italic',
+          fontWeight: '1 999',
+          'src': `url('/fonts/Inter-italic-var.woff2') format('woff2')`,
+          'fontDisplay': 'swap'
         },
-        '&-disabled *': {
-          cursor: 'default'
-        },
-        '&-bubble .ql-tooltip': {
-          opacity: 0,
-          animation: 'fade-in forwards 250ms',
-          backgroundColor: toolbarColor,
-          '&-arrow': {
-            borderBottomColor: `${toolbarColor} !important`,
-            backgroundColor: 'transparent'
-          }
-        },
-        '&-toolbar .ql-formats': {
-          '& button:not(.ql-active)': {
-            opacity: 0.55
-          }
-        },
-        '&-picker': {
-          '&-options': {
-            right: 0,
+        '.ql': {
+          '&-editor': {
+            cursor: 'inherit',
             fontFamily: 'Inter',
-            borderRadius: 'default',
-            backgroundColor: `${toolbarColor} !important`,
-            '.ql-picker-item::before': {
-              content: '"Heading"'
+            fontSize: '14px',
+            fontWeight: 'light',
+            minHeight: '50vh',
+            padding: 0,
+            '&:focus': {
+              boxShadow: 'none',
+            },
+            '& blockquote': {
+              borderLeftColor: '#555 !important'
+            },
+            '& strong, h1, h2, h3': {
+              fontWeight: '600'
             }
           },
-          '&-label': {
-            display: 'inline-flex !important',
-            alignItems: 'center',
-            fontFamily: 'Inter'
-          }
-        },
-      }
-    })}
-    />
+          '&-disabled *': {
+            cursor: 'default'
+          },
+          '&-bubble .ql-tooltip': {
+            opacity: 0,
+            animation: 'fade-in forwards 250ms',
+            backgroundColor: toolbarColor,
+            '&-arrow': {
+              borderBottomColor: `${toolbarColor} !important`,
+              backgroundColor: 'transparent'
+            }
+          },
+          '&-toolbar .ql-formats': {
+            '& button:not(.ql-active)': {
+              opacity: 0.55
+            }
+          },
+          '&-picker': {
+            '&-options': {
+              right: 0,
+              fontFamily: 'Inter',
+              borderRadius: 'default',
+              backgroundColor: `${toolbarColor} !important`,
+              '.ql-picker-item::before': {
+                content: '"Heading"'
+              }
+            },
+            '&-label': {
+              display: 'inline-flex !important',
+              alignItems: 'center',
+              fontFamily: 'Inter'
+            }
+          },
+        }
+      })}
+      />
+      <span sx={{ fontFamily: 'Inter', fontStyle: 'italic', pointerEvents: 'none' }} role="none presentation" />
+    </>
   )
 }
 
