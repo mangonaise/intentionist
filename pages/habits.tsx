@@ -16,7 +16,7 @@ const HabitsPage = () => {
       <Head><title>Habits</title></Head>
       <Box sx={{ maxWidth: 'habits', margin: 'auto' }}>
         <HabitsPageNavSection />
-        <Spacer mb={3} />
+        <Spacer mb={[2, 3]} />
         <FilteredHabitsList />
       </Box>
     </HabitFilterContext.Provider>

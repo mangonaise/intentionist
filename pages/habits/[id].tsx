@@ -22,7 +22,7 @@ const HabitEditorPage = () => {
       <Head><title>{editor.isNewHabit ? 'Add habit' : 'Edit habit'}</title></Head>
       <Box sx={{ maxWidth: 'habits', margin: 'auto' }}>
         <HabitEditorNavSection />
-        <Spacer mb={3} />
+        <Spacer mb={[2, 3]} />
         <Flex>
           <HabitIconPicker />
           <Spacer mr={2} />
