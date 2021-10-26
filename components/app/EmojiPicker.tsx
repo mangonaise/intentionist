@@ -187,13 +187,14 @@ const StyleWrapper: FC = ({ children }) => {
               borderRadius: 0,
               backgroundColor: 'transparent !important',
               textShadow: 'var(--text-shadow)',
+              transition: 'border-color 150ms',
               '&::placeholder': {
-                color: 'text',
+                color: 'whiteAlpha.90',
                 textShadow: 'var(--text-shadow)',
               },
               '&:focus': {
                 boxShadow: 'none',
-                borderColor: 'white !important'
+                borderColor: 'rgba(255, 255, 255, 0.8) !important'
               }
             },
 

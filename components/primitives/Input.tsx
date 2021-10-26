@@ -10,12 +10,14 @@ const Input: StyledComponent<ComponentPropsWithoutRef<'input'>> = (props) => (
       fontFamily: 'inherit',
       fontSize: 'inherit',
       color: 'text',
-      background: 'rgba(255, 255, 255, 0.02)',
-      border: 'solid 2px rgba(255, 255, 255, 0.25)',
-      borderRadius: 'default',
+      background: 'rgba(255, 255, 255, 0.03)',
+      border: 'none',
+      borderBottom: 'solid 2px',
+      borderColor: 'whiteAlpha.30',
+      transition: 'border-color 150ms',
       '&:focus': {
         boxShadow: 'none',
-        borderColor: 'whiteAlpha.60'
+        borderColor: 'whiteAlpha.80'
       }
     }}
     {...props}
