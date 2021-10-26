@@ -35,6 +35,7 @@ const WeekViewModePicker = () => {
     <Flex
       sx={{
         position: 'relative',
+        borderBottom: 'solid 2px transparent',
         '&::after': {
           position: 'absolute',
           inset: 0,
