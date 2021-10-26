@@ -3,10 +3,12 @@ import { useContext, useState } from 'react'
 import { Global } from '@emotion/react'
 import { css } from '@theme-ui/css'
 import { JournalContext } from 'pages/journal/[id]'
-import ReactQuill from 'react-quill'
 import Box from '@/components/primitives/Box'
 import Text from '@/components/primitives/Text'
+import dynamic from 'next/dynamic'
 import 'react-quill/dist/quill.bubble.css'
+
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
 
 const formats = ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block', 'list', 'indent', 'header']
 const toolbarColor = 'rgba(15, 15, 15, 0.95)'
@@ -24,6 +26,7 @@ const JournalEntryRichText = () => {
 const EntryContent = observer(() => {
   const { editor, entryData: { content } } = useContext(JournalContext)
   const [showLengthWarning, setShowLengthWarning] = useState(false)
+  const [isBrowser] = useState(typeof window !== 'undefined')
 
   function handleChange(value: string) {
     if (editor.isEditing) {
@@ -35,6 +38,8 @@ const EntryContent = observer(() => {
       }
     }
   }
+
+  if (!isBrowser) return null
 
   return (
     <Box sx={{ position: 'relative' }}>
