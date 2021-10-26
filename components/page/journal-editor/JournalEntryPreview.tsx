@@ -5,13 +5,15 @@ import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
 import Heading from '@/components/primitives/Heading'
 import Text from '@/components/primitives/Text'
+import Spacer from '@/components/primitives/Spacer'
 
 const JournalEntryViewer = () => {
   return (
     <>
       <IconAndTitle />
       <Box sx={{ borderBottom: 'solid 1.5px', borderColor: 'divider', my: [2, 3] }} />
-      <Content />
+      <EditEntryPrompt />
+      <Spacer mb={[3, 5]} />
     </>
   )
 }
@@ -39,18 +41,15 @@ const IconAndTitle = () => {
   )
 }
 
-const Content = () => {
+const EditEntryPrompt = () => {
   const { entryData } = useContext(JournalContext)
 
+  if (entryData.title) return null
+
   return (
-    <Box sx={{ fontWeight: 'light', mt: [3, 5] }}>
-      {!entryData.title ? (
-        <Text sx={{ opacity: 0.6 }}>
-          To create this journal entry, press the edit button at the top of the page.
-        </Text>)
-        : entryData.content
-      }
-    </Box>
+    <Text sx={{ opacity: 0.6, fontWeight: 'light' }}>
+      To create this journal entry, press the edit button at the top of the page.
+    </Text>
   )
 }
 

@@ -5,6 +5,7 @@ import EmojiButton from '@/components/app/EmojiButton'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
 import Input from '@/components/primitives/Input'
+import Spacer from '@/components/primitives/Spacer'
 
 const JournalEntryEditorView = () => {
   return (
@@ -13,7 +14,7 @@ const JournalEntryEditorView = () => {
         <JournalEntryIconPicker />
         <JournalEntryTitleInput />
       </Flex>
-      <JournalEntryContentEditor />
+      <Spacer mb={[2, 3]} />
     </Box>
   )
 }
@@ -39,41 +40,12 @@ const JournalEntryTitleInput = observer(() => {
     <Input
       placeholder="Enter title"
       value={entryData.title}
+      maxLength={150}
       onChange={(e: ChangeEvent<HTMLInputElement>) => editor.updateEntry('title', e.target.value)}
       sx={{
         fontSize: ['1.25rem', '1.5rem'],
         fontWeight: 'semibold',
-        pl: ['0.35em', 3],
         ml: [2, 3]
-      }}
-    />
-  )
-})
-
-const JournalEntryContentEditor = observer(() => {
-  const { editor, entryData } = useContext(JournalContext)
-
-  return (
-    <textarea
-      value={entryData.content}
-      maxLength={1000000}
-      onChange={(e) => editor.updateEntry('content', e.target.value)}
-      sx={{
-        width: '100%',
-        height: '50vh',
-        mt: 3,
-        p: 2,
-        resize: 'none',
-        color: 'text',
-        fontSize: 'inherit',
-        fontWeight: 'light',
-        bg: 'whiteAlpha.3',
-        borderRadius: 'default',
-        border: 'solid 2px rgba(255, 255, 255, 0.25)',
-        fontFamily: 'inherit',
-        '&:focus': {
-          boxShadow: 'none'
-        }
       }}
     />
   )

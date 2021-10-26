@@ -9,6 +9,7 @@ import LoadingScreen from '@/components/app/LoadingScreen'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import JournalEntryEditorView from '@/components/page/journal-editor/JournalEntryEditorView'
 import JournalEntryNavSection from '@/components/page/journal-editor/JournalEntryNavSection'
+import JournalEntryRichText from '@/components/page/journal-editor/JournalEntryRichText'
 import JournalEntryPreview from '@/components/page/journal-editor/JournalEntryPreview'
 import FadeIn from '@/components/primitives/FadeIn'
 import Flex from '@/components/primitives/Flex'
@@ -37,6 +38,7 @@ const JournalEntryPage = observer(() => {
         <DateAndHabit />
         <Spacer mb={[2, 3]} />
         {!!editor.isEditing ? <JournalEntryEditorView /> : <JournalEntryPreview />}
+        <JournalEntryRichText />
       </FadeIn>
     </JournalContext.Provider>
   )
