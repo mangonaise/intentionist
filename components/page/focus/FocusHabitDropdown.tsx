@@ -9,9 +9,9 @@ import Spacer from '@/components/primitives/Spacer'
 import Text from '@/components/primitives/Text'
 
 const FocusHabitDropdown = () => {
-  const { activeHabits, selectHabit, selectedHabit, status } = useContext(FocusTimerContext)
+  const { timeableHabits, selectHabit, selectedHabit, status } = useContext(FocusTimerContext)
 
-  if (!activeHabits.length) return <NoActiveHabitsWarning />
+  if (!timeableHabits.length) return <NoActiveHabitsWarning />
 
   function handleSelectHabit(habit: Habit) {
     selectHabit(habit)
@@ -24,7 +24,7 @@ const FocusHabitDropdown = () => {
       sx={{ width: ['100%', 'auto'] }}
       menuMaxWidth={['100%', 'none']}
     >
-      {activeHabits.map((habit) => (
+      {timeableHabits.map((habit) => (
         <Dropdown.Item itemAction={() => handleSelectHabit(habit)} key={habit.id}>
           <Flex align="center">
             <SmartEmoji nativeEmoji={habit.icon} rem={1.2} />

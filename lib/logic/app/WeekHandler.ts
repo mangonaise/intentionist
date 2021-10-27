@@ -94,6 +94,10 @@ export default class WeekHandler {
     const habitHasData = (habit: Habit) => this.getHabitIdsWithData().includes(habit.id)
     this.habitsInView = this.habitsHandler.habits
       .filter((habit) => this.condenseView ? habitHasData(habit) : (habit.status === 'active' || habitHasData(habit)))
+      
+    if (this.viewMode === 'focus') {
+      this.habitsInView = this.habitsInView.filter((habit) => habit.timeable)
+    }
 
     const isPastWeek = this.weekInView.startDate !== this.latestWeekStartDate
     const activeHabits = this.habitsHandler.habits.filter((habit) => habit.status === 'active')

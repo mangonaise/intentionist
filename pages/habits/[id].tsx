@@ -7,6 +7,7 @@ import HabitEditorNavSection from '@/components/page/habit-editor/HabitEditorNav
 import HabitIconPicker from '@/components/page/habit-editor/HabitIconPicker'
 import HabitNameInput from '@/components/page/habit-editor/HabitNameInput'
 import HabitStatusPicker from '@/components/page/habit-editor/HabitStatusPicker'
+import HabitTimeableCheckbox from '@/components/page/habit-editor/HabitTimeableCheckbox'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
 import Spacer from '@/components/primitives/Spacer'
@@ -32,7 +33,9 @@ const HabitEditorPage = () => {
         {!editor.isNewHabit && <>
           <HabitStatusPicker />
         </>}
-        <Spacer mb={[4, 8]} />
+        <Spacer mb={3} />
+        <HabitTimeableCheckbox />
+        <Spacer mb={[3, 8]} />
         <EmojiPaletteEditor />
       </Box>
     </HabitEditorContext.Provider>

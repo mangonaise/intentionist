@@ -20,7 +20,7 @@ const TimerControls = () => {
 }
 
 const PlayPauseButton = observer(() => {
-  const { status, startTimer, pauseTimer, duration, selectedHabit, activeHabits, getIsUntrackedWeek } = useContext(FocusTimerContext)
+  const { status, startTimer, pauseTimer, duration, selectedHabit, timeableHabits, getIsUntrackedWeek } = useContext(FocusTimerContext)
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
 
   if (status === 'finished') return null
@@ -44,7 +44,7 @@ const PlayPauseButton = observer(() => {
       <TimerControlButton
         onClick={handleClick}
         icon={icon}
-        disabled={!duration || !activeHabits.length || !selectedHabit}
+        disabled={!duration || !timeableHabits.length || !selectedHabit}
         sx={{ '& svg': { position: 'relative', left: icon === PlayIcon ? '5%' : null } }}
       />
       <TimerConfirmNewWeekModal

@@ -18,7 +18,8 @@ export type HabitProperties = {
   name: string
   icon: string
   status: HabitStatus,
-  palette?: string[]
+  palette?: string[],
+  timeable?: boolean
 }
 
 @scoped(Lifecycle.ContainerScoped)

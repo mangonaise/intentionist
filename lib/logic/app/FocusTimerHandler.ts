@@ -13,7 +13,7 @@ type QueryParams = { habitId: string }
 @injectable()
 export default class FocusTimerHandler {
   public selectedHabit: Habit | undefined
-  public activeHabits: Habit[]
+  public timeableHabits: Habit[]
   public duration = 1500
   public progress = 0
   public status: TimerStatus = 'not started'
@@ -24,7 +24,7 @@ export default class FocusTimerHandler {
 
   constructor(habitsHandler: HabitsHandler, weekHandler: WeekHandler, @inject('Router') router: Router) {
     this.weekHandler = weekHandler
-    this.activeHabits = habitsHandler.habits.filter((habit) => habit.status === 'active')
+    this.timeableHabits = habitsHandler.habits.filter((habit) => habit.timeable && habit.status === 'active')
 
     const query = router.query as QueryParams
     if (query.habitId) {
