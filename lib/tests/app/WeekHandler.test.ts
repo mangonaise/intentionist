@@ -371,7 +371,7 @@ describe('displaying correct habits', () => {
   let activeHabit: Habit, suspendedHabit: Habit, archivedHabitA: Habit, archivedHabitB: Habit
 
   beforeAll(() => {
-    activeHabit = { id: generateHabitId(), icon: '🏃‍♂️', name: 'WeekHandler test active', status: 'active' }
+    activeHabit = { id: generateHabitId(), icon: '🏃‍♂️', name: 'WeekHandler test active', status: 'active', timeable: true }
     suspendedHabit = { id: generateHabitId(), icon: '⏸', name: 'WeekHandler test suspended', status: 'suspended' }
     archivedHabitA = { id: generateHabitId(), icon: '🗑️', name: 'WeekHandler test archived A', status: 'archived' }
     archivedHabitB = { id: generateHabitId(), icon: '👴', name: 'WeekHandler test archived B', status: 'archived' }
