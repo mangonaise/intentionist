@@ -14,7 +14,7 @@ const JournalEntryEditorView = () => {
         <JournalEntryIconPicker />
         <JournalEntryTitleInput />
       </Flex>
-      <Spacer mb={[2, 3]} />
+      <Spacer mb={[3, 6]} />
     </Box>
   )
 }
