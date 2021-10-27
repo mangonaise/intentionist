@@ -1,8 +1,11 @@
+import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useContext, useState } from 'react'
 import { Global } from '@emotion/react'
 import { css } from '@theme-ui/css'
 import { JournalContext } from 'pages/journal/[id]'
+import DbHandler from '@/lib/logic/app/DbHandler'
+import useWarnUnsavedChanges from '@/lib/hooks/useWarnUnsavedChanges'
 import Box from '@/components/primitives/Box'
 import Text from '@/components/primitives/Text'
 import dynamic from 'next/dynamic'
@@ -25,8 +28,17 @@ const JournalEntryRichText = () => {
 
 const EntryContent = observer(() => {
   const { editor, entryData: { content } } = useContext(JournalContext)
+  const { isWriteComplete } = container.resolve(DbHandler)
   const [showLengthWarning, setShowLengthWarning] = useState(false)
   const [isBrowser] = useState(typeof window !== 'undefined')
+
+  useWarnUnsavedChanges(
+    {
+      routeChange: editor.hasUnsavedChanges,
+      unload: editor.hasUnsavedChanges || !isWriteComplete
+    },
+    'Changes you made may not be saved. Are you sure you want to leave?'
+  )
 
   function handleChange(value: string) {
     if (editor.isEditing) {
