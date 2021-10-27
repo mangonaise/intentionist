@@ -2,6 +2,8 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { createContext, useContext, useState } from 'react'
 import { format } from 'date-fns'
+import { Global } from '@emotion/react'
+import { css } from '@theme-ui/css'
 import JournalEntryEditor, { JournalEntryDocumentData } from '@/lib/logic/app/JournalEntryEditor'
 import HabitsHandler from '@/lib/logic/app/HabitsHandler'
 import withApp from '@/components/app/withApp'
@@ -26,6 +28,7 @@ const JournalEntryPage = observer(() => {
     <>
       <Head><title>...</title></Head>
       <LoadingScreen />
+      <JournalFontPreload />
     </>
   )
 
@@ -40,6 +43,7 @@ const JournalEntryPage = observer(() => {
         {!!editor.isEditing ? <JournalEntryEditorView /> : <JournalEntryPreview />}
         <JournalEntryRichText />
       </FadeIn>
+      <JournalFontPreload />
     </JournalContext.Provider>
   )
 })
@@ -61,6 +65,23 @@ const DateAndHabit = () => {
         </Text>
       </Flex>
     </Flex>
+  )
+}
+
+const JournalFontPreload = () => {
+  return (
+    <>
+      <Global styles={css({
+        '@font-face': {
+          fontFamily: 'Inter Extended',
+          fontWeight: '1 999',
+          'src': `url('/fonts/Inter-var-extended.woff2') format('woff2')`,
+          'fontDisplay': 'swap'
+        },
+      })}
+      />
+      <span sx={{ fontFamily: 'Inter Extended', pointerEvents: 'none' }} role="none presentation" />
+    </>
   )
 }
 
