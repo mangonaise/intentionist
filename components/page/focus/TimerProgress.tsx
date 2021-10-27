@@ -35,7 +35,7 @@ const TimerProgress = () => {
 }
 
 const ProgressCircle = observer(() => {
-  const { progress, duration, status, selectedHabit } = useContext(FocusTimerContext)
+  const { progress, duration, selectedHabit } = useContext(FocusTimerContext)
 
   return (
     <ProgressBar

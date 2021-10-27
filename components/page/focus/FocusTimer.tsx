@@ -1,3 +1,9 @@
+import { container } from 'tsyringe'
+import { observer } from 'mobx-react-lite'
+import { useContext } from 'react'
+import { FocusTimerContext } from 'pages/focus'
+import DbHandler from '@/lib/logic/app/DbHandler'
+import useWarnUnsavedChanges from '@/lib/hooks/useWarnUnsavedChanges'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
 import Icon from '@/components/primitives/Icon'
@@ -35,8 +41,26 @@ const FocusTimer = () => {
         <TimerDurationButtons />
         <TimerStatusText />
       </Box>
+      <UnsavedTimerHandler />
     </Box>
   )
 }
+
+const UnsavedTimerHandler = observer(() => {
+  const { isWriteComplete } = container.resolve(DbHandler)
+  const { status } = useContext(FocusTimerContext)
+
+  const isTimerActive = status === 'playing' || status === 'paused'
+
+  useWarnUnsavedChanges(
+    {
+      routeChange: isTimerActive,
+      unload: isTimerActive || !isWriteComplete
+    },
+    'Your focused time will not be saved because the timer is still active. Are you sure you want to leave?'
+  )
+
+  return null
+})
 
 export default FocusTimer
