@@ -23,30 +23,17 @@ import PlusIcon from '@/components/icons/PlusIcon'
 
 const PaletteEditorContext = createContext<PaletteEditor>(null!)
 
-const EmojiPaletteEditor = observer(() => {
+const EmojiPaletteEditor = () => {
   const habitEditor = useContext(HabitEditorContext)
   const [paletteEditor] = useState(new PaletteEditor(habitEditor))
-  const [isVisible, setIsVisible] = useState(false)
-
-  if (!isVisible && habitEditor?.habit?.name) {
-    setIsVisible(true)
-  }
 
   return (
     <PaletteEditorContext.Provider value={paletteEditor}>
-      <EditorWrapper isVisible={isVisible} />
-    </PaletteEditorContext.Provider>
-  )
-})
-
-const EditorWrapper = observer(({ isVisible }: { isVisible: boolean }) => {
-  return (
-    <Box sx={{ opacity: isVisible ? 1 : 0, transition: 'opacity 350ms 500ms' }}>
       <HeadingSection />
       <EmojiList />
-    </Box>
+    </PaletteEditorContext.Provider>
   )
-})
+}
 
 const HeadingSection = () => {
   const { addEmoji } = useContext(PaletteEditorContext)

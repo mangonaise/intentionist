@@ -1,5 +1,6 @@
 import { container } from 'tsyringe'
-import { createContext, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import { createContext, useContext, useState } from 'react'
 import HabitEditor from '@/lib/logic/app/HabitEditor'
 import withApp from '@/components/app/withApp'
 import EmojiPaletteEditor from '@/components/page/habit-editor/EmojiPaletteEditor'
@@ -34,12 +35,33 @@ const HabitEditorPage = () => {
           <HabitStatusPicker />
         </>}
         <Spacer mb={3} />
-        <HabitTimeableCheckbox />
-        <Spacer mb={[3, 8]} />
-        <EmojiPaletteEditor />
+        <InitiallyHiddenOptions />
       </Box>
     </HabitEditorContext.Provider>
   )
 }
+
+const InitiallyHiddenOptions = observer(() => {
+  const habitEditor = useContext(HabitEditorContext)
+  const [isVisible, setIsVisible] = useState(false)
+
+  if (!isVisible && habitEditor?.habit?.name) {
+    setIsVisible(true)
+  }
+
+  return (
+    <Box
+      sx={{
+        opacity: isVisible ? 1 : 0,
+        transition: 'opacity 350ms 500ms'
+      }}
+      tabIndex={-1}
+    >
+      <HabitTimeableCheckbox />
+      <Spacer mb={[3, 8]} />
+      <EmojiPaletteEditor />
+    </Box>
+  )
+})
 
 export default withApp(HabitEditorPage, 'neutral')
