@@ -1,18 +1,18 @@
 import { observer } from 'mobx-react-lite'
 import { container } from 'tsyringe'
 import { useRouter } from 'next/dist/client/router'
-import { ChangeEvent, FormEvent, useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import { handleSignOut } from '@/lib/logic/utils/authUtilities'
 import AuthUser from '@/lib/logic/app/AuthUser'
 import InitialFetchHandler from '@/lib/logic/app/InitialFetchHandler'
-import ProfileHandler from '@/lib/logic/app/ProfileHandler'
+import ProfileHandler, { ProfileInfo } from '@/lib/logic/app/ProfileHandler'
 import useAutorun from '@/lib/hooks/useAutorun'
 import withAuthUser from '@/components/app/withAuthUser'
 import LoadingScreen from '@/components/app/LoadingScreen'
+import EmojiButton from '@/components/app/EmojiButton'
 import FadeIn from '@/components/primitives/FadeIn'
 import Button from '@/components/primitives/Button'
 import Flex from '@/components/primitives/Flex'
-import Form from '@/components/primitives/Form'
 import Heading from '@/components/primitives/Heading'
 import IconButton from '@/components/primitives/IconButton'
 import Input from '@/components/primitives/Input'
@@ -24,7 +24,10 @@ import Head from 'next/head'
 const NewUserPage = withAuthUser(observer(() => {
   const router = useRouter()
   const { initialFetches, hasCompletedInitialFetches } = container.resolve(InitialFetchHandler)
-  const [displayName, setDisplayName] = useState(container.resolve(AuthUser).displayName || '')
+  const [profileInfo, setProfileInfo] = useState<ProfileInfo>({
+    displayName: container.resolve(AuthUser).displayName || '',
+    avatar: '🙂'
+  })
 
   useAutorun(() => {
     if (initialFetches?.userProfile) {
@@ -32,9 +35,12 @@ const NewUserPage = withAuthUser(observer(() => {
     }
   })
 
-  function handleSubmitUser(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    container.resolve(ProfileHandler).updateUserProfile({ displayName })
+  function updateProfileInfo(updates: Partial<ProfileInfo>) {
+    setProfileInfo({ ...profileInfo, ...updates })
+  }
+
+  function handleSubmitUser() {
+    container.resolve(ProfileHandler).updateUserProfile(profileInfo)
     router.push('/home')
   }
 
@@ -47,23 +53,34 @@ const NewUserPage = withAuthUser(observer(() => {
       <Flex justify="center" column sx={{ width: ['100%', '25rem'], minHeight: '50vh', margin: 'auto', textAlign: 'center' }}>
         <Heading level={1} sx={{ mb: 3 }}>Hello! 👋</Heading>
         <Text sx={{ mb: 8 }}>Welcome to intentionist.</Text>
-        <Form onSubmit={handleSubmitUser}>
-          <Flex column sx={{ width: '100%', px: 4 }}>
-            <Label htmlFor="name" sx={{ fontWeight: 'medium', mb: 2, opacity: 0.6, textAlign: 'left' }}>
-              Your name
-            </Label>
+        <Flex center column sx={{ mb: 8 }}>
+          <EmojiButton
+            label="as your avatar"
+            value={profileInfo.avatar}
+            onChangeEmoji={(emoji) => updateProfileInfo({ avatar: emoji })}
+            buttonSize="5rem"
+            emojiSizeRem={2.25}
+            sx={{ borderRadius: '50%' }}
+          />
+          <Text type="span" sx={{ color: 'whiteAlpha.60', mt: 2 }}>Choose an avatar</Text>
+        </Flex>
+        <Flex column sx={{ width: '100%', px: 4 }}>
+          <Label sx={{ mb: 4, textAlign: 'left', color: 'whiteAlpha.60' }}>
+            Your name
             <Input
-              value={displayName}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setDisplayName(e.target.value)}
+              value={profileInfo.displayName}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => updateProfileInfo({ displayName: e.target.value })}
               placeholder="Enter your name or a nickname"
               required
               type="text"
-              id="name"
-              sx={{ mb: 4 }}
+              aria-label="Your name"
+              sx={{ mt: 2 }}
             />
-            <Button type="submit">Start</Button>
-          </Flex>
-        </Form>
+          </Label>
+          <Button onClick={handleSubmitUser} disabled={!profileInfo.displayName || !profileInfo.avatar}>
+            Start
+          </Button>
+        </Flex>
       </Flex>
     </FadeIn>
   )

@@ -5,7 +5,8 @@ import isEqual from 'lodash/isEqual'
 import DbHandler from './DbHandler'
 
 export type ProfileInfo = {
-  displayName: string
+  displayName: string,
+  avatar: string
 }
 
 @scoped(Lifecycle.ContainerScoped)
