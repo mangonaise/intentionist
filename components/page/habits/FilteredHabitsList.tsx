@@ -7,6 +7,7 @@ import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifi
 import { CSS } from '@dnd-kit/utilities'
 import { HabitFilterContext } from 'pages/habits'
 import HabitsHandler, { Habit } from '@/lib/logic/app/HabitsHandler'
+import useAutorun from '@/lib/hooks/useAutorun'
 import DragHandle, { DragHandleProps } from '@/components/app/DragHandle'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Button from '@/components/primitives/Button'
@@ -15,15 +16,25 @@ import Icon from '@/components/primitives/Icon'
 import PencilIcon from '@/components/icons/PencilIcon'
 import NextLink from 'next/link'
 
+function createHabitsMap(habits: Habit[]) {
+  return habits.reduce<{ [habitId: string]: Habit }>((map, habit) => {
+    map[habit.id] = habit
+    return map
+  }, {})
+}
+
 const FilteredHabitsList = () => {
   const { filteredHabits, refresh } = useContext(HabitFilterContext)
   const { habits, reorderHabits } = container.resolve(HabitsHandler)
   const [draggedHabitId, setDraggedHabitId] = useState<string | null>(null)
 
-  const [habitsMap] = useState(habits.reduce<{ [habitId: string]: Habit }>((map, habit) => {
-    map[habit.id] = habit
-    return map
-  }, {}))
+  const [habitsMap, setHabitsMap] = useState(createHabitsMap(habits))
+
+  useAutorun(() => {
+    if (habits.length !== Object.keys(habitsMap).length) {
+      setHabitsMap(createHabitsMap(habits))
+    }
+  })
 
   const sensors = useSensors(
     useSensor(PointerSensor),
