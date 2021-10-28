@@ -146,7 +146,7 @@ export const habitPresets: HabitPreset[] = [
     timeable: false
   },
   {
-    name: 'Make the bed',
+    name: 'Make bed',
     icon: '🛏️',
     palette: ['✅', '❌'],
     timeable: false
@@ -155,12 +155,6 @@ export const habitPresets: HabitPreset[] = [
     name: 'Read',
     icon: '📚',
     palette: ['⭐', '👍', '🤏'],
-    timeable: true
-  },
-  {
-    name: 'Journal',
-    icon: '✏️',
-    palette: ['✅', '❌'],
     timeable: true
   },
   {
@@ -194,6 +188,12 @@ export const habitPresets: HabitPreset[] = [
     timeable: true
   },
   {
+    name: 'Journal',
+    icon: '✏️',
+    palette: ['✅', '❌'],
+    timeable: true
+  },
+  {
     name: 'No phone in bed',
     icon: '📴',
     palette: ['✅', '❌'],
@@ -207,7 +207,7 @@ export const habitPresets: HabitPreset[] = [
   },
   {
     name: 'Healthy eating',
-    icon: '🥗',
+    icon: '🍎',
     palette: ['⭐', '👍', '🆗', '👎'],
     timeable: false
   },
