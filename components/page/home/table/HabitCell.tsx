@@ -5,7 +5,6 @@ import { useRouter } from 'next/router'
 import { ColumnsDisplayContext } from '../WeekTable'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Flex from '@/components/primitives/Flex'
-import Link from '@/components/primitives/Link'
 import Dropdown from '@/components/app/Dropdown'
 import NextLink from 'next/link'
 import Button from '@/components/primitives/Button'
@@ -18,9 +17,8 @@ const HabitCell = observer(({ habit }: { habit: Habit }) => {
     <Flex
       center
       sx={{
-        minHeight: 'row',
         borderTop: 'solid 1px',
-        borderColor: 'grid',
+        borderColor: 'grid'
       }}
     >
       {showHabitNames

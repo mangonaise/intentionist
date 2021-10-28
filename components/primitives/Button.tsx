@@ -8,14 +8,13 @@ export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
 const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProps>>(function Button (props, ref) {
   const hoverEffect = props.hoverEffect ?? 'default'
 
-  props.type
-
   return (
     <button
       sx={{
         cursor: 'pointer',
         userSelect: 'none',
-        padding: '0.75rem 1rem',
+        minHeight: '2.5rem',
+        paddingX: '1rem',
         border: 'none',
         color: 'inherit',
         fontSize: 'inherit',

@@ -65,7 +65,9 @@ const Preset = ({ preset, onSelectPreset }: { preset: HabitPreset } & Props) => 
         sx={{ mr: 3 }}
         disabled={presetOptions && !selectedPresetOption}
       />
-      <SmartEmoji nativeEmoji={preset.icon} rem={1.2} />
+      <Flex center sx={{ width: '1.2rem' }}>
+        <SmartEmoji nativeEmoji={preset.icon} rem={1.2} />
+      </Flex>
       <Spacer ml={3} />
       {segments.map((segment, index) => {
         return (

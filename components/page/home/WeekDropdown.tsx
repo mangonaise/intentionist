@@ -133,8 +133,8 @@ const WeekButton = observer(({ weekStart, selectedDate, onSelectWeek }: WeekButt
           Mon {format(weekStart, 'do')}
         </Text>
         {!!weekIcon && (
-          <Box sx={{ transform: 'scale(1.5)', ml: 'auto', mr: 1 }}>
-            <SmartEmoji nativeEmoji={weekIcon} rem={0.8} />
+          <Box sx={{ ml: 'auto' }}>
+            <SmartEmoji nativeEmoji={weekIcon} rem={1.2} />
           </Box>
         )}
       </Flex>
@@ -159,6 +159,7 @@ const ViewThisWeekButton = () => {
           margin: '0',
           paddingY: '0.7rem',
           borderRadius: 'default',
+          minHeight: '2.5rem'
         }}
         hoverEffect="opacity"
         itemAction={handleViewThisWeek}

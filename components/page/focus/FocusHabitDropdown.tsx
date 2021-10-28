@@ -42,9 +42,7 @@ const DropdownTitle = ({ selectedHabit }: { selectedHabit: Habit | undefined }) 
     <Flex align="center">
       {selectedHabit
         ? <>
-          <Flex center sx={{ transform: 'scale(1.2)' }}>
-            <SmartEmoji nativeEmoji={selectedHabit.icon} rem={1} />
-          </Flex>
+          <SmartEmoji nativeEmoji={selectedHabit.icon} rem={1.2} />
           <Spacer mr={4} />
           {selectedHabit.name}
         </>

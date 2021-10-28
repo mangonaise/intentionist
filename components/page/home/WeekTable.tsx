@@ -89,7 +89,8 @@ const Table: FC = observer(({ children }) => {
         marginX: ['-0.5rem', 0],
         opacity: isLoadingWeek ? 0.5 : 1,
         pointerEvents: isLoadingWeek ? 'none' : 'auto',
-        transition: 'opacity 100ms'
+        transition: 'opacity 100ms',
+        '& button': { minHeight: 'row' }
       }}
     >
       {children}

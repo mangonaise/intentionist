@@ -158,7 +158,7 @@ const Item: StyledComponent<ItemProps> = (props) => {
       onClick={handleClick}
       sx={{
         margin: '-2px',
-        paddingY: '0.8em',
+        minHeight: '2.6rem',
         textAlign: 'left',
         borderRadius: '0',
         '&:first-of-type': {
