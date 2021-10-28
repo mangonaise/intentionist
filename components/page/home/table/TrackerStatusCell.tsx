@@ -11,9 +11,10 @@ import Flex from '@/components/primitives/Flex'
 interface TrackerStatusCellProps {
   habitId: string,
   weekday: WeekdayId,
+  rowIndex: number
 }
 
-const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
+const TrackerStatusCell = ({ habitId, weekday, rowIndex }: TrackerStatusCellProps) => {
   const { isLoadingWeek, weekInView: { statuses } } = container.resolve(WeekHandler)
   const status = statuses?.[habitId]?.[weekday] ?? []
   const [isEditing, setIsEditing] = useState(false)
@@ -65,6 +66,7 @@ const TrackerStatusCell = ({ habitId, weekday }: TrackerStatusCellProps) => {
         isEditing={isEditing}
         isLoading={isLoadingWeek}
         hasStatus={!!visibleEmojis.length}
+        id={`cell-${weekday},${rowIndex}`}
       >
         <Flex center flexWrap sx={{ py: '4px' }}>
           {visibleEmojis.map((emoji, index) => (
@@ -92,11 +94,12 @@ interface CellButtonProps {
   onClickCell: () => void,
   isEditing: boolean,
   isLoading: boolean,
-  hasStatus: boolean
+  hasStatus: boolean,
+  id: string,
 }
 
 const CellButton: FC<CellButtonProps> = (props) => {
-  const { onClickCell, isEditing, isLoading, hasStatus, children } = props
+  const { onClickCell, isEditing, isLoading, hasStatus, id, children } = props
 
   return (
     <Button
@@ -123,6 +126,7 @@ const CellButton: FC<CellButtonProps> = (props) => {
           }
         }
       }}
+      id={id}
     >
       {children}
     </Button>

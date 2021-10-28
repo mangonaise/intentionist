@@ -1,7 +1,7 @@
 import { container } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import { createContext, FC, Fragment, useLayoutEffect, useRef } from 'react'
+import { createContext, FC, Fragment, useEffect, useLayoutEffect, useRef } from 'react'
 import WeekHandler, { WeekdayId, WeekViewMode } from '@/lib/logic/app/WeekHandler'
 import useMediaQuery from '@/lib/hooks/useMediaQuery'
 import Grid from '@/components/primitives/Grid'
@@ -31,6 +31,8 @@ const WeekTable = () => {
   const columnsDisplayHandler = useRef(new ColumnsDisplayHandler())
   const showHabitNames = useMediaQuery('(max-width: 500px)', false, true)
 
+  useWeekTableArrowNavigation()
+
   useLayoutEffect(() => {
     refreshHabitsInView()
   }, [refreshHabitsInView])
@@ -39,13 +41,14 @@ const WeekTable = () => {
     columnsDisplayHandler.current.setShowHabitNames(showHabitNames)
   }, [showHabitNames])
 
-  function getRowContent(habitId: string) {
+  function getRowContent(habitId: string, rowIndex: number) {
     switch (viewMode) {
       case 'tracker':
         return Array.from({ length: 7 }).map((_, weekdayId) => (
           <TrackerStatusCell
             habitId={habitId}
             weekday={weekdayId as WeekdayId}
+            rowIndex={rowIndex}
             key={weekdayId}
           />
         ))
@@ -61,10 +64,10 @@ const WeekTable = () => {
       <Table>
         <CondenseViewToggle />
         <WeekTableColumnTitles />
-        {habitsInView.map((habit) => (
+        {habitsInView.map((habit, rowIndex) => (
           <Fragment key={habit.id}>
             <HabitCell habit={habit} />
-            {getRowContent(habit.id)}
+            {getRowContent(habit.id, rowIndex)}
           </Fragment>
         ))}
         <CondensedViewAlert />
@@ -97,5 +100,39 @@ const Table: FC = observer(({ children }) => {
     </Grid>
   )
 })
+
+function useWeekTableArrowNavigation() {
+  function handleArrowNavigation(coords: [number, number]) {
+    const focusedElementId = document.activeElement?.id
+    if (focusedElementId?.includes('cell')) {
+      let [row, col] = focusedElementId.split('-')[1]?.split(',').map((coord) => parseInt(coord))
+      if (row !== NaN && col !== NaN) {
+        row += coords[0]
+        col += coords[1]
+        const cellElement = document.getElementById(`cell-${row},${col}`)
+        if (cellElement) {
+          cellElement.focus()
+        }
+      }
+    }
+  }
+
+  function handleKeyDown(e: KeyboardEvent) {
+    const direction = ({
+      'ArrowUp': [0, -1],
+      'ArrowRight': [1, 0],
+      'ArrowDown': [0, 1],
+      'ArrowLeft': [-1, 0]
+    } as { [key: string]: [number, number] })[e.key]
+    if (direction) {
+      handleArrowNavigation(direction)
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
+}
 
 export default observer(WeekTable)
