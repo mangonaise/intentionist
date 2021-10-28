@@ -113,7 +113,9 @@ const CellButton: FC<CellButtonProps> = (props) => {
         boxShadow: isEditing ? 'var(--highlight)' : 'none',
         '&:hover': {
           backgroundColor: 'whiteAlpha.8',
-          boxShadow: 'var(--highlight) !important'
+          '&:not(:focus-visible)': {
+            boxShadow: 'var(--highlight) !important'
+          }
         },
         '&:not:hover': {
           transition: 'background-color 100ms'
