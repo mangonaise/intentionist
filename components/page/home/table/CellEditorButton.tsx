@@ -7,11 +7,12 @@ import Icon from '@/components/primitives/Icon'
 interface CellEditorButtonProps {
   content: string | (() => JSX.Element)
   action: () => void,
+  focusIndex: number
   invert?: boolean,
-  disabled?: boolean
+  disabled?: boolean,
 }
 
-const CellEditorButton = ({ content, action, invert, disabled = false }: CellEditorButtonProps) => {
+const CellEditorButton = ({ content, action, focusIndex, invert, disabled = false }: CellEditorButtonProps) => {
   return (
     <Box sx={{ mr: '4px', mb: '4px', opacity: 0, animation: 'fade-in forwards 175ms' }}>
       <Button
@@ -23,6 +24,7 @@ const CellEditorButton = ({ content, action, invert, disabled = false }: CellEdi
           color: disabled ? '#666' : 'text',
           cursor: disabled ? 'default' : 'pointer',
         }}
+        id={`cell_editor-${focusIndex}`}
       >
         <Flex center>
           {typeof content === 'string'

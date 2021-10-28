@@ -1,5 +1,5 @@
 import { container } from 'tsyringe'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { BaseEmoji } from 'emoji-mart'
 import HabitsHandler from '@/lib/logic/app/HabitsHandler'
 import CellEditorButton from './CellEditorButton'
@@ -22,6 +22,8 @@ const TrackerStatusEditor = ({ draft, onEditDraft, habitId, closeEditor }: Track
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const [palette] = useState(getHabitPalette(habitId))
 
+  useStatusEditorArrowNavigation()
+
   function addEmoji(emoji: string) {
     const newDraft = [...draft]
     newDraft.push(emoji)
@@ -39,19 +41,24 @@ const TrackerStatusEditor = ({ draft, onEditDraft, habitId, closeEditor }: Track
   }
 
   return (
-    <FocusTrap paused={showEmojiPicker} focusTrapOptions={{
-      clickOutsideDeactivates: true,
-      onDeactivate: closeEditor
-    }}>
+    <FocusTrap
+      paused={showEmojiPicker}
+      focusTrapOptions={{
+        clickOutsideDeactivates: true,
+        onDeactivate: closeEditor
+      }}
+    >
       <Box sx={{ position: 'absolute', size: '100%' }}>
         <CellEditorButtonsBar above>
-          <CellEditorButton content={SearchIcon} action={() => setShowEmojiPicker(!showEmojiPicker)} />
-          <CellEditorButton content={BackspaceIcon} action={backspace} disabled={!draft.length} />
-          <CellEditorButton content={CheckIcon} action={closeEditor} />
+          <CellEditorButton content={SearchIcon} action={() => setShowEmojiPicker(!showEmojiPicker)} focusIndex={0} />
+          <CellEditorButton content={BackspaceIcon} action={backspace} disabled={!draft.length} focusIndex={1} />
+          <CellEditorButton content={CheckIcon} action={closeEditor} focusIndex={2} />
         </CellEditorButtonsBar>
         {!!palette.length && (
           <CellEditorButtonsBar>
-            {palette.map((emoji, index) => <CellEditorButton key={index} content={emoji} action={() => addEmoji(emoji)} />)}
+            {palette.map((emoji, index) => (
+              <CellEditorButton key={index} content={emoji} action={() => addEmoji(emoji)} focusIndex={index + 3} />
+            ))}
           </CellEditorButtonsBar>
         )}
         <EmojiPicker
@@ -64,6 +71,30 @@ const TrackerStatusEditor = ({ draft, onEditDraft, habitId, closeEditor }: Track
       </Box>
     </FocusTrap>
   )
+}
+
+function useStatusEditorArrowNavigation() {
+  function handleKeyDown(e: KeyboardEvent) {
+    if (document.getElementById('emoji-picker')) return
+    if (e.key === 'ArrowUp') {
+      document.getElementById('cell_editor-2')?.focus()
+    } else if (e.key === 'ArrowDown') {
+      document.getElementById('cell_editor-3')?.focus()
+    } else {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+      const focusedElementId = document.activeElement?.id
+      if (focusedElementId?.includes('cell_editor')) {
+        const focusedIndex = parseInt(focusedElementId.split('-')[1])
+        const newIndex = focusedIndex + (e.key === 'ArrowRight' ? 1 : -1)
+        document.getElementById(`cell_editor-${newIndex}`)?.focus()
+      }
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
 }
 
 function getHabitPalette(habitId: string) {
