@@ -115,17 +115,24 @@ const DropdownMenu = () => {
           position: 'absolute',
           right: positionRight,
           zIndex: 1,
-          backgroundColor: 'bg',
           width: 'max-content',
           maxWidth: menuMaxWidth,
           minWidth: '100%',
           transform: noGap ? null : 'translateY(4px)',
+          backgroundColor: 'bg',
           border: 'solid 2px',
           borderColor: 'divider',
           borderRadius: 'default',
           wordBreak: 'break-word',
           opacity: 0,
-          animation: 'fade-in forwards 200ms'
+          animation: 'fade-in forwards 200ms',
+          '&::after': {
+            position: 'absolute',
+            content: '""',
+            bottom: '-0.5rem',
+            height: '0.5rem',
+            width: '1px'
+          }
         }}>
         {children}
       </Flex>
