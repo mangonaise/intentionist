@@ -118,14 +118,18 @@ function useWeekTableArrowNavigation() {
   }
 
   function handleKeyDown(e: KeyboardEvent) {
-    const direction = ({
+    const deltaCoords = ({
       'ArrowUp': [0, -1],
+      'w': [0, -1],
       'ArrowRight': [1, 0],
+      'd': [1, 0],
       'ArrowDown': [0, 1],
-      'ArrowLeft': [-1, 0]
+      's': [0, 1],
+      'ArrowLeft': [-1, 0],
+      'a': [-1, 0]
     } as { [key: string]: [number, number] })[e.key]
-    if (direction) {
-      handleArrowNavigation(direction)
+    if (deltaCoords) {
+      handleArrowNavigation(deltaCoords)
     }
   }
 

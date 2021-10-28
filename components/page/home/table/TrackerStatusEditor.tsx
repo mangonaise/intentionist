@@ -76,16 +76,29 @@ const TrackerStatusEditor = ({ draft, onEditDraft, habitId, closeEditor }: Track
 function useStatusEditorArrowNavigation() {
   function handleKeyDown(e: KeyboardEvent) {
     if (document.getElementById('emoji-picker')) return
-    if (e.key === 'ArrowUp') {
+
+    const direction = ({
+      'ArrowUp': 'up',
+      'w': 'up',
+      'ArrowRight': 'right',
+      'd': 'right',
+      'ArrowDown': 'down',
+      's': 'down',
+      'ArrowLeft': 'left',
+      'a': 'left'
+    } as { [key: string]: 'up' | 'right' | 'down' | 'left' })[e.key]
+
+    if (!direction) return
+
+    if (direction === 'up') {
       document.getElementById('cell_editor-2')?.focus()
-    } else if (e.key === 'ArrowDown') {
+    } else if (direction === 'down') {
       document.getElementById('cell_editor-3')?.focus()
     } else {
-      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
       const focusedElementId = document.activeElement?.id
       if (focusedElementId?.includes('cell_editor')) {
         const focusedIndex = parseInt(focusedElementId.split('-')[1])
-        const newIndex = focusedIndex + (e.key === 'ArrowRight' ? 1 : -1)
+        const newIndex = focusedIndex + (direction === 'right' ? 1 : -1)
         document.getElementById(`cell_editor-${newIndex}`)?.focus()
       }
     }
