@@ -1,3 +1,4 @@
+import type { StyledComponent } from '../types/StyledComponent'
 import type { BaseEmoji } from 'emoji-mart'
 import { useState } from 'react'
 import Button from '@/components/primitives/Button'
@@ -13,7 +14,7 @@ interface Props {
   label: string
 }
 
-const EmojiButton = ({ value, onChangeEmoji, buttonSize, emojiSizeRem, label }: Props) => {
+const EmojiButton: StyledComponent<Props> = ({ value, onChangeEmoji, buttonSize, emojiSizeRem, label, className }) => {
   const [showPicker, setShowPicker] = useState(false)
 
   function handleSelectEmoji(emoji: BaseEmoji) {
@@ -25,6 +26,7 @@ const EmojiButton = ({ value, onChangeEmoji, buttonSize, emojiSizeRem, label }: 
       <Button
         onClick={() => setShowPicker(!showPicker)}
         sx={{ size: buttonSize }}
+        className={className}
       >
         <Flex center>
           <SmartEmoji nativeEmoji={value} rem={emojiSizeRem} />
