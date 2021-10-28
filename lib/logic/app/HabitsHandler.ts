@@ -6,6 +6,7 @@ import isEqual from 'lodash/isEqual'
 import exclude from '../utils/exclude'
 import DbHandler, { HABITS } from './DbHandler'
 import arrayMove from '../utils/arrayMove'
+import generateHabitId from '../utils/generateHabitId'
 
 export type HabitsDocumentData = {
   habits: { [id: string]: HabitProperties },
@@ -50,6 +51,17 @@ export default class HabitsHandler {
     })
 
     return this.habits[index]
+  }
+
+  public addHabitFromPreset = async (preset: HabitPreset) => {
+    await this.setHabit({
+      id: generateHabitId(),
+      status: 'active',
+      name: preset.name,
+      icon: preset.icon,
+      palette: preset.palette,
+      timeable: preset.timeable
+    })
   }
 
   public deleteHabitById = async (id: string) => {
@@ -108,3 +120,112 @@ export default class HabitsHandler {
     }))
   }
 }
+
+export type HabitPreset = Pick<Habit, 'name' | 'icon' | 'palette' | 'timeable'> & { uniqueText?: string }
+
+export const habitPresets: HabitPreset[] = [
+  {
+    name: 'Wake up by [5,5:30,6,6:30,7,7:30,8,8:30,9]',
+    uniqueText: 'Wake up by',
+    icon: '⏰',
+    palette: ['✅', '❌'],
+    timeable: false,
+  },
+  {
+    name: 'Sleep by [10,10:30,11,11:30,12]',
+    uniqueText: 'Sleep by',
+    icon: '🌙',
+    palette: ['✅', '❌'],
+    timeable: false,
+  },
+  {
+    name: 'Drink [6,7,8,9,10] glasses of water',
+    uniqueText: 'glasses of water',
+    icon: '💧',
+    palette: ['✅', '❌'],
+    timeable: false
+  },
+  {
+    name: 'Make the bed',
+    icon: '🛏️',
+    palette: ['✅', '❌'],
+    timeable: false
+  },
+  {
+    name: 'Read',
+    icon: '📚',
+    palette: ['⭐', '👍', '🤏'],
+    timeable: true
+  },
+  {
+    name: 'Journal',
+    icon: '✏️',
+    palette: ['✅', '❌'],
+    timeable: true
+  },
+  {
+    name: 'Podcast',
+    icon: '📻',
+    palette: ['✅', '🤏', '❌'],
+    timeable: true
+  },
+  {
+    name: 'Exercise',
+    icon: '🏃',
+    palette: ['⭐', '👍', '🤏'],
+    timeable: true
+  },
+  {
+    name: 'Stretch',
+    icon: '🙆',
+    palette: ['⭐', '👍', '🤏'],
+    timeable: true
+  },
+  {
+    name: 'Yoga',
+    icon: '🧘',
+    palette: ['⭐', '👍', '🤏'],
+    timeable: true
+  },
+  {
+    name: 'Meditate',
+    icon: '🌸',
+    palette: ['⭐', '👍', '🤏'],
+    timeable: true
+  },
+  {
+    name: 'No phone in bed',
+    icon: '📴',
+    palette: ['✅', '❌'],
+    timeable: false
+  },
+  {
+    name: 'Tidy space',
+    icon: '🧹',
+    palette: ['⭐', '👍', '🆗', '👎'],
+    timeable: true
+  },
+  {
+    name: 'Healthy eating',
+    icon: '🥗',
+    palette: ['⭐', '👍', '🆗', '👎'],
+    timeable: false
+  },
+  {
+    name: 'Me time',
+    icon: '💖',
+    palette: ['⭐', '👍', '🤏', '👎'],
+    timeable: true
+  },
+  {
+    name: 'Wakefulness',
+    icon: '⚡',
+    palette: ['🤩', '👍', '🆗', '🥱'],
+    timeable: false
+  },
+  {
+    name: 'Mood',
+    icon: '🙂',
+    palette: ['😊', '🙂', '😐', '😢', '😒', '😬', '😠']
+  }
+]

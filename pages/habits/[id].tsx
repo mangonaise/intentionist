@@ -9,7 +9,9 @@ import HabitIconPicker from '@/components/page/habit-editor/HabitIconPicker'
 import HabitNameInput from '@/components/page/habit-editor/HabitNameInput'
 import HabitStatusPicker from '@/components/page/habit-editor/HabitStatusPicker'
 import HabitTimeableCheckbox from '@/components/page/habit-editor/HabitTimeableCheckbox'
+import HabitEditorPresetsSection from '@/components/page/habit-editor/HabitEditorPresetsSection'
 import Box from '@/components/primitives/Box'
+import FadeIn from '@/components/primitives/FadeIn'
 import Flex from '@/components/primitives/Flex'
 import Spacer from '@/components/primitives/Spacer'
 import Head from 'next/head'
@@ -31,9 +33,7 @@ const HabitEditorPage = () => {
           <HabitNameInput />
         </Flex>
         <Spacer mb={2} />
-        {!editor.isNewHabit && <>
-          <HabitStatusPicker />
-        </>}
+        {editor.isNewHabit ? <HabitEditorPresetsSection /> : <HabitStatusPicker />}
         <Spacer mb={3} />
         <InitiallyHiddenOptions />
       </Box>
@@ -44,23 +44,21 @@ const HabitEditorPage = () => {
 const InitiallyHiddenOptions = observer(() => {
   const habitEditor = useContext(HabitEditorContext)
   const [isVisible, setIsVisible] = useState(false)
+  const [fadeIn] = useState(!habitEditor.habit?.name)
 
-  if (!isVisible && habitEditor?.habit?.name) {
-    setIsVisible(true)
+  if (!isVisible) {
+    if (habitEditor.habit?.name) {
+      setIsVisible(true)
+    }
+    return null
   }
 
   return (
-    <Box
-      sx={{
-        opacity: isVisible ? 1 : 0,
-        transition: 'opacity 350ms 500ms'
-      }}
-      tabIndex={-1}
-    >
+    <FadeIn time={fadeIn ? 350 : 0} delay={400}>
       <HabitTimeableCheckbox />
       <Spacer mb={[3, 8]} />
       <EmojiPaletteEditor />
-    </Box>
+    </FadeIn>
   )
 })
 
