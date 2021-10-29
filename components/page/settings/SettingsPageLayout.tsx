@@ -8,12 +8,14 @@ import Link from '@/components/primitives/Link'
 import IconButton from '@/components/primitives/IconButton'
 import BackIcon from '@/components/icons/BackIcon'
 import NextLink from 'next/link'
+import Head from 'next/head'
 
 const SettingsPageLayout = ({ sectionData }: { sectionData: SettingsSectionData }) => {
   const showSidebar = useMediaQuery('(min-width: 750px)', true, false)
 
   return (
     <Flex column={!showSidebar} sx={{ maxWidth: '900px', margin: 'auto' }}>
+      <Head><title>{sectionData.title}</title></Head>
       {showSidebar
         ? <SectionsSidebar activeSectionPath={sectionData.path} />
         : <SectionsDropdown dropdownTitle={sectionData.shortName ?? sectionData.title} />}
