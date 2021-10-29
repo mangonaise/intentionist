@@ -12,7 +12,7 @@ const HabitsPageNavSection = () => {
       sx={{
         flexWrap: ['wrap', 'nowrap'],
         pb: [0, 3],
-        borderBottom: 'solid 1.5px',
+        borderBottom: 'solid 1px',
         borderColor: ['transparent', 'divider']
       }}
     >

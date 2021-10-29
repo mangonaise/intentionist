@@ -11,7 +11,7 @@ const JournalEntryViewer = () => {
   return (
     <>
       <IconAndTitle />
-      <Box sx={{ borderBottom: 'solid 1.5px', borderColor: 'divider', my: [2, 3] }} />
+      <Box sx={{ borderBottom: 'solid 1px', borderColor: 'divider', my: [2, 3] }} />
       <EditEntryPrompt />
       <Spacer mb={[3, 5]} />
     </>

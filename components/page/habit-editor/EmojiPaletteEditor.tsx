@@ -39,7 +39,7 @@ const HeadingSection = () => {
   const { addEmoji } = useContext(PaletteEditorContext)
 
   return (
-    <Flex align="center" sx={{ mb: [2, 3], pb: [2, 3], borderBottom: 'solid 1.5px', borderColor: 'divider' }}>
+    <Flex align="center" sx={{ mb: [2, 3], pb: [2, 3], borderBottom: 'solid 1px', borderColor: 'divider' }}>
       <IconButton icon={PlusIcon} onClick={addEmoji} sx={{ mr: 3, p: '0.7rem' }} />
       <Heading level={3} sx={{ fontSize: ['1.25rem', '1.5rem'], fontWeight: 'medium' }}>
         Quick palette

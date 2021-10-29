@@ -54,7 +54,7 @@ const HabitPresetsSection = () => {
 
   return (
     <>
-      <Flex align="center" sx={{ mt: [2, 4], mb: [2, 3], pb: [2, 3], borderBottom: 'solid 1.5px', borderColor: 'divider' }}>
+      <Flex align="center" sx={{ mt: [2, 4], mb: [2, 3], pb: [2, 3], borderBottom: 'solid 1px', borderColor: 'divider' }}>
         <Heading level={3} sx={{ fontSize: ['1.25rem', '1.5rem'], fontWeight: 'medium' }}>
           Presets
         </Heading>
