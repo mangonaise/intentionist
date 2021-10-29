@@ -17,6 +17,7 @@ const GradientBackground = () => {
     <div
       sx={{
         position: 'fixed',
+        zIndex: -1,
         top: 0,
         left: 0,
         height: '130px',

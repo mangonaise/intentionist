@@ -40,12 +40,12 @@ const withApp = (WrappedComponent: () => JSX.Element, accent?: AccentColor) => w
   return (
     <>
       <FadeIn time={fade ? 500 : 0} delay={100} sx={{ zIndex: 100 }}>
+        <Navbar />
         <Spacer mb={theme.navbarHeights} />
         <GradientBackground />
         <FadeIn time={300}>
           <WrappedComponent />
         </FadeIn>
-        <Navbar />
       </FadeIn>
     </>
   )
