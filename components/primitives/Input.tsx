@@ -6,6 +6,7 @@ const Input: StyledComponent<ComponentPropsWithoutRef<'input'>> = (props) => (
     type="text"
     sx={{
       width: '100%',
+      margin: 0,
       padding: '0.6rem 0.8rem',
       fontFamily: 'inherit',
       fontSize: 'inherit',
