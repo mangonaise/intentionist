@@ -37,7 +37,7 @@ const HabitPresetsList = observer(({ onSelectPreset }: Props) => {
 })
 
 const Preset = ({ preset, onSelectPreset }: { preset: HabitPreset } & Props) => {
-  const [presetOptions] = useState(preset.name.indexOf('[') > -1 && preset.name.match(/(?<=\[).*?(?=\])/)?.[0].split(','))
+  const [presetOptions] = useState(preset.name.indexOf('[') > -1 && preset.name.match(/\[(.*)\]/)?.[1].split(','))
   const [selectedPresetOption, setSelectedPresetOption] = useState<string | null>(null)
   const [segments] = useState(
     presetOptions
