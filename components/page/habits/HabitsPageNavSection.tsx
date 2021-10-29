@@ -16,7 +16,9 @@ const HabitsPageNavSection = () => {
         borderColor: ['transparent', 'divider']
       }}
     >
-      <NextLink href="/home"><IconButton icon={BackIcon} /></NextLink>
+      <NextLink href="/home">
+        <IconButton icon={BackIcon} sx={{ bg: 'transparent' }} />
+      </NextLink>
       <Spacer ml={2} />
       <HabitFilterDropdown />
       <NextLink href="/habits/new">

@@ -47,7 +47,7 @@ const DefaultNavSection = () => {
   return (
     <Flex>
       <NextLink href="/home">
-        <IconButton icon={BackIcon} />
+        <IconButton icon={BackIcon} sx={{ bg: 'transparent' }} />
       </NextLink>
       <IconButton
         icon={PencilIcon}

@@ -49,7 +49,7 @@ const NewUserPage = withAuthUser(observer(() => {
   return (
     <FadeIn>
       <Head><title>Welcome</title></Head>
-      <IconButton icon={BackIcon} onClick={handleSignOut} />
+      <IconButton icon={BackIcon} onClick={handleSignOut} sx={{ bg: 'transparent' }} />
       <Flex justify="center" column sx={{ width: ['100%', '25rem'], minHeight: '50vh', margin: 'auto', textAlign: 'center' }}>
         <Heading level={1} sx={{ mb: 3 }}>Hello! 👋</Heading>
         <Text sx={{ mb: 8 }}>Welcome to intentionist.</Text>

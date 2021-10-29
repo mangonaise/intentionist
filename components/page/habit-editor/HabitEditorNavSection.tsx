@@ -13,13 +13,13 @@ const HabitEditorNavSection = () => {
 
   return (
     <Flex sx={{ pb: [2, 3], borderBottom: 'solid 1px', borderColor: 'divider' }}>
-      {editor.isNewHabit && <IconButton icon={CloseIcon} onClick={editor.exit} sx={{ mr: [2, 3, 4] }} />}
+      {editor.isNewHabit && <IconButton icon={CloseIcon} onClick={editor.exit} sx={{ mr: [2, 3, 4], bg: 'transparent' }} />}
       <Text
         type="span"
         sx={{
           color: 'whiteAlpha.70',
           alignSelf: 'center',
-          transform: editor.isNewHabit ? null : ['translateY(0.25rem)', 'translateY(0.45rem)']
+          transform: editor.isNewHabit ? 'translateY(-0.075rem)' : ['translateY(0.25rem)', 'translateY(0.45rem)']
         }}
       >
         {editor.isNewHabit ? 'Adding new ' : 'Editing '}habit

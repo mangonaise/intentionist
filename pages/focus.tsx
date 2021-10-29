@@ -43,9 +43,9 @@ const NavSection = () => {
   return (
     <Flex align="center" sx={{ mb: 2, pb: [2, 0], borderBottom: ['solid 1px', 'none'], borderColor: 'divider' }}>
       <NextLink href="/home">
-        <IconButton icon={BackIcon} sx={{ mr: 3 }} />
+        <IconButton icon={BackIcon} sx={{ mr: 3, bg: 'transparent' }} />
       </NextLink>
-      <Heading level={2} sx={{ fontSize: ['1.2rem', '1.5rem']}}>Focus</Heading>
+      <Heading level={2} sx={{ fontSize: ['1.2rem', '1.5rem'] }}>Focus</Heading>
     </Flex>
   )
 }
