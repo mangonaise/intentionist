@@ -58,14 +58,12 @@ const UserActionsDropdown = () => {
   return (
     <Dropdown
       anchorRight
-      noArrow
-      title={<SmartEmoji nativeEmoji={profileInfo?.avatar ?? '🙂'} rem={1.5} />}
-      sx={{
-        '& > button': {
-          display: 'flex', justifyContent: 'center', alignItems: 'center',
-          minHeight: '2.5rem', width: '2.5rem', borderRadius: '100%'
-        }
-      }}
+      title={
+        <Box sx={{ mr: '-0.3rem' }}>
+          <SmartEmoji nativeEmoji={profileInfo?.avatar ?? '🙂'} rem={1.75} />
+        </Box>
+      }
+      sx={{ '& > button': { px: 2, bg: 'transparent', borderRadius: '99px' } }}
     >
       <Dropdown.Item href="/settings/profile" sx={{ minWidth: '10rem' }}>Your profile</Dropdown.Item>
       <Dropdown.Item href="/settings/account">Account settings</Dropdown.Item>
