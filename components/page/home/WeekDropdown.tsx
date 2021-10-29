@@ -18,6 +18,7 @@ import ArrowRightIcon from '@/components/icons/ArrowRightIcon'
 import ChevronLeftIcon from '@/components/icons/ChevronLeftIcon'
 import ChevronRightIcon from '@/components/icons/ChevronRightIcon'
 import SmartEmoji from '@/components/app/SmartEmoji'
+import CheckIcon from '@/components/icons/CheckIcon'
 
 const WeekDropdown = observer(() => {
   const { startDate } = container.resolve(WeekHandler).weekInView
@@ -89,14 +90,11 @@ const WeekSelectMenu = () => {
           disable={isDisplayingCurrentMonth}
         />
       </Flex>
-      <Divider />
-      <Flex sx={{ py: 2, bg: 'whiteAlpha.5' }}>
-        <Text sx={{ fontSize: '0.8rem', opacity: 0.75, pl: 2 }}>
+      <Flex center sx={{ py: 2, bg: 'whiteAlpha.5' }}>
+        <Text sx={{ fontSize: '0.8rem', opacity: 0.75 }}>
           View week beginning on
         </Text>
       </Flex>
-      <Divider />
-      <Spacer mt='1px' />
       {displayedWeeks.map((weekStart, index) => (
         <WeekButton weekStart={weekStart} selectedDate={selectedDate} onSelectWeek={handleSelectWeek} key={index} />
       ))}
@@ -123,15 +121,12 @@ const WeekButton = observer(({ weekStart, selectedDate, onSelectWeek }: WeekButt
       sx={{ ':first-of-type': { borderTopLeftRadius: 0, borderTopRightRadius: 0 } }}
     >
       <Flex align="center" sx={{ width: '100%' }}>
-        <Text
-          type="span"
-          sx={isSelectedDate ? {
-            color: accentColor.current,
-            filter: 'brightness(1.2)'
-          } : {}}
-        >
+        <Text type="span">
           Mon {format(weekStart, 'do')}
         </Text>
+        {isSelectedDate && (
+          <Icon icon={CheckIcon} sx={{ ml: 3 }} />
+        )}
         {!!weekIcon && (
           <Box sx={{ ml: 'auto' }}>
             <SmartEmoji nativeEmoji={weekIcon} rem={1.2} />

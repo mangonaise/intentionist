@@ -118,11 +118,10 @@ const DropdownMenu = () => {
           width: 'max-content',
           maxWidth: menuMaxWidth,
           minWidth: '100%',
-          transform: noGap ? null : 'translateY(4px)',
-          backgroundColor: 'bg',
-          border: 'solid 2px',
-          borderColor: 'divider',
+          transform: noGap ? null : 'translateY(5px)',
+          backgroundColor: '#2d2d2d',
           borderRadius: 'default',
+          boxShadow: 'var(--background-color) 0px 4px 16px 0px',
           wordBreak: 'break-word',
           opacity: 0,
           animation: 'fade-in forwards 200ms',
@@ -157,7 +156,7 @@ const Item: StyledComponent<ItemProps> = (props) => {
     <Button
       onClick={handleClick}
       sx={{
-        margin: '-2px',
+        // margin: '-1px',
         minHeight: '2.6rem',
         textAlign: 'left',
         borderRadius: '0',
