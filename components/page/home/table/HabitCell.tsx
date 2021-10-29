@@ -1,7 +1,6 @@
 import type { Habit } from '@/lib/logic/app/HabitsHandler'
 import { observer } from 'mobx-react-lite'
-import { useContext, useEffect } from 'react'
-import { useRouter } from 'next/router'
+import { useContext } from 'react'
 import { ColumnsDisplayContext } from '../WeekTable'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Flex from '@/components/primitives/Flex'
@@ -69,12 +68,6 @@ const HabitCellWithName = ({ habit }: { habit: Habit }) => {
 }
 
 const HabitCellWithoutName = ({ habit }: { habit: Habit }) => {
-  const router = useRouter()
-
-  useEffect(() => {
-    router.prefetch('/habits/[id]')
-  }, [])
-
   return (
     <Dropdown
       noGap
@@ -89,7 +82,7 @@ const HabitCellWithoutName = ({ habit }: { habit: Habit }) => {
         }
       }}>
       <Dropdown.Item
-        itemAction={() => router.push(`/habits/${habit.id}?returnHome=true`)}
+        href={`/habits/${habit.id}?returnHome=true`}
         sx={{ maxWidth: '100vw' }}
       >
         {habit.name}
