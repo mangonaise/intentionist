@@ -67,9 +67,9 @@ const UserActionsDropdown = () => {
         }
       }}
     >
-      <Dropdown.Item sx={{ opacity: 0.5, minWidth: '10rem' }}>Your profile</Dropdown.Item>
+      <Dropdown.Item href="/settings/profile" sx={{ minWidth: '10rem' }}>Your profile</Dropdown.Item>
+      <Dropdown.Item href="/settings/account">Account settings</Dropdown.Item>
       <Dropdown.Item sx={{ opacity: 0.5 }}>Friends</Dropdown.Item>
-      <Dropdown.Item sx={{ opacity: 0.5 }}>Settings</Dropdown.Item>
       <Dropdown.Item itemAction={handleSignOut}>Sign out</Dropdown.Item>
     </Dropdown>
   )
