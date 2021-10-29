@@ -6,12 +6,14 @@ import Flex from '@/components/primitives/Flex'
 import Icon from '@/components/primitives/Icon'
 import ExpandUpIcon from '@/components/icons/ExpandUpIcon'
 import ExpandDownIcon from '@/components/icons/ExpandDownIcon'
+import NextLink from 'next/link'
 import FocusTrap from 'focus-trap-react'
 
 interface DropdownProps {
   title?: string | JSX.Element,
   anchorRight?: boolean | boolean[],
   noGap?: boolean,
+  noArrow?: boolean,
   disabled?: boolean,
   menuMaxWidth?: string | string[],
   className?: string,
@@ -56,7 +58,7 @@ const Dropdown = (props: DropdownProps) => {
 
 const DropdownButton = () => {
   const [preventOpen, setPreventOpen] = useState(false)
-  const { isOpen, openDropdown, title, disabled } = useContext(DropdownContext)
+  const { isOpen, openDropdown, title, noArrow, disabled } = useContext(DropdownContext)
 
   function handleClick() {
     if (!preventOpen) {
@@ -82,10 +84,12 @@ const DropdownButton = () => {
     >
       <Flex align="center" sx={{ textAlign: 'left', wordBreak: 'break-word' }}>
         {title}
-        <Icon
-          icon={isOpen ? ExpandUpIcon : ExpandDownIcon}
-          sx={{ ml: 'auto', pl: title ? '0.6em' : 0, transform: 'scale(1.1)' }}
-        />
+        {!noArrow && (
+          <Icon
+            icon={isOpen ? ExpandUpIcon : ExpandDownIcon}
+            sx={{ ml: 'auto', pl: title ? '0.6em' : 0, transform: 'scale(1.1)' }}
+          />
+        )}
       </Flex>
     </Button>
   )
@@ -140,23 +144,23 @@ const DropdownMenu = () => {
 }
 
 interface ItemProps extends ButtonProps {
-  itemAction: () => void
+  itemAction?: () => void,
+  href?: string
 }
 
 const Item: StyledComponent<ItemProps> = (props) => {
-  const { itemAction, children } = props
+  const { itemAction, href, children } = props
   const { closeDropdown } = useContext(DropdownContext)
 
   function handleClick() {
-    itemAction()
+    itemAction?.()
     closeDropdown()
   }
 
-  return (
+  const component = (
     <Button
       onClick={handleClick}
       sx={{
-        // margin: '-1px',
         minHeight: '2.6rem',
         textAlign: 'left',
         borderRadius: '0',
@@ -178,6 +182,10 @@ const Item: StyledComponent<ItemProps> = (props) => {
       {children}
     </Button>
   )
+
+  return href
+    ? <NextLink href={href}>{component}</NextLink>
+    : component
 }
 
 export default Object.assign(Dropdown, { Item })

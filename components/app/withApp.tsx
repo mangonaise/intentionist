@@ -6,11 +6,13 @@ import accentColor, { AccentColor } from '@/lib/logic/utils/accentColor'
 import InitialFetchHandler from '@/lib/logic/app/InitialFetchHandler'
 import ProfileHandler from '@/lib/logic/app/ProfileHandler'
 import useAutorun from '@/lib/hooks/useAutorun'
+import FadeIn from '@/components/primitives/FadeIn'
+import Spacer from '@/components/primitives/Spacer'
 import withAuthUser from './withAuthUser'
 import LoadingScreen from './LoadingScreen'
 import Navbar from './Navbar'
 import GradientBackground from './GradientBackground'
-import FadeIn from '@/components/primitives/FadeIn'
+import theme from 'styles/theme'
 
 const withApp = (WrappedComponent: () => JSX.Element, accent?: AccentColor) => withAuthUser(observer(() => {
   const router = useRouter()
@@ -37,12 +39,13 @@ const withApp = (WrappedComponent: () => JSX.Element, accent?: AccentColor) => w
   if (!hasCompletedInitialFetches || !profileExists) return <LoadingScreen />
   return (
     <>
-      <FadeIn time={fade ? 500 : 0} delay={100}>
+      <FadeIn time={fade ? 500 : 0} delay={100} sx={{ zIndex: 100 }}>
+        <Spacer mb={theme.navbarHeights} />
         <GradientBackground />
+        <FadeIn time={300}>
+          <WrappedComponent />
+        </FadeIn>
         <Navbar />
-      </FadeIn>
-      <FadeIn time={300} delay={25}>
-        <WrappedComponent />
       </FadeIn>
     </>
   )
