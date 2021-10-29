@@ -60,7 +60,7 @@ const WeekViewModePicker = () => {
             sx={{
               flex: 1,
               position: 'relative',
-              paddingBottom: 4,
+              paddingBottom: 3,
               paddingTop: 2,
               color: isSelected ? data.view : 'text',
               filter: 'brightness(1.5)',
