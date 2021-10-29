@@ -14,6 +14,7 @@ const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProps>>(fun
         cursor: 'pointer',
         userSelect: 'none',
         minHeight: '2.5rem',
+        margin: 0,
         paddingX: '1rem',
         border: 'none',
         color: 'inherit',
