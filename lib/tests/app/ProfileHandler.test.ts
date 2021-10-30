@@ -38,7 +38,7 @@ describe('initialization', () => {
   })
 
   test('fetching profile of an existing user works', async () => {
-    const profile: ProfileInfo = { displayName: 'Bob' }
+    const profile: ProfileInfo = { displayName: 'Bob', avatar: '😎' }
     await setDoc(doc(db, 'users', authUser.uid), { profile })
     await initializeProfileHandler()
     expect(profileHandler.profileInfo).toEqual(profile)
@@ -52,33 +52,38 @@ describe('behavior', () => {
 
   test('updated profile info will appear in the "profile" field in the user document', async () => {
     await profileHandler.updateUserProfile({
-      displayName: 'Jeff'
+      displayName: 'Jeff',
+      avatar: '🐹'
     })
     const userDoc = await dbHandler.getUserDoc()
     expect(userDoc).toEqual({
       profile: {
-        displayName: 'Jeff'
+        displayName: 'Jeff',
+        avatar: '🐹'
       }
     })
   })
 
   test('updated profile data will be reflected in local cache', async () => {
     await profileHandler.updateUserProfile({
-      displayName: 'Zoe'
+      displayName: 'Zoe',
+      avatar: '🐸'
     })
     expect(profileHandler.profileInfo?.displayName).toBe('Zoe')
   })
 
   test('updating profile data returns the new data', async () => {
     const profileInfo: ProfileInfo = {
-      displayName: 'Pam'
+      displayName: 'Pam',
+      avatar: '🐔'
     }
     expect(await profileHandler.updateUserProfile(profileInfo)).toEqual(profileInfo)
   })
 
   test('attempting to update profile without changing anything just returns the existing profile', async () => {
     const profileInfo: ProfileInfo = {
-      displayName: 'Arnold'
+      displayName: 'Arnold',
+      avatar: '🤖'
     }
     const firstUpdate = await profileHandler.updateUserProfile(profileInfo)
     const secondUpdate = await profileHandler.updateUserProfile(profileInfo)
