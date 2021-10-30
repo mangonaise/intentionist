@@ -1,5 +1,5 @@
 import type { StyledComponent } from '../types/StyledComponent'
-import { createContext, ReactNode, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, ReactNode, useContext, useState } from 'react'
 import Button, { ButtonProps } from '@/components/primitives/Button'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
@@ -97,7 +97,6 @@ const DropdownButton = () => {
 
 const DropdownMenu = () => {
   const { closeDropdown, children, noGap, anchorRight, menuMaxWidth } = useContext(DropdownContext)
-  const containerRef = useRef<HTMLDivElement>(null!)
 
   let positionRight: Array<0 | 'auto'>
   if (!anchorRight) {
@@ -110,17 +109,14 @@ const DropdownMenu = () => {
     positionRight = anchorRight.map((anchor) => anchor ? 0 : 'auto')
   }
 
-  useEffect(() => {
-    containerRef.current?.focus()
-  }, [])
-
   return (
     <FocusTrap focusTrapOptions={{
       onDeactivate: closeDropdown,
-      clickOutsideDeactivates: true
+      clickOutsideDeactivates: true,
+      initialFocus: false
     }}>
       <div>
-        <Flex column tabIndex={-1} ref={containerRef}
+        <Flex column
           sx={{
             position: 'absolute',
             right: positionRight,

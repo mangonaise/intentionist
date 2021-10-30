@@ -24,7 +24,6 @@ const Flex = forwardRef<HTMLDivElement, PropsWithChildren<FlexProps>>(function F
       ref={ref}
       className={props.className}
       style={props.style}
-      tabIndex={props.tabIndex}
     >
       {props.children}
     </div>

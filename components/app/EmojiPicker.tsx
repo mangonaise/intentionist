@@ -1,7 +1,7 @@
 import 'emoji-mart/css/emoji-mart.css'
 import 'react-responsive-modal/styles.css'
 import isWindowsOS from '@/lib/logic/utils/isWindowsOS'
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 import { Global } from '@emotion/react'
 import { css } from '@theme-ui/css'
 import { BaseEmoji, Picker } from 'emoji-mart'
@@ -21,6 +21,8 @@ interface Props {
 }
 
 const EmojiPicker = ({ isOpen, label, onSelectEmoji, onClosePicker }: Props) => {
+  const modalRef = useRef(null!)
+
   function handleSelectEmoji(emoji: BaseEmoji) {
     onSelectEmoji(emoji)
     onClosePicker()
@@ -36,6 +38,8 @@ const EmojiPicker = ({ isOpen, label, onSelectEmoji, onClosePicker }: Props) => 
       }}
       animationDuration={250}
       showCloseIcon={false}
+      initialFocusRef={modalRef}
+      ref={modalRef}
     >
       <StyleWrapper>
         <Flex column sx={{ margin: 'auto' }}>

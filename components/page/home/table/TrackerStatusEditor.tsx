@@ -45,7 +45,8 @@ const TrackerStatusEditor = ({ draft, onEditDraft, habitId, closeEditor }: Track
       paused={showEmojiPicker}
       focusTrapOptions={{
         clickOutsideDeactivates: true,
-        onDeactivate: closeEditor
+        onDeactivate: closeEditor,
+        initialFocus: false
       }}
     >
       <Box sx={{ position: 'absolute', size: '100%' }}>
