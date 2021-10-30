@@ -12,6 +12,7 @@ import Head from 'next/head'
 
 const SettingsPageLayout = ({ sectionData }: { sectionData: SettingsSectionData }) => {
   const showSidebar = useMediaQuery('(min-width: 750px)', true, false)
+  const SettingsComponent = sectionData.component
 
   return (
     <Flex column={!showSidebar} sx={{ maxWidth: '900px', margin: 'auto' }}>
@@ -23,7 +24,8 @@ const SettingsPageLayout = ({ sectionData }: { sectionData: SettingsSectionData 
         <Heading
           level={2}
           sx={{
-            paddingBottom: 3,
+            paddingBottom: [2, 3],
+            marginBottom: [3, 4],
             fontSize: ['1.5rem', '2rem'],
             borderBottom: 'solid 1px',
             borderColor: 'divider'
@@ -31,6 +33,7 @@ const SettingsPageLayout = ({ sectionData }: { sectionData: SettingsSectionData 
         >
           {sectionData.title}
         </Heading>
+        <SettingsComponent />
       </Flex>
     </Flex>
   )
@@ -42,7 +45,7 @@ const SectionsSidebar = ({ activeSectionPath }: { activeSectionPath: SettingsSec
   }, [activeSectionPath])
 
   return (
-    <Flex column sx={{ width: '25%', mr: 6 }}>
+    <Flex column sx={{ width: '30%', mr: 6 }}>
       <Flex sx={{ mb: 2 }}>
         <NextLink href="/home">
           <IconButton icon={BackIcon} sx={{ bg: 'transparent' }} />
