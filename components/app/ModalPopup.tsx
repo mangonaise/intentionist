@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactNode, useRef } from 'react'
 import { Global } from '@emotion/react'
 import { css } from '@theme-ui/css'
 import Modal from 'react-responsive-modal'
@@ -13,6 +13,8 @@ interface Props {
 }
 
 const ModalPopup = ({ isOpen, closeModal, children }: Props) => {
+  const modalRef = useRef(null!)
+
   return (
     <>
       <Global styles={css({
@@ -45,6 +47,8 @@ const ModalPopup = ({ isOpen, closeModal, children }: Props) => {
           modalAnimationIn: 'in',
           modalAnimationOut: 'out'
         }}
+        initialFocusRef={modalRef}
+        ref={modalRef}
       >
         {children}
       </Modal>
