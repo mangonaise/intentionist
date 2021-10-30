@@ -14,14 +14,21 @@ const SmartEmoji = ({ nativeEmoji, rem }: Props) => {
     if (twemoji) {
       const twemojiSize = rem * 14
       return (
-        <Text type="span" sx={{ height: `${twemojiSize}px`, '& span': { maxHeight: `${twemojiSize}px`} }}>
+        <Text type="span" sx={{ height: `${twemojiSize}px`, '& span': { maxHeight: `${twemojiSize}px` } }}>
           <Emoji emoji={twemoji} size={twemojiSize} set="twitter" sheetSize={32} skin={twemoji.skin || undefined} />
         </Text>
       )
     }
   }
   return (
-    <Text type="span" sx={{ fontSize: `${rem}rem` || 'inherit' }}>
+    <Text
+      type="span"
+      sx={{
+        display: 'flex', justifyContent: 'center', alignItems: 'center',
+        size: `${rem}rem`,
+        fontSize: `${rem}rem` || 'inherit'
+      }}
+    >
       {nativeEmoji}
     </Text >
   )

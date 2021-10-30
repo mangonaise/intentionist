@@ -71,7 +71,7 @@ const TrackerStatusCell = ({ habitId, weekday, rowIndex }: TrackerStatusCellProp
         <Flex center flexWrap sx={{ py: '4px' }}>
           {visibleEmojis.map((emoji, index) => (
             <FadeIn time={isEditing ? 250 : 0} key={index}>
-              <Flex center sx={{ p: '1px' }}>
+              <Flex center sx={{ p: '3px' }}>
                 <SmartEmoji nativeEmoji={emoji} rem={1.2} />
               </Flex>
             </FadeIn>
