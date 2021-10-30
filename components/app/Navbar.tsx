@@ -59,9 +59,9 @@ const UserActionsDropdown = () => {
     <Dropdown
       anchorRight
       title={
-        <Box sx={{ mr: '-0.3rem' }}>
+        <Flex center sx={{ mr: '-0.3rem' }}>
           <SmartEmoji nativeEmoji={profileInfo?.avatar ?? '🙂'} rem={1.75} />
-        </Box>
+        </Flex>
       }
       sx={{ '& > button': { px: 2, bg: 'transparent', borderRadius: '99px' } }}
     >
