@@ -51,7 +51,7 @@ const ProfileSettings = observer(() => {
       <Box sx={{ borderBottom: 'solid 1px', borderColor: 'divider', my: 4 }} />
       <Button
         onClick={saveChanges}
-        disabled={isEqual(draftProfileInfo, profileInfo)}
+        disabled={!draftProfileInfo?.displayName || isEqual(draftProfileInfo, profileInfo)}
         hoverEffect="opacity"
         sx={{ bg: 'text', color: 'bg' }}
       >
