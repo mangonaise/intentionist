@@ -52,7 +52,7 @@ const Navbar = () => {
   )
 }
 
-const UserActionsDropdown = () => {
+const UserActionsDropdown = observer(() => {
   const { profileInfo } = container.resolve(ProfileHandler)
 
   return (
@@ -63,14 +63,34 @@ const UserActionsDropdown = () => {
           <SmartEmoji nativeEmoji={profileInfo?.avatar ?? '🙂'} rem={1.75} />
         </Flex>
       }
-      sx={{ '& > button': { px: 2, bg: 'transparent', borderRadius: '99px' } }}
+      sx={{
+        '& > button': { px: 2, bg: 'transparent', borderRadius: '99px' }
+      }}
     >
-      <Dropdown.Item href="/settings/profile" sx={{ minWidth: '10rem' }}>Your profile</Dropdown.Item>
+      <Flex
+        center
+        sx={{
+          height: '2rem',
+          minWidth: '10rem',
+          paddingX: 4,
+          backgroundColor: 'whiteAlpha.10',
+          borderRadius: 'default',
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+          fontSize: '0.8rem',
+          opacity: 0.75
+        }}
+      >
+        {profileInfo?.displayName}
+      </Flex>
+      <Dropdown.Item href="/settings/profile" sx={{ borderRadius: '0 !important' }}>
+        Your profile
+      </Dropdown.Item>
       <Dropdown.Item href="/settings/account">Account settings</Dropdown.Item>
       <Dropdown.Item sx={{ opacity: 0.5 }}>Friends</Dropdown.Item>
       <Dropdown.Item itemAction={handleSignOut}>Sign out</Dropdown.Item>
     </Dropdown>
   )
-}
+})
 
 export default observer(Navbar)
