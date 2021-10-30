@@ -84,6 +84,7 @@ export default class JournalEntryEditor {
 
   public deleteEntry = async () => {
     if (!this.entry) return
+    this.hasUnsavedChanges = false
     this.weekHandler.clearJournalEntryLocally(this.entry.habitId, this.entry.id)
     this.router.push('/home')
     if (!this.isNewEntry) {
