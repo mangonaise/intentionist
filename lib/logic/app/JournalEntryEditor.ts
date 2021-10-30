@@ -28,6 +28,7 @@ export default class JournalEntryEditor {
   public isEditing = false
   public isNewEntry = false
   public hasUnsavedChanges = false
+  private hasMadeChanges = false
   private router
   private weekHandler
   private habitsHandler
@@ -49,21 +50,26 @@ export default class JournalEntryEditor {
 
   public startEditing = () => {
     this.isEditing = true
+    this.hasMadeChanges = false
   }
 
   public updateEntry = (property: 'icon' | 'title' | 'content', value: string) => {
     if (!this.entry) return
     this.entry[property] = value
     this.hasUnsavedChanges = true
+    this.hasMadeChanges = true
   }
 
   public finishEditing = async () => {
     if (!this.entry) return
-    this.entry.title = this.entry.title || 'Untitled'
+    
+    this.isEditing = false
+    if (!this.isNewEntry && !this.hasMadeChanges) return
 
     const replaceUrl = this.isNewEntry
-    this.isEditing = false
+    this.entry.title = this.entry.title || 'Untitled'
     this.hasUnsavedChanges = false
+    
     this.isNewEntry = false
 
     // 💻
