@@ -59,6 +59,7 @@ const SectionsSidebar = ({ activeSectionPath }: { activeSectionPath: SettingsSec
             position: 'absolute', content: '""', inset: 0,
             top: `calc(${sectionIndex / settingsSections.length} * 100%)`,
             height: `calc(100% / ${settingsSections.length})`,
+            zIndex: -1,
             borderRadius: 'default',
             backgroundColor: 'whiteAlpha.10',
             transition: 'top 250ms cubic-bezier(0, 0, 0.15, 1.0)'
@@ -90,7 +91,10 @@ const SidebarItem = ({ title, path, isActive }: { title: string, path: string, i
           fontSize: '1.15rem',
           borderRadius: 'default',
           color: isActive ? 'text' : 'whiteAlpha.50',
-          '&:hover': { textDecoration: 'none', opacity: 1 }
+          '&:hover': {
+            textDecoration: 'none',
+            color: isActive ? 'text' : 'whiteAlpha.80'
+          }
         }}
       >
         {title}
