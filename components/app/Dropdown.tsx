@@ -1,5 +1,5 @@
 import type { StyledComponent } from '../types/StyledComponent'
-import { createContext, ReactNode, useContext, useState } from 'react'
+import { createContext, ReactNode, useContext, useEffect, useRef, useState } from 'react'
 import Button, { ButtonProps } from '@/components/primitives/Button'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
@@ -97,6 +97,7 @@ const DropdownButton = () => {
 
 const DropdownMenu = () => {
   const { closeDropdown, children, noGap, anchorRight, menuMaxWidth } = useContext(DropdownContext)
+  const containerRef = useRef<HTMLDivElement>(null!)
 
   let positionRight: Array<0 | 'auto'>
   if (!anchorRight) {
@@ -109,36 +110,42 @@ const DropdownMenu = () => {
     positionRight = anchorRight.map((anchor) => anchor ? 0 : 'auto')
   }
 
+  useEffect(() => {
+    containerRef.current?.focus()
+  }, [])
+
   return (
     <FocusTrap focusTrapOptions={{
       onDeactivate: closeDropdown,
       clickOutsideDeactivates: true
     }}>
-      <Flex column
-        sx={{
-          position: 'absolute',
-          right: positionRight,
-          zIndex: 1,
-          width: 'max-content',
-          maxWidth: menuMaxWidth,
-          minWidth: '100%',
-          transform: noGap ? null : 'translateY(5px)',
-          backgroundColor: '#2d2d2d',
-          borderRadius: 'default',
-          boxShadow: 'var(--background-color) 0px 4px 16px 0px',
-          wordBreak: 'break-word',
-          opacity: 0,
-          animation: 'fade-in forwards 200ms',
-          '&::after': {
+      <div>
+        <Flex column tabIndex={-1} ref={containerRef}
+          sx={{
             position: 'absolute',
-            content: '""',
-            bottom: '-0.5rem',
-            height: '0.5rem',
-            width: '1px'
-          }
-        }}>
-        {children}
-      </Flex>
+            right: positionRight,
+            zIndex: 1,
+            width: 'max-content',
+            maxWidth: menuMaxWidth,
+            minWidth: '100%',
+            transform: noGap ? null : 'translateY(5px)',
+            backgroundColor: '#2d2d2d',
+            borderRadius: 'default',
+            boxShadow: 'var(--background-color) 0px 4px 16px 0px',
+            wordBreak: 'break-word',
+            opacity: 0,
+            animation: 'fade-in forwards 200ms',
+            '&::after': {
+              position: 'absolute',
+              content: '""',
+              bottom: '-0.5rem',
+              height: '0.5rem',
+              width: '1px'
+            }
+          }}>
+          {children}
+        </Flex>
+      </div>
     </FocusTrap>
   )
 }
