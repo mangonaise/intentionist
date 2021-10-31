@@ -61,15 +61,18 @@ export default class JournalEntryEditor {
   }
 
   public finishEditing = async () => {
-    if (!this.entry) return
-    
     this.isEditing = false
+    await this.saveChanges()
+  }
+
+  public saveChanges = async () => {
+    if (!this.entry) return
     if (!this.isNewEntry && !this.hasMadeChanges) return
 
     const replaceUrl = this.isNewEntry
     this.entry.title = this.entry.title || 'Untitled'
     this.hasUnsavedChanges = false
-    
+
     this.isNewEntry = false
 
     // 💻
