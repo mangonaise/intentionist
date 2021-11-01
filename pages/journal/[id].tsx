@@ -56,7 +56,7 @@ const DateAndHabit = () => {
   return (
     <Flex align="center" flexWrap>
       <Text type="span" sx={{ opacity: 0.5, mr: 2 }}>
-        {format(new Date(entryData.date), 'dd MMM yyyy')} in
+        {format(new Date(entryData.date), 'd MMM yyyy')} in
       </Text>
       <Flex center sx={{ maxWidth: '100%' }}>
         <SmartEmoji nativeEmoji={habit.icon} rem={1.2} />
