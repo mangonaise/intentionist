@@ -73,6 +73,7 @@ const EmojiPicker = ({ isOpen, label, onSelectEmoji, onClosePicker }: Props) => 
 }
 
 const PickerWrapper = ({ onSelectEmoji }: { onSelectEmoji: (emoji: BaseEmoji) => void }) => {
+  const [autoFocusSearch] = useState(typeof window === undefined ? false : window.innerWidth > 768)
   const [show, setShow] = useState(false)
 
   useEffect(() => {
@@ -81,6 +82,16 @@ const PickerWrapper = ({ onSelectEmoji }: { onSelectEmoji: (emoji: BaseEmoji) =>
     }, 260)
     return () => clearTimeout(delay)
   }, [])
+
+  useEffect(() => {
+    if (show) {
+      if (autoFocusSearch) {
+        const search = document.querySelector<HTMLInputElement>('[id^="emoji-mart-search-"]')
+        search?.setAttribute('autocomplete', 'off')
+        search?.focus()
+      }
+    }
+  }, [show])
 
   function handleSelect(emoji: BaseEmoji) {
     onSelectEmoji(emoji)
@@ -176,7 +187,7 @@ const StyleWrapper: FC = ({ children }) => {
           },
 
           '&-anchor-bar': {
-           borderRadius: '99px'
+            borderRadius: '99px'
           },
 
           '&-search': {
