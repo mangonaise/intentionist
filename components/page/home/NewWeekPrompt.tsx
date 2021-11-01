@@ -47,7 +47,7 @@ const NewWeekPrompt = () => {
       </Flex>
       <Button
         onClick={trackNewWeek}
-        sx={{ mt: [3, 0], bg: accentColor.current, transition: 'background-color 250ms' }}
+        sx={{ mt: [3, 0], ml: [0, 2], bg: accentColor.current, transition: 'background-color 250ms' }}
         hoverEffect="opacity"
       >
         Track
@@ -63,7 +63,8 @@ const Seedling = () => {
       sx={{
         position: 'relative',
         alignSelf: 'center',
-        size: '4rem',
+        height: '4rem',
+        minWidth: '4rem',
         borderRadius: '50%',
         '&::before': {
           position: 'absolute',
