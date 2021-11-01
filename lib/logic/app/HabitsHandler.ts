@@ -128,27 +128,27 @@ export const habitPresets: HabitPreset[] = [
     name: 'Wake up by [5,5:30,6,6:30,7,7:30,8,8:30,9]',
     uniqueText: 'Wake up by',
     icon: '⏰',
-    palette: ['✅', '❌'],
+    palette: ['👍'],
     timeable: false,
   },
   {
     name: 'Sleep by [10,10:30,11,11:30,12]',
     uniqueText: 'Sleep by',
     icon: '🌙',
-    palette: ['✅', '❌'],
+    palette: ['👍'],
     timeable: false,
   },
   {
     name: 'Drink [6,7,8,9,10] glasses of water',
     uniqueText: 'glasses of water',
     icon: '💧',
-    palette: ['✅', '❌'],
+    palette: ['👍'],
     timeable: false
   },
   {
     name: 'Make bed',
     icon: '🛏️',
-    palette: ['✅', '❌'],
+    palette: ['👍'],
     timeable: false
   },
   {
@@ -160,7 +160,7 @@ export const habitPresets: HabitPreset[] = [
   {
     name: 'Podcast',
     icon: '📻',
-    palette: ['✅', '🤏', '❌'],
+    palette: ['👍', '🤏'],
     timeable: true
   },
   {
@@ -190,13 +190,13 @@ export const habitPresets: HabitPreset[] = [
   {
     name: 'Journal',
     icon: '✏️',
-    palette: ['✅', '❌'],
+    palette: ['👍', '🤏'],
     timeable: true
   },
   {
     name: 'No phone in bed',
     icon: '📴',
-    palette: ['✅', '❌'],
+    palette: ['👍', '👎'],
     timeable: false
   },
   {
