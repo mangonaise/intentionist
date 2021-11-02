@@ -1,4 +1,5 @@
 import { format } from 'date-fns'
+import { getFirstDayOfThisWeek } from '@/lib/logic/utils/dateUtilities'
 import ModalPopup from '@/components/app/ModalPopup'
 import Box from '@/components/primitives/Box'
 import Button from '@/components/primitives/Button'
@@ -33,7 +34,7 @@ const TimerConfirmNewWeekModal = ({ isOpen, onConfirmStart, onCloseModal }: Prop
             lineHeight: 1.5,
           }}>
             <Text>
-              Starting the timer will automatically begin tracking the week beginning on <b>{format(new Date(), 'EEEE, MMMM d')}</b>.
+              Starting the timer will automatically begin tracking the week beginning on <b>{format(getFirstDayOfThisWeek(), 'EEEE, MMMM d')}</b>.
             </Text>
           </Box>
           <Button onClick={handleConfirmStart} sx={{ flex: 1, minWidth: '100%' }}>
