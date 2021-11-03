@@ -27,9 +27,9 @@ test('unauthenticated users cannot write to the database', async () => {
   expect(await assertFails(create))
 })
 
-test(`authenticated users can get another user's profile document by uid`, async () => {
+test(`by default, authenticated users cannot get another user's profile document`, async () => {
   const get = getDoc(doc(authenticatedDb, '/users/alice'))
-  expect(await assertSucceeds(get))
+  expect(await assertFails(get))
 })
 
 test(`authenticated users cannot create a query that might return user documents`, async () => {
