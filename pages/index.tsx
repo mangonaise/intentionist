@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { autorun } from 'mobx'
 import { useRouter } from 'next/dist/client/router'
 import { useLayoutEffect, useState } from 'react'
+import { auth } from '@/lib/firebase'
 import { authState, signInWithGoogle } from '@/lib/logic/utils/authUtilities'
 import LoadingScreen from '@/components/app/LoadingScreen'
 import FadeIn from '@/components/primitives/FadeIn'
@@ -20,7 +21,11 @@ const LandingPage: NextPage = () => {
   useLayoutEffect(() => autorun(() => {
     if (authState.getCachedState() || authState.current === true) {
       setHide(true)
-      router.push('/home')
+      if (auth.currentUser?.metadata.creationTime === auth.currentUser?.metadata.lastSignInTime) {
+        router.push('/welcome')
+      } else {
+        router.push('/home')
+      }
     }
   }))
 
