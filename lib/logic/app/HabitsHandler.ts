@@ -46,7 +46,7 @@ export default class HabitsHandler {
     this.habits[index] = habitToSet
 
     // ☁️
-    await this.dbHandler.updateUserDoc(HABITS, {
+    await this.dbHandler.updateOwnDoc(HABITS, {
       habits: { [habitToSet.id]: { ...exclude(habitToSet, 'id') } }
     })
 
@@ -84,7 +84,7 @@ export default class HabitsHandler {
     this.habits = arrayMove(this.habits, oldIndex, newIndex)
 
     // ☁️
-    await this.dbHandler.updateUserDoc(HABITS, {
+    await this.dbHandler.updateOwnDoc(HABITS, {
       order: this.habits.map((habit) => habit.id)
     })
   }
@@ -94,7 +94,7 @@ export default class HabitsHandler {
     this.habits.push(newHabit)
 
     // ☁️
-    await this.dbHandler.updateUserDoc(HABITS, {
+    await this.dbHandler.updateOwnDoc(HABITS, {
       habits: { [newHabit.id]: { ...exclude(newHabit, 'id') } },
       order: arrayUnion(newHabit.id)
     })

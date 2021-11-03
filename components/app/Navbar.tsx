@@ -10,6 +10,7 @@ import Flex from '@/components/primitives/Flex'
 import Heading from '@/components/primitives/Heading'
 import Icon from '@/components/primitives/Icon'
 import Spacer from '@/components/primitives/Spacer'
+import Text from '@/components/primitives/Text'
 import IntentionistIcon from '@/components/icons/IntentionistIcon'
 import CloudUploadingIcon from '@/components/icons/CloudUploadingIcon'
 import CloudSyncedIcon from '@/components/icons/CloudSyncedIcon'
@@ -92,6 +93,7 @@ const UserActionsDropdown = observer(() => {
     >
       <Flex
         center
+        flexWrap
         sx={{
           height: '2rem',
           minWidth: '10rem',
@@ -101,15 +103,20 @@ const UserActionsDropdown = observer(() => {
           borderBottomLeftRadius: 0,
           borderBottomRightRadius: 0,
           fontSize: '0.8rem',
-          opacity: 0.75
+          maxWidth: 'calc(100vw - 1rem)'
         }}
       >
-        {profileInfo?.displayName}
+        <Text type="span">
+          {profileInfo?.displayName}
+        </Text>
+        <Text type="span" sx={{ color: 'whiteAlpha.70', ml: 2 }}>
+          @{profileInfo?.username}
+        </Text>
       </Flex>
       <Dropdown.Item href="/settings/profile" sx={{ borderRadius: '0 !important' }}>
         Your profile
       </Dropdown.Item>
-      <Dropdown.Item sx={{ opacity: 0.5 }}>Friends</Dropdown.Item>
+      <Dropdown.Item href="/friends">Friends</Dropdown.Item>
       <Dropdown.Item href="/settings/account">Settings</Dropdown.Item>
       <Dropdown.Item itemAction={handleSignOut}>Sign out</Dropdown.Item>
     </Dropdown>

@@ -2,10 +2,14 @@ import { Lifecycle, scoped } from 'tsyringe'
 import { makeAutoObservable, runInAction } from 'mobx'
 import { InitialState } from './InitialFetchHandler'
 import isEqual from 'lodash/isEqual'
+import isValidUsername from '../utils/isValidUsername'
 import DbHandler from './DbHandler'
 
-export type UserProfileInfo = {
-  username: string,
+export type UserProfileInfo = AvatarAndDisplayName & {
+  username: string
+}
+
+export type AvatarAndDisplayName = {
   displayName: string,
   avatar: string
 }
@@ -25,16 +29,16 @@ export default class ProfileHandler {
 
   public setUserProfileInfo = async (info: UserProfileInfo) => {
     if (isEqual(info, this.profileInfo)) return this.profileInfo
-    await this.dbHandler.updateUserDoc('', info)
+    await this.dbHandler.updateOwnDoc('', info)
     runInAction(() => this.profileInfo = info)
     return this.profileInfo
   }
 
   public checkUsernameAvailability = async (username: string): Promise<UsernameAvailability> => {
-    if (username.length < 3 || username.length > 30 || !username.match(/^[a-z0-9][a-z0-9]*([_][a-z0-9]+)*$/)) {
+    if (!isValidUsername(username)) {
       return 'invalid'
     }
-    const usernameDoc = await this.dbHandler.getUsernameDoc(username)
-    return usernameDoc.exists ? 'taken' : 'available'
+    const userData = await this.dbHandler.getUsernameDoc(username)
+    return userData ? 'taken' : 'available'
   }
 }

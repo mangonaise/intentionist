@@ -71,7 +71,7 @@ describe('updating weekIcons collection in database', () => {
   test(`setting a week icon updates the field corresponding to the week's start date in a document corresponding to the week's year`, async () => {
     await weekHandler.viewWeek('2021-10-04')
     await weekIconsHandler.setIcon('👨‍💻')
-    const iconsDoc = await dbHandler.getUserDoc('weekIcons', '2021')
+    const iconsDoc = await dbHandler.getOwnDoc('weekIcons', '2021')
     expect(iconsDoc?.['10-04']).toEqual('👨‍💻')
   })
 
@@ -82,7 +82,7 @@ describe('updating weekIcons collection in database', () => {
     await weekIconsHandler.setIcon('⭐')
     await weekHandler.viewWeek('2020-09-20')
     await weekIconsHandler.setIcon('😃')
-    const iconsDoc = await dbHandler.getUserDoc('weekIcons', '2020')
+    const iconsDoc = await dbHandler.getOwnDoc('weekIcons', '2020')
     expect(iconsDoc).toEqual({
       '09-06': '😎',
       '09-13': '⭐',
@@ -94,7 +94,7 @@ describe('updating weekIcons collection in database', () => {
     await weekHandler.viewWeek('2021-10-25')
     await weekIconsHandler.setIcon('😢')
     await weekIconsHandler.removeIcon()
-    const iconsDoc = await dbHandler.getUserDoc('weekIcons', '2021')
+    const iconsDoc = await dbHandler.getOwnDoc('weekIcons', '2021')
     expect(iconsDoc?.['10-25']).toBeUndefined()
   })
 })
@@ -107,13 +107,13 @@ describe('handling cached icons', () => {
   }
 
   test(`caching a year's week icons from the database works`, async () => {
-    await dbHandler.updateUserDoc('weekIcons/2020', dummyIconsData)
+    await dbHandler.updateOwnDoc('weekIcons/2020', dummyIconsData)
     await weekIconsHandler.cacheIconsInYear('2020')
     expect(weekIconsHandler.iconsCache['2020']).toEqual(dummyIconsData)
   })
 
   test('cacheIconsInYear has no return value on first fetch, but on subsequent attempts, returns the cached data instead of re-fetching', async () => {
-    await dbHandler.updateUserDoc('weekIcons/2020', dummyIconsData)
+    await dbHandler.updateOwnDoc('weekIcons/2020', dummyIconsData)
     expect(await weekIconsHandler.cacheIconsInYear('2020')).toBeUndefined()
     expect(await weekIconsHandler.cacheIconsInYear('2020')).toEqual(dummyIconsData)
   })
