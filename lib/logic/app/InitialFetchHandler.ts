@@ -1,6 +1,6 @@
 import type { HabitsDocumentData } from './HabitsHandler'
 import type { WeekDocumentData } from './WeekHandler'
-import type { ProfileInfo } from './ProfileHandler'
+import type { UserProfileInfo } from './ProfileHandler'
 import { makeAutoObservable, runInAction } from 'mobx'
 import { Lifecycle, scoped } from 'tsyringe'
 import DbHandler from './DbHandler'
@@ -8,7 +8,7 @@ import DbHandler from './DbHandler'
 export type Fetched<T> = T | null
 
 type InitialFetches = {
-  userProfile: Fetched<ProfileInfo>
+  userProfile: Fetched<UserProfileInfo>
   habitsDoc: Fetched<HabitsDocumentData>,
   latestWeekDoc: Fetched<WeekDocumentData>
 }
@@ -43,8 +43,7 @@ export default class InitialFetchHandler {
 
   private fetchUserProfile = async () => {
     const userDoc = await this.dbHandler.getUserDoc()
-    const profile = userDoc?.profile
-    return profile ? profile as ProfileInfo : null
+    return userDoc ? userDoc as UserProfileInfo : null
   }
 
   private fetchHabitsDoc = async () => {

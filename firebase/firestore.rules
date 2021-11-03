@@ -1,12 +1,42 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId}/{documents=**} {
-      allow read, write: if requestedByUserWithId(userId)
+    match /users/{userId} {
+      allow get: if request.auth != null;
+      allow delete: if requestedByUserWithId(userId);
+      allow create: if requestedByUserWithId(userId)
+	      && isValidUserProfile(request.resource.data)
+        && isUsernameAvailable(request.resource.data.username);
+      allow update: if requestedByUserWithId(userId)
+	      && isValidUserProfile(request.resource.data)
+        && (request.resource.data.username == resource.data.username 
+          || isUsernameAvailable(request.resource.data.username));
+
+      match /{subcollection}/{documents=**} {
+        allow read, write: if requestedByUserWithId(userId);
+      }
     }
-  }
-  
-  function requestedByUserWithId(userId) {
-    return request.auth != null && request.auth.uid == userId
+
+    match /usernames/{username} {
+      allow get: if request.auth != null && isValidUsername(username);
+    }
+
+    function requestedByUserWithId(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isValidUsername(username) {
+      return username.size() > 2
+      && username.size() < 31
+      && username.matches('^[a-z0-9][a-z0-9]*([_][a-z0-9]+)*$');
+    }
+
+    function isValidUserProfile(profile) {
+      return profile.avatar.size() > 0 && profile.displayName.size() > 0;
+    }
+
+    function isUsernameAvailable(username) {
+      return isValidUsername(username) && !exists(/databases/$(database)/documents/usernames/$(username));
+    }
   }
 }

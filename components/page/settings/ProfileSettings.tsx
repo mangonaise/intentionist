@@ -2,7 +2,7 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { isEqual } from 'lodash'
-import ProfileHandler, { ProfileInfo } from '@/lib/logic/app/ProfileHandler'
+import ProfileHandler, { UserProfileInfo } from '@/lib/logic/app/ProfileHandler'
 import EmojiButton from '@/components/app/EmojiButton'
 import Flex from '@/components/primitives/Flex'
 import Text from '@/components/primitives/Text'
@@ -12,15 +12,15 @@ import Button from '@/components/primitives/Button'
 import Box from '@/components/primitives/Box'
 
 const ProfileSettings = observer(() => {
-  const { profileInfo, updateUserProfile } = container.resolve(ProfileHandler)
-  const [draftProfileInfo, setDraftProfileInfo] = useState<ProfileInfo>(profileInfo!)
+  const { profileInfo, setUserProfileInfo } = container.resolve(ProfileHandler)
+  const [draftProfileInfo, setDraftProfileInfo] = useState<UserProfileInfo>(profileInfo!)
 
-  function updateDraft(updates: Partial<ProfileInfo>) {
+  function updateDraft(updates: Partial<UserProfileInfo>) {
     setDraftProfileInfo({ ...draftProfileInfo, ...updates })
   }
 
   function saveChanges() {
-    updateUserProfile(draftProfileInfo)
+    setUserProfileInfo(draftProfileInfo)
   }
 
   return (

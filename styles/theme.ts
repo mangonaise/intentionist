@@ -7,6 +7,7 @@ const theme = {
     grid: 'var(--grid-color)',
     button: 'var(--button-color)',
     buttonHighlight: 'var(--button-highlight-color)',
+    warning: 'var(--warning-color)',
     tracker: 'var(--tracker-accent-color)',
     journal: 'var(--journal-accent-color)',
     focus: 'var(--focus-accent-color)',

@@ -8,11 +8,12 @@ import { db } from '../../firebase'
 import { separateYYYYfromMMDD } from '../utils/dateUtilities'
 import AuthUser from './AuthUser'
 
-export const HABITS = 'data/habits'
+const USERS = 'users'
+const USERNAMES = 'usernames'
 const WEEKS = 'weeks'
 const WEEK_ICONS = 'weekIcons'
-const USERS = 'users'
 const JOURNAL = 'journal'
+export const HABITS = 'data/habits'
 
 @scoped(Lifecycle.ContainerScoped)
 export default class DbHandler {
@@ -32,6 +33,14 @@ export default class DbHandler {
     this.isWriteComplete = false
     await setDoc(this.userDocRef(path), data, { merge: true })
     this.completeWrite()
+  }
+
+  public getUsernameDoc = async (username: string) => {
+    const document = (await getDoc(doc(db, USERNAMES, username)))
+    return {
+      exists: document.exists(),
+      uid: document.data()?.uid
+    }
   }
 
   public getWeekDoc = async (weekStartDate: string) => {

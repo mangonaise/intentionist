@@ -6,11 +6,12 @@ import { db } from '@/lib/firebase'
 import signInDummyUser from '@/test-setup/signIn'
 import AuthUser from '@/logic/app/AuthUser'
 import DbHandler from '@/logic/app/DbHandler'
-import ProfileHandler, { ProfileInfo } from '@/logic/app/ProfileHandler'
+import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import InitialFetchHandler from '@/lib/logic/app/InitialFetchHandler'
 
 // 🔨
 
+let testUsername: string
 let authUser: AuthUser, dbHandler: DbHandler, profileHandler: ProfileHandler
 
 async function initializeProfileHandler() {
@@ -23,6 +24,10 @@ beforeAll(async () => {
   await signInDummyUser()
   authUser = container.resolve(AuthUser)
   dbHandler = container.resolve(DbHandler)
+})
+
+beforeEach(async () => {
+  testUsername = `test_username${Date.now()}`
 })
 
 afterEach(async () => {
@@ -38,8 +43,8 @@ describe('initialization', () => {
   })
 
   test('fetching profile of an existing user works', async () => {
-    const profile: ProfileInfo = { displayName: 'Bob', avatar: '😎' }
-    await setDoc(doc(db, 'users', authUser.uid), { profile })
+    const profile: UserProfileInfo = { displayName: 'Bob', avatar: '😎', username: testUsername }
+    await setDoc(doc(db, 'users', authUser.uid), profile)
     await initializeProfileHandler()
     expect(profileHandler.profileInfo).toEqual(profile)
   })
@@ -50,43 +55,46 @@ describe('behavior', () => {
     await initializeProfileHandler()
   })
 
-  test('updated profile info will appear in the "profile" field in the user document', async () => {
-    await profileHandler.updateUserProfile({
+  test('updated profile info appears in the "profile" field in the user document', async () => {
+    await profileHandler.setUserProfileInfo({
       displayName: 'Jeff',
-      avatar: '🐹'
+      avatar: '🐹',
+      username: testUsername
     })
     const userDoc = await dbHandler.getUserDoc()
     expect(userDoc).toEqual({
-      profile: {
-        displayName: 'Jeff',
-        avatar: '🐹'
-      }
+      displayName: 'Jeff',
+      avatar: '🐹',
+      username: testUsername
     })
   })
 
-  test('updated profile data will be reflected in local cache', async () => {
-    await profileHandler.updateUserProfile({
+  test('updated profile data is reflected in local cache', async () => {
+    await profileHandler.setUserProfileInfo({
       displayName: 'Zoe',
-      avatar: '🐸'
+      avatar: '🐸',
+      username: testUsername
     })
     expect(profileHandler.profileInfo?.displayName).toBe('Zoe')
   })
 
   test('updating profile data returns the new data', async () => {
-    const profileInfo: ProfileInfo = {
+    const profileInfo: UserProfileInfo = {
       displayName: 'Pam',
-      avatar: '🐔'
+      avatar: '🐔',
+      username: testUsername
     }
-    expect(await profileHandler.updateUserProfile(profileInfo)).toEqual(profileInfo)
+    expect(await profileHandler.setUserProfileInfo(profileInfo)).toEqual(profileInfo)
   })
 
   test('attempting to update profile without changing anything just returns the existing profile', async () => {
-    const profileInfo: ProfileInfo = {
+    const profileInfo: UserProfileInfo = {
       displayName: 'Arnold',
-      avatar: '🤖'
+      avatar: '🤖',
+      username: testUsername
     }
-    const firstUpdate = await profileHandler.updateUserProfile(profileInfo)
-    const secondUpdate = await profileHandler.updateUserProfile(profileInfo)
+    const firstUpdate = await profileHandler.setUserProfileInfo(profileInfo)
+    const secondUpdate = await profileHandler.setUserProfileInfo(profileInfo)
     expect(firstUpdate === secondUpdate).toBe(true)
   })
 })

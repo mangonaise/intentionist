@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "emulate": "cd ./firebase && firebase emulators:start",
+    "emulate": "npm run compile-functions && cd ./firebase && firebase emulators:start",
+    "compile-functions": "cd ./firebase/functions && npm run build",
     "test": "cd ./firebase && firebase emulators:exec 'jest --runInBand --forceExit'",
     "analyze": "cross-env ANALYZE=true next build"
   },

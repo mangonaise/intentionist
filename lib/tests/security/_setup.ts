@@ -12,5 +12,11 @@ export async function createRulesTestEnvironment() {
       port: 8080
     }
   })
-  return testEnv
+
+  return {
+    testEnv,
+    authUid: 'test-uid',
+    authenticatedDb: testEnv.authenticatedContext('test-uid').firestore(),
+    unauthenticatedDb: testEnv.unauthenticatedContext().firestore()
+  }
 }
