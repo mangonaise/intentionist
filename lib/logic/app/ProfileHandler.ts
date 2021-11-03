@@ -1,5 +1,5 @@
 import { Lifecycle, scoped } from 'tsyringe'
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import { InitialState } from './InitialFetchHandler'
 import isEqual from 'lodash/isEqual'
 import DbHandler from './DbHandler'
@@ -25,8 +25,8 @@ export default class ProfileHandler {
 
   public setUserProfileInfo = async (info: UserProfileInfo) => {
     if (isEqual(info, this.profileInfo)) return this.profileInfo
-    this.profileInfo = info
     await this.dbHandler.updateUserDoc('', info)
+    runInAction(() => this.profileInfo = info)
     return this.profileInfo
   }
 

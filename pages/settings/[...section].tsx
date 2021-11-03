@@ -11,7 +11,7 @@ const PlaceholderSettingsComponent = () => {
 }
 
 export type SettingsSectionData = {
-  path: 'profile' | 'about' | 'account' | 'plus',
+  path: 'profile' | 'plus' | 'account' | 'about'
   title: string,
   shortName?: string,
   component: () => JSX.Element
@@ -25,13 +25,13 @@ export const settingsSections: SettingsSectionData[] = [
     component: ProfileSettings
   },
   {
-    path: 'account',
-    title: 'Account settings',
+    path: 'plus',
+    title: 'Intentionist Plus',
     component: PlaceholderSettingsComponent
   },
   {
-    path: 'plus',
-    title: 'Intentionist Plus',
+    path: 'account',
+    title: 'Account settings',
     component: PlaceholderSettingsComponent
   },
   {
