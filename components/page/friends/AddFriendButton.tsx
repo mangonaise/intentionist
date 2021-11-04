@@ -82,7 +82,7 @@ const AddFriendModal = ({ isOpen, closeModal }: { isOpen: boolean, closeModal: (
         onSendFriendRequest={handleSendFriendRequest}
       />
       <Heading level={2} sx={{ my: 6, textAlign: 'center' }}>Add friend</Heading>
-      <Box sx={{ maxWidth: '450px', pb: 5, px: 4 }}>
+      <Box sx={{ maxWidth: '435px', pb: 5, px: 4 }}>
         <Label sx={{ fontWeight: 'medium' }}>
           Search via username
           <Flex align="center" sx={{ mt: 3 }}>
@@ -102,6 +102,9 @@ const AddFriendModal = ({ isOpen, closeModal }: { isOpen: boolean, closeModal: (
             />
           </Flex>
         </Label>
+        <Box sx={{ p: 4, mt: 4, borderRadius: 'default', bg: 'whiteAlpha.5', fontWeight: 'light' }}>
+          <Text>When you add a friend, they'll be able to see your activity, including your tracked habits and public journal entries.</Text>
+        </Box>
       </Box>
     </ModalPopup>
   )
