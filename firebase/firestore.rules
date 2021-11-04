@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId} {
-      allow get, delete: if requestedByUserWithId(userId);
+      allow get: if requestedByUserWithId(userId);
       allow create: if requestedByUserWithId(userId)
 	      && isValidUserProfile(request.resource.data)
         && isUsernameAvailable(request.resource.data.username);
