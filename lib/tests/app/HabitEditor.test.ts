@@ -1,7 +1,7 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { when } from 'mobx'
-import signInDummyUser from '@/test-setup/signIn'
+import signInDummyUser from '@/test-setup/signInDummyUser'
 import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
 import MockRouter from '@/test-setup/mock/MockRouter'
 import DbHandler from '@/logic/app/DbHandler'

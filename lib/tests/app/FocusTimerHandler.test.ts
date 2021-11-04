@@ -11,9 +11,9 @@ import DbHandler from '@/lib/logic/app/DbHandler'
 import MockDate from 'mockdate'
 import MockRouter from '@/test-setup/mock/MockRouter'
 import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
-import signInDummyUser from '@/test-setup/signIn'
+import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteWeeks from '@/test-setup/deleteWeeks'
-import deleteHabitsDoc from '../_setup/deleteHabitsDoc'
+import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import addWeeks from 'date-fns/addWeeks'
 
 // 🔨

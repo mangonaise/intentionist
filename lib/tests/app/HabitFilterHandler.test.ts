@@ -1,6 +1,6 @@
 import '@abraham/reflection'
 import { container, DependencyContainer } from 'tsyringe'
-import signInDummyUser from '@/test-setup/signIn'
+import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'

@@ -6,7 +6,7 @@ import DbHandler from '@/lib/logic/app/DbHandler'
 import NewWeekPromptHandler from '@/lib/logic/app/NewWeekPromptHandler'
 import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
 import deleteWeeks from '@/test-setup/deleteWeeks'
-import signInDummyUser from '@/test-setup/signIn'
+import signInDummyUser from '@/test-setup/signInDummyUser'
 import MockDate from 'mockdate'
 import addWeeks from 'date-fns/addWeeks'
 

@@ -1,18 +1,21 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { when } from 'mobx'
-import { setDoc, deleteDoc, doc } from '@firebase/firestore'
+import { setDoc, doc } from '@firebase/firestore'
 import { db } from '@/lib/firebase'
-import signInDummyUser from '@/test-setup/signIn'
+import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
+import signInDummyUser from '@/test-setup/signInDummyUser'
+import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import AuthUser from '@/logic/app/AuthUser'
 import DbHandler from '@/logic/app/DbHandler'
-import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import InitialFetchHandler from '@/lib/logic/app/InitialFetchHandler'
 
 // 🔨
 
-let testUsername: string
+const { app: adminApp, db: adminDb } = getFirebaseAdmin()
+
 let authUser: AuthUser, dbHandler: DbHandler, profileHandler: ProfileHandler
+let testUsername = 'profile_handler_test_username'
 
 async function initializeProfileHandler() {
   const testContainer = container.createChildContainer()
@@ -26,12 +29,13 @@ beforeAll(async () => {
   dbHandler = container.resolve(DbHandler)
 })
 
-beforeEach(async () => {
-  testUsername = `test_username${Date.now()}`
+afterEach(async () => {
+  await adminDb.collection('users').doc(authUser.uid).delete()
+  await adminDb.collection('usernames').doc(testUsername).delete()
 })
 
-afterEach(async () => {
-  await deleteDoc(doc(db, 'users', authUser.uid))
+afterAll(async () => {
+  await adminApp.delete()
 })
 
 // 🧪
@@ -99,6 +103,7 @@ describe('behavior', () => {
   })
 })
 
-test('teardown: user document is removed after tests', async () => {
+test('teardown: user document and username document are removed after tests', async () => {
   expect(await dbHandler.getOwnDoc()).toBeUndefined()
+  expect(await dbHandler.getUsernameDoc(testUsername)).toBeNull()
 })
