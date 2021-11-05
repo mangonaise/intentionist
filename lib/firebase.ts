@@ -1,28 +1,35 @@
+import { container } from 'tsyringe'
 import { initializeApp } from 'firebase/app'
 import { connectAuthEmulator, getAuth } from 'firebase/auth'
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore'
 
 const consoleInfo = console.info
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyCfjsR8D8fm-na_IVemInUmEiGerYcSblk',
-  authDomain: 'intentionist.firebaseapp.com',
-  projectId: 'intentionist',
-  storageBucket: 'intentionist.appspot.com'
-}
+export default function initializeFirebase(projectId = 'intentionist') {
+  const firebaseConfig = {
+    projectId,
+    apiKey: 'AIzaSyCfjsR8D8fm-na_IVemInUmEiGerYcSblk',
+    authDomain: 'intentionist.firebaseapp.com',
+    storageBucket: 'intentionist.appspot.com'
+  }
 
-const firebaseApp = initializeApp(firebaseConfig)
+  const firebaseApp = initializeApp(firebaseConfig)
+  const auth = getAuth(firebaseApp)
+  const db = getFirestore(firebaseApp)
 
-export const auth = getAuth(firebaseApp)
-export const db = getFirestore(firebaseApp)
+  if (typeof window === 'undefined' || window.location.hostname.includes('localhost')) {
+    connectFirestoreEmulator(db, 'localhost', 8080)
+    console.info = () => { }
+    connectAuthEmulator(auth, 'http://localhost:9099')
+    console.info = consoleInfo
+  }
 
-if (typeof window === 'undefined' || window.location.hostname.includes('localhost')) {
-  connectFirestoreEmulator(db, 'localhost', 8080)
-  setShowAuthEmulatorWarning(false)
-  connectAuthEmulator(auth, 'http://localhost:9099')
-  setShowAuthEmulatorWarning(true)
-}
+  container.register('Auth', { useValue: auth })
+  container.register('Db', { useValue: db })
 
-function setShowAuthEmulatorWarning(show: boolean) {
-  console.info = show ? consoleInfo : () => { }
+  return {
+    firebaseApp,
+    auth,
+    db
+  }
 }

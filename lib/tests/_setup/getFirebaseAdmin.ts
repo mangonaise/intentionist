@@ -2,9 +2,9 @@ import * as admin from 'firebase-admin'
 
 process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080'
 
-export default function getFirebaseAdmin() {
+export default function getFirebaseAdmin(projectId = 'intentionist') {
   const app = admin.initializeApp({
-    projectId: 'intentionist',
+    projectId,
     credential: admin.credential.applicationDefault()
   })
 

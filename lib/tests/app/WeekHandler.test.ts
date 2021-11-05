@@ -1,10 +1,11 @@
 import '@abraham/reflection'
 import { container as globalContainer, DependencyContainer } from 'tsyringe'
+import { deleteApp } from '@firebase/app'
 import { collection, doc, getDoc, getDocs, query } from '@firebase/firestore'
 import { when } from 'mobx'
-import { db } from '@/lib/firebase'
 import { formatFirstDayOfThisWeek, formatYYYYMMDD, getFirstDayOfThisWeek } from '@/lib/logic/utils/dateUtilities'
 import { addWeeks, isMonday } from 'date-fns'
+import initializeFirebase from '@/lib/firebase'
 import WeekHandler, { JournalEntryMetadata, WeekDocumentData } from '@/lib/logic/app/WeekHandler'
 import AuthUser from '@/lib/logic/app/AuthUser'
 import DbHandler from '@/lib/logic/app/DbHandler'
@@ -17,6 +18,8 @@ import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import deleteWeeks from '@/test-setup/deleteWeeks'
 
 // 🔨
+
+const { firebaseApp, db } = initializeFirebase('test-weekhandler')
 
 let testContainer: DependencyContainer
 let weekHandler: WeekHandler, dbHandler: DbHandler, authUser: AuthUser, habitsHandler: HabitsHandler
@@ -59,6 +62,10 @@ beforeAll(async () => {
 afterEach(async () => {
   await deleteWeeks()
   await deleteHabitsDoc()
+})
+
+afterAll(async () => {
+  await deleteApp(firebaseApp)
 })
 
 // 🧪

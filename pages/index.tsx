@@ -1,10 +1,10 @@
 import type { NextPage } from 'next'
+import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { autorun } from 'mobx'
 import { useRouter } from 'next/dist/client/router'
 import { useLayoutEffect, useState } from 'react'
-import { auth } from '@/lib/firebase'
-import { authState, signInWithGoogle } from '@/lib/logic/utils/authUtilities'
+import AuthHandler from '@/lib/logic/app/AuthHandler'
 import LoadingScreen from '@/components/app/LoadingScreen'
 import FadeIn from '@/components/primitives/FadeIn'
 import Flex from '@/components/primitives/Flex'
@@ -15,11 +15,12 @@ import GoogleIcon from '@/components/icons/GoogleIcon'
 import Head from 'next/head'
 
 const LandingPage: NextPage = () => {
+  const { getCachedAuthState, isAuthenticated, signInWithGoogle, auth } = container.resolve(AuthHandler)
   const [hide, setHide] = useState(false)
   const router = useRouter()
 
   useLayoutEffect(() => autorun(() => {
-    if (authState.getCachedState() || authState.current === true) {
+    if (getCachedAuthState() || isAuthenticated) {
       setHide(true)
       if (auth.currentUser?.metadata.creationTime === auth.currentUser?.metadata.lastSignInTime) {
         router.push('/welcome')

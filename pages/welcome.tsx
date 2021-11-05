@@ -2,9 +2,9 @@ import { observer } from 'mobx-react-lite'
 import { container } from 'tsyringe'
 import { useRouter } from 'next/dist/client/router'
 import { useState } from 'react'
-import { handleSignOut } from '@/lib/logic/utils/authUtilities'
 import { UserProfileInfo } from '@/lib/logic/app/ProfileHandler'
 import AuthUser from '@/lib/logic/app/AuthUser'
+import AuthHandler from '@/lib/logic/app/AuthHandler'
 import InitialFetchHandler from '@/lib/logic/app/InitialFetchHandler'
 import useAutorun from '@/lib/hooks/useAutorun'
 import withAuthUser from '@/components/app/withAuthUser'
@@ -20,6 +20,7 @@ import Head from 'next/head'
 
 const NewUserPage = withAuthUser(observer(() => {
   const router = useRouter()
+  const { handleSignOut } = container.resolve(AuthHandler)
   const { initialFetches, hasCompletedInitialFetches } = container.resolve(InitialFetchHandler)
   const [initialProfile] = useState<UserProfileInfo>({
     avatar: '🙂',

@@ -1,8 +1,10 @@
 import '@abraham/reflection'
 import { container as globalContainer } from 'tsyringe'
 import { when } from 'mobx'
+import { deleteApp } from '@firebase/app'
 import { formatYYYYMMDD } from '@/lib/logic/utils/dateUtilities'
 import { Habit } from '@/lib/logic/app/HabitsHandler'
+import initializeFirebase from '@/lib/firebase'
 import JournalEntryEditor, { JournalEntryDocumentData } from '@/lib/logic/app/JournalEntryEditor'
 import WeekHandler from '@/lib/logic/app/WeekHandler'
 import generateHabitId from '@/lib/logic/utils/generateHabitId'
@@ -12,8 +14,12 @@ import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import DbHandler from '@/lib/logic/app/DbHandler'
 import deleteJournalEntries from '@/test-setup/deleteJournalEntries'
+import deleteWeeks from '@/test-setup/deleteWeeks'
 import generateJournalEntryId from '@/lib/logic/utils/generateJournalEntryId'
-import deleteWeeks from '../_setup/deleteWeeks'
+
+// 🔨
+
+const { firebaseApp } = initializeFirebase('test-journalentryeditor')
 
 let journalEntryEditor: JournalEntryEditor, weekHandler: WeekHandler, dbHandler: DbHandler
 
@@ -45,8 +51,6 @@ function startJournalEntryEditor() {
   journalEntryEditor = globalContainer.resolve(JournalEntryEditor)
 }
 
-// 🔨
-
 beforeAll(async () => {
   await signInDummyUser()
   const habitsHandler = await initializeHabitsHandler(globalContainer)
@@ -61,6 +65,10 @@ afterEach(async () => {
   await deleteWeeks()
   weekHandler.weekInView.journalEntries = undefined
   weekHandler.weekInView.journalMetadata = undefined
+})
+
+afterAll(async () => {
+  await deleteApp(firebaseApp)
 })
 
 // 🧪

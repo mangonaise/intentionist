@@ -2,17 +2,19 @@ import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { when } from 'mobx'
 import { setDoc, doc } from '@firebase/firestore'
-import { db } from '@/lib/firebase'
+import { deleteApp } from '@firebase/app'
 import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import AuthUser from '@/logic/app/AuthUser'
 import DbHandler from '@/logic/app/DbHandler'
+import initializeFirebase from '@/lib/firebase'
 import InitialFetchHandler from '@/lib/logic/app/InitialFetchHandler'
 
 // 🔨
 
-const { app: adminApp, db: adminDb } = getFirebaseAdmin()
+const { firebaseApp, db } = initializeFirebase('test-profilehandler')
+const { app: firebaseAdmin, db: adminDb } = getFirebaseAdmin('test-profilehandler')
 
 let authUser: AuthUser, dbHandler: DbHandler, profileHandler: ProfileHandler
 let testUsername = 'profile_handler_test_username'
@@ -35,7 +37,8 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await adminApp.delete()
+  await deleteApp(firebaseApp)
+  await firebaseAdmin.delete()
 })
 
 // 🧪

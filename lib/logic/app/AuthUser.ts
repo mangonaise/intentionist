@@ -1,12 +1,12 @@
-import { auth } from '../../firebase'
-import { Lifecycle, scoped } from 'tsyringe'
+import type { Auth } from 'firebase/auth'
+import { inject, Lifecycle, scoped } from 'tsyringe'
 
 @scoped(Lifecycle.ContainerScoped)
 export default class AuthUser {
   uid
   displayName
 
-  constructor() {
+  constructor(@inject('Auth') auth: Auth) {
     if (!auth.currentUser) {
       throw new Error('Cannot construct AuthUser when not authenticated')
     }

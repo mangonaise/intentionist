@@ -1,11 +1,11 @@
+import type { Firestore } from 'firebase/firestore'
 import type { Fetched } from './InitialFetchHandler'
 import type { WeekDocumentData } from './WeekHandler'
 import type { JournalEntryDocumentData } from './JournalEntryEditor'
 import type { AvatarAndDisplayName } from './ProfileHandler'
-import { Lifecycle, scoped } from 'tsyringe'
+import { inject, Lifecycle, scoped } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
 import { collection, doc, getDoc, getDocs, query, setDoc, limit, orderBy, writeBatch, arrayUnion, arrayRemove, deleteField, where, deleteDoc } from '@firebase/firestore'
-import { db } from '../../firebase'
 import { separateYYYYfromMMDD } from '../utils/dateUtilities'
 import AuthUser from './AuthUser'
 
@@ -19,15 +19,17 @@ export const HABITS = 'data/habits'
 @scoped(Lifecycle.ContainerScoped)
 export default class DbHandler {
   private uid
+  public db
   public isWriteComplete = true
 
-  constructor(authUser: AuthUser) {
+  constructor(authUser: AuthUser, @inject('Db') db: Firestore) {
     this.uid = authUser.uid
+    this.db = db
     makeAutoObservable(this)
   }
 
   public getUsernameDoc = async (username: string) => {
-    const data = (await getDoc(doc(db, USERNAMES, username))).data()
+    const data = (await getDoc(doc(this.db, USERNAMES, username))).data()
     if (!data) return null
     return data as AvatarAndDisplayName
   }
@@ -72,7 +74,7 @@ export default class DbHandler {
   public updateWeekIcon = async (weekStartDate: string, icon: string) => {
     this.isWriteComplete = false
     const { yyyy, mmdd } = separateYYYYfromMMDD(weekStartDate)
-    const batch = writeBatch(db)
+    const batch = writeBatch(this.db)
     batch.set(this.ownDocRef(WEEKS, weekStartDate), {
       icon,
       startDate: weekStartDate
@@ -85,7 +87,7 @@ export default class DbHandler {
   public removeWeekIcon = async (weekStartDate: string) => {
     this.isWriteComplete = false
     const { yyyy, mmdd } = separateYYYYfromMMDD(weekStartDate)
-    const batch = writeBatch(db)
+    const batch = writeBatch(this.db)
     batch.set(this.ownDocRef(WEEKS, weekStartDate), {
       icon: deleteField()
     }, { merge: true })
@@ -103,7 +105,7 @@ export default class DbHandler {
 
   public updateJournalEntry = async (entry: JournalEntryDocumentData) => {
     this.isWriteComplete = false
-    const batch = writeBatch(db)
+    const batch = writeBatch(this.db)
     batch.set(this.ownDocRef(JOURNAL, entry.id), entry, { merge: true })
     batch.set(this.ownDocRef(WEEKS, entry.weekStartDate), {
       startDate: entry.weekStartDate,
@@ -116,7 +118,7 @@ export default class DbHandler {
 
   public deleteJournalEntry = async (entry: JournalEntryDocumentData) => {
     this.isWriteComplete = false
-    const batch = writeBatch(db)
+    const batch = writeBatch(this.db)
     batch.delete(this.ownDocRef(JOURNAL, entry.id))
     batch.set(this.ownDocRef(WEEKS, entry.weekStartDate), {
       journalEntries: { [entry.habitId]: arrayRemove(entry.id) },
@@ -154,14 +156,14 @@ export default class DbHandler {
   }
 
   private ownDocRef = (...pathSegments: string[]) => {
-    return doc(db, USERS, this.uid, ...pathSegments)
+    return doc(this.db, USERS, this.uid, ...pathSegments)
   }
 
   private get weeksCollectionRef() {
-    return collection(db, USERS, this.uid, WEEKS)
+    return collection(this.db, USERS, this.uid, WEEKS)
   }
 
   private get journalCollectionRef() {
-    return collection(db, USERS, this.uid, JOURNAL)
+    return collection(this.db, USERS, this.uid, JOURNAL)
   }
 }

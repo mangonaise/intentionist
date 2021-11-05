@@ -1,5 +1,7 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
+import { deleteApp } from '@firebase/app'
+import initializeFirebase from '@/lib/firebase'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
@@ -9,6 +11,8 @@ import generateHabitId from '@/logic/utils/generateHabitId'
 import exclude from '@/lib/logic/utils/exclude'
 
 // 🔨
+
+const { firebaseApp } = initializeFirebase('test-habitshandler')
 
 let dbHandler: DbHandler, habitsHandler: HabitsHandler
 const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '🧪', status: 'active' }
@@ -23,6 +27,10 @@ beforeAll(async () => {
 
 afterEach(async () => {
   await deleteHabitsDoc()
+})
+
+afterAll(async () => {
+  deleteApp(firebaseApp)
 })
 
 async function initialize() {

@@ -1,13 +1,17 @@
 import '@abraham/reflection'
 import { container, DependencyContainer } from 'tsyringe'
+import { deleteApp } from '@firebase/app'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
+import initializeFirebase from '@/lib/firebase'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import generateHabitId from '@/logic/utils/generateHabitId'
 import HabitFilterHandler from '@/logic/app/HabitFilterHandler'
 
 // 🔨
+
+const { firebaseApp } = initializeFirebase('test-habitfilterhandler')
 
 let habitsHandler: HabitsHandler
 let testContainer: DependencyContainer
@@ -27,6 +31,10 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await deleteHabitsDoc()
+})
+
+afterAll(async () => {
+  await deleteApp(firebaseApp)
 })
 
 // 🧪

@@ -1,7 +1,9 @@
 import '@abraham/reflection'
 import { container as globalContainer, DependencyContainer } from 'tsyringe'
-import { formatFirstDayOfThisWeek, getFirstDayOfThisWeek } from '@/lib/logic/utils/dateUtilities'
 import { addMilliseconds, startOfDay, startOfWeek } from 'date-fns'
+import { deleteApp } from '@firebase/app'
+import { formatFirstDayOfThisWeek, getFirstDayOfThisWeek } from '@/lib/logic/utils/dateUtilities'
+import initializeFirebase from '@/lib/firebase'
 import DbHandler from '@/lib/logic/app/DbHandler'
 import NewWeekPromptHandler from '@/lib/logic/app/NewWeekPromptHandler'
 import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
@@ -11,6 +13,8 @@ import MockDate from 'mockdate'
 import addWeeks from 'date-fns/addWeeks'
 
 // 🔨
+
+const { firebaseApp } = initializeFirebase('test-newweekprompthandler')
 
 let testContainer: DependencyContainer
 let newWeekPromptHandler: NewWeekPromptHandler, dbHandler: DbHandler
@@ -34,6 +38,10 @@ afterEach(async () => {
   jest.useRealTimers()
   MockDate.reset()
   await deleteWeeks()
+})
+
+afterAll(async () => {
+  deleteApp(firebaseApp)
 })
 
 // 🧪

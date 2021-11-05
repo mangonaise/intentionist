@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import { container } from 'tsyringe'
-import { handleSignOut } from '@/lib/logic/utils/authUtilities'
+import AuthHandler from '@/lib/logic/app/AuthHandler'
 import ProfileHandler from '@/lib/logic/app/ProfileHandler'
 import DbHandler from '@/lib/logic/app/DbHandler'
 import accentColor from '@/lib/logic/utils/accentColor'
@@ -77,6 +77,7 @@ const CloudSyncIndicator = observer(() => {
 })
 
 const UserActionsDropdown = observer(() => {
+  const { handleSignOut } = container.resolve(AuthHandler)
   const { profileInfo } = container.resolve(ProfileHandler)
 
   return (

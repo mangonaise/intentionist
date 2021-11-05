@@ -1,16 +1,19 @@
+import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { authState } from '@/lib/logic/utils/authUtilities'
+import AuthHandler from '@/lib/logic/app/AuthHandler'
 import useAutorun from '@/lib/hooks/useAutorun'
 import LoadingScreen from './LoadingScreen'
 
 const withAuthUser = (WrappedComponent: () => JSX.Element | null) => observer(() => {
+  const { isAuthenticated, getCachedAuthState} = container.resolve(AuthHandler)
+
   useAutorun(() => {
-    if (!authState.getCachedState() && !authState.current) {
+    if (!getCachedAuthState() && !isAuthenticated) {
       window.location.assign('/')
     }
   })
 
-  if (!authState.current) return <LoadingScreen />
+  if (!isAuthenticated) return <LoadingScreen />
   return (
     <WrappedComponent />
   )

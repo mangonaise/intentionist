@@ -1,7 +1,9 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { subWeeks } from 'date-fns'
+import { deleteApp } from 'firebase/app'
 import { formatFirstDayOfThisWeek, formatYYYYMMDD, getFirstDayOfThisWeek } from '@/lib/logic/utils/dateUtilities'
+import initializeFirebase from '@/lib/firebase'
 import HabitsHandler, { Habit } from '@/lib/logic/app/HabitsHandler'
 import FocusTimerHandler from '@/lib/logic/app/FocusTimerHandler'
 import WeekHandler from '@/lib/logic/app/WeekHandler'
@@ -18,6 +20,8 @@ import addWeeks from 'date-fns/addWeeks'
 
 // 🔨
 
+const { firebaseApp } = initializeFirebase('test-focustimerhandler')
+
 const router = container.resolve(MockRouter)
 container.register('Router', { useValue: router })
 
@@ -31,6 +35,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await deleteHabitsDoc()
+  await deleteApp(firebaseApp)
 })
 
 // 🧪
@@ -181,14 +186,11 @@ describe('behavior', () => {
       timerHandler.setDuration(3000)
       timerHandler.startTimer()
       jest.runAllTimers()
-      timerHandler.setDuration(1500)
-      timerHandler.startTimer()
-      jest.runAllTimers()
 
       jest.useRealTimers()
-      expect(weekHandler.weekInView.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(4500)
+      expect(weekHandler.weekInView.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(3000)
       const weekDoc = await container.resolve(DbHandler).getWeekDoc(formatFirstDayOfThisWeek())
-      expect(weekDoc?.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(4500)
+      expect(weekDoc?.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(3000)
     })
 
     test('partial progress is saved when the timer is stopped', async () => {

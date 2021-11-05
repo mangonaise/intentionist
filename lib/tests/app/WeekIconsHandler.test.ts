@@ -1,5 +1,7 @@
 import '@abraham/reflection'
 import { container as globalContainer, DependencyContainer } from 'tsyringe'
+import { deleteApp } from '@firebase/app'
+import initializeFirebase from '@/lib/firebase'
 import WeekIconsHandler from '@/lib/logic/app/WeekIconsHandler'
 import WeekHandler from '@/lib/logic/app/WeekHandler'
 import DbHandler from '@/lib/logic/app/DbHandler'
@@ -8,6 +10,10 @@ import AuthUser from '@/lib/logic/app/AuthUser'
 import initializeTestApp from '@/test-setup/initializeTestApp'
 import deleteWeeks from '@/test-setup/deleteWeeks'
 import deleteWeekIcons from '@/test-setup/deleteWeekIcons'
+
+// 🔨
+
+const { firebaseApp } = initializeFirebase('test-weekiconshandler')
 
 let testContainer: DependencyContainer
 let weekIconsHandler: WeekIconsHandler, weekHandler: WeekHandler, dbHandler: DbHandler
@@ -33,6 +39,12 @@ afterEach(async () => {
   await deleteWeeks()
   await deleteWeekIcons()
 })
+
+afterAll(async () => {
+  await deleteApp(firebaseApp)
+})
+
+// 🧪
 
 test('the week icon is initially undefined', () => {
   expect(weekHandler.weekInView.icon).toBeUndefined()
