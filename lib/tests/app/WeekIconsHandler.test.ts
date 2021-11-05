@@ -13,7 +13,7 @@ import deleteWeekIcons from '@/test-setup/deleteWeekIcons'
 
 // 🔨
 
-const { firebaseApp, auth, db } = initializeFirebase('test-weekiconshandler')
+const firebase = initializeFirebase('test-weekiconshandler')
 
 let weekIconsHandler: WeekIconsHandler, weekHandler: WeekHandler, dbHandler: DbHandler
 
@@ -24,7 +24,7 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
-  registerFirebaseInjectionTokens({ auth, db })
+  registerFirebaseInjectionTokens(firebase)
   await simulateInitialFetches(container)
   weekHandler = container.resolve(WeekHandler)
   weekIconsHandler = container.resolve(WeekIconsHandler)
@@ -37,7 +37,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await deleteApp(firebaseApp)
+  await deleteApp(firebase.app)
 })
 
 // 🧪

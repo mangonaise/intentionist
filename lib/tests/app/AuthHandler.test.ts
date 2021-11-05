@@ -5,14 +5,14 @@ import initializeFirebase from '@/firebase-setup/initializeFirebase'
 import AuthHandler from '@/logic/app/AuthHandler'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 
-const { firebaseApp } = initializeFirebase('test-authhandler')
+const firebase = initializeFirebase('test-authhandler')
 
 afterEach(() => {
   container.clearInstances()
 })
 
 afterAll(() => {
-  deleteApp(firebaseApp)
+  deleteApp(firebase.app)
 })
 
 test('signing in and out correctly updates local auth state', async () => {

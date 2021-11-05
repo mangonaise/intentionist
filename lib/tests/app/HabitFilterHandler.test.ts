@@ -11,7 +11,7 @@ import simulateInitialFetches from '../_setup/simulateInitialFetches'
 
 // 🔨
 
-const { firebaseApp, auth, db } = initializeFirebase('test-habitfilterhandler')
+const firebase = initializeFirebase('test-habitfilterhandler')
 
 let habitsHandler: HabitsHandler
 
@@ -24,7 +24,7 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
-  registerFirebaseInjectionTokens({ auth, db })
+  registerFirebaseInjectionTokens(firebase)
   await simulateInitialFetches(container)
   habitsHandler = container.resolve(HabitsHandler)
 })
@@ -35,7 +35,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await deleteApp(firebaseApp)
+  await deleteApp(firebase.app)
 })
 
 // 🧪

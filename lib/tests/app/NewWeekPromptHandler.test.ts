@@ -14,7 +14,7 @@ import addWeeks from 'date-fns/addWeeks'
 
 // 🔨
 
-const { firebaseApp, auth, db } = initializeFirebase('test-newweekprompthandler')
+const firebase = initializeFirebase('test-newweekprompthandler')
 
 let newWeekPromptHandler: NewWeekPromptHandler
 
@@ -28,7 +28,7 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
-  registerFirebaseInjectionTokens({ auth, db })
+  registerFirebaseInjectionTokens(firebase)
   await simulateInitialFetches(container)
 })
 
@@ -40,7 +40,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  deleteApp(firebaseApp)
+  deleteApp(firebase.app)
 })
 
 // 🧪

@@ -12,7 +12,7 @@ import exclude from '@/logic/utils/exclude'
 
 // 🔨
 
-const { firebaseApp, auth, db } = initializeFirebase('test-habitshandler')
+const firebase = initializeFirebase('test-habitshandler')
 
 let dbHandler: DbHandler, habitsHandler: HabitsHandler
 const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '🧪', status: 'active' }
@@ -25,7 +25,7 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
-  registerFirebaseInjectionTokens({ auth, db })
+  registerFirebaseInjectionTokens(firebase)
   dbHandler = container.resolve(DbHandler)
 })
 
@@ -35,7 +35,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  deleteApp(firebaseApp)
+  deleteApp(firebase.app)
 })
 
 async function initialize() {

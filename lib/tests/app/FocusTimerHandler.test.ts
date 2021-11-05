@@ -20,7 +20,7 @@ import addWeeks from 'date-fns/addWeeks'
 
 // 🔨
 
-const { firebaseApp } = initializeFirebase('test-focustimerhandler')
+const firebase = initializeFirebase('test-focustimerhandler')
 
 const router = container.resolve(MockRouter)
 container.register('Router', { useValue: router })
@@ -36,7 +36,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await deleteHabitsDoc()
-  await deleteApp(firebaseApp)
+  await deleteApp(firebase.app)
 })
 
 // 🧪

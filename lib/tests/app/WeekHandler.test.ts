@@ -19,7 +19,7 @@ import simulateInitialFetches from '../_setup/simulateInitialFetches'
 
 // 🔨
 
-const { firebaseApp, auth, db } = initializeFirebase('test-weekhandler')
+const firebase = initializeFirebase('test-weekhandler')
 
 let weekHandler: WeekHandler, dbHandler: DbHandler, authUser: AuthUser, habitsHandler: HabitsHandler
 
@@ -57,7 +57,7 @@ beforeAll(async () => {
 })
 
 beforeEach(() => {
-  registerFirebaseInjectionTokens({ auth, db })
+  registerFirebaseInjectionTokens(firebase)
   authUser = container.resolve(AuthUser)
   dbHandler = container.resolve(DbHandler)
 })
@@ -69,7 +69,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await deleteApp(firebaseApp)
+  await deleteApp(firebase.app)
 })
 
 // 🧪
@@ -312,7 +312,7 @@ describe('switching weeks', () => {
     const { startDate, statuses } = weekHandler.weekInView
     expect(startDate).toEqual('2021-09-27')
     expect(statuses).toBeUndefined()
-    expect((await getDoc(doc(db, 'users', authUser.uid, 'weeks', '2021-09-27'))).data()).toBeUndefined()
+    expect((await getDoc(doc(firebase.db, 'users', authUser.uid, 'weeks', '2021-09-27'))).data()).toBeUndefined()
   })
 
   test('switching to the new latest week will generate an empty week locally and also create a document in the database', async () => {
@@ -534,7 +534,7 @@ describe('displaying correct habits', () => {
 })
 
 test('teardown: weeks collection and habits doc are emptied', async () => {
-  const weekDocs = await getDocs(query(collection(db, 'users', authUser.uid, 'weeks')))
+  const weekDocs = await getDocs(query(collection(firebase.db, 'users', authUser.uid, 'weeks')))
   expect(weekDocs.size).toEqual(0)
   expect(await dbHandler.getOwnDoc('data', 'habits')).toBeUndefined()
 })

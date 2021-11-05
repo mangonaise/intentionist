@@ -19,7 +19,7 @@ import deleteWeeks from '@/test-setup/deleteWeeks'
 
 // 🔨
 
-const { firebaseApp, auth, db } = initializeFirebase('test-journalentryeditor')
+const firebase = initializeFirebase('test-journalentryeditor')
 
 let journalEntryEditor: JournalEntryEditor, weekHandler: WeekHandler, dbHandler: DbHandler
 let router: MockRouter
@@ -50,7 +50,7 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
-  registerFirebaseInjectionTokens({ auth, db })
+  registerFirebaseInjectionTokens(firebase)
   await simulateInitialFetches(container)
   const habitsHandler = container.resolve(HabitsHandler)
   habitsHandler.setHabit(dummyHabit)
@@ -68,7 +68,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await deleteApp(firebaseApp)
+  await deleteApp(firebase.app)
 })
 
 function startJournalEntryEditor() {

@@ -12,7 +12,7 @@ import HabitEditor from '@/logic/app/HabitEditor'
 
 // 🔨
 
-const { firebaseApp, auth, db } = initializeFirebase('test-habiteditor')
+const firebase = initializeFirebase('test-habiteditor')
 
 let habitEditor: HabitEditor
 
@@ -34,7 +34,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await deleteApp(firebaseApp)
+  await deleteApp(firebase.app)
 })
 
 // 🧪
@@ -53,7 +53,7 @@ describe('when habits have already been fetched', () => {
   })
 
   beforeEach(() => {
-    registerFirebaseInjectionTokens({ auth, db })
+    registerFirebaseInjectionTokens(firebase)
     habitsHandler = container.resolve(HabitsHandler)
   })
 

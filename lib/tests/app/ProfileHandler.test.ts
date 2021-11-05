@@ -12,7 +12,7 @@ import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-
 
 // 🔨
 
-const { firebaseApp, auth, db } = initializeFirebase('test-profilehandler')
+const firebase = initializeFirebase('test-profilehandler')
 const { app: firebaseAdmin, db: adminDb } = getFirebaseAdmin('test-profilehandler')
 
 let authUser: AuthUser, dbHandler: DbHandler, profileHandler: ProfileHandler
@@ -28,7 +28,7 @@ beforeAll(async () => {
 })
 
 beforeEach(() => {
-  registerFirebaseInjectionTokens({ auth, db })
+  registerFirebaseInjectionTokens(firebase)
   authUser = container.resolve(AuthUser)
   dbHandler = container.resolve(DbHandler)
 })
@@ -40,7 +40,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await deleteApp(firebaseApp)
+  await deleteApp(firebase.app)
   await firebaseAdmin.delete()
 })
 
@@ -54,7 +54,7 @@ describe('initialization', () => {
 
   test('fetching profile of an existing user works', async () => {
     const profile: UserProfileInfo = { displayName: 'Bob', avatar: '😎', username: testUsername }
-    await setDoc(doc(db, 'users', authUser.uid), profile)
+    await setDoc(doc(firebase.db, 'users', authUser.uid), profile)
     await initializeProfileHandler()
     expect(profileHandler.profileInfo).toEqual(profile)
   })
