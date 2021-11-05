@@ -114,6 +114,10 @@ const QuillStyles = () => {
           },
           '& em': {
             fontVariationSettings: '"slnt" -10'
+          },
+          '& .ql-syntax': {
+            backgroundColor: '#2f2f2f !important',
+            color: '#77d988 !important'
           }
         },
         '&-disabled *': {
