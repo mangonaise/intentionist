@@ -1,12 +1,12 @@
-import { Lifecycle, scoped } from 'tsyringe'
+import { singleton } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
-import ProfileHandler, { AvatarAndDisplayName } from './ProfileHandler'
-import DbHandler from './DbHandler'
-import isValidUsername from '../utils/isValidUsername'
+import ProfileHandler, { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
+import DbHandler from '@/logic/app/DbHandler'
+import isValidUsername from '@/logic/utils/isValidUsername'
 
 export type UserSearchResult = AvatarAndDisplayName | 'invalid' | 'self' | 'not found' //! | 'already friends'
 
-@scoped(Lifecycle.ContainerScoped)
+@singleton()
 export default class FriendsHandler {
   profileHandler
   dbHandler

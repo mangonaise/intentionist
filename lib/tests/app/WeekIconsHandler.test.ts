@@ -1,43 +1,39 @@
 import '@abraham/reflection'
-import { container as globalContainer, DependencyContainer } from 'tsyringe'
+import { container } from 'tsyringe'
 import { deleteApp } from '@firebase/app'
-import initializeFirebase from '@/lib/firebase'
+import initializeFirebase, { registerFirebaseInjectionTokens } from '@/lib/firebase'
 import WeekIconsHandler from '@/lib/logic/app/WeekIconsHandler'
 import WeekHandler from '@/lib/logic/app/WeekHandler'
 import DbHandler from '@/lib/logic/app/DbHandler'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import AuthUser from '@/lib/logic/app/AuthUser'
-import initializeTestApp from '@/test-setup/initializeTestApp'
+import simulateInitialFetches from '@/lib/tests/_setup/simulateInitialFetches'
 import deleteWeeks from '@/test-setup/deleteWeeks'
 import deleteWeekIcons from '@/test-setup/deleteWeekIcons'
 
 // 🔨
 
-const { firebaseApp } = initializeFirebase('test-weekiconshandler')
+const { firebaseApp, auth, db } = initializeFirebase('test-weekiconshandler')
 
-let testContainer: DependencyContainer
 let weekIconsHandler: WeekIconsHandler, weekHandler: WeekHandler, dbHandler: DbHandler
-
-async function initialize() {
-  testContainer = globalContainer.createChildContainer()
-  await initializeTestApp(testContainer)
-  weekHandler = testContainer.resolve(WeekHandler)
-  weekIconsHandler = testContainer.resolve(WeekIconsHandler)
-}
 
 beforeAll(async () => {
   await signInDummyUser()
-  globalContainer.resolve(AuthUser)
-  dbHandler = globalContainer.resolve(DbHandler)
+  container.resolve(AuthUser)
+  dbHandler = container.resolve(DbHandler)
 })
 
 beforeEach(async () => {
-  await initialize()
+  registerFirebaseInjectionTokens({ auth, db })
+  await simulateInitialFetches(container)
+  weekHandler = container.resolve(WeekHandler)
+  weekIconsHandler = container.resolve(WeekIconsHandler)
 })
 
 afterEach(async () => {
   await deleteWeeks()
   await deleteWeekIcons()
+  container.clearInstances()
 })
 
 afterAll(async () => {

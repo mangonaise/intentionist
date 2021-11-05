@@ -1,10 +1,10 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { deleteApp } from '@firebase/app'
-import initializeFirebase from '@/lib/firebase'
+import initializeFirebase, { registerFirebaseInjectionTokens } from '@/lib/firebase'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
-import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
+import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import DbHandler from '@/logic/app/DbHandler'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import generateHabitId from '@/logic/utils/generateHabitId'
@@ -12,7 +12,7 @@ import exclude from '@/lib/logic/utils/exclude'
 
 // 🔨
 
-const { firebaseApp } = initializeFirebase('test-habitshandler')
+const { firebaseApp, auth, db } = initializeFirebase('test-habitshandler')
 
 let dbHandler: DbHandler, habitsHandler: HabitsHandler
 const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '🧪', status: 'active' }
@@ -22,11 +22,16 @@ const getHabitsDoc = async () => await dbHandler.getOwnDoc('data', 'habits')
 
 beforeAll(async () => {
   await signInDummyUser()
+})
+
+beforeEach(async () => {
+  registerFirebaseInjectionTokens({ auth, db })
   dbHandler = container.resolve(DbHandler)
 })
 
 afterEach(async () => {
   await deleteHabitsDoc()
+  container.clearInstances()
 })
 
 afterAll(async () => {
@@ -34,8 +39,8 @@ afterAll(async () => {
 })
 
 async function initialize() {
-  const testContainer = container.createChildContainer()
-  habitsHandler = await initializeHabitsHandler(testContainer)
+  await simulateInitialFetches(container)
+  habitsHandler = container.resolve(HabitsHandler)
 }
 
 // 🧪

@@ -1,5 +1,5 @@
 import { getDay } from 'date-fns'
-import { WeekdayId } from '../app/WeekHandler'
+import { WeekdayId } from '@/logic/app/WeekHandler'
 
 export default function getCurrentWeekdayId() {
   let index = getDay(new Date()) - 1

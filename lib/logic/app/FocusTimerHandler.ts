@@ -1,10 +1,10 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import { inject, injectable } from 'tsyringe'
-import { formatFirstDayOfThisWeek } from '../utils/dateUtilities'
-import Router from '../types/router'
-import HabitsHandler, { Habit } from './HabitsHandler'
-import WeekHandler, { WeekdayId } from './WeekHandler'
-import getCurrentWeekdayId from '../utils/getCurrentWeekdayId'
+import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
+import WeekHandler, { WeekdayId } from '@/logic/app/WeekHandler'
+import { formatFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
+import getCurrentWeekdayId from '@/logic/utils/getCurrentWeekdayId'
+import Router from '@/lib/types/router'
 
 export type TimerStatus = 'not started' | 'playing' | 'paused' | 'finished'
 

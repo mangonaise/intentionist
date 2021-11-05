@@ -1,32 +1,25 @@
 import '@abraham/reflection'
-import { container as globalContainer, DependencyContainer } from 'tsyringe'
+import { container } from 'tsyringe'
 import { addMilliseconds, startOfDay, startOfWeek } from 'date-fns'
 import { deleteApp } from '@firebase/app'
 import { formatFirstDayOfThisWeek, getFirstDayOfThisWeek } from '@/lib/logic/utils/dateUtilities'
-import initializeFirebase from '@/lib/firebase'
-import DbHandler from '@/lib/logic/app/DbHandler'
+import initializeFirebase, { registerFirebaseInjectionTokens } from '@/lib/firebase'
 import NewWeekPromptHandler from '@/lib/logic/app/NewWeekPromptHandler'
-import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
 import deleteWeeks from '@/test-setup/deleteWeeks'
+import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import MockDate from 'mockdate'
 import addWeeks from 'date-fns/addWeeks'
+import WeekHandler from '@/lib/logic/app/WeekHandler'
 
 // 🔨
 
-const { firebaseApp } = initializeFirebase('test-newweekprompthandler')
+const { firebaseApp, auth, db } = initializeFirebase('test-newweekprompthandler')
 
-let testContainer: DependencyContainer
-let newWeekPromptHandler: NewWeekPromptHandler, dbHandler: DbHandler
+let newWeekPromptHandler: NewWeekPromptHandler
 
-async function setup() {
-  testContainer = globalContainer.createChildContainer()
-  await initializeHabitsHandler(testContainer)
-  dbHandler = testContainer.resolve(DbHandler)
-}
-
-function initialize() {
-  newWeekPromptHandler = testContainer.resolve(NewWeekPromptHandler)
+function startNewWeekPromptHandler() {
+  newWeekPromptHandler = container.resolve(NewWeekPromptHandler)
   newWeekPromptHandler.checkIsNewWeek()
 }
 
@@ -34,10 +27,16 @@ beforeAll(async () => {
   await signInDummyUser()
 })
 
+beforeEach(async () => {
+  registerFirebaseInjectionTokens({ auth, db })
+  await simulateInitialFetches(container)
+})
+
 afterEach(async () => {
   jest.useRealTimers()
   MockDate.reset()
   await deleteWeeks()
+  container.clearInstances()
 })
 
 afterAll(async () => {
@@ -48,8 +47,7 @@ afterAll(async () => {
 
 describe('initialization', () => {
   test('it stores the start of the current week correctly', async () => {
-    await setup()
-    initialize()
+    startNewWeekPromptHandler()
     expect(newWeekPromptHandler.thisWeekStartDate).toEqual(getFirstDayOfThisWeek())
   })
 
@@ -58,9 +56,8 @@ describe('initialization', () => {
     const date = addMilliseconds(startOfDay(new Date('Mon Sep 27 2021')), 30600000)
     MockDate.set(date)
 
-    await setup()
     jest.useFakeTimers('legacy')
-    initialize()
+    startNewWeekPromptHandler()
 
     // Timeout length should be the difference between now and the beginning of next Monday
     const timeoutTimeMs = (setTimeout as any).mock.calls[0][1]
@@ -68,17 +65,15 @@ describe('initialization', () => {
     jest.runOnlyPendingTimers()
   })
 
-  test('if the last tracked week is this week in real time, showPrompt initializes to false', async () => {
-    await dbHandler.updateWeekDoc(formatFirstDayOfThisWeek(), {})
-    await setup()
-    initialize()
+  test('if the latest tracked week is this week in real time, showPrompt initializes to false', async () => {
+    container.resolve(WeekHandler).latestWeekStartDate = formatFirstDayOfThisWeek()
+    startNewWeekPromptHandler()
     expect(newWeekPromptHandler.showPrompt).toEqual(false)
   })
 
-  test('if the last tracked week is a week in the past, showPrompt initializes to true', async () => {
-    await dbHandler.updateWeekDoc('2021-08-16', {})
-    await setup()
-    initialize()
+  test('if the latest tracked week is a week in the past, showPrompt initializes to true', async () => {
+    container.resolve(WeekHandler).latestWeekStartDate = '2021-08-16'
+    startNewWeekPromptHandler()
     expect(newWeekPromptHandler.showPrompt).toEqual(true)
   })
 })
@@ -88,9 +83,8 @@ describe('timeout behavior', () => {
     const date = startOfDay(new Date('Mon Sep 20 2021'))
     MockDate.set(date)
 
-    await setup()
     jest.useFakeTimers('legacy')
-    initialize()
+    startNewWeekPromptHandler()
 
     MockDate.set(startOfDay(addWeeks(date, 1)))
     jest.runOnlyPendingTimers()
@@ -102,9 +96,8 @@ describe('timeout behavior', () => {
     const date = addMilliseconds(startOfDay(new Date('Mon Sep 27 2021')), 30600000)
     MockDate.set(date)
 
-    await setup()
     jest.useFakeTimers('legacy')
-    initialize()
+    startNewWeekPromptHandler()
 
     MockDate.set(startOfDay(addWeeks(date, 1)))
     jest.runOnlyPendingTimers()

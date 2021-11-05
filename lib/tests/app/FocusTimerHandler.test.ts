@@ -12,10 +12,10 @@ import getCurrentWeekdayId from '@/lib/logic/utils/getCurrentWeekdayId'
 import DbHandler from '@/lib/logic/app/DbHandler'
 import MockDate from 'mockdate'
 import MockRouter from '@/test-setup/mock/MockRouter'
-import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteWeeks from '@/test-setup/deleteWeeks'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
+import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import addWeeks from 'date-fns/addWeeks'
 
 // 🔨
@@ -30,7 +30,8 @@ const dummyHabit: Habit = { id: generateHabitId(), name: 'Focus timer test habit
 
 beforeAll(async () => {
   await signInDummyUser()
-  habitsHandler = await initializeHabitsHandler(container)
+  await simulateInitialFetches(container)
+  habitsHandler = container.resolve(HabitsHandler)
 })
 
 afterAll(async () => {

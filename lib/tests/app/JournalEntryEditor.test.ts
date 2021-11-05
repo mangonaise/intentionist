@@ -1,30 +1,28 @@
 import '@abraham/reflection'
-import { container as globalContainer } from 'tsyringe'
+import { container } from 'tsyringe'
 import { when } from 'mobx'
 import { deleteApp } from '@firebase/app'
 import { formatYYYYMMDD } from '@/lib/logic/utils/dateUtilities'
-import { Habit } from '@/lib/logic/app/HabitsHandler'
-import initializeFirebase from '@/lib/firebase'
+import initializeFirebase, { registerFirebaseInjectionTokens } from '@/lib/firebase'
+import generateJournalEntryId from '@/lib/logic/utils/generateJournalEntryId'
+import generateHabitId from '@/lib/logic/utils/generateHabitId'
+import HabitsHandler, { Habit } from '@/lib/logic/app/HabitsHandler'
 import JournalEntryEditor, { JournalEntryDocumentData } from '@/lib/logic/app/JournalEntryEditor'
 import WeekHandler from '@/lib/logic/app/WeekHandler'
-import generateHabitId from '@/lib/logic/utils/generateHabitId'
-import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
+import DbHandler from '@/lib/logic/app/DbHandler'
 import MockRouter from '@/test-setup/mock/MockRouter'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
-import DbHandler from '@/lib/logic/app/DbHandler'
+import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import deleteJournalEntries from '@/test-setup/deleteJournalEntries'
 import deleteWeeks from '@/test-setup/deleteWeeks'
-import generateJournalEntryId from '@/lib/logic/utils/generateJournalEntryId'
 
 // 🔨
 
-const { firebaseApp } = initializeFirebase('test-journalentryeditor')
+const { firebaseApp, auth, db } = initializeFirebase('test-journalentryeditor')
 
 let journalEntryEditor: JournalEntryEditor, weekHandler: WeekHandler, dbHandler: DbHandler
-
-const router = globalContainer.resolve(MockRouter)
-globalContainer.register('Router', { useValue: router })
+let router: MockRouter
 
 const dummyHabit: Habit = { id: generateHabitId(), name: 'Journal editor test habit A', icon: '✏️', status: 'active' }
 const dummyWeekStartDate = '2021-09-27'
@@ -47,29 +45,35 @@ const dummyJournalEntryB: JournalEntryDocumentData = {
   weekStartDate: dummyWeekStartDate
 }
 
-function startJournalEntryEditor() {
-  journalEntryEditor = globalContainer.resolve(JournalEntryEditor)
-}
-
 beforeAll(async () => {
   await signInDummyUser()
-  const habitsHandler = await initializeHabitsHandler(globalContainer)
-  await habitsHandler.setHabit(dummyHabit)
-  dbHandler = globalContainer.resolve(DbHandler)
-  weekHandler = globalContainer.resolve(WeekHandler)
+})
+
+beforeEach(async () => {
+  registerFirebaseInjectionTokens({ auth, db })
+  await simulateInitialFetches(container)
+  const habitsHandler = container.resolve(HabitsHandler)
+  habitsHandler.setHabit(dummyHabit)
+  dbHandler = container.resolve(DbHandler)
+  weekHandler = container.resolve(WeekHandler)
+  router = container.resolve(MockRouter)
+  container.register('Router', { useValue: router })
 })
 
 afterEach(async () => {
   await deleteHabitsDoc()
   await deleteJournalEntries()
   await deleteWeeks()
-  weekHandler.weekInView.journalEntries = undefined
-  weekHandler.weekInView.journalMetadata = undefined
+  container.clearInstances()
 })
 
 afterAll(async () => {
   await deleteApp(firebaseApp)
 })
+
+function startJournalEntryEditor() {
+  journalEntryEditor = container.resolve(JournalEntryEditor)
+}
 
 // 🧪
 

@@ -1,6 +1,6 @@
 import { injectable } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
-import HabitsHandler, { Habit, HabitStatus } from './HabitsHandler'
+import HabitsHandler, { Habit, HabitStatus } from '@/logic/app/HabitsHandler'
 
 @injectable()
 export default class HabitFilterHandler {

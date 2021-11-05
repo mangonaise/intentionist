@@ -1,9 +1,9 @@
-import { Lifecycle, scoped } from 'tsyringe'
+import { singleton } from 'tsyringe'
 import { makeAutoObservable, runInAction } from 'mobx'
-import { InitialState } from './InitialFetchHandler'
+import { InitialState } from '@/logic/app/InitialFetchHandler'
 import isEqual from 'lodash/isEqual'
-import isValidUsername from '../utils/isValidUsername'
-import DbHandler from './DbHandler'
+import isValidUsername from '@/logic/utils/isValidUsername'
+import DbHandler from '@/logic/app/DbHandler'
 
 export type UserProfileInfo = AvatarAndDisplayName & {
   username: string
@@ -16,7 +16,7 @@ export type AvatarAndDisplayName = {
 
 export type UsernameAvailability = 'unknown' | 'checking' | 'invalid' | 'available' | 'taken'
 
-@scoped(Lifecycle.ContainerScoped)
+@singleton()
 export default class ProfileHandler {
   private dbHandler: DbHandler
   public profileInfo: UserProfileInfo | null

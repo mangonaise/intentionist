@@ -1,12 +1,12 @@
 import { arrayUnion } from '@firebase/firestore'
 import { makeAutoObservable } from 'mobx'
-import { Lifecycle, scoped } from 'tsyringe'
-import { Fetched, InitialState } from './InitialFetchHandler'
+import { singleton } from 'tsyringe'
+import { Fetched, InitialState } from '@/logic/app/InitialFetchHandler'
+import DbHandler, { HABITS } from '@/logic/app/DbHandler'
+import exclude from '@/logic/utils/exclude'
+import arrayMove from '@/logic/utils/arrayMove'
+import generateHabitId from '@/logic/utils/generateHabitId'
 import isEqual from 'lodash/isEqual'
-import exclude from '../utils/exclude'
-import DbHandler, { HABITS } from './DbHandler'
-import arrayMove from '../utils/arrayMove'
-import generateHabitId from '../utils/generateHabitId'
 
 export type HabitsDocumentData = {
   habits: { [id: string]: HabitProperties },
@@ -23,7 +23,7 @@ export type HabitProperties = {
   timeable?: boolean
 }
 
-@scoped(Lifecycle.ContainerScoped)
+@singleton()
 export default class HabitsHandler {
   public habits: Habit[]
   private dbHandler

@@ -1,11 +1,11 @@
 import '@abraham/reflection'
-import { container as globalContainer, DependencyContainer } from 'tsyringe'
+import { container } from 'tsyringe'
 import { deleteApp } from '@firebase/app'
 import { collection, doc, getDoc, getDocs, query } from '@firebase/firestore'
 import { when } from 'mobx'
 import { formatFirstDayOfThisWeek, formatYYYYMMDD, getFirstDayOfThisWeek } from '@/lib/logic/utils/dateUtilities'
 import { addWeeks, isMonday } from 'date-fns'
-import initializeFirebase from '@/lib/firebase'
+import initializeFirebase, { registerFirebaseInjectionTokens } from '@/lib/firebase'
 import WeekHandler, { JournalEntryMetadata, WeekDocumentData } from '@/lib/logic/app/WeekHandler'
 import AuthUser from '@/lib/logic/app/AuthUser'
 import DbHandler from '@/lib/logic/app/DbHandler'
@@ -13,15 +13,14 @@ import HabitsHandler, { Habit } from '@/lib/logic/app/HabitsHandler'
 import generateHabitId from '@/lib/logic/utils/generateHabitId'
 import generateJournalEntryId from '@/lib/logic/utils/generateJournalEntryId'
 import signInDummyUser from '@/test-setup/signInDummyUser'
-import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import deleteWeeks from '@/test-setup/deleteWeeks'
+import simulateInitialFetches from '../_setup/simulateInitialFetches'
 
 // 🔨
 
-const { firebaseApp, db } = initializeFirebase('test-weekhandler')
+const { firebaseApp, auth, db } = initializeFirebase('test-weekhandler')
 
-let testContainer: DependencyContainer
 let weekHandler: WeekHandler, dbHandler: DbHandler, authUser: AuthUser, habitsHandler: HabitsHandler
 
 const dummyTrackerStatuses: WeekDocumentData['statuses'] = {
@@ -48,20 +47,25 @@ const dummyEntryDataB = {
 }
 
 async function initializeWeekHandler() {
-  testContainer = globalContainer.createChildContainer()
-  habitsHandler = await initializeHabitsHandler(testContainer)
-  weekHandler = testContainer.resolve(WeekHandler)
+  await simulateInitialFetches(container)
+  habitsHandler = container.resolve(HabitsHandler)
+  weekHandler = container.resolve(WeekHandler)
 }
 
 beforeAll(async () => {
   await signInDummyUser()
-  authUser = globalContainer.resolve(AuthUser)
-  dbHandler = globalContainer.resolve(DbHandler)
+})
+
+beforeEach(() => {
+  registerFirebaseInjectionTokens({ auth, db })
+  authUser = container.resolve(AuthUser)
+  dbHandler = container.resolve(DbHandler)
 })
 
 afterEach(async () => {
   await deleteWeeks()
   await deleteHabitsDoc()
+  container.clearInstances()
 })
 
 afterAll(async () => {
@@ -131,7 +135,7 @@ describe('initialization', () => {
   })
 
   test(`week icon is correctly placed into week in view's local cache`, async () => {
-    await dbHandler.updateWeekDoc('2021-10-25',  {
+    await dbHandler.updateWeekDoc('2021-10-25', {
       icon: '⭐'
     })
     await initializeWeekHandler()

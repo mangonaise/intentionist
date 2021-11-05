@@ -1,6 +1,6 @@
-import Router from '../../../logic/types/router'
 import { ParsedUrlQuery } from 'querystring'
 import { singleton } from 'tsyringe'
+import Router from '@/lib/types/router'
 
 @singleton()
 export default class MockRouter implements Router {

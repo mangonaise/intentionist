@@ -1,10 +1,10 @@
-import differenceInMilliseconds from 'date-fns/differenceInMilliseconds'
+import { singleton } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
-import { Lifecycle, scoped } from 'tsyringe'
-import { formatFirstDayOfThisWeek, getFirstDayOfNextWeek, getFirstDayOfThisWeek } from '../utils/dateUtilities'
-import WeekHandler from './WeekHandler'
+import { formatFirstDayOfThisWeek, getFirstDayOfNextWeek, getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
+import differenceInMilliseconds from 'date-fns/differenceInMilliseconds'
+import WeekHandler from '@/logic/app/WeekHandler'
 
-@scoped(Lifecycle.ContainerScoped)
+@singleton()
 export default class NewWeekPromptHandler {
   public showPrompt = false
   public thisWeekStartDate = getFirstDayOfThisWeek()

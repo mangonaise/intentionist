@@ -1,32 +1,34 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
-import { when } from 'mobx'
 import { setDoc, doc } from '@firebase/firestore'
 import { deleteApp } from '@firebase/app'
 import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
+import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import AuthUser from '@/logic/app/AuthUser'
 import DbHandler from '@/logic/app/DbHandler'
-import initializeFirebase from '@/lib/firebase'
-import InitialFetchHandler from '@/lib/logic/app/InitialFetchHandler'
+import initializeFirebase, { registerFirebaseInjectionTokens } from '@/lib/firebase'
 
 // 🔨
 
-const { firebaseApp, db } = initializeFirebase('test-profilehandler')
+const { firebaseApp, auth, db } = initializeFirebase('test-profilehandler')
 const { app: firebaseAdmin, db: adminDb } = getFirebaseAdmin('test-profilehandler')
 
 let authUser: AuthUser, dbHandler: DbHandler, profileHandler: ProfileHandler
 let testUsername = 'profile_handler_test_username'
 
 async function initializeProfileHandler() {
-  const testContainer = container.createChildContainer()
-  await (when(() => testContainer.resolve(InitialFetchHandler).hasCompletedInitialFetches))
-  profileHandler = testContainer.resolve(ProfileHandler)
+  await simulateInitialFetches(container)
+  profileHandler = container.resolve(ProfileHandler)
 }
 
 beforeAll(async () => {
   await signInDummyUser()
+})
+
+beforeEach(() => {
+  registerFirebaseInjectionTokens({ auth, db })
   authUser = container.resolve(AuthUser)
   dbHandler = container.resolve(DbHandler)
 })
@@ -34,6 +36,7 @@ beforeAll(async () => {
 afterEach(async () => {
   await adminDb.collection('users').doc(authUser.uid).delete()
   await adminDb.collection('usernames').doc(testUsername).delete()
+  container.clearInstances()
 })
 
 afterAll(async () => {

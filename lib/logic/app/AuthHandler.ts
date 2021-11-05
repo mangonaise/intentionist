@@ -1,11 +1,11 @@
 import type { Auth } from 'firebase/auth'
 import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth'
 import { makeAutoObservable } from 'mobx'
-import { inject, Lifecycle, scoped } from 'tsyringe'
+import { inject, singleton } from 'tsyringe'
 
 const isBrowser = typeof window !== 'undefined'
 
-@scoped(Lifecycle.ContainerScoped)
+@singleton()
 export default class AuthHandler {
   public auth
   public isAuthenticated = false

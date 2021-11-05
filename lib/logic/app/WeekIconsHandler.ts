@@ -1,14 +1,14 @@
 import { makeAutoObservable, runInAction } from 'mobx'
-import { Lifecycle, scoped } from 'tsyringe'
-import { separateYYYYfromMMDD } from '../utils/dateUtilities'
-import DbHandler from './DbHandler'
-import WeekHandler from './WeekHandler'
+import { singleton } from 'tsyringe'
+import { separateYYYYfromMMDD } from '@/logic/utils/dateUtilities'
+import DbHandler from '@/logic/app/DbHandler'
+import WeekHandler from '@/logic/app/WeekHandler'
 
 type WeekIconsCache = {
   [yyyy: string]: { [mmdd: string]: string }
 }
 
-@scoped(Lifecycle.ContainerScoped)
+@singleton()
 export default class WeekIconsHandler {
   public iconsCache: WeekIconsCache = {}
   private weekHandler

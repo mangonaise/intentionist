@@ -3,16 +3,16 @@ import { container } from 'tsyringe'
 import { when } from 'mobx'
 import { deleteApp } from '@firebase/app'
 import signInDummyUser from '@/test-setup/signInDummyUser'
-import initializeHabitsHandler from '@/test-setup/initializeHabitsHandler'
 import MockRouter from '@/test-setup/mock/MockRouter'
-import initializeFirebase from '@/lib/firebase'
+import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
+import initializeFirebase, { registerFirebaseInjectionTokens } from '@/lib/firebase'
 import DbHandler from '@/logic/app/DbHandler'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import HabitEditor from '@/logic/app/HabitEditor'
 
 // 🔨
 
-const { firebaseApp } = initializeFirebase('test-habiteditor')
+const { firebaseApp, auth, db } = initializeFirebase('test-habiteditor')
 
 let habitEditor: HabitEditor
 
@@ -49,7 +49,12 @@ describe('when habits have already been fetched', () => {
   let habitsHandler: HabitsHandler
 
   beforeAll(async () => {
-    habitsHandler = await initializeHabitsHandler(container)
+    await simulateInitialFetches(container)
+  })
+
+  beforeEach(() => {
+    registerFirebaseInjectionTokens({ auth, db })
+    habitsHandler = container.resolve(HabitsHandler)
   })
 
   afterEach(async () => {

@@ -1,13 +1,13 @@
 import type { Firestore } from 'firebase/firestore'
-import type { Fetched } from './InitialFetchHandler'
-import type { WeekDocumentData } from './WeekHandler'
-import type { JournalEntryDocumentData } from './JournalEntryEditor'
-import type { AvatarAndDisplayName } from './ProfileHandler'
-import { inject, Lifecycle, scoped } from 'tsyringe'
+import type { Fetched } from '@/logic/app/InitialFetchHandler'
+import type { WeekDocumentData } from '@/logic/app/WeekHandler'
+import type { JournalEntryDocumentData } from '@/logic/app/JournalEntryEditor'
+import type { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
+import { inject, singleton } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
 import { collection, doc, getDoc, getDocs, query, setDoc, limit, orderBy, writeBatch, arrayUnion, arrayRemove, deleteField, where, deleteDoc } from '@firebase/firestore'
-import { separateYYYYfromMMDD } from '../utils/dateUtilities'
-import AuthUser from './AuthUser'
+import { separateYYYYfromMMDD } from '@/logic/utils/dateUtilities'
+import AuthUser from '@/logic/app/AuthUser'
 
 const USERS = 'users'
 const USERNAMES = 'usernames'
@@ -16,7 +16,7 @@ const WEEK_ICONS = 'weekIcons'
 const JOURNAL = 'journal'
 export const HABITS = 'data/habits'
 
-@scoped(Lifecycle.ContainerScoped)
+@singleton()
 export default class DbHandler {
   private uid
   public db

@@ -1,10 +1,10 @@
-import { Lifecycle, scoped } from 'tsyringe'
+import { singleton } from 'tsyringe'
 import { makeAutoObservable, runInAction, when } from 'mobx'
 import { deleteField, increment } from '@firebase/firestore'
-import { InitialState } from './InitialFetchHandler'
-import { formatFirstDayOfThisWeek } from '../utils/dateUtilities'
-import HabitsHandler, { Habit } from './HabitsHandler'
-import DbHandler from './DbHandler'
+import { InitialState } from '@/logic/app/InitialFetchHandler'
+import { formatFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
+import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
+import DbHandler from '@/logic/app/DbHandler'
 import isEqual from 'lodash/isEqual'
 import sum from 'lodash/sum'
 
@@ -37,7 +37,7 @@ export type JournalEntryMetadata = {
 export type WeekdayId = 0 | 1 | 2 | 3 | 4 | 5 | 6
 export type WeekViewMode = 'tracker' | 'journal' | 'focus'
 
-@scoped(Lifecycle.ContainerScoped)
+@singleton()
 export default class WeekHandler {
   public viewMode = 'tracker' as WeekViewMode
   public weekInView: WeekDocumentData

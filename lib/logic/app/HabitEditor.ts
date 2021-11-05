@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx'
 import { inject, injectable } from 'tsyringe'
-import Router from '../types/router'
-import generateHabitId from '../utils/generateHabitId'
-import HabitsHandler, { Habit } from './HabitsHandler'
+import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
+import generateHabitId from '@/logic/utils/generateHabitId'
+import Router from '@/lib/types/router'
 
 type QueryParams = {
   id: string | undefined,

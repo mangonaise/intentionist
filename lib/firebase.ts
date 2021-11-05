@@ -1,7 +1,9 @@
+import type { Auth } from '@firebase/auth'
+import type { Firestore } from '@firebase/firestore'
 import { container } from 'tsyringe'
-import { initializeApp } from 'firebase/app'
-import { connectAuthEmulator, getAuth } from 'firebase/auth'
-import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore'
+import { initializeApp } from '@firebase/app'
+import { connectAuthEmulator, getAuth } from '@firebase/auth'
+import { connectFirestoreEmulator, getFirestore } from '@firebase/firestore'
 
 const consoleInfo = console.info
 
@@ -24,12 +26,16 @@ export default function initializeFirebase(projectId = 'intentionist') {
     console.info = consoleInfo
   }
 
-  container.register('Auth', { useValue: auth })
-  container.register('Db', { useValue: db })
+  registerFirebaseInjectionTokens({ auth, db })
 
   return {
     firebaseApp,
     auth,
     db
   }
+}
+
+export function registerFirebaseInjectionTokens({ auth, db }: { auth: Auth, db: Firestore }) {
+  container.register('Auth', { useValue: auth })
+  container.register('Db', { useValue: db })
 }

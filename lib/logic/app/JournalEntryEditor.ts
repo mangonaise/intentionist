@@ -1,11 +1,11 @@
-import type Router from '../types/router'
+import type Router from '@/lib/types/router'
 import { inject, injectable } from 'tsyringe'
 import { makeAutoObservable, runInAction, when } from 'mobx'
-import { formatYYYYMMDD } from '../utils/dateUtilities'
-import generateJournalEntryId from '../utils/generateJournalEntryId'
-import HabitsHandler from './HabitsHandler'
-import WeekHandler from './WeekHandler'
-import DbHandler from './DbHandler'
+import { formatYYYYMMDD } from '@/logic/utils/dateUtilities'
+import generateJournalEntryId from '@/logic/utils/generateJournalEntryId'
+import HabitsHandler from '@/logic/app/HabitsHandler'
+import WeekHandler from '@/logic/app/WeekHandler'
+import DbHandler from '@/logic/app/DbHandler'
 
 type QueryParams = {
   id: string,

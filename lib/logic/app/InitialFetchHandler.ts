@@ -1,9 +1,9 @@
-import type { HabitsDocumentData } from './HabitsHandler'
-import type { WeekDocumentData } from './WeekHandler'
-import type { UserProfileInfo } from './ProfileHandler'
+import type { HabitsDocumentData } from '@/logic/app/HabitsHandler'
+import type { WeekDocumentData } from '@/logic/app/WeekHandler'
+import type { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import { makeAutoObservable, runInAction } from 'mobx'
-import { Lifecycle, scoped } from 'tsyringe'
-import DbHandler from './DbHandler'
+import { singleton } from 'tsyringe'
+import DbHandler from '@/logic/app/DbHandler'
 
 export type Fetched<T> = T | null
 
@@ -13,7 +13,7 @@ type InitialFetches = {
   latestWeekDoc: Fetched<WeekDocumentData>
 }
 
-@scoped(Lifecycle.ContainerScoped)
+@singleton()
 export default class InitialFetchHandler {
   private dbHandler
   public initialFetches: InitialFetches | undefined
@@ -57,7 +57,7 @@ export default class InitialFetchHandler {
   }
 }
 
-@scoped(Lifecycle.ContainerScoped)
+@singleton()
 export class InitialState {
   data: InitialFetches
 

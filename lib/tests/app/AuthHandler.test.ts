@@ -7,6 +7,10 @@ import signInDummyUser from '@/test-setup/signInDummyUser'
 
 const { firebaseApp } = initializeFirebase('test-authhandler')
 
+afterEach(() => {
+  container.clearInstances()
+})
+
 afterAll(() => {
   deleteApp(firebaseApp)
 })

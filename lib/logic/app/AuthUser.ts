@@ -1,7 +1,7 @@
 import type { Auth } from 'firebase/auth'
-import { inject, Lifecycle, scoped } from 'tsyringe'
+import { inject, singleton } from 'tsyringe'
 
-@scoped(Lifecycle.ContainerScoped)
+@singleton()
 export default class AuthUser {
   uid
   displayName
