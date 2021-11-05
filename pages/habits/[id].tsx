@@ -1,7 +1,7 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { createContext, useContext, useState } from 'react'
-import HabitEditor from '@/lib/logic/app/HabitEditor'
+import HabitEditor from '@/logic/app/HabitEditor'
 import withApp from '@/components/app/withApp'
 import EmojiPaletteEditor from '@/components/page/habit-editor/EmojiPaletteEditor'
 import HabitEditorNavSection from '@/components/page/habit-editor/HabitEditorNavSection'

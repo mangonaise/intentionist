@@ -1,6 +1,6 @@
 import 'emoji-mart/css/emoji-mart.css'
 import 'react-responsive-modal/styles.css'
-import isWindowsOS from '@/lib/logic/utils/isWindowsOS'
+import isWindowsOS from '@/logic/utils/isWindowsOS'
 import { FC, useEffect, useRef, useState } from 'react'
 import { Global } from '@emotion/react'
 import { css } from '@theme-ui/css'

@@ -1,7 +1,7 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import AuthHandler from '@/lib/logic/app/AuthHandler'
-import useAutorun from '@/lib/hooks/useAutorun'
+import AuthHandler from '@/logic/app/AuthHandler'
+import useAutorun from '@/hooks/useAutorun'
 import LoadingScreen from './LoadingScreen'
 
 const withAuthUser = (WrappedComponent: () => JSX.Element | null) => observer(() => {

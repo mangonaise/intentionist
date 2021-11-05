@@ -1,6 +1,6 @@
 import { Emoji, getEmojiDataFromNative } from 'emoji-mart'
 import emojiData from 'emoji-mart/data/all.json'
-import isWindowsOS from '@/lib/logic/utils/isWindowsOS'
+import isWindowsOS from '@/logic/utils/isWindowsOS'
 import Text from '@/components/primitives/Text'
 
 interface Props {

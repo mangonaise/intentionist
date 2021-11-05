@@ -1,4 +1,4 @@
-import type Router from '@/lib/types/router'
+import type Router from '@/types/router'
 import { inject, injectable } from 'tsyringe'
 import { makeAutoObservable, runInAction, when } from 'mobx'
 import { formatYYYYMMDD } from '@/logic/utils/dateUtilities'

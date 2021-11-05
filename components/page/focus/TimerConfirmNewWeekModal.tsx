@@ -1,5 +1,5 @@
 import { format } from 'date-fns'
-import { getFirstDayOfThisWeek } from '@/lib/logic/utils/dateUtilities'
+import { getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import ModalPopup from '@/components/app/ModalPopup'
 import Box from '@/components/primitives/Box'
 import Button from '@/components/primitives/Button'

@@ -1,6 +1,6 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import WeekHandler from '@/lib/logic/app/WeekHandler'
+import WeekHandler from '@/logic/app/WeekHandler'
 import Box from '@/components/primitives/Box'
 import IconButton from '@/components/primitives/IconButton'
 import ArrowRightIcon from '@/components/icons/ArrowRightIcon'

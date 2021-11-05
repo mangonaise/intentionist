@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { SettingsSectionData, settingsSections } from 'pages/settings/[...section]'
-import useMediaQuery from '@/lib/hooks/useMediaQuery'
+import useMediaQuery from '@/hooks/useMediaQuery'
 import Dropdown from '@/components/app/Dropdown'
 import Flex from '@/components/primitives/Flex'
 import Heading from '@/components/primitives/Heading'

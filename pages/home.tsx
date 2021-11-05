@@ -1,5 +1,5 @@
 import { container } from 'tsyringe'
-import HabitsHandler from '@/lib/logic/app/HabitsHandler'
+import HabitsHandler from '@/logic/app/HabitsHandler'
 import withApp from '@/components/app/withApp'
 import NewWeekPrompt from '@/components/page/home/NewWeekPrompt'
 import WeekDropdown from '@/components/page/home/WeekDropdown'

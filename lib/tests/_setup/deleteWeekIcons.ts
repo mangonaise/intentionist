@@ -1,7 +1,7 @@
 import { container } from 'tsyringe'
 import { collection, deleteDoc, getDocs, query } from '@firebase/firestore'
-import AuthUser from '@/lib/logic/app/AuthUser'
-import DbHandler from '@/lib/logic/app/DbHandler'
+import AuthUser from '@/logic/app/AuthUser'
+import DbHandler from '@/logic/app/DbHandler'
 
 export default async function deleteWeekIcons() {
   const authUser = container.resolve(AuthUser)

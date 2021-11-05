@@ -1,4 +1,4 @@
-import formatSeconds from '@/lib/logic/utils/formatSeconds'
+import formatSeconds from '@/logic/utils/formatSeconds'
 
 // 🧪
 

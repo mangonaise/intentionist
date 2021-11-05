@@ -4,7 +4,7 @@ import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import WeekHandler, { WeekdayId } from '@/logic/app/WeekHandler'
 import { formatFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import getCurrentWeekdayId from '@/logic/utils/getCurrentWeekdayId'
-import Router from '@/lib/types/router'
+import Router from '@/types/router'
 
 export type TimerStatus = 'not started' | 'playing' | 'paused' | 'finished'
 

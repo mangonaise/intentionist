@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { container } from 'tsyringe'
 import { Fragment, useState } from 'react'
-import HabitsHandler, { HabitPreset, habitPresets } from '@/lib/logic/app/HabitsHandler'
+import HabitsHandler, { HabitPreset, habitPresets } from '@/logic/app/HabitsHandler'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Dropdown from '@/components/app/Dropdown'
 import Box from '@/components/primitives/Box'

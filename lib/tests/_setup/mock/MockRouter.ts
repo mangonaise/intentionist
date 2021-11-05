@@ -1,6 +1,6 @@
 import { ParsedUrlQuery } from 'querystring'
 import { singleton } from 'tsyringe'
-import Router from '@/lib/types/router'
+import Router from '@/types/router'
 
 @singleton()
 export default class MockRouter implements Router {

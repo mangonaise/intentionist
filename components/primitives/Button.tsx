@@ -1,5 +1,5 @@
 import { ComponentPropsWithoutRef, forwardRef, PropsWithChildren } from 'react'
-import exclude from '@/lib/logic/utils/exclude'
+import exclude from '@/logic/utils/exclude'
 
 export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   hoverEffect?: 'default' | 'none' | 'opacity'

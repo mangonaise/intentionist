@@ -1,7 +1,7 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { FC, useEffect, useState } from 'react'
-import WeekHandler, { WeekdayId } from '@/lib/logic/app/WeekHandler'
+import WeekHandler, { WeekdayId } from '@/logic/app/WeekHandler'
 import TrackerStatusEditor from './TrackerStatusEditor'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Button from '@/components/primitives/Button'

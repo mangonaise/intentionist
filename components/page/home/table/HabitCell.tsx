@@ -1,4 +1,4 @@
-import type { Habit } from '@/lib/logic/app/HabitsHandler'
+import type { Habit } from '@/logic/app/HabitsHandler'
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { ColumnsDisplayContext } from '../WeekTable'

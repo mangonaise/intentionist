@@ -1,8 +1,8 @@
 
 import { container } from 'tsyringe'
 import { doc, deleteDoc } from 'firebase/firestore'
-import AuthUser from '@/lib/logic/app/AuthUser'
-import DbHandler from '@/lib/logic/app/DbHandler'
+import AuthUser from '@/logic/app/AuthUser'
+import DbHandler from '@/logic/app/DbHandler'
 
 async function deleteHabitsDoc() {
   const authUser = container.resolve(AuthUser)

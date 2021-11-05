@@ -1,4 +1,4 @@
-import AuthHandler from '@/lib/logic/app/AuthHandler'
+import AuthHandler from '@/logic/app/AuthHandler'
 import { GoogleAuthProvider, signInWithCredential } from '@firebase/auth'
 import { container } from 'tsyringe'
 

@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
-import { Habit } from '@/lib/logic/app/HabitsHandler'
+import { Habit } from '@/logic/app/HabitsHandler'
 import { FocusTimerContext } from 'pages/focus'
 import Dropdown from '@/components/app/Dropdown'
 import SmartEmoji from '@/components/app/SmartEmoji'

@@ -1,4 +1,4 @@
-import exclude from '@/lib/logic/utils/exclude'
+import exclude from '@/logic/utils/exclude'
 
 it('excludes a single property from an object', () => {
   const obj = { a: 1, b: 2, c: 3 }

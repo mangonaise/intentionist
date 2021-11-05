@@ -1,4 +1,4 @@
-import { separateYYYYfromMMDD } from '@/lib/logic/utils/dateUtilities'
+import { separateYYYYfromMMDD } from '@/logic/utils/dateUtilities'
 
 describe('separateYYYYfromMMDD', () => {
   it('works', () => {

@@ -1,7 +1,7 @@
 import { container } from 'tsyringe'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { BaseEmoji } from 'emoji-mart'
-import HabitsHandler from '@/lib/logic/app/HabitsHandler'
+import HabitsHandler from '@/logic/app/HabitsHandler'
 import CellEditorButton from './CellEditorButton'
 import CellEditorButtonsBar from './CellEditorButtonsBar'
 import EmojiPicker from '@/components/app/EmojiPicker'

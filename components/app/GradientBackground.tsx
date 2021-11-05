@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import accentColor, { AccentColor } from '@/lib/logic/utils/accentColor'
+import accentColor, { AccentColor } from '@/logic/utils/accentColor'
 import theme from 'styles/theme'
 
 const gradientData: { [id in AccentColor]: { color: string, opacity: number } } = {

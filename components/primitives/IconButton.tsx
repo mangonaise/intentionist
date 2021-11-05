@@ -1,5 +1,5 @@
 import { forwardRef, PropsWithChildren } from 'react'
-import exclude from '@/lib/logic/utils/exclude'
+import exclude from '@/logic/utils/exclude'
 import Button, { ButtonProps } from './Button'
 import Icon from './Icon'
 import Text from './Text'

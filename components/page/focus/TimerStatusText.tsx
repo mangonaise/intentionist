@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
-import { TimerStatus } from '@/lib/logic/app/FocusTimerHandler'
+import { TimerStatus } from '@/logic/app/FocusTimerHandler'
 import { FocusTimerContext } from 'pages/focus'
 import Flex from '@/components/primitives/Flex'
 

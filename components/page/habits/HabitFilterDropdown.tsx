@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useContext, useState } from 'react'
 import { HabitFilterContext } from 'pages/habits'
-import { HabitStatus } from '@/lib/logic/app/HabitsHandler'
+import { HabitStatus } from '@/logic/app/HabitsHandler'
 import Dropdown from '@/components/app/Dropdown'
 import Flex from '@/components/primitives/Flex'
 import Text from '@/components/primitives/Text'

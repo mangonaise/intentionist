@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { FocusTimerContext } from 'pages/focus'
-import formatSeconds from '@/lib/logic/utils/formatSeconds'
+import formatSeconds from '@/logic/utils/formatSeconds'
 import TimerControls from './TimerControls'
 import ProgressBar from 'react-customizable-progressbar'
 import Flex from '@/components/primitives/Flex'

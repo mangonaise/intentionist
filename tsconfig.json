@@ -19,9 +19,11 @@
     "baseUrl": ".",
     "paths": {
       "@/components/*": ["components/*"],
-      "@/lib/*": ["lib/*"],
+      "@/firebase-setup/*": ["lib/firebase-setup/*"],
       "@/logic/*": ["lib/logic/*"],
+      "@/hooks/*": ["lib/hooks/*"],
       "@/test-setup/*": ["lib/tests/_setup/*"],
+      "@/types/*": ["lib/types/*"],
       "@/public/*": ["public/*"]
     }
   },

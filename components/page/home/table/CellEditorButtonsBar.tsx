@@ -1,6 +1,6 @@
 import { FC, useLayoutEffect, useRef, useState } from 'react'
 import Flex from '@/components/primitives/Flex'
-import useWindowWidth from '@/lib/hooks/useWindowWidth'
+import useWindowWidth from '@/hooks/useWindowWidth'
 
 const CellEditorButtonsBar: FC<{ above?: boolean }> = ({ above, children }) => {
   const barRef = useRef<HTMLDivElement>(null)

@@ -8,7 +8,7 @@ import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import AuthUser from '@/logic/app/AuthUser'
 import DbHandler from '@/logic/app/DbHandler'
-import initializeFirebase, { registerFirebaseInjectionTokens } from '@/lib/firebase'
+import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
 
 // 🔨
 

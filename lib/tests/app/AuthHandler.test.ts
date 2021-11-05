@@ -1,8 +1,8 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { deleteApp } from 'firebase/app'
-import initializeFirebase from '@/lib/firebase'
-import AuthHandler from '@/lib/logic/app/AuthHandler'
+import initializeFirebase from '@/firebase-setup/initializeFirebase'
+import AuthHandler from '@/logic/app/AuthHandler'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 
 const { firebaseApp } = initializeFirebase('test-authhandler')
