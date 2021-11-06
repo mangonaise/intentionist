@@ -1,16 +1,21 @@
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import { waitForCloudFunctionExecution } from './_helpers'
 
+// 🔨
+
 const { app, db } = getFirebaseAdmin()
 
 afterAll(async () => {
   await app.delete()
 })
 
+// 🧪
+
 describe('onUpdateUserDocument background trigger function', () => {
+  const now = Date.now()
   const uid = 'test-onUpdateUserDocument'
-  const originalUsername = 'test_username'
-  const updatedUsername = 'test_username_updated'
+  const originalUsername = `test_username${now}`
+  const updatedUsername = `test_username_updated${now}`
   const testAvatarAndDisplayName = {
     avatar: '🧪',
     displayName: 'Firebase Admin'
