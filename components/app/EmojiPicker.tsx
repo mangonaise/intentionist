@@ -10,7 +10,7 @@ import Flex from '@/components/primitives/Flex'
 import Text from '@/components/primitives/Text'
 import IconButton from '@/components/primitives/IconButton'
 import Box from '@/components/primitives/Box'
-import CloseIcon from '@/components/icons/CloseIcon'
+import CrossIcon from '@/components/icons/CrossIcon'
 import Modal from 'react-responsive-modal'
 
 interface Props {
@@ -52,7 +52,7 @@ const EmojiPicker = ({ isOpen, label, onSelectEmoji, onClosePicker }: Props) => 
             </Heading>
             <IconButton
               onClick={onClosePicker}
-              icon={CloseIcon}
+              icon={CrossIcon}
               sx={{
                 ml: 'auto',
                 bg: 'transparent'

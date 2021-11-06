@@ -3,16 +3,17 @@ import { Global } from '@emotion/react'
 import { css } from '@theme-ui/css'
 import Modal from 'react-responsive-modal'
 import Icon from '@/components/primitives/Icon'
-import CloseIcon from '@/components/icons/CloseIcon'
+import CrossIcon from '@/components/icons/CrossIcon'
 import 'react-responsive-modal/styles.css'
 
 interface Props {
   isOpen: boolean,
   closeModal: () => void,
   children: ReactNode
+  disableClose?: boolean,
 }
 
-const ModalPopup = ({ isOpen, closeModal, children }: Props) => {
+const ModalPopup = ({ isOpen, closeModal, children, disableClose = false }: Props) => {
   const modalRef = useRef(null!)
 
   return (
@@ -41,13 +42,16 @@ const ModalPopup = ({ isOpen, closeModal, children }: Props) => {
       <Modal
         open={isOpen}
         onClose={closeModal}
-        closeIcon={<Icon icon={CloseIcon} sx={{ color: 'whiteAlpha.40' }} />}
+        closeIcon={<Icon icon={CrossIcon} sx={{ color: 'whiteAlpha.40' }} />}
         animationDuration={250}
         classNames={{
           modalAnimationIn: 'in',
           modalAnimationOut: 'out'
         }}
         initialFocusRef={modalRef}
+        closeOnEsc={!disableClose}
+        closeOnOverlayClick={!disableClose}
+        showCloseIcon={!disableClose}
         ref={modalRef}
       >
         {children}

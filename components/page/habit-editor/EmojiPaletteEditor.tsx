@@ -18,7 +18,7 @@ import Flex from '@/components/primitives/Flex'
 import Heading from '@/components/primitives/Heading'
 import IconButton from '@/components/primitives/IconButton'
 import Spacer from '@/components/primitives/Spacer'
-import CloseIcon from '@/components/icons/CloseIcon'
+import CrossIcon from '@/components/icons/CrossIcon'
 import PlusIcon from '@/components/icons/PlusIcon'
 
 const PaletteEditorContext = createContext<PaletteEditor>(null!)
@@ -187,7 +187,7 @@ const RemoveEmojiButton = ({ id }: { id: string }) => {
 
   return (
     <IconButton
-      icon={CloseIcon}
+      icon={CrossIcon}
       onClick={() => removeEmoji(id)}
       sx={{ ml: 2, bg: 'transparent', color: 'whiteAlpha.40', size: '2.8rem' }}
     />

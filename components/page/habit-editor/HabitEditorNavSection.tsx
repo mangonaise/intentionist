@@ -6,14 +6,14 @@ import Button from '@/components/primitives/Button'
 import Flex from '@/components/primitives/Flex'
 import IconButton from '@/components/primitives/IconButton'
 import Text from '@/components/primitives/Text'
-import CloseIcon from '@/components/icons/CloseIcon'
+import CrossIcon from '@/components/icons/CrossIcon'
 
 const HabitEditorNavSection = () => {
   const editor = useContext(HabitEditorContext)
 
   return (
     <Flex sx={{ pb: [2, 3], borderBottom: 'solid 1px', borderColor: 'divider' }}>
-      {editor.isNewHabit && <IconButton icon={CloseIcon} onClick={editor.exit} sx={{ mr: [2, 3, 4], bg: 'transparent' }} />}
+      {editor.isNewHabit && <IconButton icon={CrossIcon} onClick={editor.exit} sx={{ mr: [2, 3, 4], bg: 'transparent' }} />}
       <Text
         type="span"
         sx={{

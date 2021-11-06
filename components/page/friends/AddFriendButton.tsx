@@ -40,7 +40,7 @@ const AddFriendButton = () => {
 
 const AddFriendModal = ({ isOpen, closeModal }: { isOpen: boolean, closeModal: () => void }) => {
   const inputRef = useRef<HTMLInputElement>(null!)
-  const { searchForUser } = container.resolve(FriendsHandler)
+  const { searchForUser, sendFriendRequest } = container.resolve(FriendsHandler)
   const [username, setUsername] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [searchResult, setSearchResult] = useState<UserSearchResult | undefined>()
@@ -68,7 +68,7 @@ const AddFriendModal = ({ isOpen, closeModal }: { isOpen: boolean, closeModal: (
   }
 
   function handleSendFriendRequest() {
-    // TODO: IMPLEMENT FRIEND REQUESTS
+    sendFriendRequest(username)
     setShowSearchResult(false)
     closeModal()
   }

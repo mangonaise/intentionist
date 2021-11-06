@@ -22,7 +22,7 @@ export default class DbHandler {
   public db
   public isWriteComplete = true
 
-  constructor(authUser: AuthUser, @inject('Db') db: Firestore) {
+  constructor(authUser: AuthUser, @inject('Firestore') db: Firestore) {
     this.uid = authUser.uid
     this.db = db
     makeAutoObservable(this)

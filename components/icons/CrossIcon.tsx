@@ -1,4 +1,4 @@
-const CloseIcon = () => {
+const CrossIcon = () => {
   return (
     <path
       d="M18 6L6 18M6 6l12 12"
@@ -10,4 +10,4 @@ const CloseIcon = () => {
   )
 }
 
-export default CloseIcon
+export default CrossIcon

@@ -51,6 +51,6 @@ export default function initializeFirebase(projectId = 'intentionist') {
 
 export function registerFirebaseInjectionTokens(firebase: FirebaseServices) {
   container.register('Auth', { useValue: firebase.auth })
-  container.register('Db', { useValue: firebase.db })
-  container.register('CloudFunctions', { useValue: firebase.functions })
+  container.register('Firestore', { useValue: firebase.db })
+  container.register('Functions', { useValue: firebase.functions })
 }
