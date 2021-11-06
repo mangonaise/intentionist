@@ -2,4 +2,5 @@ import admin = require('firebase-admin')
 
 admin.initializeApp()
 
-export * from './functions/onUpdateUserDocument'
+export * from './triggers/onUpdateUserDocument'
+export * from './callables/sendFriendRequest'
