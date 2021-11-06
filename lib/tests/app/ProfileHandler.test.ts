@@ -19,7 +19,7 @@ let authUser: AuthUser, dbHandler: DbHandler, profileHandler: ProfileHandler
 let testUsername = 'profile_handler_test_username'
 
 async function initializeProfileHandler() {
-  await simulateInitialFetches(container)
+  await simulateInitialFetches()
   profileHandler = container.resolve(ProfileHandler)
 }
 

@@ -39,7 +39,7 @@ afterAll(async () => {
 })
 
 async function initialize() {
-  await simulateInitialFetches(container)
+  await simulateInitialFetches()
   habitsHandler = container.resolve(HabitsHandler)
 }
 

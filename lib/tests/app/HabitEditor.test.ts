@@ -49,7 +49,7 @@ describe('when habits have already been fetched', () => {
   let habitsHandler: HabitsHandler
 
   beforeAll(async () => {
-    await simulateInitialFetches(container)
+    await simulateInitialFetches()
   })
 
   beforeEach(() => {

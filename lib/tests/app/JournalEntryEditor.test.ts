@@ -51,7 +51,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   registerFirebaseInjectionTokens(firebase)
-  await simulateInitialFetches(container)
+  await simulateInitialFetches()
   const habitsHandler = container.resolve(HabitsHandler)
   habitsHandler.setHabit(dummyHabit)
   dbHandler = container.resolve(DbHandler)

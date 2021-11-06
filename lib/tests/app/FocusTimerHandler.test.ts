@@ -30,7 +30,7 @@ const dummyHabit: Habit = { id: generateHabitId(), name: 'Focus timer test habit
 
 beforeAll(async () => {
   await signInDummyUser()
-  await simulateInitialFetches(container)
+  await simulateInitialFetches()
   habitsHandler = container.resolve(HabitsHandler)
 })
 

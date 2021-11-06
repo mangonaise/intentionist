@@ -47,7 +47,7 @@ const dummyEntryDataB = {
 }
 
 async function initializeWeekHandler() {
-  await simulateInitialFetches(container)
+  await simulateInitialFetches()
   habitsHandler = container.resolve(HabitsHandler)
   weekHandler = container.resolve(WeekHandler)
 }
