@@ -1,11 +1,13 @@
 import { ComponentPropsWithoutRef, forwardRef, PropsWithChildren } from 'react'
 import exclude from '@/logic/utils/exclude'
 
-export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
+export interface CustomButtonProps {
   hoverEffect?: 'default' | 'none' | 'opacity'
 }
 
-const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProps>>(function Button (props, ref) {
+export interface ButtonProps extends ComponentPropsWithoutRef<'button'>, CustomButtonProps {}
+
+const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProps>>(function Button(props, ref) {
   const hoverEffect = props.hoverEffect ?? 'default'
 
   return (

@@ -1,6 +1,6 @@
 import type { StyledComponent } from '../types/StyledComponent'
 import { createContext, ReactNode, useContext, useState } from 'react'
-import Button, { ButtonProps } from '@/components/primitives/Button'
+import Button, { CustomButtonProps } from '@/components/primitives/Button'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
 import Icon from '@/components/primitives/Icon'
@@ -146,7 +146,7 @@ const DropdownMenu = () => {
   )
 }
 
-interface ItemProps extends ButtonProps {
+interface ItemProps extends CustomButtonProps {
   itemAction?: () => void,
   href?: string
 }
