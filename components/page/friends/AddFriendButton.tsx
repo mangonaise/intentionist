@@ -56,7 +56,7 @@ const AddFriendModal = ({ isOpen, closeModal }: { isOpen: boolean, closeModal: (
 
   async function handleSearch() {
     setIsSearching(true)
-    const result = await searchForUser(username)
+    const result = await searchForUser(username[0] === '@' ? username.slice(1) : username)
     setSearchResult(result)
     setShowSearchResult(true)
     setIsSearching(false)
