@@ -1,7 +1,7 @@
 import { container } from 'tsyringe'
 import { useEffect, useRef, useState } from 'react'
 import { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
-import FriendsHandler, { UserSearchResult } from '@/logic/app/FriendsHandler'
+import FriendRequestsHandler, { UserSearchResult } from '@/logic/app/FriendRequestsHandler'
 import ModalPopup from '@/components/app/ModalPopup'
 import AddFriendIcon from '@/components/icons/AddFriendIcon'
 import SmartEmoji from '@/components/app/SmartEmoji'
@@ -39,12 +39,12 @@ const AddFriendButton = () => {
 }
 
 const AddFriendModal = ({ isOpen, closeModal }: { isOpen: boolean, closeModal: () => void }) => {
-  const inputRef = useRef<HTMLInputElement>(null!)
-  const { searchForUser, sendFriendRequest } = container.resolve(FriendsHandler)
+  const { searchForUser, sendFriendRequest } = container.resolve(FriendRequestsHandler)
   const [username, setUsername] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [searchResult, setSearchResult] = useState<UserSearchResult | undefined>()
   const [showSearchResult, setShowSearchResult] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null!)
 
   useEffect(() => {
     if (isOpen) {

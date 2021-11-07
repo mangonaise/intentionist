@@ -1,37 +1,40 @@
-import withApp from '@/components/app/withApp'
+import { container } from 'tsyringe'
+import { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react'
+import FriendRequestsHandler from '@/logic/app/FriendRequestsHandler'
+import FriendRequestsView from '@/components/page/friends/FriendRequestsView'
 import OutgoingFriendRequestModal from '@/components/page/friends/OutgoingFriendRequestModal'
-import AddFriendButton from '@/components/page/friends/AddFriendButton'
+import FriendsPageNavSection from '@/components/page/friends/FriendsPageNavSection'
+import withApp from '@/components/app/withApp'
 import Box from '@/components/primitives/Box'
-import Flex from '@/components/primitives/Flex'
-import IconButton from '@/components/primitives/IconButton'
-import Spacer from '@/components/primitives/Spacer'
-import Heading from '@/components/primitives/Heading'
-import BackIcon from '@/components/icons/BackIcon'
-import NextLink from 'next/link'
-import Head from 'next/head'
+
+type FriendsPageTab = 'friends' | 'requests'
+
+export const FriendsPageContext = createContext<{
+  tab: FriendsPageTab,
+  setTab: Dispatch<SetStateAction<FriendsPageTab>>
+}>(null!)
 
 const FriendsPage = () => {
+  const [tab, setTab] = useState<FriendsPageTab>('friends')
+  useFriendRequestsListener()
+
   return (
-    <Box sx={{ maxWidth: '800px', margin: 'auto' }}>
-      <NavSection />
+    <FriendsPageContext.Provider value={{ tab, setTab }}>
       <OutgoingFriendRequestModal />
-    </Box>
+      <Box sx={{ maxWidth: '800px', margin: 'auto' }}>
+        <FriendsPageNavSection />
+        {tab === 'friends' ? null : <FriendRequestsView />}
+      </Box>
+    </FriendsPageContext.Provider>
   )
 }
 
-const NavSection = () => {
-  return (
-    <Flex align="center" sx={{ mb: 3 }}>
-      <Head><title>Friends</title></Head>
-      <NextLink href="/home">
-        <IconButton icon={BackIcon} sx={{ bg: 'transparent' }} />
-      </NextLink>
-      <Spacer ml={2} />
-      <Heading level={2} sx={{ fontSize: ['1.2rem', '1.5rem'] }}>Friends</Heading>
-      <Spacer ml="auto" />
-      <AddFriendButton />
-    </Flex>
-  )
+function useFriendRequestsListener() {
+  const { startListener, stopListener } = container.resolve(FriendRequestsHandler)
+  useEffect(() => {
+    startListener()
+    return () => stopListener()
+  }, [])
 }
 
 export default withApp(FriendsPage, 'neutral')

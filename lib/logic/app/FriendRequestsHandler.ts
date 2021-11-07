@@ -1,6 +1,7 @@
+import type { Functions } from '@firebase/functions'
 import { inject, singleton } from 'tsyringe'
 import { makeAutoObservable, runInAction } from 'mobx'
-import { Functions, httpsCallable } from '@firebase/functions'
+import { httpsCallable } from '@firebase/functions'
 import { DocumentData, Unsubscribe, onSnapshot } from '@firebase/firestore'
 import ProfileHandler, { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
 import DbHandler from '@/logic/app/DbHandler'

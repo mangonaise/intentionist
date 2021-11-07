@@ -1,7 +1,7 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
-import FriendsHandler from '@/logic/app/FriendsHandler'
+import FriendRequestsHandler from '@/logic/app/FriendRequestsHandler'
 import ModalPopup from '@/components/app/ModalPopup'
 import Flex from '@/components/primitives/Flex'
 import Button from '@/components/primitives/Button'
@@ -11,10 +11,10 @@ import SendIcon from '@/components/icons/SendIcon'
 import CrossIcon from '@/components/icons/CrossIcon'
 
 const OutgoingFriendRequestModal = observer(() => {
-  const { outgoingFriendRequestStatus } = container.resolve(FriendsHandler)
+  const { outgoingRequestStatus } = container.resolve(FriendRequestsHandler)
   const [showModal, setShowModal] = useState(false)
 
-  const status = outgoingFriendRequestStatus ?? 'sent'
+  const status = outgoingRequestStatus ?? 'sent'
   const contentMap = {
     'sending': { icon: SendIcon, text: 'Sending friend request...' },
     'sent': { icon: CheckFillIcon, text: 'Friend request sent!' },
