@@ -1,7 +1,6 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { subWeeks } from 'date-fns'
-import { deleteApp } from 'firebase/app'
 import { formatFirstDayOfThisWeek, formatYYYYMMDD, getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import initializeFirebase from '@/firebase-setup/initializeFirebase'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
@@ -16,6 +15,7 @@ import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteWeeks from '@/test-setup/deleteWeeks'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
+import teardownFirebase from '@/test-setup/teardownFirebase'
 import addWeeks from 'date-fns/addWeeks'
 
 // 🔨
@@ -36,7 +36,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await deleteHabitsDoc()
-  await deleteApp(firebase.app)
+  await teardownFirebase(firebase)
 })
 
 // 🧪

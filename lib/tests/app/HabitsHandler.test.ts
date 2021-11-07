@@ -1,10 +1,10 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
-import { deleteApp } from '@firebase/app'
 import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
+import teardownFirebase from '@/test-setup/teardownFirebase'
 import DbHandler from '@/logic/app/DbHandler'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import generateHabitId from '@/logic/utils/generateHabitId'
@@ -35,7 +35,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  deleteApp(firebase.app)
+  await teardownFirebase(firebase)
 })
 
 async function initialize() {

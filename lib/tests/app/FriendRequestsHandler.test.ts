@@ -1,13 +1,13 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { when } from 'mobx'
-import { deleteApp } from '@firebase/app'
 import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
 import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import FriendRequestsHandler from '@/logic/app/FriendRequestsHandler'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
+import teardownFirebase from '@/test-setup/teardownFirebase'
 
 // 🔨
 
@@ -47,7 +47,7 @@ afterEach(async () => {
 afterAll(async () => {
   await db.recursiveDelete(users.doc(testUserUid))
   await usernames.doc(testUserProfile.username).delete()
-  await deleteApp(firebase.app)
+  await teardownFirebase(firebase)
 })
 
 async function waitForRealtimeUpdates() {

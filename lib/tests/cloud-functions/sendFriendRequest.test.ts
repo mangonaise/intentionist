@@ -6,6 +6,7 @@ import { waitForCloudFunctionExecution } from './_helpers'
 import initializeFirebase from '@/firebase-setup/initializeFirebase'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import signInDummyUser from '@/test-setup/signInDummyUser'
+import teardownFirebase from '@/test-setup/teardownFirebase'
 import AuthHandler from '@/logic/app/AuthHandler'
 
 // 🔨
@@ -36,6 +37,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
+  await teardownFirebase(firebase)
   await app.delete()
 })
 

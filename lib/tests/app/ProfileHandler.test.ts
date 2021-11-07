@@ -1,11 +1,11 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { setDoc, doc } from '@firebase/firestore'
-import { deleteApp } from '@firebase/app'
 import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
+import teardownFirebase from '@/test-setup/teardownFirebase'
 import AuthUser from '@/logic/app/AuthUser'
 import DbHandler from '@/logic/app/DbHandler'
 import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
@@ -40,7 +40,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await deleteApp(firebase.app)
+  await teardownFirebase(firebase)
   await firebaseAdmin.delete()
 })
 

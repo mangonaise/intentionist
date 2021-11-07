@@ -1,7 +1,6 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { when } from 'mobx'
-import { deleteApp } from '@firebase/app'
 import { formatYYYYMMDD } from '@/logic/utils/dateUtilities'
 import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
 import generateJournalEntryId from '@/logic/utils/generateJournalEntryId'
@@ -16,6 +15,7 @@ import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import deleteJournalEntries from '@/test-setup/deleteJournalEntries'
 import deleteWeeks from '@/test-setup/deleteWeeks'
+import teardownFirebase from '@/test-setup/teardownFirebase'
 
 // 🔨
 
@@ -68,7 +68,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await deleteApp(firebase.app)
+  await teardownFirebase(firebase)
 })
 
 function startJournalEntryEditor() {

@@ -1,10 +1,10 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { when } from 'mobx'
-import { deleteApp } from '@firebase/app'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import MockRouter from '@/test-setup/mock/MockRouter'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
+import teardownFirebase from '@/test-setup/teardownFirebase'
 import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
 import DbHandler from '@/logic/app/DbHandler'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
@@ -34,7 +34,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await deleteApp(firebase.app)
+  await teardownFirebase(firebase)
 })
 
 // 🧪

@@ -1,25 +1,28 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
-import { deleteApp } from '@firebase/app'
 import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
 import WeekIconsHandler from '@/logic/app/WeekIconsHandler'
 import WeekHandler from '@/logic/app/WeekHandler'
 import DbHandler from '@/logic/app/DbHandler'
-import signInDummyUser from '@/test-setup/signInDummyUser'
-import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import AuthUser from '@/logic/app/AuthUser'
 import deleteWeeks from '@/test-setup/deleteWeeks'
-import deleteWeekIcons from '@/test-setup/deleteWeekIcons'
+import signInDummyUser from '@/test-setup/signInDummyUser'
+import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
+import teardownFirebase from '@/test-setup/teardownFirebase'
+import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 
 // 🔨
 
-const firebase = initializeFirebase('test-weekiconshandler')
+const projectId = 'test-weekiconshandler'
+const firebase = initializeFirebase(projectId)
+const { db: adminDb } = getFirebaseAdmin(projectId)
 
 let weekIconsHandler: WeekIconsHandler, weekHandler: WeekHandler, dbHandler: DbHandler
+let uid: string
 
 beforeAll(async () => {
   await signInDummyUser()
-  container.resolve(AuthUser)
+  uid = container.resolve(AuthUser).uid
   dbHandler = container.resolve(DbHandler)
 })
 
@@ -37,8 +40,12 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await deleteApp(firebase.app)
+  await teardownFirebase(firebase)
 })
+
+async function deleteWeekIcons() {
+  await adminDb.recursiveDelete(adminDb.collection('users').doc(uid).collection('weekIcons'))
+}
 
 // 🧪
 

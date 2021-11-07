@@ -1,7 +1,6 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { addMilliseconds, startOfDay, startOfWeek } from 'date-fns'
-import { deleteApp } from '@firebase/app'
 import { formatFirstDayOfThisWeek, getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
 import WeekHandler from '@/logic/app/WeekHandler'
@@ -9,6 +8,7 @@ import NewWeekPromptHandler from '@/logic/app/NewWeekPromptHandler'
 import deleteWeeks from '@/test-setup/deleteWeeks'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import signInDummyUser from '@/test-setup/signInDummyUser'
+import teardownFirebase from '@/test-setup/teardownFirebase'
 import MockDate from 'mockdate'
 import addWeeks from 'date-fns/addWeeks'
 
@@ -40,7 +40,7 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  deleteApp(firebase.app)
+  await teardownFirebase(firebase)
 })
 
 // 🧪

@@ -9,7 +9,7 @@ import { connectFunctionsEmulator, getFunctions } from '@firebase/functions'
 
 const consoleInfo = console.info
 
-type FirebaseServices = {
+export type FirebaseServices = {
   app: FirebaseApp,
   auth: Auth,
   db: Firestore,
