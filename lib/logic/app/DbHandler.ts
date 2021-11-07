@@ -14,6 +14,7 @@ const USERNAMES = 'usernames'
 const WEEKS = 'weeks'
 const WEEK_ICONS = 'weekIcons'
 const JOURNAL = 'journal'
+const FRIEND_REQUESTS = 'data/friendRequests'
 export const HABITS = 'data/habits'
 
 @singleton()
@@ -142,6 +143,23 @@ export default class DbHandler {
     this.completeWrite()
   }
 
+  public get friendRequestsDocRef() {
+    return this.ownDocRef(FRIEND_REQUESTS)
+  }
+
+  private get weeksCollectionRef() {
+    return collection(this.db, USERS, this.uid, WEEKS)
+  }
+
+  private get journalCollectionRef() {
+    return collection(this.db, USERS, this.uid, JOURNAL)
+  }
+
+  private ownDocRef = (...pathSegments: string[]) => {
+    return doc(this.db, USERS, this.uid, ...pathSegments)
+  }
+
+  // TODO: Move to cloud function
   private deleteJournalEntriesWithHabitId = async (habitId: string) => {
     const entryDocs = await getDocs(query(this.journalCollectionRef, where('habitId', '==', habitId)))
     let deleteEntryPromises: Promise<void>[] = []
@@ -153,17 +171,5 @@ export default class DbHandler {
 
   private completeWrite = () => {
     this.isWriteComplete = true
-  }
-
-  private ownDocRef = (...pathSegments: string[]) => {
-    return doc(this.db, USERS, this.uid, ...pathSegments)
-  }
-
-  private get weeksCollectionRef() {
-    return collection(this.db, USERS, this.uid, WEEKS)
-  }
-
-  private get journalCollectionRef() {
-    return collection(this.db, USERS, this.uid, JOURNAL)
   }
 }
