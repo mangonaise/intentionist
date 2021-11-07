@@ -1,6 +1,6 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
 import FriendRequestsHandler, { FriendRequestsViewMode } from '@/logic/app/FriendRequestsHandler'
 import Dropdown from '@/components/app/Dropdown'
@@ -64,7 +64,7 @@ const IncomingRequestsList = observer(() => {
 })
 
 const OutgoingRequestsList = observer(() => {
-  const { requestsData: { outgoingUsernames }, cachedUserData } = container.resolve(FriendRequestsHandler)
+  const { requestsData: { outgoingUsernames } } = container.resolve(FriendRequestsHandler)
 
   if (outgoingUsernames.length === 0) {
     return <NoRequestsText viewMode="outgoing" />
@@ -73,11 +73,7 @@ const OutgoingRequestsList = observer(() => {
   return (
     <Box>
       {outgoingUsernames.map((username) => (
-        <FriendRequestLayout username={username} cachedUserData={cachedUserData[username]} key={username}>
-          <Button sx={{ flex: 1 }}>
-            Cancel request
-          </Button>
-        </FriendRequestLayout>
+        <OutgoingRequest username={username} key={username} />
       ))}
     </Box>
   )
@@ -110,6 +106,28 @@ const FriendRequestLayout: FC<{ username: string, cachedUserData: AvatarAndDispl
     </Flex>
   )
 }
+
+const OutgoingRequest = observer(({ username }: { username: string }) => {
+  const { cachedUserData, cancelOutgoingRequest } = container.resolve(FriendRequestsHandler)
+  const [isCanceling, setIsCanceling] = useState(false)
+
+  async function handleCancelRequest() {
+    setIsCanceling(true)
+    await cancelOutgoingRequest(username)
+  }
+
+  return (
+    <FriendRequestLayout username={username} cachedUserData={cachedUserData[username]}>
+      <Button
+        onClick={handleCancelRequest}
+        disabled={isCanceling}
+        sx={{ flex: 1, bg: isCanceling ? 'transparent' : null }}
+      >
+        {isCanceling ? 'Canceling...' : 'Cancel request'}
+      </Button>
+    </FriendRequestLayout>
+  )
+})
 
 const LoadingRequest = () => {
   return (

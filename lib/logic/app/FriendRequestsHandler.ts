@@ -36,6 +36,7 @@ export default class FriendRequestsHandler {
   }
 
   public startListener = () => {
+    this.setViewMode('incoming')
     this.listenerUnsubscribe = onSnapshot(
       this.dbHandler.friendRequestsDocRef,
       (snapshot) => this.handleFriendRequestsSnapshot(snapshot.data())
@@ -95,6 +96,11 @@ export default class FriendRequestsHandler {
     }
   }
 
+  public cancelOutgoingRequest = async (recipientUsername: string) => {
+    const cancel = httpsCallable(this.functions, 'cancelFriendRequest')
+    await cancel({ recipientUsername })
+  }
+
   public setUserDataFetchingEnabled = (enabled: boolean) => {
     this.isUserDataFetchingEnabled = enabled
     if (enabled) this.fetchUserProfiles()
@@ -116,7 +122,7 @@ export default class FriendRequestsHandler {
 
   private fetchUserProfiles = async () => {
     if (!this.isUserDataFetchingEnabled) return
-    
+
     const usernames = this.requestsData[`${this.viewMode}Usernames`]
 
     let promises: Promise<void>[] = []

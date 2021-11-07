@@ -4,3 +4,4 @@ admin.initializeApp()
 
 export * from './triggers/onUpdateUserDocument'
 export * from './callables/sendFriendRequest'
+export * from './callables/cancelOutgoingFriendRequest'
