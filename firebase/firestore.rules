@@ -11,8 +11,29 @@ service cloud.firestore {
         && (request.resource.data.username == resource.data.username 
           || isUsernameAvailable(request.resource.data.username));
 
-      match /{subcollection}/{documents=**} {
+      match /weeks/{startDate} {
         allow read, write: if requestedByUserWithId(userId);
+        // && if week has a valid startDate
+        // allow get: if friend
+      }
+
+      match /weekIcons/{year} {
+        allow write: if requestedByUserWithId(userId);
+        allow get: if requestedByUserWithId(userId); // or if friend
+      }
+
+      match /journal/{entryId} {
+        allow read, write: if requestedByUserWithId(userId);
+        // allow get: if friend
+      }
+
+      match /data/habits {
+        allow write: if requestedByUserWithId(userId);
+        allow get: if requestedByUserWithId(userId); // or if friend
+      }
+
+      match /data/friendRequests {
+        allow get: if requestedByUserWithId(userId);
       }
     }
 
