@@ -34,6 +34,7 @@ export default class FriendRequestsHandler {
 
   public startListener = () => {
     this.setViewMode('incoming')
+    if (this.listenerUnsubscribe) return
     this.listenerUnsubscribe = onSnapshot(
       this.dbHandler.friendRequestsDocRef,
       (snapshot) => this.handleFriendRequestsSnapshot(snapshot.data())
