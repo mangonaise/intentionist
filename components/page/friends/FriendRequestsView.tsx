@@ -1,7 +1,8 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { FC, useState } from 'react'
-import FriendRequestsHandler, { FriendRequest, FriendRequestsViewMode } from '@/logic/app/FriendRequestsHandler'
+import FriendRequestsHandler, { FriendRequest } from '@/logic/app/FriendRequestsHandler'
+import EmptyFriendsViewText from '@/components/page/friends/EmptyFriendsViewText'
 import Dropdown from '@/components/app/Dropdown'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Box from '@/components/primitives/Box'
@@ -38,7 +39,7 @@ const IncomingRequestsList = observer(() => {
   const { incomingRequests } = container.resolve(FriendRequestsHandler)
 
   if (incomingRequests.length === 0) {
-    return <NoRequestsText viewMode="incoming" />
+    return <EmptyFriendsViewText text="You don't have any incoming friend requests." />
   }
 
   return (
@@ -54,7 +55,7 @@ const OutgoingRequestsList = observer(() => {
   const { outgoingRequests } = container.resolve(FriendRequestsHandler)
 
   if (outgoingRequests.length === 0) {
-    return <NoRequestsText viewMode="outgoing" />
+    return <EmptyFriendsViewText text="You don't have any outgoing friend requests." />
   }
 
   return (
@@ -150,20 +151,6 @@ const LoadingIndicator = () => {
   return (
     <Flex center sx={{ minHeight: '5rem', width: '100%' }}>
       <Icon icon={EllipsisIcon} sx={{ fontSize: '1.5rem', animation: 'pulse infinite 2s' }} />
-    </Flex>
-  )
-}
-
-const NoRequestsText = ({ viewMode }: { viewMode: FriendRequestsViewMode }) => {
-  const content = viewMode === 'incoming'
-    ? `You don't have any incoming friend requests.`
-    : `You don't have any outgoing friend requests.`
-
-  return (
-    <Flex center sx={{ height: '4rem' }}>
-      <Text sx={{ fontSize: '1.2rem', textAlign: 'center', color: 'whiteAlpha.60' }}>
-        {content}
-      </Text>
     </Flex>
   )
 }

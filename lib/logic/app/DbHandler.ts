@@ -15,6 +15,7 @@ const WEEKS = 'weeks'
 const WEEK_ICONS = 'weekIcons'
 const JOURNAL = 'journal'
 const FRIEND_REQUESTS = 'data/friendRequests'
+const FRIENDS = 'data/friends'
 export const HABITS = 'data/habits'
 
 @singleton()
@@ -145,6 +146,10 @@ export default class DbHandler {
 
   public get friendRequestsDocRef() {
     return this.ownDocRef(FRIEND_REQUESTS)
+  }
+
+  public get friendsDocRef() {
+    return this.ownDocRef(FRIENDS)
   }
 
   private get weeksCollectionRef() {

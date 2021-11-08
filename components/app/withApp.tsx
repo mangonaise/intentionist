@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import accentColor, { AccentColor } from '@/logic/utils/accentColor'
 import InitialFetchHandler from '@/logic/app/InitialFetchHandler'
 import ProfileHandler from '@/logic/app/ProfileHandler'
+import FriendsHandler from '@/logic/app/FriendsHandler'
 import useAutorun from '@/hooks/useAutorun'
 import FadeIn from '@/components/primitives/FadeIn'
 import Spacer from '@/components/primitives/Spacer'
@@ -32,6 +33,7 @@ const withApp = (WrappedComponent: () => JSX.Element, accent?: AccentColor) => w
         router.push('/welcome')
       } else {
         setProfileExists(true)
+        container.resolve(FriendsHandler).listenToFriendsDoc()
       }
     }
   })
