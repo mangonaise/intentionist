@@ -105,22 +105,26 @@ describe('making a valid response', () => {
     expect(recipientFriendRequests?.incoming).toEqual({ [otherUsername]: { time: 123 } })
     expect(senderFriendRequests?.outgoing).toEqual({ [otherUsername]: { time: 123 } })
 
-    const recipientFriends = (await (friendsDoc(recipientUid).get())).data()
+    const recipientFriendsDoc = (await (friendsDoc(recipientUid).get())).data()
     const senderFriends = (await (friendsDoc(senderUid).get())).data()
-    expect(recipientFriends).toEqual({
-      [senderUid]: {
-        time,
-        username: sender.username,
-        avatar: sender.avatar,
-        displayName: sender.displayName
+    expect(recipientFriendsDoc).toEqual({
+      friends: {
+        [senderUid]: {
+          time,
+          username: sender.username,
+          avatar: sender.avatar,
+          displayName: sender.displayName
+        }
       }
     })
     expect(senderFriends).toEqual({
-      [recipientUid]: {
-        time,
-        username: recipient.username,
-        avatar: recipient.avatar,
-        displayName: recipient.displayName
+      friends: {
+        [recipientUid]: {
+          time,
+          username: recipient.username,
+          avatar: recipient.avatar,
+          displayName: recipient.displayName
+        }
       }
     })
   })

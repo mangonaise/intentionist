@@ -74,19 +74,23 @@ exports.respondToFriendRequest = functions.https.onCall(async (data, context) =>
 
     if (accept === true) {
       transaction.set(friendsDoc(senderUserData.uid), {
-        [recipientUserData.uid]: {
-          time,
-          username: recipientUserData.username,
-          displayName: recipientUserData.displayName,
-          avatar: recipientUserData.avatar
+        friends: {
+          [recipientUserData.uid]: {
+            time,
+            username: recipientUserData.username,
+            displayName: recipientUserData.displayName,
+            avatar: recipientUserData.avatar
+          }
         }
       }, { merge: true })
       transaction.set(friendsDoc(recipientUserData.uid), {
-        [senderUserData.uid]: {
-          time,
-          username: senderUserData.username,
-          displayName: senderUserData.displayName,
-          avatar: senderUserData.avatar
+        friends: {
+          [senderUserData.uid]: {
+            time,
+            username: senderUserData.username,
+            displayName: senderUserData.displayName,
+            avatar: senderUserData.avatar
+          }
         }
       }, { merge: true })
     }
