@@ -88,8 +88,8 @@ export default class FriendRequestsHandler {
     }
   }
 
-  public cancelOutgoingRequest = async (request: FriendRequest) => {
-    const cancel = httpsCallable(this.functions, 'cancelFriendRequest')
+  public cancelOutgoingFriendRequest = async (request: FriendRequest) => {
+    const cancel = httpsCallable(this.functions, 'cancelOutgoingFriendRequest')
     await cancel({ recipientUsername: request.username })
   }
 
