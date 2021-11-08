@@ -2,7 +2,7 @@ import { container } from 'tsyringe'
 import { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react'
 import FriendRequestsHandler from '@/logic/app/FriendRequestsHandler'
 import FriendRequestsView from '@/components/page/friends/FriendRequestsView'
-import OutgoingFriendRequestModal from '@/components/page/friends/OutgoingFriendRequestModal'
+import PendingFriendRequestModal from '@/components/page/friends/PendingFriendRequestModal'
 import FriendsPageNavSection from '@/components/page/friends/FriendsPageNavSection'
 import withApp from '@/components/app/withApp'
 import Box from '@/components/primitives/Box'
@@ -20,7 +20,7 @@ const FriendsPage = () => {
 
   return (
     <FriendsPageContext.Provider value={{ tab, setTab }}>
-      <OutgoingFriendRequestModal />
+      <PendingFriendRequestModal />
       <Box sx={{ maxWidth: '800px', margin: 'auto' }}>
         <FriendsPageNavSection />
         {tab === 'friends' ? null : <FriendRequestsView />}

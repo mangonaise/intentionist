@@ -1,28 +1,22 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { FC, useEffect, useState } from 'react'
-import { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
-import FriendRequestsHandler, { FriendRequestsViewMode } from '@/logic/app/FriendRequestsHandler'
+import { FC, useState } from 'react'
+import FriendRequestsHandler, { FriendRequest, FriendRequestsViewMode } from '@/logic/app/FriendRequestsHandler'
 import Dropdown from '@/components/app/Dropdown'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
 import Text from '@/components/primitives/Text'
 import FadeIn from '@/components/primitives/FadeIn'
-import Icon from '@/components/primitives/Icon'
 import Button from '@/components/primitives/Button'
+import Icon from '@/components/primitives/Icon'
 import IconButton from '@/components/primitives/IconButton'
 import CheckIcon from '@/components/icons/CheckIcon'
 import CrossIcon from '@/components/icons/CrossIcon'
 import EllipsisIcon from '@/components/icons/EllipsisIcon'
 
 const FriendRequestsView = observer(() => {
-  const { viewMode, setViewMode, setUserDataFetchingEnabled } = container.resolve(FriendRequestsHandler)
-
-  useEffect(() => {
-    setUserDataFetchingEnabled(true)
-    return () => setUserDataFetchingEnabled(false)
-  }, [])
+  const { viewMode, setViewMode, hasLoadedRequests } = container.resolve(FriendRequestsHandler)
 
   return (
     <FadeIn>
@@ -33,91 +27,114 @@ const FriendRequestsView = observer(() => {
         <Dropdown.Item itemAction={() => setViewMode('incoming')}>Incoming requests</Dropdown.Item>
         <Dropdown.Item itemAction={() => setViewMode('outgoing')}>Sent requests</Dropdown.Item>
       </Dropdown>
-      {viewMode === 'incoming' ? <IncomingRequestsList /> : <OutgoingRequestsList />}
+      {hasLoadedRequests
+        ? (viewMode === 'incoming' ? <IncomingRequestsList /> : <OutgoingRequestsList />)
+        : <LoadingIndicator />}
     </FadeIn>
   )
 })
 
 const IncomingRequestsList = observer(() => {
-  const { requestsData: { incomingUsernames }, cachedUserData } = container.resolve(FriendRequestsHandler)
+  const { incomingRequests } = container.resolve(FriendRequestsHandler)
 
-  if (incomingUsernames.length === 0) {
+  if (incomingRequests.length === 0) {
     return <NoRequestsText viewMode="incoming" />
   }
 
   return (
     <Box>
-      {incomingUsernames.map((username) => (
-        <FriendRequestLayout username={username} cachedUserData={cachedUserData[username]} key={username}>
-          <IconButton
-            icon={CheckIcon}
-            hoverEffect="opacity"
-            sx={{ flex: 1, bg: 'text', color: 'bg', fontWeight: 'medium' }}
-          >
-            Accept
-          </IconButton>
-          <IconButton icon={CrossIcon} sx={{ ml: 2 }} />
-        </FriendRequestLayout>
+      {incomingRequests.map((request) => (
+        <IncomingRequest request={request} key={request.username} />
       ))}
     </Box>
   )
 })
 
 const OutgoingRequestsList = observer(() => {
-  const { requestsData: { outgoingUsernames } } = container.resolve(FriendRequestsHandler)
+  const { outgoingRequests } = container.resolve(FriendRequestsHandler)
 
-  if (outgoingUsernames.length === 0) {
+  if (outgoingRequests.length === 0) {
     return <NoRequestsText viewMode="outgoing" />
   }
 
   return (
     <Box>
-      {outgoingUsernames.map((username) => (
-        <OutgoingRequest username={username} key={username} />
+      {outgoingRequests.map((request) => (
+        <OutgoingRequest request={request} key={request.username} />
       ))}
     </Box>
   )
 })
 
-const FriendRequestLayout: FC<{ username: string, cachedUserData: AvatarAndDisplayName | undefined }> = ({ username, cachedUserData, children }) => {
+const FriendRequestLayout: FC<{ request: FriendRequest }> = ({ request, children }) => {
   return (
     <Flex
       align="center"
       flexWrap
       sx={{ mb: [4, 3] }}
     >
-      {cachedUserData
-        ? <>
-          <Flex align="center" flexWrap sx={{ mb: [3, 0] }}>
-            <SmartEmoji nativeEmoji={cachedUserData.avatar} rem={1.8} />
-            <Text type="span" sx={{ mx: 2 }}>{cachedUserData.displayName}</Text>
-            <Text
-              type="span"
-              sx={{ py: 1, color: 'whiteAlpha.60', fontWeight: 'light' }}>
-              @{username}
-            </Text>
-          </Flex>
-          <Flex sx={{ ml: [0, 'auto'], width: ['100%', 'auto'] }}>
-            {children}
-          </Flex>
-        </>
-        : <LoadingRequest />
-      }
+      <Flex align="center" flexWrap sx={{ mb: [3, 0] }}>
+        <SmartEmoji nativeEmoji={request.avatar} rem={1.8} />
+        <Text type="span" sx={{ mx: 2 }}>{request.displayName}</Text>
+        <Text
+          type="span"
+          sx={{ py: 1, color: 'whiteAlpha.60', fontWeight: 'light' }}>
+          @{request.username}
+        </Text>
+      </Flex>
+      <Flex sx={{ ml: [0, 'auto'], width: ['100%', 'auto'] }}>
+        {children}
+      </Flex>
     </Flex>
   )
 }
 
-const OutgoingRequest = observer(({ username }: { username: string }) => {
-  const { cachedUserData, cancelOutgoingRequest } = container.resolve(FriendRequestsHandler)
+const IncomingRequest = ({ request }: { request: FriendRequest }) => {
+  const { declineFriendRequest, acceptFriendRequest } = container.resolve(FriendRequestsHandler)
+  const [isDeclining, setIsDeclining] = useState(false)
+
+  function handleAcceptRequest() {
+    // ui handled in pending request modal
+    acceptFriendRequest(request)
+  }
+
+  async function handleDeclineRequest() {
+    setIsDeclining(true)
+    await declineFriendRequest(request)
+  }
+
+  return (
+    <FriendRequestLayout request={request}>
+      <IconButton
+        onClick={handleAcceptRequest}
+        disabled={isDeclining}
+        icon={CheckIcon}
+        hoverEffect="opacity"
+        sx={{ flex: 1, bg: 'text', color: 'bg', fontWeight: 'medium' }}
+      >
+        Accept
+      </IconButton>
+      <IconButton
+        onClick={handleDeclineRequest}
+        disabled={isDeclining}
+        icon={isDeclining ? EllipsisIcon : CrossIcon}
+        sx={{ ml: 2 }}
+      />
+    </FriendRequestLayout>
+  )
+}
+
+const OutgoingRequest = ({ request }: { request: FriendRequest }) => {
+  const { cancelOutgoingFriendRequest } = container.resolve(FriendRequestsHandler)
   const [isCanceling, setIsCanceling] = useState(false)
 
   async function handleCancelRequest() {
     setIsCanceling(true)
-    await cancelOutgoingRequest(username)
+    await cancelOutgoingFriendRequest(request)
   }
 
   return (
-    <FriendRequestLayout username={username} cachedUserData={cachedUserData[username]}>
+    <FriendRequestLayout request={request}>
       <Button
         onClick={handleCancelRequest}
         disabled={isCanceling}
@@ -127,11 +144,11 @@ const OutgoingRequest = observer(({ username }: { username: string }) => {
       </Button>
     </FriendRequestLayout>
   )
-})
+}
 
-const LoadingRequest = () => {
+const LoadingIndicator = () => {
   return (
-    <Flex center sx={{ minHeight: '2.5rem', width: '100%' }}>
+    <Flex center sx={{ minHeight: '5rem', width: '100%' }}>
       <Icon icon={EllipsisIcon} sx={{ fontSize: '1.5rem', animation: 'pulse infinite 2s' }} />
     </Flex>
   )
