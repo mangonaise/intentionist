@@ -14,13 +14,15 @@ import teardownFirebase from '@/test-setup/teardownFirebase'
 const firebase = initializeFirebase()
 const { db } = getFirebaseAdmin()
 
-const usernames = db.collection('usernames')
-const users = db.collection('users')
-const friendRequests = () => users.doc(testUserUid).collection('data').doc('friendRequests')
+const usernameDoc = (uid: string) => db.collection('usernames').doc(uid)
+const userDoc = (uid: string) => db.collection('users').doc(uid)
+const friendRequestsDoc = (uid: string) => userDoc(uid).collection('data').doc('friendRequests')
+
+const now = Date.now()
 
 let testUserUid: string
 let testUserProfile: UserProfileInfo = {
-  username: `frh${Date.now()}`,
+  username: `frh${now}`,
   displayName: 'FriendRequestsHandler Test User',
   avatar: '🧪'
 }
@@ -29,7 +31,7 @@ let requestsHandler: FriendRequestsHandler
 beforeAll(async () => {
   const user = await signInDummyUser('testfrh')
   testUserUid = user.uid
-  await users.doc(testUserUid).set(testUserProfile)
+  await userDoc(testUserUid).set(testUserProfile)
 })
 
 beforeEach(async () => {
@@ -45,8 +47,8 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await db.recursiveDelete(users.doc(testUserUid))
-  await usernames.doc(testUserProfile.username).delete()
+  await db.recursiveDelete(userDoc(testUserUid))
+  await usernameDoc(testUserProfile.username).delete()
   await teardownFirebase(firebase)
 })
 
@@ -79,13 +81,13 @@ describe('searching for users', () => {
     const jeff = { username: 'my_name_is_jeff', avatar: '🧪', displayName: 'Jeff' }
 
     beforeEach(async () => {
-      await usernames.doc(jeff.username).set({
+      await usernameDoc(jeff.username).set({
         displayName: jeff.displayName, avatar: jeff.avatar
       })
     })
 
     afterEach(async () => {
-      await usernames.doc(jeff.username).delete()
+      await usernameDoc(jeff.username).delete()
     })
 
     test('searching for an existing user returns an object with their avatar and display name', async () => {
@@ -119,30 +121,30 @@ describe('searching for users', () => {
   })
 })
 
-describe('sending friend requests', () => {
+describe('sending and canceling outgoing friend requests', () => {
   const recipient = {
-    uid: 'test-recipient-uid',
-    username: 'test_recipient',
+    uid: `test-recipient-uid${now}`,
+    username: `test_recipient${now}`,
     displayName: 'Test Recipient',
     avatar: '🧪'
   }
 
   beforeEach(async () => {
-    await users.doc(recipient.uid).set({
+    await userDoc(recipient.uid).set({
       username: recipient.username,
       displayName: recipient.displayName,
       avatar: recipient.avatar
     })
-    await usernames.doc(recipient.username).set({
+    await usernameDoc(recipient.username).set({
       displayName: recipient.displayName,
       avatar: recipient.avatar
     })
   })
 
   afterEach(async () => {
-    await usernames.doc(recipient.username).delete()
-    await db.recursiveDelete(users.doc(recipient.uid))
-    await friendRequests().delete()
+    await usernameDoc(recipient.username).delete()
+    await db.recursiveDelete(userDoc(recipient.uid))
+    await friendRequestsDoc(testUserUid).delete()
   })
 
   test(`when a request is sent, the user's data appears in the outgoing requests array`, async () => {
@@ -170,15 +172,71 @@ describe('sending friend requests', () => {
     await requestsHandler.sendFriendRequest('this_user_does_not_exist')
     expect(requestsHandler.pendingStatus).toEqual('error')
   })
+
+  test('when a friend request is canceled, it is removed from the outgoing requests array', async () => {
+    await requestsHandler.sendFriendRequest(recipient.username)
+    await waitForRealtimeUpdates()
+    const request = requestsHandler.outgoingRequests.find((request) => request.username === recipient.username)
+    await requestsHandler.cancelOutgoingFriendRequest(request!)
+    await waitForRealtimeUpdates()
+    expect(requestsHandler.outgoingRequests).toEqual([])
+  })
+})
+
+describe('responding to incoming friend requests', () => {
+  const sender = {
+    uid: `test-sender-uid${now}`,
+    username: `test_sender${now}`,
+    displayName: 'Test Sender',
+    avatar: '🧪'
+  }
+
+  beforeEach(async () => {
+    await friendRequestsDoc(testUserUid).set({
+      incoming: {
+        [sender.username]: {
+          time: 123,
+          displayName: sender.displayName,
+          avatar: sender.avatar
+        }
+      }
+    })
+
+    // sender needs to 1. exist & 2. have matching outgoing request, or else the attempt to accept a friend request will be denied
+    await userDoc(sender.uid).set({ username: sender.username, displayName: sender.displayName, avatar: sender.avatar })
+    await friendRequestsDoc(sender.uid).set({ outgoing: { [testUserProfile.username]: {} } })
+  })
+
+  afterEach(async () => {
+    await friendRequestsDoc(testUserUid).delete()
+    await usernameDoc(sender.username).delete()
+    await db.recursiveDelete(userDoc(sender.uid))
+  })
+
+  test('when a friend request is declined, the friend request is removed from the incoming requests array', async () => {
+    await waitForRealtimeUpdates()
+    const incomingRequest = requestsHandler.incomingRequests.find((request) => request.username = sender.username)
+    await requestsHandler.declineFriendRequest(incomingRequest!)
+    await waitForRealtimeUpdates()
+    expect(requestsHandler.incomingRequests).toEqual([])
+  })
+
+  test('when a friend request is accepted, the friend request is removed from the incoming requests array', async () => {
+    await waitForRealtimeUpdates()
+    const incomingRequest = requestsHandler.incomingRequests.find((request) => request.username = sender.username)
+    await requestsHandler.acceptFriendRequest(incomingRequest!)
+    await waitForRealtimeUpdates()
+    expect(requestsHandler.incomingRequests).toEqual([])
+  })
 })
 
 describe('processing incoming and outgoing requests', () => {
   afterEach(async () => {
-    await friendRequests().delete()
+    await friendRequestsDoc(testUserUid).delete()
   })
 
   test('incoming and outgoing requests appear in their respective usernames arrays, sorted by newest first', async () => {
-    await friendRequests().set({
+    await friendRequestsDoc(testUserUid).set({
       incoming: {
         username_a: { time: 1000, displayName: 'Mr A', avatar: '😎' },
         username_b: { time: 2000, displayName: 'Mrs B', avatar: '🧐' }
