@@ -1,3 +1,4 @@
+import type { UserData } from '../types'
 import { firestore } from 'firebase-admin'
 import * as functions from 'firebase-functions'
 import admin = require('firebase-admin')
@@ -16,19 +17,33 @@ exports.respondToFriendRequest = functions.https.onCall(async (data, context) =>
   }
 
   const { senderUsername, accept } = data
-  const recipientUid = context.auth.uid
 
   const time = admin.firestore.Timestamp.now().seconds
 
-  const senderUid = await db.runTransaction(async (transaction) => {
-    async function getSenderUid() {
+  await db.runTransaction(async (transaction) => {
+    async function getSenderUserData(): Promise<UserData | undefined> {
       const querySnapshot = await transaction.get(db.collection('users').where('username', '==', senderUsername))
-      return querySnapshot.empty ? undefined : querySnapshot.docs[0].id
+      if (querySnapshot.empty) return undefined
+      const senderUserDoc = querySnapshot.docs[0]
+      const profile = senderUserDoc.data()
+      return {
+        uid: senderUserDoc.id,
+        username: senderUsername,
+        displayName: profile.displayName,
+        avatar: profile.avatar
+      }
     }
 
-    async function getRecipientUsername() {
-      const responderUserDoc = await transaction.get(db.collection('users').doc(recipientUid))
-      return responderUserDoc.data()?.username as string | undefined
+    async function getRecipientUserData(): Promise<UserData | undefined> {
+      const recipientUserDoc = await transaction.get(db.collection('users').doc(context.auth!.uid))
+      const profile = recipientUserDoc.data()
+      if (!profile) return undefined
+      return {
+        uid: context.auth!.uid,
+        username: profile.username,
+        displayName: profile.displayName,
+        avatar: profile.avatar
+      }
     }
 
     async function wasFriendRequestSent(senderUid: string, recipientUsername: string) {
@@ -36,49 +51,46 @@ exports.respondToFriendRequest = functions.https.onCall(async (data, context) =>
       return senderFriendRequestsDoc.data()?.outgoing?.[recipientUsername] !== undefined
     }
 
-    const [senderUid, recipientUsername] = await Promise.all([getSenderUid(), getRecipientUsername()])
+    const [senderUserData, recipientUserData] = await Promise.all([getSenderUserData(), getRecipientUserData()])
 
-    if (!recipientUsername) throw new functions.https.HttpsError('aborted', 'Recipient user could not be found')
-    if (!senderUid) throw new functions.https.HttpsError('aborted', 'Sender user could not be found')
+    if (!recipientUserData) throw new functions.https.HttpsError('aborted', 'Recipient user could not be found')
+    if (!senderUserData) throw new functions.https.HttpsError('aborted', 'Sender user could not be found')
 
-    if (await wasFriendRequestSent(senderUid, recipientUsername) === false) {
+    if (await wasFriendRequestSent(senderUserData.uid, recipientUserData.username) === false) {
       throw new functions.https.HttpsError('aborted', 'No friend request was sent by that user')
     }
 
-    transaction.set(friendRequestsDoc(senderUid), {
+    transaction.set(friendRequestsDoc(senderUserData.uid), {
       outgoing: {
-        [recipientUsername]: firestore.FieldValue.delete()
+        [recipientUserData.username]: firestore.FieldValue.delete()
       }
     }, { merge: true })
 
-    transaction.set(friendRequestsDoc(recipientUid), {
+    transaction.set(friendRequestsDoc(recipientUserData.uid), {
       incoming: {
         [senderUsername]: firestore.FieldValue.delete()
       }
     }, { merge: true })
 
     if (accept === true) {
-      transaction.set(friendsDoc(senderUid), {
-        uids: {
-          [recipientUid]: { time }
+      transaction.set(friendsDoc(senderUserData.uid), {
+        [recipientUserData.uid]: {
+          time,
+          username: recipientUserData.username,
+          displayName: recipientUserData.displayName,
+          avatar: recipientUserData.avatar
         }
       }, { merge: true })
-      transaction.set(friendsDoc(recipientUid), {
-        uids: {
-          [senderUid]: { time }
+      transaction.set(friendsDoc(recipientUserData.uid), {
+        [senderUserData.uid]: {
+          time,
+          username: senderUserData.username,
+          displayName: senderUserData.displayName,
+          avatar: senderUserData.avatar
         }
       }, { merge: true })
     }
-
-    return senderUid
   })
 
-  if (accept === true) {
-    return {
-      time,
-      senderUid
-    }
-  }
-
-  return null
+  return { time }
 })

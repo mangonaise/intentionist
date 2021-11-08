@@ -108,26 +108,21 @@ describe('making a valid response', () => {
     const recipientFriends = (await (friendsDoc(recipientUid).get())).data()
     const senderFriends = (await (friendsDoc(senderUid).get())).data()
     expect(recipientFriends).toEqual({
-      uids: {
-        [senderUid]: { time }
+      [senderUid]: {
+        time,
+        username: sender.username,
+        avatar: sender.avatar,
+        displayName: sender.displayName
       }
     })
     expect(senderFriends).toEqual({
-      uids: {
-        [recipientUid]: { time }
+      [recipientUid]: {
+        time,
+        username: recipient.username,
+        avatar: recipient.avatar,
+        displayName: recipient.displayName
       }
     })
-  })
-
-  test('when a request is declined, the function returns nothing (null)', async () => {
-    const result = await respondToFriendRequest({ senderUsername: sender.username, accept: false })
-    expect(result.data).toBeNull()
-  })
-
-  test('when a request is accepted, the function returns an object with the time of the request and the uid of the new friend', async () => {
-    const result = await respondToFriendRequest({ senderUsername: sender.username, accept: true })
-    expect(Object.keys(result.data as object).sort()).toEqual(['senderUid', 'time'])
-    expect((result.data as any).senderUid).toEqual(senderUid)
   })
 })
 
