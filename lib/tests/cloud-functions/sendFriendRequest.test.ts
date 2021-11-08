@@ -17,6 +17,7 @@ const authUserSeed = 'sendFriendRequest'
 const { app, db } = getFirebaseAdmin()
 const firebase = initializeFirebase()
 
+const friendRequestsDoc = (uid: string) => db.collection('users').doc(uid).collection('data').doc('friendRequests')
 const sendFriendRequest = httpsCallable(firebase.functions, 'sendFriendRequest')
 
 let sender: User
@@ -69,23 +70,19 @@ describe('sending a valid friend request', () => {
     const result = await sendFriendRequest({ recipientUsername })
     const resultData = result.data as { time: Date }
 
-    const senderFriendRequestsDoc = await db
-      .collection('users')
-      .doc(sender.uid)
-      .collection('data')
-      .doc('friendRequests')
-      .get()
+    const senderFriendRequestsDoc = await friendRequestsDoc(sender.uid).get()
+    expect(senderFriendRequestsDoc.data()?.outgoing?.[recipientUsername]).toEqual({
+      time: resultData.time,
+      displayName: 'Test Friend Request Recipient',
+      avatar: '🧪'
+    })
 
-    expect(senderFriendRequestsDoc.data()?.outgoing?.[recipientUsername]).toEqual({ time: resultData.time })
-
-    const recipientFriendRequestsDoc = await db
-      .collection('users')
-      .doc(recipientUid)
-      .collection('data')
-      .doc('friendRequests')
-      .get()
-
-    expect(recipientFriendRequestsDoc.data()?.incoming?.[senderUsername]).toEqual({ time: resultData.time })
+    const recipientFriendRequestsDoc = await friendRequestsDoc(recipientUid).get()
+    expect(recipientFriendRequestsDoc.data()?.incoming?.[senderUsername]).toEqual({
+      time: resultData.time,
+      displayName: 'Test Friend Request Sender',
+      avatar: '✉️'
+    })
   })
 })
 
@@ -130,13 +127,11 @@ describe('expected failures', () => {
   })
 
   it('fails if the recipient already has at least 100 incoming friend requests', async () => {
-    const recipientFriendRequestsDocRef = db.collection('users').doc(recipientUid).collection('data').doc('friendRequests')
-
     let incoming: { [username: string]: { time: number } } = {}
     for (let i = 0; i < 100; i++) {
       incoming[`req_${i}`] = { time: 123 }
     }
-    await recipientFriendRequestsDocRef.set({ incoming })
+    await friendRequestsDoc(recipientUid).set({ incoming })
 
     let reason = ''
     try { await sendFriendRequest({ recipientUsername }) }

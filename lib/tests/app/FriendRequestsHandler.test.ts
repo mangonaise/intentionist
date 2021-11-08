@@ -57,14 +57,9 @@ async function waitForRealtimeUpdates() {
 // 🧪
 
 describe('initialization', () => {
-  test('incoming and outgoing usernames initialize to empty arrays', () => {
-    expect(requestsHandler.requestsData.incomingUsernames).toEqual([])
-    expect(requestsHandler.requestsData.outgoingUsernames).toEqual([])
-  })
-
-  test('incoming and outgoing view limits both initialize to 10', () => {
-    expect(requestsHandler.requestsData.incomingViewLimit).toEqual(10)
-    expect(requestsHandler.requestsData.outgoingViewLimit).toEqual(10)
+  test('incoming and outgoing requests initialize to empty arrays', () => {
+    expect(requestsHandler.incomingRequests).toEqual([])
+    expect(requestsHandler.outgoingRequests).toEqual([])
   })
 
   test('view mode initializes to "incoming"', () => {
@@ -98,13 +93,6 @@ describe('searching for users', () => {
       expect(searchResult).toEqual({
         avatar: jeff.avatar,
         displayName: jeff.displayName
-      })
-    })
-
-    test(`searching for an existing user adds that user's data to the cache`, async () => {
-      await requestsHandler.searchForUser(jeff.username)
-      expect(requestsHandler.cachedUserData[jeff.username]).toEqual({
-        displayName: jeff.displayName, avatar: jeff.avatar
       })
     })
   })
@@ -157,26 +145,30 @@ describe('sending friend requests', () => {
     await friendRequests().delete()
   })
 
-  test('when a request is sent, the username appears in the outgoing usernames array', async () => {
+  test(`when a request is sent, the user's data appears in the outgoing requests array`, async () => {
     await requestsHandler.sendFriendRequest(recipient.username)
     await waitForRealtimeUpdates()
-    expect(requestsHandler.requestsData.outgoingUsernames).toEqual([recipient.username])
+    expect(requestsHandler.outgoingRequests).toEqual([{
+      username: recipient.username,
+      displayName: recipient.displayName,
+      avatar: recipient.avatar
+    }])
   })
 
   test('immediately after sending a request, the outgoing friend request status is set to "sending"', async () => {
     requestsHandler.sendFriendRequest(recipient.username)
-    expect(requestsHandler.outgoingRequestStatus).toEqual('sending')
-    await when(() => requestsHandler.outgoingRequestStatus !== 'sending')
+    expect(requestsHandler.pendingStatus).toEqual('sending')
+    await when(() => requestsHandler.pendingStatus !== 'sending')
   })
 
   test('after a request is successfully sent, the outgoing request status is set to "sent"', async () => {
     await requestsHandler.sendFriendRequest(recipient.username)
-    expect(requestsHandler.outgoingRequestStatus).toEqual('sent')
+    expect(requestsHandler.pendingStatus).toEqual('sent')
   })
 
   test('if the friend request fails, the outgoing request status is set to "error"', async () => {
     await requestsHandler.sendFriendRequest('this_user_does_not_exist')
-    expect(requestsHandler.outgoingRequestStatus).toEqual('error')
+    expect(requestsHandler.pendingStatus).toEqual('error')
   })
 })
 
@@ -188,80 +180,23 @@ describe('processing incoming and outgoing requests', () => {
   test('incoming and outgoing requests appear in their respective usernames arrays, sorted by newest first', async () => {
     await friendRequests().set({
       incoming: {
-        username_a: { time: 1000 },
-        username_b: { time: 2000 }
+        username_a: { time: 1000, displayName: 'Mr A', avatar: '😎' },
+        username_b: { time: 2000, displayName: 'Mrs B', avatar: '🧐' }
       },
       outgoing: {
-        username_c: { time: 1000 },
-        username_d: { time: 2000 }
+        username_c: { time: 1000, displayName: 'Herr C', avatar: '🐸' },
+        username_d: { time: 2000, displayName: 'Frau D', avatar: '🐵' }
       }
     })
 
     await waitForRealtimeUpdates()
-    expect(requestsHandler.requestsData.incomingUsernames).toEqual([
-      'username_b',
-      'username_a'
+    expect(requestsHandler.incomingRequests).toEqual([
+      { username: 'username_b', displayName: 'Mrs B', avatar: '🧐' },
+      { username: 'username_a', displayName: 'Mr A', avatar: '😎' }
     ])
-    expect(requestsHandler.requestsData.outgoingUsernames).toEqual([
-      'username_d',
-      'username_c'
+    expect(requestsHandler.outgoingRequests).toEqual([
+      { username: 'username_d', displayName: 'Frau D', avatar: '🐵' },
+      { username: 'username_c', displayName: 'Herr C', avatar: '🐸' }
     ])
-  })
-
-  test('user data for incoming requests is auto-cached when view mode is "incoming" and fetching is enabled', async () => {
-    expect(requestsHandler.cachedUserData).toEqual({})
-    await usernames.doc('username_a').set({ avatar: '😎', displayName: 'Mr A' })
-    await usernames.doc('username_b').set({ avatar: '🧐', displayName: 'Mrs B' })
-    await friendRequests().set({
-      incoming: {
-        username_a: { time: 1000 }
-      }
-    })
-
-    // no caching when fetching is not yet enabled
-    await waitForRealtimeUpdates()
-    expect(requestsHandler.cachedUserData).toEqual({})
-
-    // don't fetch incoming requests when viewMode is "outgoing"
-    requestsHandler.setViewMode('outgoing')
-    requestsHandler.setUserDataFetchingEnabled(true)
-    expect(requestsHandler.cachedUserData).toEqual({})
-
-    requestsHandler.setViewMode('incoming')
-    await waitForRealtimeUpdates()
-    expect(requestsHandler.cachedUserData.username_a).toEqual({ avatar: '😎', displayName: 'Mr A' })
-
-    // respond to realtime friend requests
-    await friendRequests().set({
-      incoming: {
-        username_b: { time: 2000 }
-      }
-    }, { merge: true })
-
-    await waitForRealtimeUpdates()
-    expect(requestsHandler.cachedUserData.username_b).toEqual({ avatar: '🧐', displayName: 'Mrs B' })
-
-    await usernames.doc('username_a').delete()
-    await usernames.doc('username_b').delete()
-  })
-
-  test('user data for outgoing requests is auto-cached when view mode is "outgoing" and fetching is enabled', async () => {
-    requestsHandler.setUserDataFetchingEnabled(true)
-    await usernames.doc('username_a').set({ avatar: '😎', displayName: 'Mr A' })
-    await friendRequests().set({
-      outgoing: {
-        username_a: { time: 1000 }
-      }
-    })
-
-    // don't fetch outgoing requests when view mode is "incoming"
-    await waitForRealtimeUpdates()
-    expect(requestsHandler.cachedUserData).toEqual({})
-
-    requestsHandler.setViewMode('outgoing')
-    await waitForRealtimeUpdates()
-    expect(requestsHandler.cachedUserData.username_a).toEqual({ avatar: '😎', displayName: 'Mr A' })
-
-    await usernames.doc('username_a').delete()
   })
 })

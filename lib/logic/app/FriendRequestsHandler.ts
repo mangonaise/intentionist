@@ -7,22 +7,19 @@ import ProfileHandler, { AvatarAndDisplayName } from '@/logic/app/ProfileHandler
 import DbHandler from '@/logic/app/DbHandler'
 import isValidUsername from '@/logic/utils/isValidUsername'
 
+export type FriendRequest = { username: string, displayName: string, avatar: string }
 export type UserSearchResult = AvatarAndDisplayName | 'invalid' | 'self' | 'not found' //! | 'already friends' | 'already outgoing' | 'already incoming' | 'max requests' | 'max friends'
-export type OutgoingFriendRequestStatus = null | 'sending' | 'sent' | 'recipient-max-requests' | 'error'
+export type PendingFriendRequestStatus = null | 'sending' | 'sent' | 'accepting' | 'accepted' | 'recipient-max-requests' | 'error'
 export type FriendRequestsViewMode = 'incoming' | 'outgoing'
 
 @singleton()
 export default class FriendRequestsHandler {
-  public requestsData = {
-    incomingUsernames: [] as string[],
-    outgoingUsernames: [] as string[],
-    incomingViewLimit: 10,
-    outgoingViewLimit: 10
-  }
-  public isUserDataFetchingEnabled = false
-  public cachedUserData: { [username: string]: AvatarAndDisplayName } = {}
-  public outgoingRequestStatus = null as OutgoingFriendRequestStatus
+  public incomingRequests: FriendRequest[] = []
+  public outgoingRequests: FriendRequest[] = []
+  public hasLoadedRequests = false
   public viewMode: FriendRequestsViewMode = 'incoming'
+  public pendingStatus = null as PendingFriendRequestStatus
+  public newFriendDisplayName?: string
   private profileHandler
   private dbHandler
   private functions
@@ -49,7 +46,6 @@ export default class FriendRequestsHandler {
 
   public setViewMode = async (viewMode: FriendRequestsViewMode) => {
     this.viewMode = viewMode
-    await this.fetchUserProfiles()
   }
 
   public searchForUser = async (username: string): Promise<UserSearchResult> => {
@@ -65,83 +61,73 @@ export default class FriendRequestsHandler {
     // if the target user has friend requests disabled (not yet implemented), the request will fail, so wrap in a try/catch 
     try {
       const userData = await this.dbHandler.getUsernameDoc(username)
-      if (userData) {
-        this.addUserDataToCache(username, userData)
-        return userData
-      }
-      return 'not found'
+      return userData ?? 'not found'
     } catch {
       return 'not found'
     }
   }
 
   public sendFriendRequest = async (recipientUsername: string) => {
-    this.outgoingRequestStatus = 'sending'
+    this.pendingStatus = 'sending'
 
     try {
       const send = httpsCallable(this.functions, 'sendFriendRequest')
       await send({ recipientUsername })
       runInAction(() => {
-        this.outgoingRequestStatus = 'sent'
+        this.pendingStatus = 'sent'
       })
     } catch (err) {
-      let status = 'error' as OutgoingFriendRequestStatus
+      let status = 'error' as PendingFriendRequestStatus
       const reason = (err as any).details?.reason as string | undefined
       if (reason === 'recipient-max-requests') {
         status = reason
       }
       runInAction(() => {
-        this.outgoingRequestStatus = status
+        this.pendingStatus = status
       })
     }
   }
 
-  public cancelOutgoingRequest = async (recipientUsername: string) => {
+  public cancelOutgoingRequest = async (request: FriendRequest) => {
     const cancel = httpsCallable(this.functions, 'cancelFriendRequest')
-    await cancel({ recipientUsername })
+    await cancel({ recipientUsername: request.username })
   }
 
-  public setUserDataFetchingEnabled = (enabled: boolean) => {
-    this.isUserDataFetchingEnabled = enabled
-    if (enabled) this.fetchUserProfiles()
+  public acceptFriendRequest = async (request: FriendRequest) => {
+    const respond = httpsCallable(this.functions, 'respondToFriendRequest')
+    this.pendingStatus = 'accepting'
+    try {
+      await respond({ senderUsername: request.username, accept: true })
+      runInAction(() => {
+        this.pendingStatus = 'accepted'
+        this.newFriendDisplayName = request.displayName
+      })
+    } catch {
+      runInAction(() => { this.pendingStatus = 'error' })
+
+    }
   }
 
-  private handleFriendRequestsSnapshot = async (snapshotData: DocumentData | undefined) => {
+  public declineFriendRequest = async (request: FriendRequest) => {
+    const respond = httpsCallable(this.functions, 'respondToFriendRequest')
+    await respond({ senderUsername: request.username, accept: false })
+  }
+
+  private handleFriendRequestsSnapshot = (snapshotData: DocumentData | undefined) => {
+    this.hasLoadedRequests = true
     if (!snapshotData) return
-    this.requestsData.incomingUsernames = this.getSortedUsernames(snapshotData.incoming)
-    this.requestsData.outgoingUsernames = this.getSortedUsernames(snapshotData.outgoing)
-    await this.fetchUserProfiles()
+    this.incomingRequests = this.sortRequests(snapshotData.incoming)
+    this.outgoingRequests = this.sortRequests(snapshotData.outgoing)
   }
 
-  private getSortedUsernames = (requests: { [username: string]: { time: number } } | undefined) => {
-    if (!requests) requests = {}
+  private sortRequests = (requests: { [username: string]: AvatarAndDisplayName & { time: number } } | undefined) => {
+    if (!requests) return []
     return Object.entries(requests)
       .sort(([_keyA, valueA], [_keyB, valueB]) => valueB.time - valueA.time)
-      .map(([username]) => username)
-  }
-
-  private fetchUserProfiles = async () => {
-    if (!this.isUserDataFetchingEnabled) return
-
-    const usernames = this.requestsData[`${this.viewMode}Usernames`]
-
-    let promises: Promise<void>[] = []
-    const limit = this.requestsData[`${this.viewMode}ViewLimit`]
-    const iterations = Math.min(usernames.length, limit)
-    for (let i = 0; i < iterations; i++) {
-      const username = usernames[i]
-      if (this.cachedUserData[username]) continue
-      promises.push((async () => {
-        const avatarAndDisplayName = await this.dbHandler.getUsernameDoc(username)
-        if (avatarAndDisplayName) {
-          this.addUserDataToCache(username, avatarAndDisplayName)
-        }
-      })())
-    }
-    await Promise.all(promises)
-  }
-
-  private addUserDataToCache = (username: string, userData: AvatarAndDisplayName) => {
-    this.cachedUserData[username] = userData
+      .map(([username, data]) => ({
+        username,
+        displayName: data.displayName,
+        avatar: data.avatar
+      }))
   }
 }
