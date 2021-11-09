@@ -10,7 +10,7 @@ import CondenseViewToggle from './table/CondenseViewToggle'
 import FocusedTimeRow from './table/FocusedTimeRow'
 import HabitCell from './table/HabitCell'
 import TrackerStatusCell from './table/TrackerStatusCell'
-import JournalRow from './table/JournalRow'
+import NotesRow from './table/NotesRow'
 import WeekTableColumnTitles from './table/WeekTableColumnTitles'
 import ViewHabitsButton from './ViewHabitsButton'
 
@@ -52,8 +52,8 @@ const WeekTable = () => {
             key={weekdayId}
           />
         ))
-      case 'journal':
-        return <JournalRow habitId={habitId} />
+      case 'notes':
+        return <NotesRow habitId={habitId} />
       case 'focus':
         return <FocusedTimeRow habitId={habitId} />
     }
@@ -81,7 +81,7 @@ const Table: FC = observer(({ children }) => {
   const { viewMode, isLoadingWeek } = container.resolve(WeekHandler)
   const templateColumnsMap: { [key in WeekViewMode]: string } = {
     tracker: 'auto repeat(7, minmax(2.5ch, 1fr))',
-    journal: 'auto 1fr',
+    notes: 'auto 1fr',
     focus: 'auto 1fr'
   }
 

@@ -21,7 +21,7 @@ const WeekTableColumnTitles = () => {
 
   const map: { [viewMode in WeekViewMode]: JSX.Element } = {
     'tracker': <TrackerTitleRow />,
-    'journal': <JournalTitleRow />,
+    'notes': <NotesTitleRow />,
     'focus': <FocusTitleRow />
   }
 
@@ -32,10 +32,12 @@ const TrackerTitleRow = () => {
   return <WeekdayLabels />
 }
 
-const JournalTitleRow = () => {
+const NotesTitleRow = () => {
+  // todo: show notes count
+
   return (
     <Flex center sx={{ height: 'row' }}>
-      Entries
+      Notes
     </Flex>
   )
 }

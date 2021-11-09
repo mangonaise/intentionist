@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { useContext, useState } from 'react'
 import { Global } from '@emotion/react'
 import { css } from '@theme-ui/css'
-import { JournalContext } from 'pages/journal/[id]'
+import { NoteContext } from 'pages/note/[id]'
 import DbHandler from '@/logic/app/DbHandler'
 import useWarnUnsavedChanges from '@/hooks/useWarnUnsavedChanges'
 import Box from '@/components/primitives/Box'
@@ -15,19 +15,19 @@ const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
 
 const formats = ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block', 'list', 'indent', 'header']
 const toolbarColor = 'rgba(15, 15, 15, 0.95)'
-const maxEntryLength = 49900
+const maxNoteLength = 48000
 
-const JournalEntryRichText = () => {
+const NoteRichText = () => {
   return (
     <>
-      <EntryContent />
+      <NoteContent />
       <QuillStyles />
     </>
   )
 }
 
-const EntryContent = observer(() => {
-  const { editor, entryData: { content } } = useContext(JournalContext)
+const NoteContent = observer(() => {
+  const { editor, noteData: { content } } = useContext(NoteContext)
   const { isWriteComplete } = container.resolve(DbHandler)
   const [showLengthWarning, setShowLengthWarning] = useState(false)
   const [isBrowser] = useState(typeof window !== 'undefined')
@@ -42,10 +42,10 @@ const EntryContent = observer(() => {
 
   function handleChange(value: string) {
     if (editor.isEditing) {
-      if (value.length > maxEntryLength) {
+      if (value.length > maxNoteLength) {
         setShowLengthWarning(true)
       } else {
-        editor.updateEntry('content', value)
+        editor.updateNote('content', value)
         setShowLengthWarning(false)
       }
     }
@@ -85,7 +85,7 @@ const EntryContent = observer(() => {
       )}
       {showLengthWarning && (
         <Text type="span" sx={{ color: 'focus', fontWeight: 'semibold', mt: 2 }}>
-          Your entry is too long. It will not be saved in full unless you shorten it.
+          Your note is too long. It will not be saved in full unless you shorten it.
         </Text>
       )}
     </Box>
@@ -159,4 +159,4 @@ const QuillStyles = () => {
   )
 }
 
-export default JournalEntryRichText
+export default NoteRichText

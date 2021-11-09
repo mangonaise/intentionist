@@ -21,21 +21,21 @@ export type WeekDocumentData = {
       [day in WeekdayId]?: number
     }
   }
-  journalEntries?: {
+  notes?: {
     [habitId: string]: string[]
   }
-  journalMetadata?: {
-    [entryId: string]: JournalEntryMetadata
+  notesMetadata?: {
+    [noteId: string]: NoteMetadata
   }
 }
 
-export type JournalEntryMetadata = {
+export type NoteMetadata = {
   title: string,
   icon: string
 }
 
 export type WeekdayId = 0 | 1 | 2 | 3 | 4 | 5 | 6
-export type WeekViewMode = 'tracker' | 'journal' | 'focus'
+export type WeekViewMode = 'tracker' | 'notes' | 'focus'
 
 @singleton()
 export default class WeekHandler {
@@ -150,36 +150,36 @@ export default class WeekHandler {
     })
   }
 
-  public setJournalEntryLocally = (habitId: string, entryId: string, metadata: JournalEntryMetadata) => {
-    this.weekInView.journalEntries = this.weekInView.journalEntries ?? {}
-    const habitEntries = this.weekInView.journalEntries[habitId] ?? []
-    if (!habitEntries.find((existingEntryId) => entryId === existingEntryId)) {
-      habitEntries.push(entryId)
-      this.weekInView.journalEntries[habitId] = habitEntries
+  public setNoteLocally = (habitId: string, noteId: string, metadata: NoteMetadata) => {
+    this.weekInView.notes = this.weekInView.notes ?? {}
+    const habitNotes = this.weekInView.notes[habitId] ?? []
+    if (!habitNotes.find((existingNoteId) => noteId === existingNoteId)) {
+      habitNotes.push(noteId)
+      this.weekInView.notes[habitId] = habitNotes
     }
 
-    if (!this.weekInView.journalMetadata) this.weekInView.journalMetadata = {}
-    this.weekInView.journalMetadata[entryId] = metadata
+    if (!this.weekInView.notesMetadata) this.weekInView.notesMetadata = {}
+    this.weekInView.notesMetadata[noteId] = metadata
   }
 
-  public clearJournalEntryLocally = (habitId: string, entryIdToDelete: string) => {
-    if (this.weekInView.journalEntries?.[habitId]) {
-      this.weekInView.journalEntries[habitId] = this.weekInView.journalEntries[habitId]
-        .filter((entryId) => entryId !== entryIdToDelete)
-      if (!this.weekInView.journalEntries[habitId].length) {
-        delete this.weekInView.journalEntries[habitId]
+  public clearNoteLocally = (habitId: string, noteIdToDelete: string) => {
+    if (this.weekInView.notes?.[habitId]) {
+      this.weekInView.notes[habitId] = this.weekInView.notes[habitId]
+        .filter((noteId) => noteId !== noteIdToDelete)
+      if (!this.weekInView.notes[habitId].length) {
+        delete this.weekInView.notes[habitId]
       }
     }
-    delete this.weekInView.journalMetadata?.[entryIdToDelete]
+    delete this.weekInView.notesMetadata?.[noteIdToDelete]
   }
 
-  public getJournalEntryDataForHabit = (habitId: string) => {
-    if (!this.weekInView.journalEntries?.[habitId]) return []
+  public getNoteDataForHabit = (habitId: string) => {
+    if (!this.weekInView.notes?.[habitId]) return []
     const data = []
-    for (const entryId of this.weekInView.journalEntries[habitId]) {
-      const metadata = this.weekInView.journalMetadata?.[entryId]
+    for (const noteId of this.weekInView.notes[habitId]) {
+      const metadata = this.weekInView.notesMetadata?.[noteId]
       if (!metadata) continue
-      data.push({ entryId, metadata })
+      data.push({ noteId, metadata })
     }
     return data
   }
@@ -225,7 +225,7 @@ export default class WeekHandler {
   private getHabitIdsWithData = () => {
     const viewDataMap: { [key in WeekViewMode]: { [key: string]: any } } = {
       tracker: this.weekInView.statuses ?? {},
-      journal: this.weekInView.journalEntries ?? {},
+      notes: this.weekInView.notes ?? {},
       focus: this.weekInView.times ?? {}
     }
     return Object.keys(viewDataMap[this.viewMode])

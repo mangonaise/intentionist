@@ -7,18 +7,18 @@ import useMediaQuery from '@/hooks/useMediaQuery'
 import Flex from '@/components/primitives/Flex'
 import IconButton from '@/components/primitives/IconButton'
 import CalendarIcon from '@/components/icons/CalendarIcon'
-import JournalIcon from '@/components/icons/JournalIcon'
 import TimerIcon from '@/components/icons/TimerIcon'
+import NotebookIcon from '@/components/icons/NotebookIcon'
 
 const buttonData: Array<{ view: WeekViewMode, text: string, icon: () => JSX.Element }> = [
   { view: 'tracker', text: 'Habit tracker', icon: CalendarIcon },
-  { view: 'journal', text: 'Journal', icon: JournalIcon },
+  { view: 'notes', text: 'Notes', icon: NotebookIcon },
   { view: 'focus', text: 'Focused time', icon: TimerIcon }
 ]
 
 const borderOffsets = {
   'tracker': '0',
-  'journal': 'calc(100% / 3)',
+  'notes': 'calc(100% / 3)',
   'focus': 'calc(100% / 3 * 2)'
 }
 

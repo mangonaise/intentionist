@@ -157,15 +157,15 @@ describe('behavior', () => {
     })
   })
 
-  test('deleting a habit removes associated journal entries from database', async () => {
+  test('deleting a habit removes associated notes from database', async () => {
     await habitsHandler.setHabit(dummyHabitA)
-    await dbHandler.updateOwnDoc('journal/a1', { habitId: dummyHabitA.id })
-    await dbHandler.updateOwnDoc('journal/a2', { habitId: dummyHabitA.id })
-    await dbHandler.updateOwnDoc('journal/b1', { habitId: dummyHabitB.id })
+    await dbHandler.updateOwnDoc('notes/a1', { habitId: dummyHabitA.id })
+    await dbHandler.updateOwnDoc('notes/a2', { habitId: dummyHabitA.id })
+    await dbHandler.updateOwnDoc('notes/b1', { habitId: dummyHabitB.id })
     await habitsHandler.deleteHabitById(dummyHabitA.id)
-    expect(await dbHandler.getJournalEntryDoc('a1')).toBeNull()
-    expect(await dbHandler.getJournalEntryDoc('a2')).toBeNull()
-    expect(await dbHandler.getJournalEntryDoc('b1')).not.toBeNull()
+    expect(await dbHandler.getNoteDoc('a1')).toBeNull()
+    expect(await dbHandler.getNoteDoc('a2')).toBeNull()
+    expect(await dbHandler.getNoteDoc('b1')).not.toBeNull()
   })
 })
 

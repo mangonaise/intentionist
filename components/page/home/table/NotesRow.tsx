@@ -2,7 +2,7 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
-import WeekHandler, { JournalEntryMetadata } from '@/logic/app/WeekHandler'
+import WeekHandler, { NoteMetadata } from '@/logic/app/WeekHandler'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Button from '@/components/primitives/Button'
 import Flex from '@/components/primitives/Flex'
@@ -13,46 +13,46 @@ import ChevronRightIcon from '@/components/icons/ChevronRightIcon'
 import PlusIcon from '@/components/icons/PlusIcon'
 import NextLink from 'next/link'
 
-const JournalRow = ({ habitId }: { habitId: string }) => {
-  const { isLoadingWeek, getJournalEntryDataForHabit } = container.resolve(WeekHandler)
-  const cellEntriesData = isLoadingWeek ? [] : getJournalEntryDataForHabit(habitId)
+const NotesRow = ({ habitId }: { habitId: string }) => {
+  const { isLoadingWeek, getNoteDataForHabit } = container.resolve(WeekHandler)
+  const cellNotesData = isLoadingWeek ? [] : getNoteDataForHabit(habitId)
 
   return (
     <Flex
       align="center"
       sx={{ borderTop: 'solid 1px', borderLeft: 'solid 1px', borderColor: 'grid' }}
     >
-      {cellEntriesData.length > 0 && <JournalEntryPreview cellEntriesData={cellEntriesData} />}
-      <AddEntryButton habitId={habitId} />
+      {cellNotesData.length > 0 && <NotePreview cellNotesData={cellNotesData} />}
+      <AddNoteButton habitId={habitId} />
     </Flex>
   )
 }
 
-const JournalEntryPreview = ({ cellEntriesData }: { cellEntriesData: Array<{ entryId: string, metadata: JournalEntryMetadata }> }) => {
+const NotePreview = ({ cellNotesData }: { cellNotesData: Array<{ noteId: string, metadata: NoteMetadata }> }) => {
   const router = useRouter()
   const { weekInView: { startDate }, latestWeekStartDate } = container.resolve(WeekHandler)
   const isViewingLatestWeek = startDate === latestWeekStartDate
-  const [viewedEntryIndex, setViewedEntryIndex] = useState(isViewingLatestWeek ? cellEntriesData.length - 1 : 0)
-  const viewedEntryData = cellEntriesData[viewedEntryIndex]
+  const [viewedNoteIndex, setViewedNoteIndex] = useState(isViewingLatestWeek ? cellNotesData.length - 1 : 0)
+  const viewedNoteData = cellNotesData[viewedNoteIndex]
 
-  function changeViewedEntry(delta: 1 | -1) {
-    let newIndex = viewedEntryIndex + delta
+  function changeViewedNote(delta: 1 | -1) {
+    let newIndex = viewedNoteIndex + delta
     if (newIndex < 0) {
-      newIndex = cellEntriesData.length - 1
-    } else if (newIndex > cellEntriesData.length - 1) {
+      newIndex = cellNotesData.length - 1
+    } else if (newIndex > cellNotesData.length - 1) {
       newIndex = 0
     }
-    setViewedEntryIndex(newIndex)
+    setViewedNoteIndex(newIndex)
   }
 
-  function openViewedEntry() {
-    router.push(`/journal/${viewedEntryData.entryId}`)
+  function openViewedNote() {
+    router.push(`/note/${viewedNoteData.noteId}`)
   }
 
   return (
     <>
       <Button
-        onClick={openViewedEntry}
+        onClick={openViewedNote}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -64,7 +64,7 @@ const JournalEntryPreview = ({ cellEntriesData }: { cellEntriesData: Array<{ ent
           borderRadius: 0
         }}
       >
-        <SmartEmoji nativeEmoji={viewedEntryData.metadata.icon} rem={1.2} />
+        <SmartEmoji nativeEmoji={viewedNoteData.metadata.icon} rem={1.2} />
         <Text
           type="span"
           sx={{
@@ -75,22 +75,22 @@ const JournalEntryPreview = ({ cellEntriesData }: { cellEntriesData: Array<{ ent
             textAlign: 'left'
           }}
         >
-          {viewedEntryData.metadata.title}
+          {viewedNoteData.metadata.title}
         </Text>
       </Button>
-      {cellEntriesData.length > 1 && (
-        <EntryChanger
-          currentIndex={viewedEntryIndex}
-          totalEntries={cellEntriesData.length}
-          change={changeViewedEntry}
+      {cellNotesData.length > 1 && (
+        <NoteChanger
+          currentIndex={viewedNoteIndex}
+          totalNotes={cellNotesData.length}
+          change={changeViewedNote}
         />
       )}
     </>
   )
 }
 
-interface EntryChangerProps { currentIndex: number, totalEntries: number, change: (delta: 1 | -1) => void }
-const EntryChanger = ({ currentIndex, totalEntries, change }: EntryChangerProps) => {
+interface NoteChangerProps { currentIndex: number, totalNotes: number, change: (delta: 1 | -1) => void }
+const NoteChanger = ({ currentIndex, totalNotes, change }: NoteChangerProps) => {
   return (
     <Flex
       center
@@ -105,7 +105,7 @@ const EntryChanger = ({ currentIndex, totalEntries, change }: EntryChangerProps)
           height: '100%',
           borderRadius: 0,
           backgroundColor: 'transparent',
-          color: 'journal',
+          color: 'notes',
           filter: 'brightness(1.2)',
           '&:first-of-type': {
             borderRight: 'solid 1px',
@@ -129,16 +129,16 @@ const EntryChanger = ({ currentIndex, totalEntries, change }: EntryChangerProps)
           paddingX: 3
         }}
       >
-        {currentIndex + 1}/{totalEntries}
+        {currentIndex + 1}/{totalNotes}
       </Text>
       <IconButton icon={ChevronRightIcon} onClick={() => change(1)} />
     </Flex>
   )
 }
 
-const AddEntryButton = ({ habitId }: { habitId: string }) => {
+const AddNoteButton = ({ habitId }: { habitId: string }) => {
   return (
-    <NextLink href={`/journal/new?habitId=${habitId}`}>
+    <NextLink href={`/note/new?habitId=${habitId}`}>
       <IconButton
         icon={PlusIcon}
         sx={{
@@ -147,7 +147,7 @@ const AddEntryButton = ({ habitId }: { habitId: string }) => {
           marginLeft: 'auto',
           paddingY: 0,
           paddingX: '0.6rem',
-          color: 'journal',
+          color: 'notes',
           backgroundColor: 'transparent',
           borderRadius: 0,
           borderLeft: 'solid 1px',
@@ -159,4 +159,4 @@ const AddEntryButton = ({ habitId }: { habitId: string }) => {
   )
 }
 
-export default observer(JournalRow)
+export default observer(NotesRow)

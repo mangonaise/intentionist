@@ -1,8 +1,6 @@
-import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useContext, useEffect, useRef, useState } from 'react'
-import { JournalContext } from 'pages/journal/[id]'
-import DbHandler from '@/logic/app/DbHandler'
+import { NoteContext } from 'pages/note/[id]'
 import Dropdown from '@/components/app/Dropdown'
 import Flex from '@/components/primitives/Flex'
 import Button from '@/components/primitives/Button'
@@ -12,8 +10,8 @@ import CheckIcon from '@/components/icons/CheckIcon'
 import PencilIcon from '@/components/icons/PencilIcon'
 import NextLink from 'next/link'
 
-const JournalEntryNavSection = () => {
-  const { editor: { isEditing } } = useContext(JournalContext)
+const NoteNavSection = () => {
+  const { editor: { isEditing } } = useContext(NoteContext)
 
   if (isEditing) {
     return <EditorNavSection />
@@ -26,8 +24,7 @@ const JournalEntryNavSection = () => {
 const EditorNavSection = observer(() => {
   const wrapperRef = useRef(null!)
   const [isWrapperPinned, setIsWrapperPinned] = useState(false)
-  const { editor } = useContext(JournalContext)
-  const { isWriteComplete } = container.resolve(DbHandler)
+  const { editor } = useContext(NoteContext)
 
   useEffect(() => {
     const stickyElement = wrapperRef.current
@@ -54,11 +51,11 @@ const EditorNavSection = observer(() => {
         icon={CheckIcon}
         onClick={editor.finishEditing}
         hoverEffect={isWrapperPinned ? 'none' : 'opacity'}
-        sx={{ mr: 2, bg: 'journal' }}
+        sx={{ mr: 2, bg: 'notes' }}
       >
         Done
       </IconButton>
-      {(!editor.isNewEntry || editor.hasUnsavedChanges) && (
+      {(!editor.isNewNote || editor.hasUnsavedChanges) && (
         <Button
           onClick={editor.saveChanges}
           disabled={!editor.hasUnsavedChanges}
@@ -79,12 +76,12 @@ const EditorNavSection = observer(() => {
         >
           {editor.hasUnsavedChanges
             ? 'Save changes'
-            : isWriteComplete ? 'Changes saved' : 'Saving...'}
+            : editor.isSaving ? 'Saving...' : 'Changes saved'}
         </Button>
       )}
       {!isWrapperPinned && (
         <Dropdown anchorRight sx={{ ml: 'auto' }}>
-          <Dropdown.Item itemAction={editor.deleteEntry}>Delete entry</Dropdown.Item>
+          <Dropdown.Item itemAction={editor.deleteNote}>Delete note</Dropdown.Item>
         </Dropdown>
       )}
     </Flex >
@@ -92,7 +89,7 @@ const EditorNavSection = observer(() => {
 })
 
 const DefaultNavSection = () => {
-  const { editor } = useContext(JournalContext)
+  const { editor } = useContext(NoteContext)
 
   return (
     <Flex>
@@ -102,11 +99,11 @@ const DefaultNavSection = () => {
       <IconButton
         icon={PencilIcon}
         onClick={editor.startEditing}
-        sx={{ bg: 'journal', ml: 2 }}
+        sx={{ bg: 'notes', ml: 2 }}
         hoverEffect="opacity"
       />
     </Flex>
   )
 }
 
-export default JournalEntryNavSection
+export default NoteNavSection

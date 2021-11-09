@@ -1,47 +1,47 @@
 import { observer } from 'mobx-react-lite'
 import { ChangeEvent, useContext } from 'react'
-import { JournalContext } from 'pages/journal/[id]'
+import { NoteContext } from 'pages/note/[id]'
 import EmojiButton from '@/components/app/EmojiButton'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
 import Input from '@/components/primitives/Input'
 import Spacer from '@/components/primitives/Spacer'
 
-const JournalEntryEditorView = () => {
+const NoteMetadataEditor = () => {
   return (
     <Box>
       <Flex>
-        <JournalEntryIconPicker />
-        <JournalEntryTitleInput />
+        <NoteIconPicker />
+        <NoteTitleInput />
       </Flex>
       <Spacer mb={[3, 6]} />
     </Box>
   )
 }
 
-const JournalEntryIconPicker = observer(() => {
-  const { editor, entryData } = useContext(JournalContext)
+const NoteIconPicker = observer(() => {
+  const { editor, noteData } = useContext(NoteContext)
 
   return (
     <EmojiButton
-      value={entryData.icon}
-      onChangeEmoji={(emoji) => editor.updateEntry('icon', emoji)}
+      value={noteData.icon}
+      onChangeEmoji={(emoji) => editor.updateNote('icon', emoji)}
       buttonSize={['3rem', '3.5rem']}
       emojiSizeRem={1.5}
-      label="as your journal entry's icon"
+      label="as your note's icon"
     />
   )
 })
 
-const JournalEntryTitleInput = observer(() => {
-  const { editor, entryData } = useContext(JournalContext)
+const NoteTitleInput = observer(() => {
+  const { editor, noteData } = useContext(NoteContext)
 
   return (
     <Input
       placeholder="Enter title"
-      value={entryData.title}
+      value={noteData.title}
       maxLength={150}
-      onChange={(e: ChangeEvent<HTMLInputElement>) => editor.updateEntry('title', e.target.value)}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => editor.updateNote('title', e.target.value)}
       sx={{
         fontSize: ['1.25rem', '1.5rem'],
         fontWeight: 'semibold',
@@ -51,4 +51,4 @@ const JournalEntryTitleInput = observer(() => {
   )
 })
 
-export default JournalEntryEditorView
+export default NoteMetadataEditor

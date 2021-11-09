@@ -2,7 +2,7 @@ import type Router from '@/types/router'
 import { inject, injectable } from 'tsyringe'
 import { makeAutoObservable, runInAction, when } from 'mobx'
 import { formatYYYYMMDD } from '@/logic/utils/dateUtilities'
-import generateJournalEntryId from '@/logic/utils/generateJournalEntryId'
+import generateNoteId from '@/logic/utils/generateNoteId'
 import HabitsHandler from '@/logic/app/HabitsHandler'
 import WeekHandler from '@/logic/app/WeekHandler'
 import DbHandler from '@/logic/app/DbHandler'
@@ -12,7 +12,7 @@ type QueryParams = {
   habitId?: string
 }
 
-export type JournalEntryDocumentData = {
+export type NoteDocumentData = {
   id: string,
   title: string,
   icon: string,
@@ -23,11 +23,12 @@ export type JournalEntryDocumentData = {
 }
 
 @injectable()
-export default class JournalEntryEditor {
-  public entry?: JournalEntryDocumentData = undefined
+export default class NoteEditor {
+  public note?: NoteDocumentData = undefined
   public isEditing = false
-  public isNewEntry = false
+  public isNewNote = false
   public hasUnsavedChanges = false
+  public isSaving = false
   private hasMadeChanges = false
   private router
   private weekHandler
@@ -41,9 +42,9 @@ export default class JournalEntryEditor {
     this.dbHandler = dbHandler
     const query = router.query as QueryParams
     if (query.id === 'new') {
-      this.initializeNewEntry(query.habitId)
+      this.initializeNewNote(query.habitId)
     } else {
-      this.loadEntry(query.id)
+      this.loadNote(query.id)
     }
     makeAutoObservable(this)
   }
@@ -53,9 +54,9 @@ export default class JournalEntryEditor {
     this.hasMadeChanges = false
   }
 
-  public updateEntry = (property: 'icon' | 'title' | 'content', value: string) => {
-    if (!this.entry) return
-    this.entry[property] = value
+  public updateNote = (property: 'icon' | 'title' | 'content', value: string) => {
+    if (!this.note) return
+    this.note[property] = value
     this.hasUnsavedChanges = true
     this.hasMadeChanges = true
   }
@@ -66,52 +67,55 @@ export default class JournalEntryEditor {
   }
 
   public saveChanges = async () => {
-    if (!this.entry) return
-    if (!this.isNewEntry && !this.hasMadeChanges) return
+    if (!this.note) return
+    if (!this.isNewNote && !this.hasMadeChanges) return
 
-    const replaceUrl = this.isNewEntry
-    this.entry.title = this.entry.title || 'Untitled'
+    const replaceUrl = this.isNewNote
+    this.note.title = this.note.title || 'Untitled note'
     this.hasUnsavedChanges = false
+    this.isSaving = true
 
-    this.isNewEntry = false
+    this.isNewNote = false
 
     // 💻
-    if (this.weekHandler.weekInView.startDate === this.entry.weekStartDate) {
-      this.weekHandler.setJournalEntryLocally(this.entry.habitId, this.entry.id, {
-        icon: this.entry.icon,
-        title: this.entry.title
+    if (this.weekHandler.weekInView.startDate === this.note.weekStartDate) {
+      this.weekHandler.setNoteLocally(this.note.habitId, this.note.id, {
+        icon: this.note.icon,
+        title: this.note.title
       })
     }
 
     // ☁️️
-    await this.dbHandler.updateJournalEntry(this.entry)
+    await this.dbHandler.updateNote(this.note)
 
-    if (replaceUrl && this.router.route.includes('journal')) {
-      this.router.replace(`/journal/${this.entry.id}`, undefined, { shallow: true })
+    runInAction(() => { this.isSaving = false })
+
+    if (replaceUrl && this.router.route.includes('note')) {
+      this.router.replace(`/note/${this.note.id}`, undefined, { shallow: true })
     }
   }
 
-  public deleteEntry = async () => {
-    if (!this.entry) return
+  public deleteNote = async () => {
+    if (!this.note) return
     this.hasUnsavedChanges = false
-    this.weekHandler.clearJournalEntryLocally(this.entry.habitId, this.entry.id)
+    this.weekHandler.clearNoteLocally(this.note.habitId, this.note.id)
     this.router.push('/home')
-    if (!this.isNewEntry) {
-      await this.dbHandler.deleteJournalEntry(this.entry)
+    if (!this.isNewNote) {
+      await this.dbHandler.deleteNote(this.note)
     }
   }
 
-  private initializeNewEntry = (habitId?: string) => {
+  private initializeNewNote = (habitId?: string) => {
     const habit = this.habitsHandler.habits.find((habit) => habit.id === habitId)
     if (!habit || !habitId) {
       this.router.push('/home')
       return
     }
-    this.isNewEntry = true
-    this.entry = {
-      id: generateJournalEntryId(),
+    this.isNewNote = true
+    this.note = {
+      id: generateNoteId(),
       title: '',
-      icon: '📖',
+      icon: '📝',
       habitId: habitId,
       date: formatYYYYMMDD(new Date()),
       weekStartDate: this.weekHandler.weekInView.startDate,
@@ -119,12 +123,12 @@ export default class JournalEntryEditor {
     }
   }
 
-  private loadEntry = async (entryId: string) => {
+  private loadNote = async (noteId: string) => {
     await when(() => this.dbHandler.isWriteComplete)
-    const entryData = await this.dbHandler.getJournalEntryDoc(entryId)
-    if (entryData) {
+    const noteData = await this.dbHandler.getNoteDoc(noteId)
+    if (noteData) {
       runInAction(() => {
-        this.entry = entryData
+        this.note = noteData
       })
     } else {
       this.router.push('/home')

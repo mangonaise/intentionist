@@ -103,7 +103,7 @@ const AddFriendModal = ({ isOpen, closeModal }: { isOpen: boolean, closeModal: (
           </Flex>
         </Label>
         <Box sx={{ p: 4, mt: 4, borderRadius: 'default', bg: 'whiteAlpha.5', fontWeight: 'light' }}>
-          <Text>When you add a friend, they'll be able to see your activity, including your tracked habits and public journal entries.</Text>
+          <Text>When you add a friend, they'll be able to see your activity, including your tracked habits and notes.</Text>
         </Box>
       </Box>
     </ModalPopup>

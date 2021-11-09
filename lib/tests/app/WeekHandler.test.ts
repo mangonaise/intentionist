@@ -5,12 +5,12 @@ import { when } from 'mobx'
 import { formatFirstDayOfThisWeek, formatYYYYMMDD, getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import { addWeeks, isMonday } from 'date-fns'
 import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
-import WeekHandler, { JournalEntryMetadata, WeekDocumentData } from '@/logic/app/WeekHandler'
+import WeekHandler, { NoteMetadata, WeekDocumentData } from '@/logic/app/WeekHandler'
 import AuthUser from '@/logic/app/AuthUser'
 import DbHandler from '@/logic/app/DbHandler'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import generateHabitId from '@/logic/utils/generateHabitId'
-import generateJournalEntryId from '@/logic/utils/generateJournalEntryId'
+import generateNoteId from '@/logic/utils/generateNoteId'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import deleteWeeks from '@/test-setup/deleteWeeks'
@@ -29,21 +29,21 @@ const dummyTrackerStatuses: WeekDocumentData['statuses'] = {
   [generateHabitId()]: { 1: ['😄'], 4: ['👎'], 5: ['👌'] },
 }
 
-const dummyEntryDataA = {
+const dummyNoteDataA = {
   habitId: generateHabitId(),
-  entryId: generateJournalEntryId(),
+  noteId: generateNoteId(),
   metadata: {
     icon: '📖',
-    title: 'A test journal entry'
-  } as JournalEntryMetadata
+    title: 'A test note'
+  } as NoteMetadata
 }
-const dummyEntryDataB = {
+const dummyNoteDataB = {
   habitId: generateHabitId(),
-  entryId: generateJournalEntryId(),
+  noteId: generateNoteId(),
   metadata: {
     icon: '🧪',
-    title: 'A journal entry about writing tests'
-  } as JournalEntryMetadata
+    title: 'A note about writing tests'
+  } as NoteMetadata
 }
 
 async function initializeWeekHandler() {
@@ -96,25 +96,25 @@ describe('initialization', () => {
     expect(weekHandler.weekInView.statuses).toEqual(dummyTrackerStatuses)
   })
 
-  test(`journal entry IDs and metadata are correctly placed into week in view's local cache`, async () => {
+  test(`note IDs and metadata are correctly placed into week in view's local cache`, async () => {
     await dbHandler.updateWeekDoc('2021-10-11', {
-      journalEntries: {
-        [dummyEntryDataA.habitId]: [dummyEntryDataA.entryId],
-        [dummyEntryDataB.habitId]: [dummyEntryDataB.entryId]
+      notes: {
+        [dummyNoteDataA.habitId]: [dummyNoteDataA.noteId],
+        [dummyNoteDataB.habitId]: [dummyNoteDataB.noteId]
       },
-      journalMetadata: {
-        [dummyEntryDataA.entryId]: dummyEntryDataA.metadata,
-        [dummyEntryDataB.entryId]: dummyEntryDataB.metadata
+      notesMetadata: {
+        [dummyNoteDataA.noteId]: dummyNoteDataA.metadata,
+        [dummyNoteDataB.noteId]: dummyNoteDataB.metadata
       }
     })
     await initializeWeekHandler()
-    expect(weekHandler.weekInView.journalEntries).toEqual({
-      [dummyEntryDataA.habitId]: [dummyEntryDataA.entryId],
-      [dummyEntryDataB.habitId]: [dummyEntryDataB.entryId]
+    expect(weekHandler.weekInView.notes).toEqual({
+      [dummyNoteDataA.habitId]: [dummyNoteDataA.noteId],
+      [dummyNoteDataB.habitId]: [dummyNoteDataB.noteId]
     })
-    expect(weekHandler.weekInView.journalMetadata).toEqual({
-      [dummyEntryDataA.entryId]: dummyEntryDataA.metadata,
-      [dummyEntryDataB.entryId]: dummyEntryDataB.metadata
+    expect(weekHandler.weekInView.notesMetadata).toEqual({
+      [dummyNoteDataA.noteId]: dummyNoteDataA.metadata,
+      [dummyNoteDataB.noteId]: dummyNoteDataB.metadata
     })
   })
 
@@ -211,47 +211,47 @@ describe('updating tracker statuses', () => {
   })
 })
 
-describe('updating local journal entry metadata', () => {
+describe('updating local note metadata', () => {
   beforeEach(async () => {
     await initializeWeekHandler()
   })
 
-  test('setting journal entries correctly updates the local cache', () => {
-    weekHandler.setJournalEntryLocally(dummyEntryDataA.habitId, dummyEntryDataA.entryId, dummyEntryDataA.metadata)
-    weekHandler.setJournalEntryLocally(dummyEntryDataB.habitId, dummyEntryDataB.entryId, dummyEntryDataB.metadata)
-    expect(weekHandler.weekInView.journalEntries).toEqual({
-      [dummyEntryDataA.habitId]: [dummyEntryDataA.entryId],
-      [dummyEntryDataB.habitId]: [dummyEntryDataB.entryId],
+  test('setting notes correctly updates the local cache', () => {
+    weekHandler.setNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
+    weekHandler.setNoteLocally(dummyNoteDataB.habitId, dummyNoteDataB.noteId, dummyNoteDataB.metadata)
+    expect(weekHandler.weekInView.notes).toEqual({
+      [dummyNoteDataA.habitId]: [dummyNoteDataA.noteId],
+      [dummyNoteDataB.habitId]: [dummyNoteDataB.noteId],
     })
-    expect(weekHandler.weekInView.journalMetadata).toEqual({
-      [dummyEntryDataA.entryId]: dummyEntryDataA.metadata,
-      [dummyEntryDataB.entryId]: dummyEntryDataB.metadata
+    expect(weekHandler.weekInView.notesMetadata).toEqual({
+      [dummyNoteDataA.noteId]: dummyNoteDataA.metadata,
+      [dummyNoteDataB.noteId]: dummyNoteDataB.metadata
     })
   })
 
-  test('updating an existing journal entry correctly updates the local cache and does not create a duplicate', () => {
-    weekHandler.setJournalEntryLocally(dummyEntryDataA.habitId, dummyEntryDataA.entryId, dummyEntryDataA.metadata)
-    weekHandler.setJournalEntryLocally(dummyEntryDataA.habitId, dummyEntryDataA.entryId, {
-      ...dummyEntryDataA.metadata,
+  test('updating an existing note correctly updates the local cache and does not create a duplicate', () => {
+    weekHandler.setNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
+    weekHandler.setNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId, {
+      ...dummyNoteDataA.metadata,
       icon: '🥳'
     })
-    expect(weekHandler.weekInView.journalEntries).toEqual({
-      [dummyEntryDataA.habitId]: [dummyEntryDataA.entryId],
+    expect(weekHandler.weekInView.notes).toEqual({
+      [dummyNoteDataA.habitId]: [dummyNoteDataA.noteId],
     })
-    expect(weekHandler.weekInView.journalMetadata).toEqual({
-      [dummyEntryDataA.entryId]: { ...dummyEntryDataA.metadata, icon: '🥳' },
+    expect(weekHandler.weekInView.notesMetadata).toEqual({
+      [dummyNoteDataA.noteId]: { ...dummyNoteDataA.metadata, icon: '🥳' },
     })
   })
 
-  test('clearing journal entries correctly updates the local cache', () => {
-    weekHandler.setJournalEntryLocally(dummyEntryDataA.habitId, dummyEntryDataA.entryId, dummyEntryDataA.metadata)
-    weekHandler.setJournalEntryLocally(dummyEntryDataB.habitId, dummyEntryDataB.entryId, dummyEntryDataB.metadata)
-    weekHandler.clearJournalEntryLocally(dummyEntryDataA.habitId, dummyEntryDataA.entryId)
-    expect(weekHandler.weekInView.journalEntries).toEqual({
-      [dummyEntryDataB.habitId]: [dummyEntryDataB.entryId]
+  test('clearing notes correctly updates the local cache', () => {
+    weekHandler.setNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
+    weekHandler.setNoteLocally(dummyNoteDataB.habitId, dummyNoteDataB.noteId, dummyNoteDataB.metadata)
+    weekHandler.clearNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId)
+    expect(weekHandler.weekInView.notes).toEqual({
+      [dummyNoteDataB.habitId]: [dummyNoteDataB.noteId]
     })
-    expect(weekHandler.weekInView.journalMetadata).toEqual({
-      [dummyEntryDataB.entryId]: dummyEntryDataB.metadata
+    expect(weekHandler.weekInView.notesMetadata).toEqual({
+      [dummyNoteDataB.noteId]: dummyNoteDataB.metadata
     })
   })
 })
@@ -297,10 +297,10 @@ describe('updating focused times', () => {
 })
 
 describe('switching weeks', () => {
-  const dummyWeekData = {
+  const dummyWeekData: Partial<WeekDocumentData> = {
     statuses: dummyTrackerStatuses,
-    journalEntries: { abcdefgh: [dummyEntryDataA.entryId] },
-    journalMetadata: { [dummyEntryDataA.entryId]: dummyEntryDataA.metadata }
+    notes: { abcdefgh: [dummyNoteDataA.noteId] },
+    notesMetadata: { [dummyNoteDataA.noteId]: dummyNoteDataA.metadata }
   }
 
   beforeEach(async () => {
@@ -332,8 +332,8 @@ describe('switching weeks', () => {
     expect(weekHandler.weekInView).toEqual({
       startDate: '2021-09-20',
       statuses: dummyTrackerStatuses,
-      journalEntries: dummyWeekData.journalEntries,
-      journalMetadata: dummyWeekData.journalMetadata
+      notes: dummyWeekData.notes,
+      notesMetadata: dummyWeekData.notesMetadata
     })
   })
 
@@ -438,7 +438,7 @@ describe('displaying correct habits', () => {
   test('when viewing latest week with no data, only active habits are shown', () => {
     weekHandler.setViewMode('tracker')
     expect(weekHandler.habitsInView).toEqual([activeHabit])
-    weekHandler.setViewMode('journal')
+    weekHandler.setViewMode('notes')
     expect(weekHandler.habitsInView).toEqual([activeHabit])
     weekHandler.setViewMode('focus')
     expect(weekHandler.habitsInView).toEqual([activeHabit])
@@ -486,36 +486,36 @@ describe('displaying correct habits', () => {
     })
   })
 
-  describe('when view mode is journal', () => {
-    beforeEach(() => weekHandler.setViewMode('journal'))
+  describe('when view mode is notes', () => {
+    beforeEach(() => weekHandler.setViewMode('notes'))
 
-    test('when viewing latest week, all active habits, plus any habits with journal data, are shown', () => {
-      weekHandler.setJournalEntryLocally(suspendedHabit.id, dummyEntryDataA.entryId, dummyEntryDataA.metadata)
-      weekHandler.setJournalEntryLocally(archivedHabitA.id, dummyEntryDataB.entryId, dummyEntryDataB.metadata)
+    test('when viewing latest week, all active habits, plus any habits with notes data, are shown', () => {
+      weekHandler.setNoteLocally(suspendedHabit.id, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
+      weekHandler.setNoteLocally(archivedHabitA.id, dummyNoteDataB.noteId, dummyNoteDataB.metadata)
       weekHandler.refreshHabitsInView()
       expect(weekHandler.habitsInView).toEqual([activeHabit, suspendedHabit, archivedHabitA])
     })
 
-    test('when viewing previous weeks with journal data, only habits with journal data are shown by default', async () => {
+    test('when viewing previous weeks with notes data, only habits with notes data are shown by default', async () => {
       await weekHandler.viewWeek('2021-09-27')
-      weekHandler.setJournalEntryLocally(archivedHabitB.id, dummyEntryDataB.entryId, dummyEntryDataB.metadata)
+      weekHandler.setNoteLocally(archivedHabitB.id, dummyNoteDataB.noteId, dummyNoteDataB.metadata)
       weekHandler.refreshHabitsInView()
       expect(weekHandler.habitsInView).toEqual([archivedHabitB])
     })
 
-    test('when viewing previous weeks with journal data, if condensed view is disabled, show habits with journal data and all active habits', async () => {
+    test('when viewing previous weeks with notes data, if condensed view is disabled, show habits with notes data and all active habits', async () => {
       await weekHandler.viewWeek('2021-09-27')
-      weekHandler.setJournalEntryLocally(suspendedHabit.id, dummyEntryDataA.entryId, dummyEntryDataA.metadata)
+      weekHandler.setNoteLocally(suspendedHabit.id, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
       weekHandler.setCondensedView(false)
       expect(weekHandler.habitsInView).toEqual([activeHabit, suspendedHabit])
     })
 
-    test('when viewing previous weeks, if all active habits have journal data, the condenser toggle is not shown', async () => {
+    test('when viewing previous weeks, if all active habits have notes data, the condenser toggle is not shown', async () => {
       await weekHandler.viewWeek('2021-08-30')
-      weekHandler.setJournalEntryLocally(activeHabit.id, dummyEntryDataA.entryId, dummyEntryDataA.metadata)
+      weekHandler.setNoteLocally(activeHabit.id, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
       weekHandler.refreshHabitsInView()
       expect(weekHandler.showCondenseViewToggle).toEqual(false)
-      weekHandler.clearJournalEntryLocally(activeHabit.id, dummyEntryDataA.entryId)
+      weekHandler.clearNoteLocally(activeHabit.id, dummyNoteDataA.noteId)
       weekHandler.refreshHabitsInView()
       expect(weekHandler.showCondenseViewToggle).toEqual(true)
     })
@@ -527,7 +527,7 @@ describe('displaying correct habits', () => {
       await weekHandler.setTrackerStatus(suspendedHabit.id, 2, ['👋'])
       weekHandler.setViewMode('tracker')
       expect(weekHandler.habitsInView).toEqual([suspendedHabit])
-      weekHandler.setViewMode('journal')
+      weekHandler.setViewMode('notes')
       expect(weekHandler.habitsInView).toEqual([])
     })
   })

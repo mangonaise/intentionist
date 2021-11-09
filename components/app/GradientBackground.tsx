@@ -4,7 +4,7 @@ import theme from 'styles/theme'
 
 const gradientData: { [id in AccentColor]: { color: string, opacity: number } } = {
   tracker: { color: theme.colors.tracker, opacity: 0.45 },
-  journal: { color: theme.colors.journal, opacity: 0.45 },
+  notes: { color: theme.colors.notes, opacity: 0.45 },
   focus: { color: theme.colors.focus, opacity: 0.4 },
   neutral: { color: '#8a8a8a', opacity: 0.4 },
   off: { color: 'transparent', opacity: 0 }

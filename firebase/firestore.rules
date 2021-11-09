@@ -12,8 +12,9 @@ service cloud.firestore {
           || isUsernameAvailable(request.resource.data.username));
 
       match /weeks/{startDate} {
-        allow read, write: if requestedByUserWithId(userId);
-        // && if week has a valid startDate
+        allow read: if requestedByUserWithId(userId);
+        allow write: if requestedByUserWithId(userId)
+          && isValidWeekDoc(startDate, request.resource.data);
         // allow get: if friend
       }
 
@@ -22,7 +23,7 @@ service cloud.firestore {
         allow get: if requestedByUserWithId(userId); // or if friend
       }
 
-      match /journal/{entryId} {
+      match /notes/{noteId} {
         allow read, write: if requestedByUserWithId(userId);
         // allow get: if friend
       }
@@ -61,6 +62,12 @@ service cloud.firestore {
 
     function isUsernameAvailable(username) {
       return isValidUsername(username) && !exists(/databases/$(database)/documents/usernames/$(username));
+    }
+
+    function isValidWeekDoc(docId, docData) {
+      return docData.startDate == docId
+        && docId.matches('^[0-9]+-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$')
+        && docData.keys().hasOnly(['startDate', 'icon', 'times', 'notes', 'notesMetadata']);
     }
   }
 }

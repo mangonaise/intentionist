@@ -33,7 +33,7 @@ const LandingPage: NextPage = () => {
   if (hide) return <LoadingScreen />
   return (
     <FadeIn>
-      <Head><title>Intentionist | Social habit tracker and journal</title></Head>
+      <Head><title>Intentionist | Social habit tracker</title></Head>
       <Flex column center sx={{ height: '90vh' }}>
         <Icon icon={IntentionistIcon} sx={{ fontSize: '3rem', mb: 8 }} />
         <IconButton icon={GoogleIcon} onClick={signInWithGoogle}>

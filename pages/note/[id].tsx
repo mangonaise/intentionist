@@ -4,59 +4,59 @@ import { createContext, useContext, useState } from 'react'
 import { format } from 'date-fns'
 import { Global } from '@emotion/react'
 import { css } from '@theme-ui/css'
-import JournalEntryEditor, { JournalEntryDocumentData } from '@/logic/app/JournalEntryEditor'
+import NoteEditor, { NoteDocumentData } from '@/logic/app/NoteEditor'
 import HabitsHandler from '@/logic/app/HabitsHandler'
 import withApp from '@/components/app/withApp'
 import LoadingScreen from '@/components/app/LoadingScreen'
 import SmartEmoji from '@/components/app/SmartEmoji'
-import JournalEntryEditorView from '@/components/page/journal-editor/JournalEntryEditorView'
-import JournalEntryNavSection from '@/components/page/journal-editor/JournalEntryNavSection'
-import JournalEntryRichText from '@/components/page/journal-editor/JournalEntryRichText'
-import JournalEntryPreview from '@/components/page/journal-editor/JournalEntryPreview'
+import NoteMetadataEditor from '@/components/page/note/NoteMetadataEditor'
+import NoteNavSection from '@/components/page/note/NoteNavSection'
+import NoteRichText from '@/components/page/note/NoteRichText'
+import NoteMetadata from '@/components/page/note/NoteMetadata'
 import FadeIn from '@/components/primitives/FadeIn'
 import Flex from '@/components/primitives/Flex'
 import Spacer from '@/components/primitives/Spacer'
 import Text from '@/components/primitives/Text'
 import Head from 'next/head'
 
-export const JournalContext = createContext<{ editor: JournalEntryEditor, entryData: JournalEntryDocumentData }>(null!)
+export const NoteContext = createContext<{ editor: NoteEditor, noteData: NoteDocumentData }>(null!)
 
-const JournalEntryPage = observer(() => {
-  const [editor] = useState(container.resolve(JournalEntryEditor))
+const NotePage = observer(() => {
+  const [editor] = useState(container.resolve(NoteEditor))
 
-  if (!editor.entry) return (
+  if (!editor.note) return (
     <>
       <Head><title>...</title></Head>
       <LoadingScreen />
-      <JournalFontPreload />
+      <FontPreload />
     </>
   )
 
   return (
-    <JournalContext.Provider value={{ editor, entryData: editor.entry }}>
-      <Head><title>{editor.entry.title || 'New journal entry'}</title></Head>
+    <NoteContext.Provider value={{ editor, noteData: editor.note }}>
+      <Head><title>{editor.note.title || 'New note'}</title></Head>
       <FadeIn sx={{ maxWidth: '750px', margin: 'auto' }}>
-        <JournalEntryNavSection />
+        <NoteNavSection />
         <Spacer mb={[4, 6]} />
         <DateAndHabit />
         <Spacer mb={[2, 3]} />
-        {!!editor.isEditing ? <JournalEntryEditorView /> : <JournalEntryPreview />}
-        <JournalEntryRichText />
+        {!!editor.isEditing ? <NoteMetadataEditor /> : <NoteMetadata />}
+        <NoteRichText />
       </FadeIn>
-      <JournalFontPreload />
-    </JournalContext.Provider>
+      <FontPreload />
+    </NoteContext.Provider>
   )
 })
 
 const DateAndHabit = () => {
-  const { entryData } = useContext(JournalContext)
-  const [habit] = useState(container.resolve(HabitsHandler).habits.find((habit) => habit.id === entryData.habitId))
+  const { noteData } = useContext(NoteContext)
+  const [habit] = useState(container.resolve(HabitsHandler).habits.find((habit) => habit.id === noteData.habitId))
   if (!habit) return null
 
   return (
     <Flex align="center" flexWrap>
       <Text type="span" sx={{ opacity: 0.5, mr: 2 }}>
-        {format(new Date(entryData.date), 'd MMM yyyy')} in
+        {format(new Date(noteData.date), 'd MMM yyyy')} in
       </Text>
       <Flex center sx={{ maxWidth: '100%' }}>
         <SmartEmoji nativeEmoji={habit.icon} rem={1.2} />
@@ -68,7 +68,7 @@ const DateAndHabit = () => {
   )
 }
 
-const JournalFontPreload = () => {
+const FontPreload = () => {
   return (
     <>
       <Global styles={css({
@@ -85,4 +85,4 @@ const JournalFontPreload = () => {
   )
 }
 
-export default withApp(JournalEntryPage, 'journal')
+export default withApp(NotePage, 'notes')
