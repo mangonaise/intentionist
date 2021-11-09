@@ -94,7 +94,7 @@ export default class WeekHandler {
     const habitHasData = (habit: Habit) => this.getHabitIdsWithData().includes(habit.id)
     this.habitsInView = this.habitsHandler.habits
       .filter((habit) => this.condenseView ? habitHasData(habit) : (habit.status === 'active' || habitHasData(habit)))
-      
+
     if (this.viewMode === 'focus') {
       this.habitsInView = this.habitsInView.filter((habit) => habit.timeable)
     }
@@ -220,6 +220,15 @@ export default class WeekHandler {
     } else {
       return this.weekInView.times?.[habitId]?.[period] ?? 0
     }
+  }
+
+  public getNotesCount = () => {
+    if (!this.weekInView.notesMetadata || !this.weekInView.notes) return 0
+    return Object.entries(this.weekInView.notes)
+      .filter(([habitId]) => this.habitsHandler.habits.find((habit) => habit.id === habitId))
+      .map(([_, values]) => values)
+      .flat()
+      .length
   }
 
   private getHabitIdsWithData = () => {

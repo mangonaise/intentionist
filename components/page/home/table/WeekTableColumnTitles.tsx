@@ -1,6 +1,6 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { useContext, useLayoutEffect, useRef } from 'react'
+import { useContext, useLayoutEffect, useRef, useState } from 'react'
 import { isSameDay } from 'date-fns'
 import { ColumnsDisplayContext } from '../WeekTable'
 import { weekdayNames } from '@/logic/utils/_consts'
@@ -17,11 +17,13 @@ const weekdaysShort = weekdayNames.map((day) => day.slice(0, 3))
 const weekdayInitials = weekdayNames.map((day) => day.slice(0, 1))
 
 const WeekTableColumnTitles = () => {
-  const { viewMode } = container.resolve(WeekHandler)
+  const { viewMode, getNotesCount } = container.resolve(WeekHandler)
+  const [notesCount] = useState(getNotesCount())
+
 
   const map: { [viewMode in WeekViewMode]: JSX.Element } = {
     'tracker': <TrackerTitleRow />,
-    'notes': <NotesTitleRow />,
+    'notes': <NotesTitleRow notesCount={notesCount} />,
     'focus': <FocusTitleRow />
   }
 
@@ -32,12 +34,10 @@ const TrackerTitleRow = () => {
   return <WeekdayLabels />
 }
 
-const NotesTitleRow = () => {
-  // todo: show notes count
-
+const NotesTitleRow = ({ notesCount }: { notesCount: number }) => {
   return (
     <Flex center sx={{ height: 'row' }}>
-      Notes
+      {notesCount} note{notesCount === 1 ? '' : 's'}
     </Flex>
   )
 }
