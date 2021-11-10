@@ -34,7 +34,9 @@ const PendingFriendRequestModal = observer(() => {
 
   let content = getModalContent(pendingStatus, newFriendDisplayName)
 
-  if (!showModal && (pendingStatus === 'sending' || pendingStatus === 'accepting')) {
+  const isIntermediateState = pendingStatus === 'sending' || pendingStatus === 'accepting'
+
+  if (!showModal && isIntermediateState) {
     // wait for other modals to close if needed
     const delay = pendingStatus === 'sending' ? 275 : 0
     new Promise(resolve => setTimeout(resolve, delay)).then(() => setShowModal(true))
@@ -44,7 +46,7 @@ const PendingFriendRequestModal = observer(() => {
     <ModalPopup
       isOpen={showModal}
       closeModal={() => setShowModal(false)}
-      disableClose={pendingStatus === 'sending' || pendingStatus === 'accepting'}
+      disableClose={isIntermediateState}
     >
       <Flex column sx={{ width: '350px', maxWidth: 'calc(100vw - 2.4rem)', mt: 4 }}>
         <Flex center column>
@@ -66,7 +68,7 @@ const PendingFriendRequestModal = observer(() => {
             <Text type="p" key={index}>{text}</Text>
           ))}
         </Flex>
-        {pendingStatus !== 'sending' && (
+        {!isIntermediateState && (
           <Button onClick={() => setShowModal(false)} sx={{ m: 4, mt: 0 }}>
             OK
           </Button>
