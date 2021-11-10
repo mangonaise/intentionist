@@ -46,11 +46,11 @@ const DeleteHabitDropdown = () => {
               <Text sx={{ mb: 4 }}>If you want to hide this habit because you aren't focusing on it anymore, simply <b>suspend</b> or <b>archive</b> it instead.</Text>
               <Text>Permanently deleting this habit will <b>erase it from history.</b> That includes all tracker history and notes.</Text>
             </Box>
-            <Flex sx={{ flexWrap: ['wrap', 'nowrap'], width: '100%' }}>
-              <Button onClick={closeModal} sx={{ flex: 1, mr: [0, 3], mb: [3, 0], minWidth: ['100%', 'auto'] }}>
+            <Flex sx={{ flexWrap: ['wrap', 'nowrap'], flexDirection: ['column-reverse', 'row'], width: '100%' }}>
+              <Button onClick={closeModal} sx={{ flex: 1, mr: [0, 3], mt: [3, 0], minWidth: ['100%', 'auto'] }}>
                 Cancel
               </Button>
-              <Button onClick={handleDeleteHabit} hoverEffect="opacity" sx={{ flex: 1, minWidth: ['100%', 'auto'], bg: 'focus'}}>
+              <Button onClick={handleDeleteHabit} hoverEffect="opacity" sx={{ flex: 1, minWidth: ['100%', 'auto'], bg: 'focus' }}>
                 Got it, delete
               </Button>
             </Flex>

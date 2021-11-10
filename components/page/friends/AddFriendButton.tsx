@@ -163,8 +163,8 @@ const SearchResultModal = ({ isOpen, closeModal, searchResult, onSendFriendReque
         )}
       </Box>
       {userData && (
-        <Flex sx={{ flexWrap: ['wrap', 'nowrap'], width: '100%', mb: 4, px: 4 }}>
-          <Button onClick={closeModal} sx={{ flex: 1, mr: [0, 3], mb: [3, 0], minWidth: ['100%', 'auto'] }}>
+        <Flex sx={{ flexWrap: ['wrap', 'nowrap'], flexDirection: ['column-reverse', 'row'], width: '100%', mb: 4, px: 4 }}>
+          <Button onClick={closeModal} sx={{ flex: 1, mr: [0, 3], mt: [3, 0], minWidth: ['100%', 'auto'] }}>
             Cancel
           </Button>
           <Button
