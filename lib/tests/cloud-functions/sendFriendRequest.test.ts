@@ -2,7 +2,7 @@ import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { signOut, User } from '@firebase/auth'
 import { httpsCallable } from '@firebase/functions'
-import { waitForCloudFunctionExecution } from './_helpers'
+import { waitForCloudFunctionExecution, getDbShortcuts } from './_helpers'
 import initializeFirebase from '@/firebase-setup/initializeFirebase'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import signInDummyUser from '@/test-setup/signInDummyUser'
@@ -17,8 +17,9 @@ const authUserSeed = 'sendFriendRequest'
 const { app, db } = getFirebaseAdmin()
 const firebase = initializeFirebase()
 
-const friendRequestsDoc = (uid: string) => db.collection('users').doc(uid).collection('data').doc('friendRequests')
 const sendFriendRequest = httpsCallable(firebase.functions, 'sendFriendRequest')
+const { friendRequestsDoc } = getDbShortcuts(db)
+
 
 let sender: User
 const senderUsername = `test_sender_username${now}`

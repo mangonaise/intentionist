@@ -1,7 +1,7 @@
 import '@abraham/reflection'
 import { httpsCallable } from '@firebase/functions'
 import { signOut } from '@firebase/auth'
-import { waitForCloudFunctionExecution } from 'lib/tests/cloud-functions/_helpers'
+import { getDbShortcuts, waitForCloudFunctionExecution } from 'lib/tests/cloud-functions/_helpers'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import teardownFirebase from '@/test-setup/teardownFirebase'
@@ -12,9 +12,11 @@ const { app, db } = getFirebaseAdmin()
 
 const cancelFriendRequest = httpsCallable(firebase.functions, 'cancelOutgoingFriendRequest')
 
-const usernameDoc = (username: string) => db.collection('usernames').doc(username)
-const userDoc = (uid: string) => db.collection('users').doc(uid)
-const friendRequestsDoc = (uid: string) => userDoc(uid).collection('data').doc('friendRequests')
+const {
+  userDoc,
+  usernameDoc,
+  friendRequestsDoc,
+} = getDbShortcuts(db)
 
 const now = Date.now()
 const authUserSeed = 'cancelFriendRequest'

@@ -1,6 +1,6 @@
 import '@abraham/reflection'
 import { firestore } from 'firebase-admin'
-import { waitForCloudFunctionExecution } from 'lib/tests/cloud-functions/_helpers'
+import { getDbShortcuts, waitForCloudFunctionExecution } from 'lib/tests/cloud-functions/_helpers'
 import { httpsCallable } from '@firebase/functions'
 import { signOut } from '@firebase/auth'
 import initializeFirebase from '@/firebase-setup/initializeFirebase'
@@ -15,10 +15,12 @@ const { app, db } = getFirebaseAdmin()
 
 const respondToFriendRequest = httpsCallable(firebase.functions, 'respondToFriendRequest')
 
-const usernameDoc = (username: string) => db.collection('usernames').doc(username)
-const userDoc = (uid: string) => db.collection('users').doc(uid)
-const friendRequestsDoc = (uid: string) => userDoc(uid).collection('data').doc('friendRequests')
-const friendsDoc = (uid: string) => userDoc(uid).collection('data').doc('friends')
+const {
+  userDoc,
+  usernameDoc,
+  friendsDoc,
+  friendRequestsDoc
+} = getDbShortcuts(db)
 
 const now = Date.now()
 const authUserSeed = 'respondToFriendRequest'

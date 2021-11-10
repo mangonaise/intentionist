@@ -1,9 +1,13 @@
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
-import { waitForCloudFunctionExecution } from './_helpers'
+import { waitForCloudFunctionExecution, getDbShortcuts } from './_helpers'
 
 // 🔨
 
 const { app, db } = getFirebaseAdmin()
+const {
+  userDoc,
+  usernameDoc
+} = getDbShortcuts(db)
 
 afterAll(async () => {
   await app.delete()
@@ -22,33 +26,33 @@ describe('onUpdateUserDocument background trigger function', () => {
   }
 
   afterAll(async () => {
-    await db.collection('users').doc(uid).delete()
-    await db.collection('usernames').doc(updatedUsername).delete()
+    await userDoc(uid).delete()
+    await usernameDoc(updatedUsername).delete()
   })
 
   test(`1. creating a user document automatically creates a username document with the user's avatar and display name`, async () => {
-    await db.collection('users').doc(uid).set({
+    await userDoc(uid).set({
       username: originalUsername,
       ...testAvatarAndDisplayName
     })
 
     await waitForCloudFunctionExecution()
 
-    const usernameDoc = await db.collection('usernames').doc(originalUsername).get()
-    expect(usernameDoc.data()).toEqual(testAvatarAndDisplayName)
+    const generatedUsernameDoc = await usernameDoc(originalUsername).get()
+    expect(generatedUsernameDoc.data()).toEqual(testAvatarAndDisplayName)
   })
 
   test('2. when a user changes their username, the old username document is deleted and a new one is created', async () => {
-    await db.collection('users').doc(uid).update({
+    await userDoc(uid).update({
       username: updatedUsername
     })
 
     await waitForCloudFunctionExecution()
 
-    const originalUsernameDoc = await db.collection('usernames').doc(originalUsername).get()
+    const originalUsernameDoc = await usernameDoc(originalUsername).get()
     expect(originalUsernameDoc.exists).toEqual(false)
 
-    const updatedUsernameDoc = await db.collection('usernames').doc(updatedUsername).get()
+    const updatedUsernameDoc = await usernameDoc(updatedUsername).get()
     expect(updatedUsernameDoc.data()).toEqual(testAvatarAndDisplayName)
   })
 
@@ -58,11 +62,11 @@ describe('onUpdateUserDocument background trigger function', () => {
       displayName: 'Cool Firebase Admin'
     }
 
-    await db.collection('users').doc(uid).update(newAvatarAndDisplayName)
+    await userDoc(uid).update(newAvatarAndDisplayName)
 
     await waitForCloudFunctionExecution()
 
-    const usernameDoc = await db.collection('usernames').doc(updatedUsername).get()
-    expect(usernameDoc.data()).toEqual(newAvatarAndDisplayName)
+    const updatedUsernameDoc = await usernameDoc(updatedUsername).get()
+    expect(updatedUsernameDoc.data()).toEqual(newAvatarAndDisplayName)
   })
 })
