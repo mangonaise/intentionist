@@ -5,6 +5,7 @@ import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import teardownFirebase from '@/test-setup/teardownFirebase'
+import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import DbHandler from '@/logic/app/DbHandler'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import generateHabitId from '@/logic/utils/generateHabitId'
@@ -12,7 +13,9 @@ import exclude from '@/logic/utils/exclude'
 
 // 🔨
 
-const firebase = initializeFirebase('test-habitshandler')
+const projectId = 'test-habitshandler'
+const firebase = initializeFirebase(projectId)
+const { db: adminDb } = getFirebaseAdmin(projectId)
 
 let dbHandler: DbHandler, habitsHandler: HabitsHandler
 const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '🧪', status: 'active' }
@@ -30,7 +33,7 @@ beforeEach(async () => {
 })
 
 afterEach(async () => {
-  await deleteHabitsDoc()
+  await deleteHabitsDoc(adminDb)
   container.clearInstances()
 })
 

@@ -15,11 +15,14 @@ import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import deleteNotes from '@/test-setup/deleteNotes'
 import deleteWeeks from '@/test-setup/deleteWeeks'
+import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import teardownFirebase from '@/test-setup/teardownFirebase'
 
 // 🔨
 
-const firebase = initializeFirebase('test-noteeditor')
+const projectId = 'test-noteeditor'
+const firebase = initializeFirebase(projectId)
+const { db: adminDb } = getFirebaseAdmin(projectId)
 
 let noteEditor: NoteEditor, weekHandler: WeekHandler, dbHandler: DbHandler
 let router: MockRouter
@@ -61,9 +64,9 @@ beforeEach(async () => {
 })
 
 afterEach(async () => {
-  await deleteHabitsDoc()
+  await deleteHabitsDoc(adminDb)
   await deleteNotes()
-  await deleteWeeks()
+  await deleteWeeks(adminDb)
   container.clearInstances()
 })
 

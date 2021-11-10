@@ -34,7 +34,7 @@ beforeEach(async () => {
 })
 
 afterEach(async () => {
-  await deleteWeeks()
+  await deleteWeeks(adminDb)
   await deleteWeekIcons()
   container.clearInstances()
 })

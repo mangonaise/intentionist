@@ -14,13 +14,16 @@ import MockRouter from '@/test-setup/mock/MockRouter'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteWeeks from '@/test-setup/deleteWeeks'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
+import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import teardownFirebase from '@/test-setup/teardownFirebase'
 import addWeeks from 'date-fns/addWeeks'
 
 // 🔨
 
-const firebase = initializeFirebase('test-focustimerhandler')
+const projectId = 'test-focustimerhandler'
+const firebase = initializeFirebase(projectId)
+const { db: adminDb } = getFirebaseAdmin(projectId)
 
 const router = container.resolve(MockRouter)
 container.register('Router', { useValue: router })
@@ -35,7 +38,7 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  await deleteHabitsDoc()
+  await deleteHabitsDoc(adminDb)
   await teardownFirebase(firebase)
 })
 
@@ -168,7 +171,7 @@ describe('behavior', () => {
     beforeAll(async () => {
       weekHandler = container.resolve(WeekHandler)
       weekHandler.weekInView.times = {}
-      await deleteWeeks()
+      await deleteWeeks(adminDb)
     })
 
     beforeEach(() => {
@@ -179,7 +182,7 @@ describe('behavior', () => {
     afterEach(async () => {
       jest.useRealTimers()
       weekHandler.weekInView.times = {}
-      await deleteWeeks()
+      await deleteWeeks(adminDb)
     })
 
     test('progress is saved when the timer completes', async () => {

@@ -14,12 +14,16 @@ import generateNoteId from '@/logic/utils/generateNoteId'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import deleteWeeks from '@/test-setup/deleteWeeks'
+import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import teardownFirebase from '@/test-setup/teardownFirebase'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 
 // 🔨
 
-const firebase = initializeFirebase('test-weekhandler')
+const projectId = 'test-weekhandler'
+const firebase = initializeFirebase(projectId)
+const { db: adminDb } = getFirebaseAdmin(projectId)
+
 
 let weekHandler: WeekHandler, dbHandler: DbHandler, authUser: AuthUser, habitsHandler: HabitsHandler
 
@@ -63,8 +67,8 @@ beforeEach(() => {
 })
 
 afterEach(async () => {
-  await deleteWeeks()
-  await deleteHabitsDoc()
+  await deleteWeeks(adminDb)
+  await deleteHabitsDoc(adminDb)
   container.clearInstances()
 })
 
@@ -91,7 +95,7 @@ describe('initialization', () => {
   })
 
   test(`tracker statuses are correctly placed into week in view's local cache`, async () => {
-    await dbHandler.updateWeekDoc('2021-09-20', { statuses: dummyTrackerStatuses })
+    await dbHandler.updateWeekDoc('2021-09-20', { startDate: '2021-09-20', statuses: dummyTrackerStatuses })
     await initializeWeekHandler()
     expect(weekHandler.weekInView.statuses).toEqual(dummyTrackerStatuses)
   })

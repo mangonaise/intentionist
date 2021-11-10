@@ -9,12 +9,15 @@ import deleteWeeks from '@/test-setup/deleteWeeks'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import teardownFirebase from '@/test-setup/teardownFirebase'
+import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import MockDate from 'mockdate'
 import addWeeks from 'date-fns/addWeeks'
 
 // 🔨
 
-const firebase = initializeFirebase('test-newweekprompthandler')
+const projectId = 'test-newweekprompthandler'
+const firebase = initializeFirebase(projectId)
+const { db: adminDb } = getFirebaseAdmin(projectId)
 
 let newWeekPromptHandler: NewWeekPromptHandler
 
@@ -35,7 +38,7 @@ beforeEach(async () => {
 afterEach(async () => {
   jest.useRealTimers()
   MockDate.reset()
-  await deleteWeeks()
+  await deleteWeeks(adminDb)
   container.clearInstances()
 })
 

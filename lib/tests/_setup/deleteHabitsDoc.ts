@@ -1,13 +1,11 @@
 
 import { container } from 'tsyringe'
-import { doc, deleteDoc } from 'firebase/firestore'
+import { Firestore } from 'firebase-admin/firestore'
 import AuthUser from '@/logic/app/AuthUser'
-import DbHandler from '@/logic/app/DbHandler'
 
-async function deleteHabitsDoc() {
+async function deleteHabitsDoc(adminDb: Firestore) {
   const authUser = container.resolve(AuthUser)
-  const db = container.resolve(DbHandler).db
-  await deleteDoc(doc(db, 'users', authUser.uid, 'data', 'habits'))
+  await adminDb.collection('users').doc(authUser.uid).collection('data').doc('habits').delete()
 }
 
 export default deleteHabitsDoc

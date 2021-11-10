@@ -1,11 +1,9 @@
 import { container } from 'tsyringe'
-import { collection, deleteDoc, getDocs, query } from '@firebase/firestore'
+import { Firestore } from 'firebase-admin/firestore'
 import AuthUser from '@/logic/app/AuthUser'
-import DbHandler from '@/logic/app/DbHandler'
 
-export default async function deleteWeeks() {
+export default async function deleteWeeks(adminDb: Firestore) {
   const authUser = container.resolve(AuthUser)
-  const db = container.resolve(DbHandler).db
-  const weekDocs = await getDocs(query(collection(db, 'users', authUser.uid, 'weeks')))
-  weekDocs.forEach(async (doc) => await deleteDoc(doc.ref))
+  const weekDocs = await adminDb.collection('users').doc(authUser.uid).collection('weeks').get()
+  weekDocs.forEach(async (doc) => await doc.ref.delete())
 }
