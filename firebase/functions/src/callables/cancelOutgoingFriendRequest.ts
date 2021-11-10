@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions'
-import { firestore } from 'firebase-admin'
 import admin = require('firebase-admin')
+import { firestore } from 'firebase-admin'
+import { getUserDataByUid, getUserDataByUsername  } from '../helpers'
 
 const db = admin.firestore()
 
@@ -16,15 +17,8 @@ exports.cancelOutgoingFriendRequest = functions.https.onCall((data, context) => 
   const senderUid = context.auth.uid
 
   return db.runTransaction(async (transaction) => {
-    async function getSenderUsername() {
-      const senderUserDoc = await transaction.get(db.collection('users').doc(senderUid))
-      return senderUserDoc.data()?.username as string | undefined
-    }
-
-    async function getRecipientUid() {
-      const querySnapshot = await transaction.get(db.collection('users').where('username', '==', recipientUsername))
-      return querySnapshot.empty ? undefined : querySnapshot.docs[0].id
-    }
+    const getSenderUsername = async () => (await getUserDataByUid(transaction, db, senderUid))?.username
+    const getRecipientUid = async () => (await getUserDataByUsername(transaction, db, recipientUsername))?.uid
 
     const [senderUsername, recipientUid] = await Promise.all([getSenderUsername(), getRecipientUid()])
 
