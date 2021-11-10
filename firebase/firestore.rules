@@ -67,7 +67,7 @@ service cloud.firestore {
     function isValidWeekDoc(docId, docData) {
       return docData.startDate == docId
         && docId.matches('^[0-9]+-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$')
-        && docData.keys().hasOnly(['startDate', 'icon', 'times', 'notes', 'notesMetadata']);
+        && docData.keys().hasOnly(['startDate', 'icon', 'statuses', 'notes', 'times', 'notesMetadata']);
     }
   }
 }
