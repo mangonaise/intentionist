@@ -1,8 +1,9 @@
 import * as functions from 'firebase-functions'
 import admin = require('firebase-admin')
-import { getUserDataByUid, getUserDataByUsername } from '../helpers'
+import { getUserDataByUid, getUserDataByUsername, getFriendRequestsDocShortcut } from '../helpers'
 
 const db = admin.firestore()
+const friendRequestsDoc = getFriendRequestsDocShortcut(db)
 
 exports.sendFriendRequest = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
@@ -21,7 +22,7 @@ exports.sendFriendRequest = functions.https.onCall(async (data, context) => {
     const getRecipientUserData = async () => (await getUserDataByUsername(transaction, db, recipientUsername))
 
     async function getRecipientIncomingFriendRequestsCount(recipientUid: string) {
-      const docRef = db.collection('users').doc(recipientUid).collection('data').doc('friendRequests')
+      const docRef = friendRequestsDoc(recipientUid)
       const recipientFriendRequestsDoc = await transaction.get(docRef)
       const incomingRequests = recipientFriendRequestsDoc.data()?.incoming ?? {}
       return Object.keys(incomingRequests).length
@@ -42,7 +43,7 @@ exports.sendFriendRequest = functions.https.onCall(async (data, context) => {
     }
 
     // create an outgoing request in the sender's /data/friendRequests/outgoing field
-    transaction.set(db.collection('users').doc(senderUserData.uid).collection('data').doc('friendRequests'), {
+    transaction.set(friendRequestsDoc(senderUserData.uid), {
       outgoing: {
         [recipientUsername]: {
           time,
@@ -53,7 +54,7 @@ exports.sendFriendRequest = functions.https.onCall(async (data, context) => {
     }, { merge: true })
 
     // create an incoming request in the recipient's /data/friendRequests/incoming field
-    transaction.set(db.collection('users').doc(recipientUserData.uid).collection('data').doc('friendRequests'), {
+    transaction.set(friendRequestsDoc(recipientUserData.uid), {
       incoming: {
         [senderUserData.username]: {
           time,

@@ -1,12 +1,12 @@
 import * as functions from 'firebase-functions'
 import admin = require('firebase-admin')
 import { firestore } from 'firebase-admin'
-import { getUserDataByUid, getUserDataByUsername } from '../helpers'
+import { getFriendRequestsDocShortcut, getFriendsDocShortcut, getUserDataByUid, getUserDataByUsername } from '../helpers'
 
 const db = admin.firestore()
 
-const friendRequestsDoc = (uid: string) => db.collection('users').doc(uid).collection('data').doc('friendRequests')
-const friendsDoc = (uid: string) => db.collection('users').doc(uid).collection('data').doc('friends')
+const friendsDoc = getFriendsDocShortcut(db)
+const friendRequestsDoc = getFriendRequestsDocShortcut(db)
 
 exports.respondToFriendRequest = functions.https.onCall(async (data, context) => {
   if (!context.auth) {

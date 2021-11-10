@@ -1,9 +1,11 @@
 import * as functions from 'firebase-functions'
 import admin = require('firebase-admin')
 import { firestore } from 'firebase-admin'
-import { getUserDataByUid, getUserDataByUsername  } from '../helpers'
+import { getFriendRequestsDocShortcut, getUserDataByUid, getUserDataByUsername  } from '../helpers'
 
 const db = admin.firestore()
+
+const friendRequestsDoc = getFriendRequestsDocShortcut(db)
 
 exports.cancelOutgoingFriendRequest = functions.https.onCall((data, context) => {
   if (!context.auth) {
@@ -26,14 +28,14 @@ exports.cancelOutgoingFriendRequest = functions.https.onCall((data, context) => 
     if (!recipientUid) throw new functions.https.HttpsError('aborted', 'Recipient user could not be found')
 
     // remove the outgoing request from the sender's /data/friendRequests/outgoing field
-    transaction.set(db.collection('users').doc(senderUid).collection('data').doc('friendRequests'), {
+    transaction.set(friendRequestsDoc(senderUid), {
       outgoing: {
         [recipientUsername]: firestore.FieldValue.delete()
       }
     }, { merge: true })
 
     // remove the incoming request from the recipient's /data/friendRequests/incoming field
-    transaction.set(db.collection('users').doc(recipientUid).collection('data').doc('friendRequests'), {
+    transaction.set(friendRequestsDoc(recipientUid), {
       incoming: {
         [senderUsername]: firestore.FieldValue.delete()
       }
