@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { FC, useState } from 'react'
 import FriendRequestsHandler, { FriendRequest } from '@/logic/app/FriendRequestsHandler'
 import EmptyFriendsViewText from '@/components/page/friends/EmptyFriendsViewText'
+import FriendsLoadingIndicator from '@/components/page/friends/FriendsLoadingIndicator'
 import Dropdown from '@/components/app/Dropdown'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Box from '@/components/primitives/Box'
@@ -10,7 +11,6 @@ import Flex from '@/components/primitives/Flex'
 import Text from '@/components/primitives/Text'
 import FadeIn from '@/components/primitives/FadeIn'
 import Button from '@/components/primitives/Button'
-import Icon from '@/components/primitives/Icon'
 import IconButton from '@/components/primitives/IconButton'
 import CheckIcon from '@/components/icons/CheckIcon'
 import CrossIcon from '@/components/icons/CrossIcon'
@@ -30,7 +30,7 @@ const FriendRequestsView = observer(() => {
       </Dropdown>
       {hasLoadedRequests
         ? (viewMode === 'incoming' ? <IncomingRequestsList /> : <OutgoingRequestsList />)
-        : <LoadingIndicator />}
+        : <FriendsLoadingIndicator />}
     </FadeIn>
   )
 })
@@ -144,14 +144,6 @@ const OutgoingRequest = ({ request }: { request: FriendRequest }) => {
         {isCanceling ? 'Canceling...' : 'Cancel request'}
       </Button>
     </FriendRequestLayout>
-  )
-}
-
-const LoadingIndicator = () => {
-  return (
-    <Flex center sx={{ minHeight: '5rem', width: '100%' }}>
-      <Icon icon={EllipsisIcon} sx={{ fontSize: '1.5rem', animation: 'pulse infinite 2s' }} />
-    </Flex>
   )
 }
 
