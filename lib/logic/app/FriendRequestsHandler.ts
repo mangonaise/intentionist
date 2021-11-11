@@ -23,7 +23,7 @@ export default class FriendRequestsHandler {
   private profileHandler
   private dbHandler
   private functions
-  private listenerUnsubscribe: Unsubscribe | undefined
+  private listenerUnsubscribe: Unsubscribe | null = null
 
   constructor(profileHandler: ProfileHandler, dbHandler: DbHandler, @inject('Functions') functions: Functions) {
     this.profileHandler = profileHandler
@@ -43,6 +43,7 @@ export default class FriendRequestsHandler {
 
   public stopListener = () => {
     this.listenerUnsubscribe?.()
+    this.listenerUnsubscribe = null
   }
 
   public setViewMode = async (viewMode: FriendRequestsViewMode) => {

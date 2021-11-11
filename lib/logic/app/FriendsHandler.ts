@@ -12,7 +12,7 @@ export default class FriendsHandler {
   public hasLoadedFriends = false
   private dbHandler
   private functions
-  private listenerUnsubscribe?: Unsubscribe
+  private listenerUnsubscribe: Unsubscribe | null = null
 
   constructor(dbHandler: DbHandler, @inject('Functions') functions: Functions) {
     this.dbHandler = dbHandler
@@ -30,6 +30,7 @@ export default class FriendsHandler {
 
   public stopListener = () => {
     this.listenerUnsubscribe?.()
+    this.listenerUnsubscribe = null
   }
 
   public removeFriend = async (uid: string) => {
