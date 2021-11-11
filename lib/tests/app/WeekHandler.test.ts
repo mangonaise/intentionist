@@ -540,5 +540,5 @@ describe('displaying correct habits', () => {
 test('teardown: weeks collection and habits doc are emptied', async () => {
   const weekDocs = await getDocs(query(collection(firebase.db, 'users', authUser.uid, 'weeks')))
   expect(weekDocs.size).toEqual(0)
-  expect(await dbHandler.getOwnDoc('data', 'habits')).toBeUndefined()
+  expect(await dbHandler.getDocData(dbHandler.userDocRef())).toBeUndefined()
 })

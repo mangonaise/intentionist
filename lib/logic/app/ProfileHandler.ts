@@ -29,7 +29,7 @@ export default class ProfileHandler {
 
   public setUserProfileInfo = async (info: UserProfileInfo) => {
     if (isEqual(info, this.profileInfo)) return this.profileInfo
-    await this.dbHandler.updateOwnDoc('', info)
+    await this.dbHandler.update(this.dbHandler.userDocRef(), info)
     runInAction(() => this.profileInfo = info)
     return this.profileInfo
   }

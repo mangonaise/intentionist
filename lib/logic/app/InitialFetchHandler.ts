@@ -42,12 +42,12 @@ export default class InitialFetchHandler {
   }
 
   private fetchUserProfile = async () => {
-    const userDoc = await this.dbHandler.getOwnDoc()
+    const userDoc = await this.dbHandler.getDocData(this.dbHandler.userDocRef())
     return userDoc ? userDoc as UserProfileInfo : null
   }
 
   private fetchHabitsDoc = async () => {
-    const habitsDoc = await this.dbHandler.getOwnDoc('data', 'habits')
+    const habitsDoc = await this.dbHandler.getDocData(this.dbHandler.habitsDocRef)
     return habitsDoc ? habitsDoc as HabitsDocumentData : null
   }
 

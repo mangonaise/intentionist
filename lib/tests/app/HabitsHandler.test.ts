@@ -21,10 +21,12 @@ let dbHandler: DbHandler, habitsHandler: HabitsHandler
 const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '🧪', status: 'active' }
 const dummyHabitB: Habit = { id: generateHabitId(), name: 'Build app', icon: '👨‍💻', status: 'active' }
 const dummyHabitC: Habit = { id: generateHabitId(), name: 'Fix bugs', icon: '🐛', status: 'active' }
-const getHabitsDoc = async () => await dbHandler.getOwnDoc('data', 'habits')
+const getHabitsDoc = async () => await dbHandler.getDocData(dbHandler.habitsDocRef)
+
+let testUserUid: string
 
 beforeAll(async () => {
-  await signInDummyUser()
+  testUserUid = (await signInDummyUser()).uid
 })
 
 beforeEach(async () => {
@@ -55,7 +57,7 @@ describe('initialization', () => {
   })
 
   test('fetched habit is placed in an array in local cache', async () => {
-    await dbHandler.updateOwnDoc('data/habits', {
+    await dbHandler.update(dbHandler.habitsDocRef, {
       habits: { [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') } },
       order: [dummyHabitA.id]
     })
@@ -64,7 +66,7 @@ describe('initialization', () => {
   })
 
   test('fetched habits are ordered correctly', async () => {
-    await dbHandler.updateOwnDoc('data/habits', {
+    await dbHandler.update(dbHandler.habitsDocRef, {
       habits: {
         [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') },
         [dummyHabitB.id]: { ...exclude(dummyHabitB, 'id') }
@@ -76,7 +78,7 @@ describe('initialization', () => {
   })
 
   test('if habit ids are missing from the fetched habit order, they are placed at the end of the local habits array', async () => {
-    await dbHandler.updateOwnDoc('data/habits', {
+    await dbHandler.update(dbHandler.habitsDocRef, {
       habits: {
         [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') },
         [dummyHabitB.id]: { ...exclude(dummyHabitB, 'id') },
@@ -162,9 +164,9 @@ describe('behavior', () => {
 
   test('deleting a habit removes associated notes from database', async () => {
     await habitsHandler.setHabit(dummyHabitA)
-    await dbHandler.updateOwnDoc('notes/a1', { habitId: dummyHabitA.id })
-    await dbHandler.updateOwnDoc('notes/a2', { habitId: dummyHabitA.id })
-    await dbHandler.updateOwnDoc('notes/b1', { habitId: dummyHabitB.id })
+    await dbHandler.update(dbHandler.noteDocRef('a1'), { habitId: dummyHabitA.id })
+    await dbHandler.update(dbHandler.noteDocRef('a2'), { habitId: dummyHabitA.id })
+    await dbHandler.update(dbHandler.noteDocRef('b1'), { habitId: dummyHabitB.id })
     await habitsHandler.deleteHabitById(dummyHabitA.id)
     expect(await dbHandler.getNoteDoc('a1')).toBeNull()
     expect(await dbHandler.getNoteDoc('a2')).toBeNull()

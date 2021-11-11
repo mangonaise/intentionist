@@ -71,7 +71,7 @@ describe('behavior', () => {
       avatar: '🐹',
       username: testUsername
     })
-    const userDoc = await dbHandler.getOwnDoc()
+    const userDoc = await dbHandler.getDocData(dbHandler.userDocRef())
     expect(userDoc).toEqual({
       displayName: 'Jeff',
       avatar: '🐹',
@@ -110,6 +110,6 @@ describe('behavior', () => {
 })
 
 test('teardown: user document and username document are removed after tests', async () => {
-  expect(await dbHandler.getOwnDoc()).toBeUndefined()
+  expect(await dbHandler.getDocData(dbHandler.userDocRef())).toBeUndefined()
   expect(await dbHandler.getUsernameDoc(testUsername)).toBeNull()
 })

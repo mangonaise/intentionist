@@ -2,7 +2,7 @@ import { arrayUnion } from '@firebase/firestore'
 import { makeAutoObservable } from 'mobx'
 import { singleton } from 'tsyringe'
 import { Fetched, InitialState } from '@/logic/app/InitialFetchHandler'
-import DbHandler, { HABITS } from '@/logic/app/DbHandler'
+import DbHandler from '@/logic/app/DbHandler'
 import exclude from '@/logic/utils/exclude'
 import arrayMove from '@/logic/utils/arrayMove'
 import generateHabitId from '@/logic/utils/generateHabitId'
@@ -46,7 +46,7 @@ export default class HabitsHandler {
     this.habits[index] = habitToSet
 
     // ☁️
-    await this.dbHandler.updateOwnDoc(HABITS, {
+    await this.dbHandler.update(this.dbHandler.habitsDocRef, {
       habits: { [habitToSet.id]: { ...exclude(habitToSet, 'id') } }
     })
 
@@ -84,7 +84,7 @@ export default class HabitsHandler {
     this.habits = arrayMove(this.habits, oldIndex, newIndex)
 
     // ☁️
-    await this.dbHandler.updateOwnDoc(HABITS, {
+    await this.dbHandler.update(this.dbHandler.habitsDocRef, {
       order: this.habits.map((habit) => habit.id)
     })
   }
@@ -94,7 +94,7 @@ export default class HabitsHandler {
     this.habits.push(newHabit)
 
     // ☁️
-    await this.dbHandler.updateOwnDoc(HABITS, {
+    await this.dbHandler.update(this.dbHandler.habitsDocRef, {
       habits: { [newHabit.id]: { ...exclude(newHabit, 'id') } },
       order: arrayUnion(newHabit.id)
     })

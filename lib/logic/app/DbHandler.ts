@@ -1,4 +1,4 @@
-import type { Firestore } from 'firebase/firestore'
+import type { Firestore, DocumentReference, DocumentData } from '@firebase/firestore'
 import type { Fetched } from '@/logic/app/InitialFetchHandler'
 import type { WeekDocumentData } from '@/logic/app/WeekHandler'
 import type { NoteDocumentData as NoteDocumentData } from '@/logic/app/NoteEditor'
@@ -16,7 +16,7 @@ const WEEK_ICONS = 'weekIcons'
 const NOTES = 'notes'
 const FRIEND_REQUESTS = 'data/friendRequests'
 const FRIENDS = 'data/friends'
-export const HABITS = 'data/habits'
+const HABITS = 'data/habits'
 
 @singleton()
 export default class DbHandler {
@@ -30,24 +30,24 @@ export default class DbHandler {
     makeAutoObservable(this)
   }
 
+  public getDocData = async (docRef: DocumentReference<DocumentData>) => {
+    return (await getDoc(docRef)).data()
+  }
+
+  public update = async (docRef: DocumentReference<DocumentData>, data: object) => {
+    this.isWriteComplete = false
+    await setDoc(docRef, data, { merge: true })
+    this.completeWrite()
+  }
+
   public getUsernameDoc = async (username: string) => {
-    const data = (await getDoc(doc(this.db, USERNAMES, username))).data()
+    const data = await this.getDocData(doc(this.db, USERNAMES, username))
     if (!data) return null
     return data as AvatarAndDisplayName
   }
 
-  public getOwnDoc = async (...pathSegments: string[]) => {
-    return (await getDoc(this.ownDocRef(...pathSegments))).data()
-  }
-
-  public updateOwnDoc = async (path: string, data: object) => {
-    this.isWriteComplete = false
-    await setDoc(this.ownDocRef(path), data, { merge: true })
-    this.completeWrite()
-  }
-
   public getWeekDoc = async (weekStartDate: string) => {
-    const weekDoc = await this.getOwnDoc(WEEKS, weekStartDate) ?? null
+    const weekDoc = await this.getDocData(this.weekDocRef(weekStartDate)) ?? null
     if (weekDoc && !weekDoc.startDate) {
       console.error('The week document is missing a startDate. This is a bug.')
       weekDoc.startDate = weekStartDate
@@ -65,11 +65,11 @@ export default class DbHandler {
   }
 
   public updateWeekDoc = async (weekStartDate: string, data: Partial<WeekDocumentData> | object) => {
-    await this.updateOwnDoc(`${WEEKS}/${weekStartDate}`, { startDate: weekStartDate, ...data })
+    await this.update(this.weekDocRef(weekStartDate), { startDate: weekStartDate, ...data })
   }
 
   public getWeekIconsDoc = async (year: string) => {
-    const iconsDoc = await this.getOwnDoc(WEEK_ICONS, year) ?? null
+    const iconsDoc = await this.getDocData(this.weekIconsDocRef(year)) ?? null
     return iconsDoc
   }
 
@@ -77,11 +77,11 @@ export default class DbHandler {
     this.isWriteComplete = false
     const { yyyy, mmdd } = separateYYYYfromMMDD(weekStartDate)
     const batch = writeBatch(this.db)
-    batch.set(this.ownDocRef(WEEKS, weekStartDate), {
+    batch.set(this.weekDocRef(weekStartDate), {
       icon,
       startDate: weekStartDate
     }, { merge: true })
-    batch.set(this.ownDocRef(WEEK_ICONS, yyyy), { [mmdd]: icon }, { merge: true })
+    batch.set(this.weekIconsDocRef(yyyy), { [mmdd]: icon }, { merge: true })
     await batch.commit()
     this.completeWrite()
   }
@@ -90,10 +90,10 @@ export default class DbHandler {
     this.isWriteComplete = false
     const { yyyy, mmdd } = separateYYYYfromMMDD(weekStartDate)
     const batch = writeBatch(this.db)
-    batch.set(this.ownDocRef(WEEKS, weekStartDate), {
+    batch.set(this.weekDocRef(weekStartDate), {
       icon: deleteField()
     }, { merge: true })
-    batch.set(this.ownDocRef(WEEK_ICONS, yyyy), {
+    batch.set(this.weekIconsDocRef(yyyy), {
       [mmdd]: deleteField()
     }, { merge: true })
     await batch.commit()
@@ -101,15 +101,15 @@ export default class DbHandler {
   }
 
   public getNoteDoc = async (noteId: string) => {
-    const noteDoc = await this.getOwnDoc(NOTES, noteId) ?? null
+    const noteDoc = await this.getDocData(this.noteDocRef(noteId)) ?? null
     return noteDoc as Fetched<NoteDocumentData>
   }
 
   public updateNote = async (note: NoteDocumentData) => {
     this.isWriteComplete = false
     const batch = writeBatch(this.db)
-    batch.set(this.ownDocRef(NOTES, note.id), note, { merge: true })
-    batch.set(this.ownDocRef(WEEKS, note.weekStartDate), {
+    batch.set(this.noteDocRef(note.id), note, { merge: true })
+    batch.set(this.weekDocRef(note.weekStartDate), {
       startDate: note.weekStartDate,
       notes: { [note.habitId]: arrayUnion(note.id) },
       notesMetadata: { [note.id]: { title: note.title, icon: note.icon } }
@@ -121,8 +121,8 @@ export default class DbHandler {
   public deleteNote = async (note: NoteDocumentData) => {
     this.isWriteComplete = false
     const batch = writeBatch(this.db)
-    batch.delete(this.ownDocRef(NOTES, note.id))
-    batch.set(this.ownDocRef(WEEKS, note.weekStartDate), {
+    batch.delete(this.noteDocRef(note.id))
+    batch.set(this.weekDocRef(note.weekStartDate), {
       notes: { [note.habitId]: arrayRemove(note.id) },
       notesMetadata: { [note.id]: deleteField() }
     }, { merge: true })
@@ -132,7 +132,7 @@ export default class DbHandler {
 
   public deleteHabit = async (habitId: string) => {
     this.isWriteComplete = false
-    const deleteHabitDataPromise = this.updateOwnDoc(HABITS, {
+    const deleteHabitDataPromise = this.update(this.habitsDocRef, {
       habits: { [habitId]: deleteField() },
       order: arrayRemove(habitId)
     })
@@ -144,24 +144,40 @@ export default class DbHandler {
     this.completeWrite()
   }
 
+  public userDocRef = (path?: string, uid?: string) => {
+    return doc(this.db, USERS, uid ?? this.uid, path ?? '')
+  }
+
+  public get habitsDocRef() {
+    return this.userDocRef(HABITS)
+  }
+
   public get friendRequestsDocRef() {
-    return this.ownDocRef(FRIEND_REQUESTS)
+    return this.userDocRef(FRIEND_REQUESTS)
   }
 
   public get friendsDocRef() {
-    return this.ownDocRef(FRIENDS)
+    return this.userDocRef(FRIENDS)
   }
 
-  private get weeksCollectionRef() {
+  public weekDocRef = (weekStartDate: string) => {
+    return this.userDocRef(WEEKS + '/' + weekStartDate)
+  }
+
+  public weekIconsDocRef = (year: string) => {
+    return this.userDocRef(WEEK_ICONS + '/' + year)
+  }
+
+  public noteDocRef = (noteId: string) => {
+    return this.userDocRef(NOTES + '/' + noteId)
+  }
+
+  public get weeksCollectionRef() {
     return collection(this.db, USERS, this.uid, WEEKS)
   }
 
-  private get notesCollectionRef() {
+  public get notesCollectionRef() {
     return collection(this.db, USERS, this.uid, NOTES)
-  }
-
-  private ownDocRef = (...pathSegments: string[]) => {
-    return doc(this.db, USERS, this.uid, ...pathSegments)
   }
 
   // TODO: Move to cloud function
