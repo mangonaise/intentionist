@@ -6,6 +6,7 @@ import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import FriendRequestsHandler from '@/logic/app/FriendRequestsHandler'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import signInDummyUser from '@/test-setup/signInDummyUser'
+import getDbShortcuts from '@/test-setup/getDbShortcuts'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import teardownFirebase from '@/test-setup/teardownFirebase'
 
@@ -14,9 +15,11 @@ import teardownFirebase from '@/test-setup/teardownFirebase'
 const firebase = initializeFirebase()
 const { db } = getFirebaseAdmin()
 
-const usernameDoc = (uid: string) => db.collection('usernames').doc(uid)
-const userDoc = (uid: string) => db.collection('users').doc(uid)
-const friendRequestsDoc = (uid: string) => userDoc(uid).collection('data').doc('friendRequests')
+const {
+  usernameDoc,
+  userDoc,
+  friendRequestsDoc
+} = getDbShortcuts(db)
 
 const now = Date.now()
 

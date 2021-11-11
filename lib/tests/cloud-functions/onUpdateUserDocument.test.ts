@@ -1,5 +1,6 @@
+import { waitForCloudFunctionExecution } from './_helpers'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
-import { waitForCloudFunctionExecution, getDbShortcuts } from './_helpers'
+import getDbShortcuts from '@/test-setup/getDbShortcuts'
 
 // 🔨
 

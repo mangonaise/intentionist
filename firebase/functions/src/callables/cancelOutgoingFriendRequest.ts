@@ -27,14 +27,14 @@ exports.cancelOutgoingFriendRequest = functions.https.onCall((data, context) => 
     if (!senderUsername) throw new functions.https.HttpsError('aborted', 'Sender user could not be found')
     if (!recipientUid) throw new functions.https.HttpsError('aborted', 'Recipient user could not be found')
 
-    // remove the outgoing request from the sender's /data/friendRequests/outgoing field
+    // remove the outgoing request from the sender's /userData/friendRequests/outgoing field
     transaction.set(friendRequestsDoc(senderUid), {
       outgoing: {
         [recipientUsername]: firestore.FieldValue.delete()
       }
     }, { merge: true })
 
-    // remove the incoming request from the recipient's /data/friendRequests/incoming field
+    // remove the incoming request from the recipient's /userData/friendRequests/incoming field
     transaction.set(friendRequestsDoc(recipientUid), {
       incoming: {
         [senderUsername]: firestore.FieldValue.delete()

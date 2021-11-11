@@ -28,16 +28,16 @@ service cloud.firestore {
         // allow get: if friend
       }
 
-      match /data/habits {
+      match /userData/habits {
         allow write: if requestedByUserWithId(userId);
         allow get: if requestedByUserWithId(userId); // or if friend
       }
 
-      match /data/friends {
+      match /userData/friends {
         allow get: if requestedByUserWithId(userId);
       }
 
-      match /data/friendRequests {
+      match /userData/friendRequests {
         allow get: if requestedByUserWithId(userId);
       }
     }

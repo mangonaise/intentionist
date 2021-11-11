@@ -14,9 +14,9 @@ const USERNAMES = 'usernames'
 const WEEKS = 'weeks'
 const WEEK_ICONS = 'weekIcons'
 const NOTES = 'notes'
-const FRIEND_REQUESTS = 'data/friendRequests'
-const FRIENDS = 'data/friends'
-const HABITS = 'data/habits'
+const FRIEND_REQUESTS = 'userData/friendRequests'
+const FRIENDS = 'userData/friends'
+const HABITS = 'userData/habits'
 
 @singleton()
 export default class DbHandler {

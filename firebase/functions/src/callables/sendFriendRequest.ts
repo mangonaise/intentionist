@@ -61,7 +61,7 @@ exports.sendFriendRequest = functions.https.onCall(async (data, context) => {
       })
     }
 
-    // create an outgoing request in the sender's /data/friendRequests/outgoing field
+    // create an outgoing request in the sender's /userData/friendRequests/outgoing field
     transaction.set(friendRequestsDoc(senderUserData.uid), {
       outgoing: {
         [recipientUsername]: {
@@ -72,7 +72,7 @@ exports.sendFriendRequest = functions.https.onCall(async (data, context) => {
       }
     }, { merge: true })
 
-    // create an incoming request in the recipient's /data/friendRequests/incoming field
+    // create an incoming request in the recipient's /userData/friendRequests/incoming field
     transaction.set(friendRequestsDoc(recipientUserData.uid), {
       incoming: {
         [senderUserData.username]: {

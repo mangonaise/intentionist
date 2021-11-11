@@ -1,4 +1,4 @@
-export type UserData = {
+export type BasicUserData = {
   uid: string,
   username: string,
   displayName: string,

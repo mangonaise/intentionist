@@ -1,7 +1,7 @@
 import '@abraham/reflection'
-import { getDbShortcuts } from './_helpers'
 import { httpsCallable } from '@firebase/functions'
 import { signOut } from '@firebase/auth'
+import getDbShortcuts from '@/test-setup/getDbShortcuts'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'

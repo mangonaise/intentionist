@@ -1,4 +1,4 @@
-import type { UserData } from './types'
+import type { BasicUserData } from './types'
 import type { Firestore, Transaction } from 'firebase-admin/firestore'
 
 export function getUserDocShortcut(db: Firestore) {
@@ -10,14 +10,14 @@ export function getUsernameDocShortcut(db: Firestore) {
 }
 
 export function getFriendsDocShortcut(db: Firestore) {
-  return (uid: string) => db.collection('users').doc(uid).collection('data').doc('friends')
+  return (uid: string) => db.collection('users').doc(uid).collection('userData').doc('friends')
 }
 
 export function getFriendRequestsDocShortcut(db: Firestore) {
-  return (uid: string) => db.collection('users').doc(uid).collection('data').doc('friendRequests')
+  return (uid: string) => db.collection('users').doc(uid).collection('userData').doc('friendRequests')
 }
 
-export async function getUserDataByUsername(transaction: Transaction, db: Firestore, username: string): Promise<UserData | undefined> {
+export async function getUserDataByUsername(transaction: Transaction, db: Firestore, username: string): Promise<BasicUserData | undefined> {
   const querySnapshot = await transaction.get(db.collection('users').where('username', '==', username))
   if (querySnapshot.empty) return undefined
   const userDoc = querySnapshot.docs[0]
@@ -30,7 +30,7 @@ export async function getUserDataByUsername(transaction: Transaction, db: Firest
   }
 }
 
-export async function getUserDataByUid(transaction: Transaction, db: Firestore, uid: string): Promise<UserData | undefined> {
+export async function getUserDataByUid(transaction: Transaction, db: Firestore, uid: string): Promise<BasicUserData | undefined> {
   const userDoc = await transaction.get(db.collection('users').doc(uid))
   const profile = userDoc.data()
   if (!profile) return undefined

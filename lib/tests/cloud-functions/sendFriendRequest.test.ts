@@ -2,7 +2,8 @@ import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { signOut, User } from '@firebase/auth'
 import { httpsCallable } from '@firebase/functions'
-import { waitForCloudFunctionExecution, getDbShortcuts } from './_helpers'
+import { waitForCloudFunctionExecution } from './_helpers'
+import getDbShortcuts from '@/test-setup/getDbShortcuts'
 import initializeFirebase from '@/firebase-setup/initializeFirebase'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import signInDummyUser from '@/test-setup/signInDummyUser'
@@ -67,7 +68,7 @@ async function teardown() {
 }
 
 describe('sending a valid friend request', () => {
-  test(`the sender and recipient's /data/friendRequests documents are updated correctly with the outgoing and incoming request`, async () => {
+  test(`the sender and recipient's /userData/friendRequests documents are updated correctly with the outgoing and incoming request`, async () => {
     const result = await sendFriendRequest({ recipientUsername })
     const resultData = result.data as { time: Date }
 
