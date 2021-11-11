@@ -141,4 +141,19 @@ describe('expected failures', () => {
     }
     expect(reason).toEqual('recipient-max-requests')
   })
+
+  it('fails if the sender already has at least 100 outgoing friend requests', async () => {
+    let outgoing: { [username: string]: { time: number } } = {}
+    for (let i = 0; i < 100; i++) {
+      outgoing[`req_${i}`] = { time: 123 }
+    }
+    await friendRequestsDoc(sender.uid).set({ outgoing })
+
+    let reason = ''
+    try { await sendFriendRequest({ recipientUsername }) }
+    catch (err) {
+      reason = (err as any).details?.reason
+    }
+    expect(reason).toEqual('sender-max-requests')
+  })
 })

@@ -21,14 +21,22 @@ exports.sendFriendRequest = functions.https.onCall(async (data, context) => {
     const getSenderUserData = async () => (await getUserDataByUid(transaction, db, context.auth!.uid))
     const getRecipientUserData = async () => (await getUserDataByUsername(transaction, db, recipientUsername))
 
+    async function getSenderOutgoingRequestsCount() {
+      const senderFriendRequestsDoc = await transaction.get(friendRequestsDoc(context.auth!.uid))
+      const outgoingRequests = senderFriendRequestsDoc.data()?.outgoing ?? {}
+      return Object.keys(outgoingRequests).length
+    }
+
     async function getRecipientIncomingFriendRequestsCount(recipientUid: string) {
-      const docRef = friendRequestsDoc(recipientUid)
-      const recipientFriendRequestsDoc = await transaction.get(docRef)
+      const recipientFriendRequestsDoc = await transaction.get(friendRequestsDoc(recipientUid))
       const incomingRequests = recipientFriendRequestsDoc.data()?.incoming ?? {}
       return Object.keys(incomingRequests).length
     }
 
-    const [senderUserData, recipientUserData] = await Promise.all([getSenderUserData(), getRecipientUserData()])
+    const [senderUserData, recipientUserData] = await Promise.all([
+      getSenderUserData(),
+      getRecipientUserData()
+    ])
 
     if (!senderUserData) throw new functions.https.HttpsError('aborted', 'Sender user could not be found')
     if (!recipientUserData) throw new functions.https.HttpsError('aborted', 'Recipient user could not be found')
@@ -36,7 +44,18 @@ exports.sendFriendRequest = functions.https.onCall(async (data, context) => {
       throw new functions.https.HttpsError('aborted', 'Attempted to send friend request to self')
     }
 
-    if (await getRecipientIncomingFriendRequestsCount(recipientUserData.uid) >= 100) {
+    const [senderOutgoingRequestsCount, recipientIncomingRequestsCount] = await Promise.all([
+      getSenderOutgoingRequestsCount(),
+      getRecipientIncomingFriendRequestsCount(recipientUserData.uid)
+    ])
+
+    if (senderOutgoingRequestsCount >= 100) {
+      throw new functions.https.HttpsError('aborted', 'Sender has too many outgoing friend requests', {
+        reason: 'sender-max-requests'
+      })
+    }
+
+    if (recipientIncomingRequestsCount >= 100) {
       throw new functions.https.HttpsError('aborted', 'Recipient has too many incoming friend requests', {
         reason: 'recipient-max-requests'
       })
@@ -59,7 +78,7 @@ exports.sendFriendRequest = functions.https.onCall(async (data, context) => {
         [senderUserData.username]: {
           time,
           displayName: senderUserData.displayName,
-          avatar: senderUserData.avatar 
+          avatar: senderUserData.avatar
         }
       }
     }, { merge: true })

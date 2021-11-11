@@ -22,7 +22,8 @@ function getModalContent(pendingStatus: PendingFriendRequestStatus, newFriendDis
       icon: CheckFillIcon,
       text: `Added ${newFriendDisplayName} as a friend!\nYou can now view each other's weekly activity.`
     },
-    'recipient-max-requests': { icon: CrossIcon, text: `Your request failed to send. That user has too many incoming friend requests.` },
+    'recipient-max-requests': { icon: CrossIcon, text: 'Your request failed to send. That user has too many incoming friend requests.' },
+    'sender-max-requests': { icon: CrossIcon, text: 'Your request failed to send. You have too many outgoing friend requests.' },
     'error': { icon: CrossIcon, text: 'Something went wrong.' },
   }
   return contentMap[pendingStatus]
