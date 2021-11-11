@@ -1,5 +1,8 @@
+import { container } from 'tsyringe'
+import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { FriendsPageContext } from 'pages/friends'
+import FriendRequestsHandler from '@/logic/app/FriendRequestsHandler'
 import AddFriendButton from '@/components/page/friends/AddFriendButton'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
@@ -10,6 +13,7 @@ import Spacer from '@/components/primitives/Spacer'
 import BackIcon from '@/components/icons/BackIcon'
 import Head from 'next/head'
 import NextLink from 'next/link'
+import Text from '@/components/primitives/Text'
 
 const FriendsPageNavSection = () => {
   return (
@@ -47,10 +51,20 @@ const Tabs = () => {
         hoverEffect="none"
         sx={{ borderBottomColor: tab === 'requests' ? 'white !important' : null }}
       >
-        Requests
+        <RequestsTabText />
       </Button>
     </Flex>
   )
 }
+
+const RequestsTabText = observer(() => {
+  const { incomingRequests } = container.resolve(FriendRequestsHandler)
+  const requestsCount = incomingRequests.length
+  return (
+    <Text type="span" sx={{ fontFeatureSettings: '"calt" 0'}}>
+      Requests{!!requestsCount && ` (${requestsCount})`}
+    </Text>
+  )
+})
 
 export default FriendsPageNavSection
