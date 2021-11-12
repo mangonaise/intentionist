@@ -6,6 +6,8 @@ import { Functions, httpsCallable } from '@firebase/functions'
 import { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import DbHandler from '@/logic/app/DbHandler'
 
+export const maxFriends = 50
+
 @singleton()
 export default class FriendsHandler {
   public friends: Array<UserProfileInfo & { uid: string }> = []

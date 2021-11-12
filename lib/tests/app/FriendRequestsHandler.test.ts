@@ -3,6 +3,7 @@ import { container } from 'tsyringe'
 import { when } from 'mobx'
 import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
 import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
+import FriendsHandler, { maxFriends } from '@/logic/app/FriendsHandler'
 import FriendRequestsHandler from '@/logic/app/FriendRequestsHandler'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import signInDummyUser from '@/test-setup/signInDummyUser'
@@ -29,7 +30,7 @@ let testUserProfile: UserProfileInfo = {
   displayName: 'FriendRequestsHandler Test User',
   avatar: '🧪'
 }
-let requestsHandler: FriendRequestsHandler
+let requestsHandler: FriendRequestsHandler, friendsHandler: FriendsHandler
 
 beforeAll(async () => {
   const user = await signInDummyUser('testfrh')
@@ -42,10 +43,13 @@ beforeEach(async () => {
   await simulateInitialFetches()
   requestsHandler = container.resolve(FriendRequestsHandler)
   requestsHandler.startListener()
+  friendsHandler = container.resolve(FriendsHandler)
+  friendsHandler.listenToFriendsDoc()
 })
 
 afterEach(async () => {
   requestsHandler.stopListener()
+  friendsHandler.stopListener()
   container.clearInstances()
 })
 
@@ -120,6 +124,35 @@ describe('searching for users', () => {
       expect(await requestsHandler.searchForUser('a'.repeat(31))).toEqual('invalid')
       expect(await requestsHandler.searchForUser('invalid-char')).toEqual('invalid')
       expect(await requestsHandler.searchForUser('abc_')).toEqual('invalid')
+    })
+
+    test('searching for a user who you have an outgoing friend request to returns "already outgoing"', async () => {
+      requestsHandler.outgoingRequests.push({ username: 'test_already_outgoing', avatar: '🧪', displayName: 'Test Already Outgoing' })
+      const searchResult = await requestsHandler.searchForUser('test_already_outgoing')
+      expect(searchResult).toEqual('already outgoing')
+    })
+
+    test('searching for a user who you have an incoming friend request from returns "already incoming"', async () => {
+      requestsHandler.incomingRequests.push({ username: 'test_already_incoming', avatar: '🧪', displayName: 'Test Already Incoming' })
+      const searchResult = await requestsHandler.searchForUser('test_already_incoming')
+      expect(searchResult).toEqual('already incoming')
+    })
+
+    test('searching for a user who is already your friend returns "already friends"', async () => {
+      friendsHandler.friends.push({ uid: 'test-already-friends', username: 'test_already_friends', avatar: '🧪', displayName: 'Test Already Friends' })
+      const searchResult = await requestsHandler.searchForUser('test_already_friends')
+      expect(searchResult).toEqual('already friends')
+    })
+
+    test('searching for a user when you have reached the maximum friends limit returns "max friends"', async () => {
+      friendsHandler.friends = Array.from({ length: maxFriends }).map((_, index) => ({
+        uid: `uid-${index}`,
+        avatar: '🧪',
+        displayName: 'Test Max Friends',
+        username: `test_max_friends${index}`
+      }))
+      const searchResult = await requestsHandler.searchForUser('does_not_matter')
+      expect(searchResult).toEqual('max friends')
     })
   })
 })

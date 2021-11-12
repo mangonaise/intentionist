@@ -4,12 +4,12 @@ import { makeAutoObservable, runInAction, when } from 'mobx'
 import { httpsCallable } from '@firebase/functions'
 import { DocumentData, Unsubscribe, onSnapshot } from '@firebase/firestore'
 import ProfileHandler, { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
-import FriendsHandler from '@/logic/app/FriendsHandler'
+import FriendsHandler, { maxFriends } from '@/logic/app/FriendsHandler'
 import DbHandler from '@/logic/app/DbHandler'
 import isValidUsername from '@/logic/utils/isValidUsername'
 
 export type FriendRequest = { username: string, displayName: string, avatar: string }
-export type UserSearchResult = AvatarAndDisplayName | 'invalid' | 'self' | 'not found' //! | 'already friends' | 'already outgoing' | 'already incoming' | 'max friends'
+export type UserSearchResult = AvatarAndDisplayName | 'invalid' | 'self' | 'not found' | 'already friends' | 'already outgoing' | 'already incoming' | 'max friends'
 export type PendingFriendRequestStatus = null | 'sending' | 'sent' | 'accepting' | 'accepted' | 'sender-max-requests' | 'recipient-max-requests' | 'sender-max-friends' | 'recipient-max-friends' | 'error'
 export type FriendRequestsViewMode = 'incoming' | 'outgoing'
 
@@ -54,15 +54,23 @@ export default class FriendRequestsHandler {
   }
 
   public searchForUser = async (username: string): Promise<UserSearchResult> => {
-    if (username === this.profileHandler.profileInfo?.username) {
-      return 'self'
+    const failConditions: Array<{ result: UserSearchResult, condition: boolean }> = [
+      { result: 'self', condition: username === this.profileHandler.profileInfo?.username },
+      { result: 'invalid', condition: !isValidUsername(username) },
+      { result: 'already outgoing', condition: this.outgoingRequests.some((request) => request.username === username) },
+      { result: 'already incoming', condition: this.incomingRequests.some((request) => request.username === username) },
+      { result: 'already friends', condition: this.friendsHandler.friends.some((friend) => friend.username === username) },
+      { result: 'max friends', condition: this.friendsHandler.friends.length >= maxFriends }
+    ]
+
+    if (!this.friendsHandler.hasLoadedFriends) {
+      await when(() => this.friendsHandler.hasLoadedFriends)
     }
-    if (!isValidUsername(username)) {
-      return 'invalid'
+
+    for (const { result, condition } of failConditions) {
+      if (condition) return result
     }
-    // TODO: handle case where the target user is already your friend
-    // TODO: handle case where you have already sent a friend request to this user
-    // TODO: handle case where you have already received a friend request from this user
+
     // if the target user has friend requests disabled (not yet implemented), the request will fail, so wrap in a try/catch 
     try {
       const userData = await this.dbHandler.getUsernameDoc(username)
@@ -102,7 +110,7 @@ export default class FriendRequestsHandler {
       await when(() => this.friendsHandler.hasLoadedFriends)
     }
 
-    if (this.friendsHandler.friends.length >= 50) {
+    if (this.friendsHandler.friends.length >= maxFriends) {
       runInAction(() => this.pendingStatus = 'recipient-max-friends')
       return
     }

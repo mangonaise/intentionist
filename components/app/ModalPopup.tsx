@@ -1,4 +1,4 @@
-import { ReactNode, useRef } from 'react'
+import { ReactNode, RefObject, useRef } from 'react'
 import { Global } from '@emotion/react'
 import { css } from '@theme-ui/css'
 import Modal from 'react-responsive-modal'
@@ -11,9 +11,10 @@ interface Props {
   closeModal: () => void,
   children: ReactNode
   disableClose?: boolean,
+  initialFocusRef?: RefObject<HTMLElement>
 }
 
-const ModalPopup = ({ isOpen, closeModal, children, disableClose = false }: Props) => {
+const ModalPopup = ({ isOpen, closeModal, initialFocusRef, children, disableClose = false }: Props) => {
   const modalRef = useRef(null!)
 
   return (
@@ -48,7 +49,7 @@ const ModalPopup = ({ isOpen, closeModal, children, disableClose = false }: Prop
           modalAnimationIn: 'in',
           modalAnimationOut: 'out'
         }}
-        initialFocusRef={modalRef}
+        initialFocusRef={initialFocusRef ?? modalRef}
         closeOnEsc={!disableClose}
         closeOnOverlayClick={!disableClose}
         showCloseIcon={!disableClose}
