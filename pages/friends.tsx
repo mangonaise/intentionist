@@ -8,7 +8,7 @@ import FriendsPageNavSection from '@/components/page/friends/FriendsPageNavSecti
 import withApp from '@/components/app/withApp'
 import Box from '@/components/primitives/Box'
 
-type FriendsPageTab = 'friends' | 'requests'
+export type FriendsPageTab = 'friends' | 'requests'
 
 export const FriendsPageContext = createContext<{
   tab: FriendsPageTab,

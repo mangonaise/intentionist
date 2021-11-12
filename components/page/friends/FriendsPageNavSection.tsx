@@ -1,19 +1,19 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
-import { FriendsPageContext } from 'pages/friends'
+import { FriendsPageContext, FriendsPageTab } from 'pages/friends'
+import SlidingTabPicker from '@/components/app/SlidingTabPicker'
 import FriendRequestsHandler from '@/logic/app/FriendRequestsHandler'
 import AddFriendButton from '@/components/page/friends/AddFriendButton'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
 import Heading from '@/components/primitives/Heading'
-import Button from '@/components/primitives/Button'
 import IconButton from '@/components/primitives/IconButton'
 import Spacer from '@/components/primitives/Spacer'
+import Text from '@/components/primitives/Text'
 import BackIcon from '@/components/icons/BackIcon'
 import Head from 'next/head'
 import NextLink from 'next/link'
-import Text from '@/components/primitives/Text'
 
 const FriendsPageNavSection = () => {
   return (
@@ -33,27 +33,23 @@ const FriendsPageNavSection = () => {
   )
 }
 
+const tabData: Array<{ text: string, tabName: FriendsPageTab }> = [
+  { text: 'Friends', tabName: 'friends' },
+  { text: 'Requests', tabName: 'requests' }
+]
+
+
 const Tabs = () => {
   const { tab, setTab } = useContext(FriendsPageContext)
 
-  // TODO: style similar to week view mode picker
   return (
-    <Flex sx={{ '& button': { flex: 1, background: 'none', borderRadius: 0, borderBottom: 'solid 2px', borderBottomColor: 'transparent' } }}>
-      <Button
-        onClick={() => setTab('friends')}
-        hoverEffect="none"
-        sx={{ borderBottomColor: tab === 'friends' ? 'white !important' : null }}
-      >
-        Friends
-      </Button>
-      <Button
-        onClick={() => setTab('requests')}
-        hoverEffect="none"
-        sx={{ borderBottomColor: tab === 'requests' ? 'white !important' : null }}
-      >
-        <RequestsTabText />
-      </Button>
-    </Flex>
+    <SlidingTabPicker
+      data={[
+        { text: 'Friends', icon: null, color: 'text', onClick: () => setTab('friends') },
+        { text: <RequestsTabText />, icon: null, color: 'text', onClick: () => setTab('requests') }
+      ]}
+      activeIndex={tab === 'friends' ? 0 : 1}
+    />
   )
 }
 
@@ -61,7 +57,7 @@ const RequestsTabText = observer(() => {
   const { incomingRequests } = container.resolve(FriendRequestsHandler)
   const requestsCount = incomingRequests.length
   return (
-    <Text type="span" sx={{ fontFeatureSettings: '"calt" 0'}}>
+    <Text type="span" sx={{ fontFeatureSettings: '"calt" 0' }}>
       Requests{!!requestsCount && ` (${requestsCount})`}
     </Text>
   )
