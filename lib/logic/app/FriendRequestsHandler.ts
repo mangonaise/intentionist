@@ -8,7 +8,7 @@ import DbHandler from '@/logic/app/DbHandler'
 import isValidUsername from '@/logic/utils/isValidUsername'
 
 export type FriendRequest = { username: string, displayName: string, avatar: string }
-export type UserSearchResult = AvatarAndDisplayName | 'invalid' | 'self' | 'not found' //! | 'already friends' | 'already outgoing' | 'already incoming' | 'max requests' | 'max friends'
+export type UserSearchResult = AvatarAndDisplayName | 'invalid' | 'self' | 'not found' //! | 'already friends' | 'already outgoing' | 'already incoming' | 'max friends'
 export type PendingFriendRequestStatus = null | 'sending' | 'sent' | 'accepting' | 'accepted' | 'sender-max-requests' | 'recipient-max-requests' | 'error'
 export type FriendRequestsViewMode = 'incoming' | 'outgoing'
 
@@ -80,9 +80,9 @@ export default class FriendRequestsHandler {
       })
     } catch (err) {
       let status = 'error' as PendingFriendRequestStatus
-      const reason = (err as any).details?.reason as string | undefined
-      if (reason === 'sender-max-requests' || reason === 'recipient-max-requests') {
-        status = reason
+      const failReason = (err as any).details?.failReason as string | undefined
+      if (failReason === 'sender-max-requests' || failReason === 'recipient-max-requests') {
+        status = failReason
       }
       runInAction(() => {
         this.pendingStatus = status

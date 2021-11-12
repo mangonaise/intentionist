@@ -51,13 +51,13 @@ exports.sendFriendRequest = functions.https.onCall(async (data, context) => {
 
     if (senderOutgoingRequestsCount >= 100) {
       throw new functions.https.HttpsError('aborted', 'Sender has too many outgoing friend requests', {
-        reason: 'sender-max-requests'
+        failReason: 'sender-max-requests'
       })
     }
 
     if (recipientIncomingRequestsCount >= 100) {
       throw new functions.https.HttpsError('aborted', 'Recipient has too many incoming friend requests', {
-        reason: 'recipient-max-requests'
+        failReason: 'recipient-max-requests'
       })
     }
 

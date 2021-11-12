@@ -135,12 +135,12 @@ describe('expected failures', () => {
     }
     await friendRequestsDoc(recipientUid).set({ incoming })
 
-    let reason = ''
+    let failReason = ''
     try { await sendFriendRequest({ recipientUsername }) }
     catch (err) {
-      reason = (err as any).details?.reason
+      failReason = (err as any).details?.failReason
     }
-    expect(reason).toEqual('recipient-max-requests')
+    expect(failReason).toEqual('recipient-max-requests')
   })
 
   it('fails if the sender already has at least 100 outgoing friend requests', async () => {
@@ -150,11 +150,11 @@ describe('expected failures', () => {
     }
     await friendRequestsDoc(sender.uid).set({ outgoing })
 
-    let reason = ''
+    let failReason = ''
     try { await sendFriendRequest({ recipientUsername }) }
     catch (err) {
-      reason = (err as any).details?.reason
+      failReason = (err as any).details?.failReason
     }
-    expect(reason).toEqual('sender-max-requests')
+    expect(failReason).toEqual('sender-max-requests')
   })
 })
