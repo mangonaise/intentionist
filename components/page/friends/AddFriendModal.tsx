@@ -29,6 +29,12 @@ const AddFriendModal = ({ isOpen, closeModal }: { isOpen: boolean, closeModal: (
     }
   }, [isOpen])
 
+  function handleInputKeyDown(key: string) {
+    if (key === 'Enter') {
+      handleSearch()
+    }
+  }
+
   async function handleSearch() {
     setIsSearching(true)
     const result = await searchForUser(username[0] === '@' ? username.slice(1) : username)
@@ -65,6 +71,7 @@ const AddFriendModal = ({ isOpen, closeModal }: { isOpen: boolean, closeModal: (
             <Input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              onKeyDown={(e) => handleInputKeyDown(e.key)}
               placeholder="Enter username"
               ref={inputRef}
             />
