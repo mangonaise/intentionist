@@ -154,4 +154,32 @@ describe('expected failures', () => {
     catch { fails = true }
     expect(fails).toEqual(true)
   })
+
+  it('fails if the sender has reached the maximum number of 50 friends', async () => {
+    let friends = {} as { [uid: string]: any }
+    for (let i = 0; i < 50; i++) {
+      friends[`uid-${i}`] = { time: 123 }
+    }
+    await (friendsDoc(senderUid).set({ friends }))
+
+    let failReason = ''
+    try { await respondToFriendRequest({ senderUsername: sender.username, accept: true }) }
+    catch (err) {
+      failReason = (err as any).details?.failReason
+    }
+    expect(failReason).toEqual('sender-max-friends')
+  })
+
+  it('fails if the recipient has reached the maximum number of 50 friends', async () => {
+    let friends = {} as { [uid: string]: any }
+    for (let i = 0; i < 50; i++) {
+      friends[`uid-${i}`] = { time: 123 }
+    }
+    await (friendsDoc(recipientUid).set({ friends }))
+
+    let fails = false
+    try { await respondToFriendRequest({ senderUsername: sender.username, accept: true }) }
+    catch { fails = true }
+    expect(fails).toEqual(true)
+  })
 })

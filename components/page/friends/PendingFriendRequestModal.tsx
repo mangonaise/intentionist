@@ -24,6 +24,8 @@ function getModalContent(pendingStatus: PendingFriendRequestStatus, newFriendDis
     },
     'recipient-max-requests': { icon: CrossIcon, text: 'Your request failed to send. That user has too many incoming friend requests.' },
     'sender-max-requests': { icon: CrossIcon, text: 'Your request failed to send. You have too many outgoing friend requests.' },
+    'recipient-max-friends': { icon: CrossIcon, text: `Couldn't accept friend request. You've reached the maximum friends limit.` },
+    'sender-max-friends': { icon: CrossIcon, text: `Couldn't accept friend request. That user has reached the maximum friends limit.` },
     'error': { icon: CrossIcon, text: 'Something went wrong.' },
   }
   return contentMap[pendingStatus]

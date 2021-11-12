@@ -1,15 +1,16 @@
 import type { Functions } from '@firebase/functions'
 import { inject, singleton } from 'tsyringe'
-import { makeAutoObservable, runInAction } from 'mobx'
+import { makeAutoObservable, runInAction, when } from 'mobx'
 import { httpsCallable } from '@firebase/functions'
 import { DocumentData, Unsubscribe, onSnapshot } from '@firebase/firestore'
 import ProfileHandler, { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
+import FriendsHandler from '@/logic/app/FriendsHandler'
 import DbHandler from '@/logic/app/DbHandler'
 import isValidUsername from '@/logic/utils/isValidUsername'
 
 export type FriendRequest = { username: string, displayName: string, avatar: string }
 export type UserSearchResult = AvatarAndDisplayName | 'invalid' | 'self' | 'not found' //! | 'already friends' | 'already outgoing' | 'already incoming' | 'max friends'
-export type PendingFriendRequestStatus = null | 'sending' | 'sent' | 'accepting' | 'accepted' | 'sender-max-requests' | 'recipient-max-requests' | 'error'
+export type PendingFriendRequestStatus = null | 'sending' | 'sent' | 'accepting' | 'accepted' | 'sender-max-requests' | 'recipient-max-requests' | 'sender-max-friends' | 'recipient-max-friends' | 'error'
 export type FriendRequestsViewMode = 'incoming' | 'outgoing'
 
 @singleton()
@@ -22,12 +23,14 @@ export default class FriendRequestsHandler {
   public newFriendDisplayName?: string
   private profileHandler
   private dbHandler
+  private friendsHandler
   private functions
   private listenerUnsubscribe: Unsubscribe | null = null
 
-  constructor(profileHandler: ProfileHandler, dbHandler: DbHandler, @inject('Functions') functions: Functions) {
+  constructor(profileHandler: ProfileHandler, dbHandler: DbHandler, friendsHandler: FriendsHandler, @inject('Functions') functions: Functions) {
     this.profileHandler = profileHandler
     this.dbHandler = dbHandler
+    this.friendsHandler = friendsHandler
     this.functions = functions
     makeAutoObservable(this)
   }
@@ -75,18 +78,14 @@ export default class FriendRequestsHandler {
     try {
       const send = httpsCallable(this.functions, 'sendFriendRequest')
       await send({ recipientUsername })
-      runInAction(() => {
-        this.pendingStatus = 'sent'
-      })
+      runInAction(() => this.pendingStatus = 'sent')
     } catch (err) {
       let status = 'error' as PendingFriendRequestStatus
       const failReason = (err as any).details?.failReason as string | undefined
       if (failReason === 'sender-max-requests' || failReason === 'recipient-max-requests') {
         status = failReason
       }
-      runInAction(() => {
-        this.pendingStatus = status
-      })
+      runInAction(() => this.pendingStatus = status)
     }
   }
 
@@ -97,16 +96,30 @@ export default class FriendRequestsHandler {
 
   public acceptFriendRequest = async (request: FriendRequest) => {
     const respond = httpsCallable(this.functions, 'respondToFriendRequest')
+
     this.pendingStatus = 'accepting'
+    if (!this.friendsHandler.hasLoadedFriends) {
+      await when(() => this.friendsHandler.hasLoadedFriends)
+    }
+
+    if (this.friendsHandler.friends.length >= 50) {
+      runInAction(() => this.pendingStatus = 'recipient-max-friends')
+      return
+    }
+
     try {
       await respond({ senderUsername: request.username, accept: true })
       runInAction(() => {
         this.pendingStatus = 'accepted'
         this.newFriendDisplayName = request.displayName
       })
-    } catch {
-      runInAction(() => { this.pendingStatus = 'error' })
-
+    } catch (err) {
+      let status = 'error' as PendingFriendRequestStatus
+      const failReason = (err as any).details?.failReason as string | undefined
+      if (failReason === 'sender-max-friends') {
+        status = failReason
+      }
+      runInAction(() => this.pendingStatus = status)
     }
   }
 
