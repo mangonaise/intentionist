@@ -144,7 +144,7 @@ const HabitWrapper = forwardRef(function HabitWrapper(props: HabitWrapperProps, 
 
 const HabitLink = observer(({ habit }: { habit: Habit }) => {
   return (
-    <NextLink href={`/habits/${habit.id}`}>
+    <NextLink href={`/habit?id=${habit.id}`}>
       <Button
         sx={{
           width: '100%', px: 3,

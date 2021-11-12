@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { SettingsSectionData, settingsSections } from 'pages/settings/[...section]'
+import { SettingsSectionData, settingsSections } from 'pages/settings'
 import useMediaQuery from '@/hooks/useMediaQuery'
 import Dropdown from '@/components/app/Dropdown'
 import Flex from '@/components/primitives/Flex'
@@ -81,7 +81,7 @@ const SectionsSidebar = ({ activeSectionPath }: { activeSectionPath: SettingsSec
 
 const SidebarItem = ({ title, path, isActive }: { title: string, path: string, isActive: boolean }) => {
   return (
-    <NextLink href={`/settings/${path}`} passHref>
+    <NextLink href={`/settings?view=${path}`} passHref>
       <Link
         sx={{
           display: 'flex',

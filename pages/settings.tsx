@@ -44,15 +44,15 @@ export const settingsSections: SettingsSectionData[] = [
 const SettingsPage = () => {
   const router = useRouter()
   const sectionData = useMemo(() => {
-    const section = router.query.section?.[0] ?? ''
+    const section = router.query.view ?? ''
     const sectionData = settingsSections.find((data) => data.path === section)
     if (sectionData) {
       return sectionData
     } else {
-      router.push('/settings/profile', undefined, { shallow: true })
+      router.push('/settings?view=profile', undefined, { shallow: true })
       return settingsSections[0]
     }
-  }, [router.query.section])
+  }, [router.query.view])
 
   return (
     <SettingsPageLayout sectionData={sectionData} />

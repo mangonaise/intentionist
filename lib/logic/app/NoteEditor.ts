@@ -41,10 +41,10 @@ export default class NoteEditor {
     this.habitsHandler = habitsHandler
     this.dbHandler = dbHandler
     const query = router.query as QueryParams
-    if (query.id === 'new') {
-      this.initializeNewNote(query.habitId)
-    } else {
+    if (query.id) {
       this.loadNote(query.id)
+    } else {
+      this.initializeNewNote(query.habitId)
     }
     makeAutoObservable(this)
   }
@@ -91,7 +91,7 @@ export default class NoteEditor {
     runInAction(() => { this.isSaving = false })
 
     if (replaceUrl && this.router.route.includes('note')) {
-      this.router.replace(`/note/${this.note.id}`, undefined, { shallow: true })
+      this.router.replace(`/note?id=${this.note.id}`, undefined, { shallow: true })
     }
   }
 

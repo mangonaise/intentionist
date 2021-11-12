@@ -8,6 +8,7 @@ import ExpandUpIcon from '@/components/icons/ExpandUpIcon'
 import ExpandDownIcon from '@/components/icons/ExpandDownIcon'
 import NextLink from 'next/link'
 import FocusTrap from 'focus-trap-react'
+import { UrlObject } from 'url'
 
 interface DropdownProps {
   title?: string | JSX.Element,
@@ -148,7 +149,7 @@ const DropdownMenu = () => {
 
 interface ItemProps extends CustomButtonProps {
   itemAction?: () => void,
-  href?: string
+  href?: UrlObject | string
 }
 
 const Item: StyledComponent<ItemProps> = (props) => {

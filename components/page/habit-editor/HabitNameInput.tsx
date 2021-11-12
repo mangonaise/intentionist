@@ -1,6 +1,6 @@
 import { ChangeEvent, useContext } from 'react'
 import { observer } from 'mobx-react-lite'
-import { HabitEditorContext } from 'pages/habits/[id]'
+import { HabitEditorContext } from 'pages/habit'
 import Input from '@/components/primitives/Input'
 
 const HabitNameInput = () => {

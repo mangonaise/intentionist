@@ -29,7 +29,7 @@ const HabitCell = observer(({ habit }: { habit: Habit }) => {
 
 const HabitCellWithName = ({ habit }: { habit: Habit }) => {
   return (
-    <NextLink href={`/habits/${habit.id}?returnHome=true`}>
+    <NextLink href={{ pathname: 'habit', query: { id: habit.id, returnHome: true } }}>
       <Button
         sx={{
           size: '100%',
@@ -82,7 +82,7 @@ const HabitCellWithoutName = ({ habit }: { habit: Habit }) => {
         }
       }}>
       <Dropdown.Item
-        href={`/habits/${habit.id}?returnHome=true`}
+        href={{ pathname: 'habit', query: { id: habit.id, returnHome: true } }}
         sx={{ maxWidth: '100vw' }}
       >
         {habit.name}

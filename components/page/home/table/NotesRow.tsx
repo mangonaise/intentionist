@@ -46,7 +46,7 @@ const NotePreview = ({ cellNotesData }: { cellNotesData: Array<{ noteId: string,
   }
 
   function openViewedNote() {
-    router.push(`/note/${viewedNoteData.noteId}`)
+    router.push(`/note?id=${viewedNoteData.noteId}`)
   }
 
   return (
@@ -138,7 +138,7 @@ const NoteChanger = ({ currentIndex, totalNotes, change }: NoteChangerProps) => 
 
 const AddNoteButton = ({ habitId }: { habitId: string }) => {
   return (
-    <NextLink href={`/note/new?habitId=${habitId}`}>
+    <NextLink href={`/note?habitId=${habitId}`}>
       <IconButton
         icon={PlusIcon}
         sx={{

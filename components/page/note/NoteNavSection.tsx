@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import { useContext, useEffect, useRef, useState } from 'react'
-import { NoteContext } from 'pages/note/[id]'
+import { NoteContext } from 'pages/note'
 import Dropdown from '@/components/app/Dropdown'
 import Flex from '@/components/primitives/Flex'
 import Button from '@/components/primitives/Button'

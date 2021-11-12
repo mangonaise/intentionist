@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useContext, useState } from 'react'
 import { HabitPreset } from '@/logic/app/HabitsHandler'
-import { HabitEditorContext } from 'pages/habits/[id]'
+import { HabitEditorContext } from 'pages/habit'
 import Box from '@/components/primitives/Box'
 import Checkbox from '@/components/primitives/Checkbox'
 import HabitPresetsList from '@/components/app/HabitPresetsList'

@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import { ChangeEvent, useContext } from 'react'
-import { NoteContext } from 'pages/note/[id]'
+import { NoteContext } from 'pages/note'
 import EmojiButton from '@/components/app/EmojiButton'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'

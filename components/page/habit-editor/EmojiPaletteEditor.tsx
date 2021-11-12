@@ -6,7 +6,7 @@ import { DragStartEvent, DragEndEvent, DndContext, DragOverlay, closestCenter, K
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy, } from '@dnd-kit/sortable'
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
-import { HabitEditorContext } from 'pages/habits/[id]'
+import { HabitEditorContext } from 'pages/habit'
 import { ThemeUIStyleObject } from '@theme-ui/css'
 import HabitEditor from '@/logic/app/HabitEditor'
 import arrayMove from '@/logic/utils/arrayMove'

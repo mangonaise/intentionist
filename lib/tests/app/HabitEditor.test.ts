@@ -64,19 +64,19 @@ describe('when habits have already been fetched', () => {
     }
   })
 
-  test('if router query.id is "new", editor will initialize with new habit', () => {
-    router.setQuery({ id: 'new' })
+  test('if router query contains param "new", editor will initialize with new habit', () => {
+    router.setQuery({ new: '' })
     startHabitEditor()
     expect(habitEditor.isNewHabit).toBe(true)
   })
 
-  test('if no habit id matches router query.id, will route to habits page', () => {
+  test('if no habit id matches query param id, will route to habits page', () => {
     router.setQuery({ id: 'idontexist' })
     container.resolve(HabitEditor)
     expect(router.push).toHaveBeenCalledWith('/habits')
   })
 
-  test('if router query.id matches existing habit, editor will initialize with existing habit', async () => {
+  test('if query param id matches existing habit, editor will initialize with existing habit', async () => {
     await habitsHandler.setHabit(dummyHabit)
     router.setQuery({ id: dummyHabit.id })
     startHabitEditor()
@@ -84,7 +84,7 @@ describe('when habits have already been fetched', () => {
   })
 
   test('newly created habits are reflected in HabitsHandler', async () => {
-    router.setQuery({ id: 'new' })
+    router.setQuery({ new: '' })
 
     startHabitEditor()
     const createdHabitA = habitEditor.habit

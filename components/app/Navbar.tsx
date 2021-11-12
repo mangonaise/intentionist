@@ -114,11 +114,11 @@ const UserActionsDropdown = observer(() => {
           @{profileInfo?.username}
         </Text>
       </Flex>
-      <Dropdown.Item href="/settings/profile" sx={{ borderRadius: '0 !important' }}>
+      <Dropdown.Item href="/settings?view=profile" sx={{ borderRadius: '0 !important' }}>
         Your profile
       </Dropdown.Item>
       <Dropdown.Item href="/friends">Friends</Dropdown.Item>
-      <Dropdown.Item href="/settings/account">Settings</Dropdown.Item>
+      <Dropdown.Item href="/settings?view=account">Settings</Dropdown.Item>
       <Dropdown.Item itemAction={handleSignOut}>Sign out</Dropdown.Item>
     </Dropdown>
   )

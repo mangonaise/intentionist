@@ -6,6 +6,7 @@ import Router from '@/types/router'
 
 type QueryParams = {
   id: string | undefined,
+  new: any,
   returnHome: boolean | undefined
 }
 
@@ -23,7 +24,7 @@ export default class HabitEditor {
 
     const query = router.query as QueryParams
     this.returnHomeOnExit = query?.returnHome
-    if (query?.id === 'new') {
+    if (query.new !== undefined) {
       this.isNewHabit = true
       this.habit = this.generateEmptyHabit()
     } else {

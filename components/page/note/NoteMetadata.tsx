@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { NoteContext } from 'pages/note/[id]'
+import { NoteContext } from 'pages/note'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'

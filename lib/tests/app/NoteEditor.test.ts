@@ -81,8 +81,8 @@ function startNoteEditor() {
 // 🧪
 
 describe('initialization', () => {
-  test(`if router query id is "new" and habitId is supplied, instantly generates empty note using the week in view's start date, with isNewNote set to true`, () => {
-    router.setQuery({ id: 'new', habitId: dummyHabit.id })
+  test(`if router query param habitId is supplied, instantly generates empty note using the week in view's start date, with isNewNote set to true`, () => {
+    router.setQuery({ habitId: dummyHabit.id })
     startNoteEditor()
     expect(noteEditor.isNewNote).toEqual(true)
     expect(noteEditor.note).toEqual({
@@ -96,7 +96,7 @@ describe('initialization', () => {
     })
   })
 
-  test('if router query id is an existing note id, loads the correct note data from the database, with isNewNote set to false', async () => {
+  test('if query param id is an existing note id, loads the correct note data from the database, with isNewNote set to false', async () => {
     await dbHandler.updateNote(dummyNoteA)
     router.setQuery({ id: dummyNoteA.id })
     startNoteEditor()
@@ -106,13 +106,13 @@ describe('initialization', () => {
   })
 
   test(`if trying to generate an empty note but habitId does not correspond to any of the user's habits, routes back home`, () => {
-    router.setQuery({ id: 'new', habitId: 'abc' })
+    router.setQuery({ habitId: 'abc' })
     startNoteEditor()
     expect(router.push).toHaveBeenCalledWith('/home')
   })
 
-  test('if trying to generate an empty note but no habitId is supplied, routes back home', () => {
-    router.setQuery({ id: 'new' })
+  test('if trying to generate a new note but no habitId is supplied, routes back home', () => {
+    router.setQuery({})
     startNoteEditor()
     expect(router.push).toHaveBeenCalledWith('/home')
   })
@@ -120,14 +120,14 @@ describe('initialization', () => {
 
 describe('behavior', () => {
   test('calling startEditing() sets isEditing to true', () => {
-    router.setQuery({ id: 'new', habitId: dummyHabit.id })
+    router.setQuery({ habitId: dummyHabit.id })
     startNoteEditor()
     noteEditor.startEditing()
     expect(noteEditor.isEditing).toEqual(true)
   })
 
   test('calling finishEditing() sets isEditing to false', () => {
-    router.setQuery({ id: 'new', habitId: dummyHabit.id })
+    router.setQuery({ habitId: dummyHabit.id })
     startNoteEditor()
     noteEditor.startEditing()
     noteEditor.finishEditing()
@@ -135,7 +135,7 @@ describe('behavior', () => {
   })
 
   test('the note title, icon and content can be updated', () => {
-    router.setQuery({ id: 'new', habitId: dummyHabit.id })
+    router.setQuery({ habitId: dummyHabit.id })
     startNoteEditor()
     noteEditor.updateNote('icon', '😎')
     noteEditor.updateNote('title', 'Updated title')
@@ -147,7 +147,7 @@ describe('behavior', () => {
 
   test('finishing editing updates local note metadata if the note is in the week in view', () => {
     // The above condition is true for new notes. See first test.
-    router.setQuery({ id: 'new', habitId: dummyHabit.id })
+    router.setQuery({ habitId: dummyHabit.id })
     startNoteEditor()
     noteEditor.updateNote('title', 'Hello!')
     noteEditor.updateNote('icon', '🌟')
@@ -161,7 +161,7 @@ describe('behavior', () => {
   })
 
   test('saving first changes on a new note sets isNewNote to false', () => {
-    router.setQuery({ id: 'new', habitId: dummyHabit.id })
+    router.setQuery({ habitId: dummyHabit.id })
     startNoteEditor()
     noteEditor.finishEditing()
     expect(noteEditor.isNewNote).toEqual(false)
@@ -178,7 +178,7 @@ describe('behavior', () => {
   })
 
   test('if editing completes but the note title is empty, it is automatically set to "Untitled note"', () => {
-    router.setQuery({ id: 'new', habitId: dummyHabit.id })
+    router.setQuery({ habitId: dummyHabit.id })
     startNoteEditor()
     noteEditor.startEditing()
     noteEditor.finishEditing()
@@ -186,7 +186,7 @@ describe('behavior', () => {
   })
 
   test('finishing editing updates the corresponding note document in the database', async () => {
-    router.setQuery({ id: 'new', habitId: dummyHabit.id })
+    router.setQuery({ habitId: dummyHabit.id })
     startNoteEditor()
     noteEditor.updateNote('title', 'Hello world!')
     noteEditor.updateNote('icon', '🌟')
@@ -231,7 +231,7 @@ describe('behavior', () => {
   })
 
   test('creating a note sets the startDate field in the corresponding week document', async () => {
-    router.setQuery({ id: 'new', habitId: dummyHabit.id })
+    router.setQuery({ habitId: dummyHabit.id })
     startNoteEditor()
     await noteEditor.finishEditing()
     const weekDoc = await dbHandler.getWeekDoc(noteEditor.note!.weekStartDate)

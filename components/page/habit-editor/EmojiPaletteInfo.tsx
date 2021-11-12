@@ -1,4 +1,3 @@
-import quickPaletteExample from '@/public/images/quickpalette.png'
 import { useState } from 'react'
 import ModalPopup from '@/components/app/ModalPopup'
 import Box from '@/components/primitives/Box'
@@ -7,7 +6,6 @@ import Heading from '@/components/primitives/Heading'
 import IconButton from '@/components/primitives/IconButton'
 import Text from '@/components/primitives/Text'
 import InfoIcon from '@/components/icons/InfoIcon'
-import NextImage from 'next/image'
 
 const EmojiPaletteInfo = () => {
   const [showModal, setShowModal] = useState(false)
@@ -41,11 +39,9 @@ const EmojiPaletteInfo = () => {
                 Every day, you can choose one or more emojis to represent the status of this habit.{' '}
                 Use the quick palette for easy access to emojis that you will commonly use.
               </Text>
-              <NextImage
-                src={quickPaletteExample}
-                width={648}
-                height={455}
-                placeholder="blur"
+              <img
+                src="/images/quickpalette.png"
+                sx={{ size: '100%' }}
                 alt="An example of the quick palette being used for an exercise habit"
               />
             </Box>

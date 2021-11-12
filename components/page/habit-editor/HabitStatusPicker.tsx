@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { HabitStatus } from '@/logic/app/HabitsHandler'
-import { HabitEditorContext } from 'pages/habits/[id]'
+import { HabitEditorContext } from 'pages/habit'
 import Flex from '@/components/primitives/Flex'
 import IconButton from '@/components/primitives/IconButton'
 import Spacer from '@/components/primitives/Spacer'

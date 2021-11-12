@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import { HabitEditorContext } from 'pages/habits/[id]'
+import { HabitEditorContext } from 'pages/habit'
 import Dropdown from '@/components/app/Dropdown'
 import ModalPopup from '@/components/app/ModalPopup'
 import Box from '@/components/primitives/Box'

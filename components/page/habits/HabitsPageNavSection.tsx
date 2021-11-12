@@ -21,7 +21,7 @@ const HabitsPageNavSection = () => {
       </NextLink>
       <Spacer ml={2} />
       <HabitFilterDropdown />
-      <NextLink href="/habits/new">
+      <NextLink href="/habit?new">
         <IconButton
           icon={PlusIcon}
           hoverEffect="opacity"
