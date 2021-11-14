@@ -4,6 +4,7 @@ import type { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import { makeAutoObservable, runInAction } from 'mobx'
 import { singleton } from 'tsyringe'
 import DbHandler from '@/logic/app/DbHandler'
+import FriendsHandler from '@/logic/app/FriendsHandler'
 
 export type Fetched<T> = T | null
 
@@ -19,9 +20,10 @@ export default class InitialFetchHandler {
   public initialFetches: InitialFetches | undefined
   public hasCompletedInitialFetches = false
 
-  constructor(dbHandler: DbHandler) {
+  constructor(dbHandler: DbHandler, friendsHandler: FriendsHandler) {
     this.dbHandler = dbHandler
     this.makeInitialFetches()
+    friendsHandler.listenToFriendsDoc()
     makeAutoObservable(this)
   }
 
