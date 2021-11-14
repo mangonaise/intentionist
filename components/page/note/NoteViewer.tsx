@@ -132,6 +132,9 @@ function useSmartTextarea() {
           target.selectionEnd = start - 3
           editor.updateNote('content', newValue)
         }
+      } else if (e.key === 's' && e.ctrlKey) {
+        e.preventDefault()
+        editor.saveChanges()
       }
     }
   }, [])
