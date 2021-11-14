@@ -29,7 +29,6 @@ export default class NoteEditor {
   public isNewNote = false
   public hasUnsavedChanges = false
   public isSaving = false
-  private hasMadeChanges = false
   private router
   private weekHandler
   private habitsHandler
@@ -51,14 +50,12 @@ export default class NoteEditor {
 
   public startEditing = () => {
     this.isEditing = true
-    this.hasMadeChanges = false
   }
 
   public updateNote = (property: 'icon' | 'title' | 'content', value: string) => {
     if (!this.note) return
     this.note[property] = value
     this.hasUnsavedChanges = true
-    this.hasMadeChanges = true
   }
 
   public finishEditing = async () => {
@@ -68,7 +65,7 @@ export default class NoteEditor {
 
   public saveChanges = async () => {
     if (!this.note) return
-    if (!this.isNewNote && !this.hasMadeChanges) return
+    if (!this.isNewNote && !this.hasUnsavedChanges) return
 
     const replaceUrl = this.isNewNote
     this.note.title = this.note.title || 'Untitled note'
