@@ -9,9 +9,9 @@ import HabitsHandler from '@/logic/app/HabitsHandler'
 import withApp from '@/components/app/withApp'
 import LoadingScreen from '@/components/app/LoadingScreen'
 import SmartEmoji from '@/components/app/SmartEmoji'
+import NoteViewer from '@/components/page/note/NoteViewer'
 import NoteMetadataEditor from '@/components/page/note/NoteMetadataEditor'
 import NoteNavSection from '@/components/page/note/NoteNavSection'
-import NoteRichText from '@/components/page/note/NoteRichText'
 import NoteMetadata from '@/components/page/note/NoteMetadata'
 import FadeIn from '@/components/primitives/FadeIn'
 import Flex from '@/components/primitives/Flex'
@@ -37,11 +37,11 @@ const NotePage = observer(() => {
       <Head><title>{editor.note.title || 'New note'}</title></Head>
       <FadeIn sx={{ maxWidth: '750px', margin: 'auto' }}>
         <NoteNavSection />
-        <Spacer mb={[4, 6]} />
+        <Spacer mb={4} />
         <DateAndHabit />
         <Spacer mb={[2, 3]} />
         {!!editor.isEditing ? <NoteMetadataEditor /> : <NoteMetadata />}
-        <NoteRichText />
+        <NoteViewer />
       </FadeIn>
       <FontPreload />
     </NoteContext.Provider>

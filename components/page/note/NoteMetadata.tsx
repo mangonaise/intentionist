@@ -5,7 +5,7 @@ import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
 import Heading from '@/components/primitives/Heading'
 import Text from '@/components/primitives/Text'
-import Spacer from '@/components/primitives/Spacer'
+import useMediaQuery from '@/hooks/useMediaQuery'
 
 const NoteMetadata = () => {
   return (
@@ -13,23 +13,23 @@ const NoteMetadata = () => {
       <IconAndTitle />
       <Box sx={{ borderBottom: 'solid 1px', borderColor: 'divider', my: [2, 3] }} />
       <EditNotePrompt />
-      <Spacer mb={[3, 5]} />
     </>
   )
 }
 
 const IconAndTitle = () => {
   const { noteData } = useContext(NoteContext)
+  const emojiSize = useMediaQuery('(max-width: 500px)', 1.3, 1.8)
 
   return (
     <Flex align="center">
-      <SmartEmoji nativeEmoji={noteData.icon} rem={1.85} />
+      <SmartEmoji nativeEmoji={noteData.icon} rem={emojiSize} />
       <Heading
         level={2}
         sx={{
           marginLeft: [3, 4],
           maxWidth: '100%',
-          fontSize: ['1.5rem', '2.5rem', '2.5rem'],
+          fontSize: ['1.3rem', '2.5rem', '2.5rem'],
           fontWeight: 'bold',
           overflowWrap: 'break-word',
           wordBreak: 'break-word'
