@@ -86,7 +86,7 @@ const Markdown = observer(() => {
   )
 })
 
-const Textarea = forwardRef<HTMLTextAreaElement>((_, ref: any) => {
+const Textarea = forwardRef<HTMLTextAreaElement>(function Textarea(_, ref: any) {
   const { editor, noteData: { content } } = useContext(NoteContext)
   const [shouldResize, setShouldResize] = useState(false)
   const isEditing = useMemo(() => editor.isEditing, [editor.isEditing])
