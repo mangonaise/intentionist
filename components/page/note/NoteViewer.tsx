@@ -205,7 +205,8 @@ const StaticStyles = () => {
           height: '2.5rem',
           fontFamily: 'inherit',
           color: 'inherit',
-          fontWeight: 'medium',
+          fontWeight: '450',
+          fontSize: 'inherit',
           borderRadius: 'default',
           backgroundColor: '#242424',
           border: 'none !important',
@@ -283,11 +284,13 @@ const StaticStyles = () => {
             border: 'none',
             borderBottom: 'solid 1px',
             borderColor: 'divider',
+            marginBlockStart: '0.5em',
             marginBlockEnd: '1em'
           },
           'h1, h2, h3': {
             borderBottomColor: 'divider',
-            marginBlock: 4
+            marginBlockStart: 1,
+            marginBlockEnd: 4
           },
           'a': {
             color: '#5493ff',

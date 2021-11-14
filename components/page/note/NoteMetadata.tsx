@@ -11,7 +11,7 @@ const NoteMetadata = () => {
   return (
     <>
       <IconAndTitle />
-      <Box sx={{ borderBottom: 'solid 1px', borderColor: 'divider', my: [2, 3] }} />
+      <Box sx={{ borderBottom: 'solid 1px', borderColor: 'divider', mt: 3, mb: [2, 3] }} />
       <EditNotePrompt />
     </>
   )
@@ -29,7 +29,7 @@ const IconAndTitle = () => {
         sx={{
           marginLeft: [2, 4],
           maxWidth: '100%',
-          fontSize: ['1.3rem', '2.5rem', '2.5rem'],
+          fontSize: ['1.5rem', '2.5rem', '2.5rem'],
           fontWeight: 'bold',
           overflowWrap: 'break-word',
           wordBreak: 'break-word'

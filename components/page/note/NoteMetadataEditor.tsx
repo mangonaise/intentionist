@@ -14,7 +14,7 @@ const NoteMetadataEditor = () => {
         <NoteIconPicker />
         <NoteTitleInput />
       </Flex>
-      <Spacer mb={2} />
+      <Spacer mb={[1, 2]} />
     </Box>
   )
 }
