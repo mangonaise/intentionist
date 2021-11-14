@@ -62,9 +62,8 @@ const EditorNavSection = observer(() => {
           hoverEffect={isWrapperPinned ? 'none' : 'default'}
           sx={{
             flexGrow: [1, 0],
-            marginRight: 2,
-            opacity: isWrapperPinned ? 0.9 : 1,
-            backgroundColor: isWrapperPinned ? 'bg' : null,
+            marginRight: isWrapperPinned ? 0 : 2,
+            backgroundColor: isWrapperPinned ? '#242424' : null,
             '&:disabled': {
               paddingX: isWrapperPinned ? 3 : 2,
               opacity: 0.9,
