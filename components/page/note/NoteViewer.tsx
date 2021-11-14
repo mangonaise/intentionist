@@ -138,7 +138,7 @@ function useSmartTextarea() {
 
   useLayoutEffect(() => {
     if (isEditing && textareaRef) {
-      resize()
+      new Promise(resolve => setTimeout(resolve, 0)).then(resize)
     }
   }, [isEditing, textareaRef])
 
@@ -241,6 +241,7 @@ const StaticStyles = () => {
           background: 'none',
           color: 'text',
           resize: 'none !important' as any,
+          overflow: 'hidden !important',
           '&:focus': {
             boxShadow: 'none'
           }
