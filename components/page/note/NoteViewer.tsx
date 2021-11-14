@@ -1,13 +1,12 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Global } from '@emotion/react'
 import { css } from '@theme-ui/css'
 import { NoteContext } from 'pages/note'
 import DbHandler from '@/logic/app/DbHandler'
 import useWarnUnsavedChanges from '@/hooks/useWarnUnsavedChanges'
 import useWindowWidth from '@/hooks/useWindowWidth'
-import Text from '@/components/primitives/Text'
 import MarkdownToJSX from 'markdown-to-jsx'
 import ReactMde from 'react-mde'
 import 'react-mde/lib/styles/css/react-mde-all.css'
@@ -29,10 +28,9 @@ const NoteViewer = () => {
 const Markdown = observer(() => {
   const { isWriteComplete } = container.resolve(DbHandler)
   const { editor, noteData: { content } } = useContext(NoteContext)
-  const [value, setValue] = useState(content ?? '')
   const [selectedTab, setSelectedTab] = useState<'write' | 'preview'>('preview')
-  const [showLengthWarning, setShowLengthWarning] = useState(false)
   const isEditing = useMemo(() => editor.isEditing, [editor.isEditing])
+  const resize = useSmartTextarea()
 
   useLayoutEffect(() => {
     const isPreviewing = selectedTab === 'preview'
@@ -52,29 +50,12 @@ const Markdown = observer(() => {
     })
   }, [])
 
-  const handleKeyDown = useMemo(() => {
-    return (key: string) => {
-      if (key === 'Escape') {
-        const writeButton = document.querySelector('.mde-tabs')?.firstChild
-        if (writeButton instanceof HTMLElement) writeButton.focus()
-      }
-    }
-  }, [])
-
   const handleChange = useCallback((value: string) => {
-    setValue(value)
-    if (value.length > maxNoteLength) {
-      setShowLengthWarning(true)
-    } else {
-      setShowLengthWarning(false)
-    }
-  }, [])
-
-  useEffect(() => {
     if (value.length <= maxNoteLength) {
       editor.updateNote('content', value)
+      resize()
     }
-  }, [value])
+  }, [])
 
   useWarnUnsavedChanges(
     {
@@ -84,46 +65,36 @@ const Markdown = observer(() => {
     'Changes you made may not be saved. Are you sure you want to leave?'
   )
 
-  useSmartTextarea(setValue)
-
   return (
-    <div className="container" onKeyDown={(e) => handleKeyDown(e.key)}>
-      <ReactMde
-        toolbarCommands={toolbarCommands}
-        value={value}
-        onChange={handleChange}
-        selectedTab={selectedTab}
-        onTabChange={setSelectedTab}
-        generateMarkdownPreview={markdown =>
-          Promise.resolve(<MarkdownToJSX
-            options={{
-              disableParsingRawHTML: true,
-            }}
-          >
-            {markdown}
-          </MarkdownToJSX>)}
-      />
-      {showLengthWarning && (
-        <Text sx={{ color: 'warning', fontWeight: 'semibold', mt: 2 }}>
-          Your note is too long. It will not be saved in full unless you shorten it.
-        </Text>
-      )}
-    </div>
+    <ReactMde
+      toolbarCommands={toolbarCommands}
+      value={content}
+      onChange={handleChange}
+      selectedTab={selectedTab}
+      onTabChange={setSelectedTab}
+      generateMarkdownPreview={markdown =>
+        Promise.resolve(<MarkdownToJSX
+          options={{
+            disableParsingRawHTML: true,
+          }}
+        >
+          {markdown}
+        </MarkdownToJSX>)}
+    />
   )
 })
 
-function useSmartTextarea(setValue: Dispatch<SetStateAction<string>>) {
+function useSmartTextarea() {
   const { editor } = useContext(NoteContext)
   const textareaRef = useRef<HTMLTextAreaElement>(null!)
   const isEditing = useMemo(() => editor.isEditing, [editor.isEditing])
 
-  async function resize() {
-    await new Promise(resolve => setTimeout(resolve, 0))
+  const resize = useCallback(() => {
     const scrollTop = document.documentElement.scrollTop
     textareaRef.current.style.height = 'auto'
     textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 28}px`
     window.scrollTo({ top: scrollTop })
-  }
+  }, [textareaRef])
 
   useEffect(() => {
     const textarea = document.querySelector('.mde-text') as HTMLTextAreaElement
@@ -137,9 +108,11 @@ function useSmartTextarea(setValue: Dispatch<SetStateAction<string>>) {
       const insertText = (text: string) => {
         e.preventDefault()
         const newValue = previousValue.slice(0, start) + text + previousValue.slice(start)
-        target.value = newValue
-        target.selectionEnd = start + text.length
-        setValue(newValue)
+        if (newValue.length <= maxNoteLength) {
+          target.value = newValue
+          target.selectionEnd = start + text.length
+          editor.updateNote('content', newValue)
+        }
       }
 
       if (e.key === 'Tab') {
@@ -157,11 +130,9 @@ function useSmartTextarea(setValue: Dispatch<SetStateAction<string>>) {
           const newValue = previousValue.slice(0, start - 3) + previousValue.slice(start)
           target.value = newValue
           target.selectionEnd = start - 3
-          setValue(newValue)
+          editor.updateNote('content', newValue)
         }
       }
-
-      resize()
     }
   }, [])
 
@@ -170,12 +141,14 @@ function useSmartTextarea(setValue: Dispatch<SetStateAction<string>>) {
       resize()
     }
   }, [isEditing, textareaRef])
+
+  return resize
 }
 
 const DynamicToolbarStyles = () => {
   const { editor } = useContext(NoteContext)
   const windowWidth = useWindowWidth()
-  const scrollable = windowWidth <= 360
+  const scrollable = windowWidth <= 400
 
   return (
     <Global styles={css({
