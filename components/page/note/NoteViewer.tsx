@@ -13,7 +13,7 @@ import 'react-mde/lib/styles/css/react-mde-all.css'
 
 const maxNoteLength = 48000
 
-const toolbarCommands = [['header', 'bold', 'italic', 'strikethrough', 'quote', 'code', 'link']]
+const toolbarCommands = [['header', 'bold', 'italic', 'strikethrough', 'code', 'quote', 'unordered-list', 'link']]
 
 const NoteViewer = () => {
   return (
@@ -148,7 +148,7 @@ function useSmartTextarea() {
 const DynamicToolbarStyles = () => {
   const { editor } = useContext(NoteContext)
   const windowWidth = useWindowWidth()
-  const scrollable = windowWidth <= 400
+  const scrollable = windowWidth <= 435
 
   return (
     <Global styles={css({
