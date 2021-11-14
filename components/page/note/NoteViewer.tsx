@@ -1,15 +1,18 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { forwardRef, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Global } from '@emotion/react'
 import { css } from '@theme-ui/css'
 import { NoteContext } from 'pages/note'
 import DbHandler from '@/logic/app/DbHandler'
 import useWarnUnsavedChanges from '@/hooks/useWarnUnsavedChanges'
 import useWindowWidth from '@/hooks/useWindowWidth'
+import Text from '@/components/primitives/Text'
 import MarkdownToJSX from 'markdown-to-jsx'
 import ReactMde from 'react-mde'
 import 'react-mde/lib/styles/css/react-mde-all.css'
+
+const maxNoteLength = 48000
 
 const toolbarCommands = [['header', 'bold', 'italic', 'strikethrough', 'quote', 'code', 'link']]
 
@@ -26,7 +29,9 @@ const NoteViewer = () => {
 const Markdown = observer(() => {
   const { isWriteComplete } = container.resolve(DbHandler)
   const { editor, noteData: { content } } = useContext(NoteContext)
+  const [value, setValue] = useState(content ?? '')
   const [selectedTab, setSelectedTab] = useState<'write' | 'preview'>('preview')
+  const [showLengthWarning, setShowLengthWarning] = useState(false)
   const isEditing = useMemo(() => editor.isEditing, [editor.isEditing])
 
   useLayoutEffect(() => {
@@ -56,6 +61,21 @@ const Markdown = observer(() => {
     }
   }, [])
 
+  const handleChange = useCallback((value: string) => {
+    setValue(value)
+    if (value.length > maxNoteLength) {
+      setShowLengthWarning(true)
+    } else {
+      setShowLengthWarning(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (value.length <= maxNoteLength) {
+      editor.updateNote('content', value)
+    }
+  }, [value])
+
   useWarnUnsavedChanges(
     {
       routeChange: editor.hasUnsavedChanges,
@@ -64,12 +84,14 @@ const Markdown = observer(() => {
     'Changes you made may not be saved. Are you sure you want to leave?'
   )
 
+  useSmartTextarea(setValue)
+
   return (
     <div className="container" onKeyDown={(e) => handleKeyDown(e.key)}>
       <ReactMde
         toolbarCommands={toolbarCommands}
-        value={content}
-        onChange={() => { }}
+        value={value}
+        onChange={handleChange}
         selectedTab={selectedTab}
         onTabChange={setSelectedTab}
         generateMarkdownPreview={markdown =>
@@ -80,80 +102,75 @@ const Markdown = observer(() => {
           >
             {markdown}
           </MarkdownToJSX>)}
-        textAreaComponent={Textarea}
       />
+      {showLengthWarning && (
+        <Text sx={{ color: 'warning', fontWeight: 'semibold', mt: 2 }}>
+          Your note is too long. It will not be saved in full unless you shorten it.
+        </Text>
+      )}
     </div>
   )
 })
 
-const Textarea = forwardRef<HTMLTextAreaElement>(function Textarea(_, ref: any) {
-  const { editor, noteData: { content } } = useContext(NoteContext)
-  const [shouldResize, setShouldResize] = useState(false)
+function useSmartTextarea(setValue: Dispatch<SetStateAction<string>>) {
+  const { editor } = useContext(NoteContext)
+  const textareaRef = useRef<HTMLTextAreaElement>(null!)
   const isEditing = useMemo(() => editor.isEditing, [editor.isEditing])
 
-  const handleChange = useCallback((value: string) => {
-    editor.updateNote('content', value)
-    setShouldResize(true)
-  }, [])
-
-  function handleKeyDown(e: KeyboardEvent) {
-    const target = e.target as HTMLTextAreaElement
-    const start = target.selectionStart
-
-    function insertText(text: string) {
-      e.preventDefault()
-      const newValue = content.slice(0, start) + text + content.slice(start)
-      editor.updateNote('content', newValue)
-      target.value = newValue
-      target.selectionEnd = start + text.length
-      setShouldResize(true)
-    }
-
-    if (e.key === 'Tab') {
-      if (!e.shiftKey) {
-        insertText('\t')
-      }
-    } else if (e.key === 'Enter') {
-      if (!content[start - 1]?.match(/\s/)) {
-        insertText('  \n')
-      }
-    } else if (e.key === 'Backspace') {
-      const tripleBackspace = (content[start - 3] === ' ' && content[start - 2] === ' ' && content[start - 1] === '\n')
-      if (tripleBackspace) {
-        e.preventDefault()
-        const newValue = content.slice(0, start - 3) + content.slice(start)
-        editor.updateNote('content', newValue)
-        target.value = newValue
-        target.selectionEnd = start - 3
-      }
-    }
+  async function resize() {
+    await new Promise(resolve => setTimeout(resolve, 0))
+    const scrollTop = document.documentElement.scrollTop
+    textareaRef.current.style.height = 'auto'
+    textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 28}px`
+    window.scrollTo({ top: scrollTop })
   }
 
   useEffect(() => {
-    if (isEditing) {
-      setShouldResize(true)
+    const textarea = document.querySelector('.mde-text') as HTMLTextAreaElement
+    textareaRef.current = textarea
+    textarea.placeholder = 'Start writing your note here.'
+    textarea.onkeydown = (e) => {
+      const target = e.target as HTMLTextAreaElement
+      const previousValue = target.value
+      const start = target.selectionStart
+
+      const insertText = (text: string) => {
+        e.preventDefault()
+        const newValue = previousValue.slice(0, start) + text + previousValue.slice(start)
+        target.value = newValue
+        target.selectionEnd = start + text.length
+        setValue(newValue)
+      }
+
+      if (e.key === 'Tab') {
+        if (!e.shiftKey) {
+          insertText('\t')
+        }
+      } else if (e.key === 'Enter') {
+        if (!previousValue[start - 1]?.match(/\s/)) {
+          insertText('  \n')
+        }
+      } else if (e.key === 'Backspace') {
+        const tripleBackspace = (previousValue[start - 3] === ' ' && previousValue[start - 2] === ' ' && previousValue[start - 1] === '\n')
+        if (tripleBackspace) {
+          e.preventDefault()
+          const newValue = previousValue.slice(0, start - 3) + previousValue.slice(start)
+          target.value = newValue
+          target.selectionEnd = start - 3
+          setValue(newValue)
+        }
+      }
+
+      resize()
     }
-  }, [isEditing])
+  }, [])
 
   useLayoutEffect(() => {
-    if (shouldResize) {
-      ref.current.style.height = 'auto'
-      ref.current.style.height = `${ref.current.scrollHeight}px`
-      setShouldResize(false)
+    if (isEditing && textareaRef) {
+      resize()
     }
-  }, [shouldResize])
-
-  return (
-    <textarea
-      className="mde-text"
-      value={content}
-      onChange={(e) => handleChange(e.target.value)}
-      onKeyDown={(e) => handleKeyDown(e as any)}
-      placeholder="Start writing your note here."
-      ref={ref}
-    />
-  )
-})
+  }, [isEditing, textareaRef])
+}
 
 const DynamicToolbarStyles = () => {
   const { editor } = useContext(NoteContext)
@@ -164,8 +181,7 @@ const DynamicToolbarStyles = () => {
     <Global styles={css({
       '.react-mde .mde-header': {
         display: editor.isEditing ? undefined : 'none',
-        overflowX: scrollable ? 'scroll' : 'hidden',
-        justifyContent: scrollable ? 'flex-start' : ['center', 'flex-start']
+        overflowX: scrollable ? 'scroll' : 'hidden'
       }
     })} />
   )
@@ -177,26 +193,36 @@ const StaticStyles = () => {
       '.react-mde': {
         border: 'none',
         '.mde-header': {
-          position: ['fixed', 'static'],
-          isolation: 'isolate',
-          paddingX: [1, 0],
+          position: 'sticky',
+          top: '3.25rem',
           zIndex: 2,
-          bottom: 0,
-          left: 0,
-          right: 0,
+          marginBottom: [1, 2],
           display: 'flex',
           flexWrap: 'nowrap',
           maxWidth: '100%',
           alignItems: 'center',
-          marginBottom: [0, 2],
           borderRadius: 'default',
-          backgroundColor: ['bg', 'transparent'],
+          background: 'none',
           color: 'text',
           border: 'none',
-          '&-item button svg': {
-            color: 'whiteAlpha.60',
-            '&:hover': {
-              color: 'text'
+          '&-group': {
+            padding: '0 !important',
+            marginY: '4px !important',
+            backgroundColor: '#242424',
+            borderRadius: 'default'
+          },
+          '&-item': {
+            margin: '0 !important',
+            '& button': {
+              height: '2.5rem !important',
+              paddingX: '0.75rem !important',
+              background: 'none',
+              '&:hover svg': {
+                color: 'text'
+              },
+              'svg': {
+                color: 'whiteAlpha.60',
+              }
             }
           }
         },
@@ -208,11 +234,8 @@ const StaticStyles = () => {
           color: 'inherit',
           fontWeight: 'medium',
           borderRadius: 'default',
-          backgroundColor: 'button',
+          backgroundColor: '#242424',
           border: 'none !important',
-          '&:hover': {
-            backgroundColor: 'buttonHighlight'
-          },
           '&.selected': {
             backgroundColor: 'notes',
           },
@@ -223,7 +246,10 @@ const StaticStyles = () => {
           '&:nth-of-type(2)': {
             borderTopLeftRadius: 0,
             borderBottomLeftRadius: 0,
-            marginRight: '0.25rem !important'
+            marginRight: '0.5rem !important'
+          },
+          '&:focus': {
+            zIndex: 1
           }
         },
         '.mde-header-group': {
@@ -289,6 +315,10 @@ const StaticStyles = () => {
           'h1, h2, h3': {
             borderBottomColor: 'divider',
             marginBlock: 4
+          },
+          'a': {
+            color: '#5493ff',
+            fontWeight: 'normal'
           }
         }
       }

@@ -27,7 +27,7 @@ const IconAndTitle = () => {
       <Heading
         level={2}
         sx={{
-          marginLeft: [3, 4],
+          marginLeft: [2, 4],
           maxWidth: '100%',
           fontSize: ['1.3rem', '2.5rem', '2.5rem'],
           fontWeight: 'bold',
