@@ -1,7 +1,8 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { BaseEmoji } from 'emoji-mart'
+import { HomePageContext } from 'pages/home'
 import WeekIconsHandler from '@/logic/app/WeekIconsHandler'
 import WeekHandler from '@/logic/app/WeekHandler'
 import EmojiPicker from '@/components/app/EmojiPicker'
@@ -14,6 +15,7 @@ import PencilIcon from '@/components/icons/PencilIcon'
 const WeekIconDropdown = observer(() => {
   const { weekInView: { icon }, isLoadingWeek } = container.resolve(WeekHandler)
   const { setIcon, removeIcon } = container.resolve(WeekIconsHandler)
+  const { narrow } = useContext(HomePageContext)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
 
   function handleSelectEmoji(emoji: BaseEmoji) {
@@ -22,7 +24,7 @@ const WeekIconDropdown = observer(() => {
 
   return (
     <>
-      <Dropdown title={<DropdownTitle />} anchorRight={[true, false]} disabled={isLoadingWeek}>
+      <Dropdown title={<DropdownTitle />} anchorRight={narrow} disabled={isLoadingWeek}>
         <Dropdown.Item itemAction={() => setShowEmojiPicker(true)}>
           {!!icon ? 'Change' : 'Add'} week icon
         </Dropdown.Item>

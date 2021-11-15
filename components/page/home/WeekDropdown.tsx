@@ -5,19 +5,19 @@ import { addMonths, eachWeekOfInterval, endOfMonth, format, isFuture, isSameDay,
 import { formatFirstDayOfThisWeek, formatYYYYMMDD, separateYYYYfromMMDD } from '@/logic/utils/dateUtilities'
 import NewWeekPromptHandler from '@/logic/app/NewWeekPromptHandler'
 import WeekHandler from '@/logic/app/WeekHandler'
-import WeekIconsHandler from '@/logic/app/WeekIconsHandler'
 import accentColor from '@/logic/utils/accentColor'
+import WeekIconsHandler from '@/logic/app/WeekIconsHandler'
+import SmartEmoji from '@/components/app/SmartEmoji'
 import Dropdown from '@/components/app/Dropdown'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
 import Icon from '@/components/primitives/Icon'
 import IconButton from '@/components/primitives/IconButton'
-import Spacer from '@/components/primitives/Spacer'
 import Text from '@/components/primitives/Text'
+import Divider from '@/components/primitives/Divider'
 import ArrowRightIcon from '@/components/icons/ArrowRightIcon'
 import ChevronLeftIcon from '@/components/icons/ChevronLeftIcon'
 import ChevronRightIcon from '@/components/icons/ChevronRightIcon'
-import SmartEmoji from '@/components/app/SmartEmoji'
 import CheckIcon from '@/components/icons/CheckIcon'
 
 const WeekDropdown = observer(() => {
@@ -191,7 +191,5 @@ const ChangeMonthButton: FC<{ icon: () => JSX.Element, onClick: () => void, disa
     {children}
   </IconButton>
 )
-
-const Divider = () => <Box sx={{ borderTop: 'solid 1px', borderColor: 'whiteAlpha.10' }} />
 
 export default WeekDropdown
