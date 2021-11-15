@@ -1,5 +1,7 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
+import { useContext } from 'react'
+import { HomePageContext } from 'pages/home'
 import WeekHandler from '@/logic/app/WeekHandler'
 import Box from '@/components/primitives/Box'
 import IconButton from '@/components/primitives/IconButton'
@@ -8,16 +10,17 @@ import NextLink from 'next/link'
 
 const OpenFocusButton = () => {
   const { viewMode } = container.resolve(WeekHandler)
+  const { narrow } = useContext(HomePageContext)
 
   if (viewMode !== 'focus') return null
 
   return (
     <Box
       sx={{
-        flex: [null, 1],
-        width: ['100%', 'auto'],
-        mt: [2, 0],
-        ml: [0, 2],
+        flex: narrow ? null : 1,
+        width: narrow ? '100%' : 'auto',
+        mt: narrow ? 2 : 0,
+        ml: narrow ? 0 : 2,
         opacity: 0,
         animation: 'fade-in forwards 400ms 150ms',
       }}

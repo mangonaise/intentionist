@@ -6,11 +6,12 @@ import { Functions, httpsCallable } from '@firebase/functions'
 import { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import DbHandler from '@/logic/app/DbHandler'
 
+export type Friend = UserProfileInfo & { uid: string }
 export const maxFriends = 50
 
 @singleton()
 export default class FriendsHandler {
-  public friends: Array<UserProfileInfo & { uid: string }> = []
+  public friends: Friend[] = []
   public hasLoadedFriends = false
   private dbHandler
   private functions
