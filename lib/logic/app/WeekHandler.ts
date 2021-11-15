@@ -222,9 +222,9 @@ export default class WeekHandler {
     }
   }
 
-  public getNotesCount = () => {
-    if (!this.weekInView.notesMetadata || !this.weekInView.notes) return 0
-    return Object.entries(this.weekInView.notes)
+  public getNotesCount = (weekInView: WeekDocumentData) => {
+    if (!weekInView.notesMetadata || !weekInView.notes) return 0
+    return Object.entries(weekInView.notes)
       .filter(([habitId]) => this.habitsHandler.habits.find((habit) => habit.id === habitId))
       .map(([_, values]) => values)
       .flat()

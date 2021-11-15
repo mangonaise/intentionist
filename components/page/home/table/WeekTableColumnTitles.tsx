@@ -17,13 +17,11 @@ const weekdaysShort = weekdayNames.map((day) => day.slice(0, 3))
 const weekdayInitials = weekdayNames.map((day) => day.slice(0, 1))
 
 const WeekTableColumnTitles = () => {
-  const { viewMode, getNotesCount } = container.resolve(WeekHandler)
-  const [notesCount] = useState(getNotesCount())
-
+  const { viewMode } = container.resolve(WeekHandler)
 
   const map: { [viewMode in WeekViewMode]: JSX.Element } = {
     'tracker': <TrackerTitleRow />,
-    'notes': <NotesTitleRow notesCount={notesCount} />,
+    'notes': <NotesTitleRow />,
     'focus': <FocusTitleRow />
   }
 
@@ -34,13 +32,17 @@ const TrackerTitleRow = () => {
   return <WeekdayLabels />
 }
 
-const NotesTitleRow = ({ notesCount }: { notesCount: number }) => {
+const NotesTitleRow = observer(() => {
+  const { weekInView, getNotesCount, isLoadingWeek } = container.resolve(WeekHandler)
+
+  const notesCount = getNotesCount(weekInView)
+
   return (
     <Flex center sx={{ height: 'row' }}>
-      {notesCount} note{notesCount === 1 ? '' : 's'}
+      {isLoadingWeek ? '...' : `${notesCount} note${notesCount === 1 ? '' : 's'}`}
     </Flex>
   )
-}
+})
 
 const FocusTitleRow = observer(() => {
   const { collapseColumns, setCollapseColumns } = useContext(ColumnsDisplayContext)
