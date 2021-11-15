@@ -112,7 +112,7 @@ const SectionsDropdown = ({ dropdownTitle }: { dropdownTitle: string }) => {
       </NextLink>
       <Dropdown title={dropdownTitle} sx={{ ml: 2, flex: 1 }}>
         {settingsSections.map((sectionData) => (
-          <Dropdown.Item href={`/settings/${sectionData.path}`} key={sectionData.path}>
+          <Dropdown.Item href={`/settings?view=${sectionData.path}`} key={sectionData.path}>
             {sectionData.shortName ?? sectionData.title}
           </Dropdown.Item>
         ))}
