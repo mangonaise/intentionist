@@ -49,7 +49,7 @@ beforeEach(async () => {
 
 afterEach(async () => {
   requestsHandler.stopListener()
-  friendsHandler.stopListener()
+  friendsHandler.stopFriendsDocListener()
   container.clearInstances()
 })
 

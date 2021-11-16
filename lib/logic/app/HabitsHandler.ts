@@ -26,10 +26,13 @@ export type HabitProperties = {
 @singleton()
 export default class HabitsHandler {
   public habits: Habit[]
+  public order: string[]
   private dbHandler
 
   constructor(initialState: InitialState, dbHandler: DbHandler) {
-    this.habits = this.processFetchedHabits(initialState.data.habitsDoc)
+    const { habits, order } = this.processFetchedHabits(initialState.data.habitsDoc)
+    this.habits = habits
+    this.order = order
     this.dbHandler = dbHandler
     makeAutoObservable(this)
   }
@@ -46,7 +49,7 @@ export default class HabitsHandler {
     this.habits[index] = habitToSet
 
     // ☁️
-    await this.dbHandler.update(this.dbHandler.habitsDocRef, {
+    await this.dbHandler.update(this.dbHandler.habitsDocRef(), {
       habits: { [habitToSet.id]: { ...exclude(habitToSet, 'id') } }
     })
 
@@ -84,7 +87,7 @@ export default class HabitsHandler {
     this.habits = arrayMove(this.habits, oldIndex, newIndex)
 
     // ☁️
-    await this.dbHandler.update(this.dbHandler.habitsDocRef, {
+    await this.dbHandler.update(this.dbHandler.habitsDocRef(), {
       order: this.habits.map((habit) => habit.id)
     })
   }
@@ -94,7 +97,7 @@ export default class HabitsHandler {
     this.habits.push(newHabit)
 
     // ☁️
-    await this.dbHandler.update(this.dbHandler.habitsDocRef, {
+    await this.dbHandler.update(this.dbHandler.habitsDocRef(), {
       habits: { [newHabit.id]: { ...exclude(newHabit, 'id') } },
       order: arrayUnion(newHabit.id)
     })
@@ -102,8 +105,8 @@ export default class HabitsHandler {
     return this.habits[this.habits.length - 1]
   }
 
-  private processFetchedHabits = (habitsDoc: Fetched<HabitsDocumentData>): Habit[] => {
-    if (!habitsDoc) return []
+  private processFetchedHabits = (habitsDoc: Fetched<HabitsDocumentData>) => {
+    if (!habitsDoc) return { habits: [], order: [] }
 
     const habitIds = Object.keys(habitsDoc.habits)
     const order = habitsDoc.order
@@ -114,10 +117,10 @@ export default class HabitsHandler {
       }
     }
 
-    return order.map(id => ({
-      id,
-      ...habitsDoc.habits[id]
-    }))
+    return {
+      habits: order.map((id) => ({ id, ...habitsDoc.habits[id] })),
+      order
+    }
   }
 }
 

@@ -49,7 +49,7 @@ export default class InitialFetchHandler {
   }
 
   private fetchHabitsDoc = async () => {
-    const habitsDoc = await this.dbHandler.getDocData(this.dbHandler.habitsDocRef)
+    const habitsDoc = await this.dbHandler.getDocData(this.dbHandler.habitsDocRef())
     return habitsDoc ? habitsDoc as HabitsDocumentData : null
   }
 

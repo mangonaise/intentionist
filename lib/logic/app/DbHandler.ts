@@ -132,7 +132,7 @@ export default class DbHandler {
 
   public deleteHabit = async (habitId: string) => {
     this.isWriteComplete = false
-    const deleteHabitDataPromise = this.update(this.habitsDocRef, {
+    const deleteHabitDataPromise = this.update(this.habitsDocRef(), {
       habits: { [habitId]: deleteField() },
       order: arrayRemove(habitId)
     })
@@ -148,16 +148,16 @@ export default class DbHandler {
     return doc(this.db, USERS, friendUid ?? this.uid, path ?? '')
   }
 
-  public get habitsDocRef() {
-    return this.userDocRef(HABITS)
-  }
-
   public get friendRequestsDocRef() {
     return this.userDocRef(FRIEND_REQUESTS)
   }
-
+  
   public get friendsDocRef() {
     return this.userDocRef(FRIENDS)
+  }
+
+  public habitsDocRef(friendUid?: string) {
+    return this.userDocRef(HABITS, friendUid)
   }
 
   public weekDocRef = (weekStartDate: string, friendUid?: string) => {
