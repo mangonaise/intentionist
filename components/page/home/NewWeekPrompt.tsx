@@ -2,6 +2,7 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import NewWeekPromptHandler from '@/logic/app/NewWeekPromptHandler'
+import HabitsHandler from '@/logic/app/HabitsHandler'
 import accentColor from '@/logic/utils/accentColor'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Button from '@/components/primitives/Button'
@@ -12,12 +13,13 @@ import format from 'date-fns/format'
 
 const NewWeekPrompt = () => {
   const { checkIsNewWeek, showPrompt, thisWeekStartDate, trackNewWeek } = container.resolve(NewWeekPromptHandler)
+  const { habits } = container.resolve(HabitsHandler)
 
   useEffect(() => {
     checkIsNewWeek()
-  }, [checkIsNewWeek])
+  }, [])
 
-  if (!showPrompt) return null
+  if (!showPrompt || !habits.length) return null
 
   return (
     <Flex
