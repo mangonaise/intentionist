@@ -1,4 +1,4 @@
-import { singleton } from 'tsyringe'
+import { container, singleton } from 'tsyringe'
 import { makeAutoObservable, runInAction, when } from 'mobx'
 import { deleteField, increment } from '@firebase/firestore'
 import { InitialState } from '@/logic/app/InitialFetchHandler'
@@ -40,10 +40,7 @@ export type WeekViewMode = 'tracker' | 'notes' | 'focus'
 @singleton()
 export default class WeekHandler {
   public viewMode = 'tracker' as WeekViewMode
-  public weekInView: WeekDocumentData
-  public habitsInView: Habit[]
-  public condenseView = false
-  public showCondenseViewToggle = false
+  public weekInView: WeekInView
   public isLoadingWeek = false
   public latestWeekStartDate: string
   private dbHandler
@@ -53,36 +50,117 @@ export default class WeekHandler {
     const thisWeekStartDate = formatFirstDayOfThisWeek()
     this.dbHandler = dbHandler
     this.habitsHandler = habitsHandler
+
     this.latestWeekStartDate = initialAppState.data.latestWeekDoc?.startDate ?? thisWeekStartDate
-    this.weekInView = initialAppState.data.latestWeekDoc ?? { startDate: thisWeekStartDate }
-    this.habitsInView = this.refreshHabitsInView()
+
+    this.weekInView = new WeekInView({
+      userHabits: habitsHandler.habits,
+      data: initialAppState.data.latestWeekDoc ?? { startDate: thisWeekStartDate }
+    }, this)
+
     makeAutoObservable(this)
   }
 
   public setViewMode = (viewMode: WeekViewMode) => {
     this.viewMode = viewMode
-    this.refreshHabitsInView()
+    this.weekInView.refreshHabitsInView()
   }
 
-  public viewWeek = async (startDate: string, cachedIcon?: string) => {
-    if (startDate === this.weekInView.startDate) return
+  public viewWeek = async ({ startDate, friendUid, cachedIcon }: { startDate: string, friendUid?: string, cachedIcon?: string }) => {
+    if (startDate === this.weekInView.data.startDate && friendUid === this.weekInView.friendUid) return
+
     this.isLoadingWeek = true
-    this.weekInView = { startDate }
-    if (cachedIcon) this.weekInView.icon = cachedIcon
+
+    // TODO: make sure user exists and has been loaded
+
+    this.weekInView = new WeekInView({
+      loadingState: this.weekInView,
+      userHabits: [],
+      data: { startDate, icon: cachedIcon },
+      friendUid
+    }, this)
+
     await when(() => this.dbHandler.isWriteComplete)
-    const weekDoc = await this.dbHandler.getWeekDoc(startDate)
+
+    const weekData = await this.dbHandler.getWeekDoc(startDate, friendUid)
+
+    // TODO: get correct habits based on user (fetch or load from a cache, no need to listen to habits docs)
+    const habits = this.habitsHandler.habits
+
     runInAction(() => {
-      if (new Date(startDate) > new Date(this.latestWeekStartDate)) {
+      if (!friendUid && new Date(startDate) > new Date(this.latestWeekStartDate)) {
         this.latestWeekStartDate = startDate
         this.dbHandler.updateWeekDoc(startDate, {})
       }
-      this.weekInView = weekDoc ?? { startDate }
-      this.condenseView =
-        startDate !== this.latestWeekStartDate
-        && this.habitsHandler.habits.filter((habit) => habit.status === 'active').length > 0
+      this.weekInView = new WeekInView({
+        friendUid,
+        data: weekData ?? { startDate },
+        userHabits: habits
+      }, this)
       this.isLoadingWeek = false
     })
-    this.refreshHabitsInView()
+  }
+}
+
+interface WeekInViewConstructor {
+  data: WeekDocumentData,
+  userHabits: Habit[]
+  friendUid?: string,
+  loadingState?: WeekInView
+}
+
+export class WeekInView {
+  public data: WeekDocumentData
+  public userHabits: Habit[]
+  public habitsInView: Habit[]
+  public friendUid?: string
+  public condenseView: boolean
+  public showCondenseViewToggle = false
+  private isPastWeek
+  private dbHandler
+  private weekHandler
+
+  constructor({ friendUid, data, userHabits, loadingState }: WeekInViewConstructor, weekHandler: WeekHandler) {
+    this.friendUid = friendUid
+    this.data = data
+    this.userHabits = userHabits
+    this.weekHandler = weekHandler
+    this.dbHandler = container.resolve(DbHandler)
+
+    if (friendUid) {
+      this.isPastWeek = data.startDate < formatFirstDayOfThisWeek()
+    } else {
+      this.isPastWeek = data.startDate < weekHandler.latestWeekStartDate
+    }
+
+    if (loadingState) {
+      this.condenseView = loadingState.condenseView
+      this.showCondenseViewToggle = loadingState.showCondenseViewToggle
+      this.habitsInView = loadingState.habitsInView
+    } else {
+      this.condenseView = this.isPastWeek && userHabits.some((habit) => habit.status === 'active')
+      this.habitsInView = this.refreshHabitsInView(userHabits)
+    }
+
+    makeAutoObservable(this)
+  }
+
+  public refreshHabitsInView = (newHabits?: Habit[]) => {
+    this.userHabits = newHabits ?? this.userHabits
+
+    const habitHasData = (habit: Habit) => this.getHabitIdsWithData().includes(habit.id)
+    this.habitsInView = this.userHabits
+      .filter((habit) => this.condenseView ? habitHasData(habit) : (habit.status === 'active' || habitHasData(habit)))
+
+    if (this.weekHandler.viewMode === 'focus') {
+      this.habitsInView = this.habitsInView.filter((habit) => habit.timeable)
+    }
+
+    const activeHabits = this.userHabits.filter((habit) => habit.status === 'active')
+    const doAllActiveHabitsHaveData = activeHabits.every(habitHasData)
+    this.showCondenseViewToggle = this.isPastWeek && !doAllActiveHabitsHaveData
+
+    return this.habitsInView
   }
 
   public setCondensedView = (condense: boolean) => {
@@ -90,26 +168,9 @@ export default class WeekHandler {
     this.refreshHabitsInView()
   }
 
-  public refreshHabitsInView = () => {
-    const habitHasData = (habit: Habit) => this.getHabitIdsWithData().includes(habit.id)
-    this.habitsInView = this.habitsHandler.habits
-      .filter((habit) => this.condenseView ? habitHasData(habit) : (habit.status === 'active' || habitHasData(habit)))
-
-    if (this.viewMode === 'focus') {
-      this.habitsInView = this.habitsInView.filter((habit) => habit.timeable)
-    }
-
-    const isPastWeek = this.weekInView.startDate !== this.latestWeekStartDate
-    const activeHabits = this.habitsHandler.habits.filter((habit) => habit.status === 'active')
-    const doAllActiveHabitsHaveData = activeHabits.every(habitHasData)
-    this.showCondenseViewToggle = isPastWeek && !doAllActiveHabitsHaveData
-
-    return this.habitsInView
-  }
-
   public setTrackerStatus = async (habitId: string, weekday: WeekdayId, emojis: string[]) => {
-    if (!this.weekInView.statuses) this.weekInView.statuses = {}
-    const existingStatus = this.weekInView.statuses[habitId]?.[weekday]
+    if (!this.data.statuses) this.data.statuses = {}
+    const existingStatus = this.data.statuses[habitId]?.[weekday]
     const newStatus = emojis.length ? emojis : undefined
     if (isEqual(existingStatus, newStatus)) {
       return existingStatus
@@ -119,31 +180,31 @@ export default class WeekHandler {
     }
 
     // 💻
-    if (!this.weekInView.statuses[habitId]) {
-      this.weekInView.statuses[habitId] = {}
-      this.refreshHabitsInView()
+    if (!this.data.statuses[habitId]) {
+      this.data.statuses[habitId] = {}
+      this.refreshHabitsInView() // hides condenser toggle if necessary
     }
-    this.weekInView.statuses[habitId][weekday] = newStatus
+    this.data.statuses[habitId][weekday] = newStatus
 
     // ☁️
-    await this.dbHandler.updateWeekDoc(this.weekInView.startDate, { statuses: this.weekInView.statuses })
+    await this.dbHandler.updateWeekDoc(this.data.startDate, { statuses: this.data.statuses })
 
-    return this.weekInView.statuses?.[habitId]?.[weekday]
+    return this.data.statuses?.[habitId]?.[weekday]
   }
 
   private clearTrackerStatus = async (habitId: string, weekday: WeekdayId) => {
-    if (!this.weekInView.statuses) throw new Error('No statuses to clear')
+    if (!this.data.statuses) throw new Error('No statuses to clear')
 
     // 💻
-    delete this.weekInView.statuses[habitId][weekday]
-    const noTrackerStatusesRemaining = (Object.keys(this.weekInView.statuses[habitId]).length === 0)
+    delete this.data.statuses[habitId]?.[weekday]
+    const noTrackerStatusesRemaining = (Object.keys(this.data.statuses[habitId]).length === 0)
     if (noTrackerStatusesRemaining) {
-      delete this.weekInView.statuses[habitId]
+      delete this.data.statuses[habitId]
       this.refreshHabitsInView()
     }
 
     // ☁️
-    await this.dbHandler.updateWeekDoc(this.weekInView.startDate, {
+    await this.dbHandler.updateWeekDoc(this.data.startDate, {
       statuses: {
         [habitId]: noTrackerStatusesRemaining ? deleteField() : { [weekday]: deleteField() }
       }
@@ -151,33 +212,33 @@ export default class WeekHandler {
   }
 
   public setNoteLocally = (habitId: string, noteId: string, metadata: NoteMetadata) => {
-    this.weekInView.notes = this.weekInView.notes ?? {}
-    const habitNotes = this.weekInView.notes[habitId] ?? []
+    this.data.notes = this.data.notes ?? {}
+    const habitNotes = this.data.notes[habitId] ?? []
     if (!habitNotes.find((existingNoteId) => noteId === existingNoteId)) {
       habitNotes.push(noteId)
-      this.weekInView.notes[habitId] = habitNotes
+      this.data.notes[habitId] = habitNotes
     }
 
-    if (!this.weekInView.notesMetadata) this.weekInView.notesMetadata = {}
-    this.weekInView.notesMetadata[noteId] = metadata
+    if (!this.data.notesMetadata) this.data.notesMetadata = {}
+    this.data.notesMetadata[noteId] = metadata
   }
 
   public clearNoteLocally = (habitId: string, noteIdToDelete: string) => {
-    if (this.weekInView.notes?.[habitId]) {
-      this.weekInView.notes[habitId] = this.weekInView.notes[habitId]
+    if (this.data.notes?.[habitId]) {
+      this.data.notes[habitId] = this.data.notes[habitId]
         .filter((noteId) => noteId !== noteIdToDelete)
-      if (!this.weekInView.notes[habitId].length) {
-        delete this.weekInView.notes[habitId]
+      if (!this.data.notes[habitId].length) {
+        delete this.data.notes[habitId]
       }
     }
-    delete this.weekInView.notesMetadata?.[noteIdToDelete]
+    delete this.data.notesMetadata?.[noteIdToDelete]
   }
 
   public getNoteDataForHabit = (habitId: string) => {
-    if (!this.weekInView.notes?.[habitId]) return []
+    if (!this.data.notes?.[habitId]) return []
     const data = []
-    for (const noteId of this.weekInView.notes[habitId]) {
-      const metadata = this.weekInView.notesMetadata?.[noteId]
+    for (const noteId of this.data.notes[habitId]) {
+      const metadata = this.data.notesMetadata?.[noteId]
       if (!metadata) continue
       data.push({ noteId, metadata })
     }
@@ -185,27 +246,27 @@ export default class WeekHandler {
   }
 
   public setFocusedTime = async (habitId: string, day: WeekdayId, time: number) => {
-    if (this.weekInView.times?.[habitId]?.[day] === time) return
+    if (this.data.times?.[habitId]?.[day] === time) return
 
     // 💻
-    this.weekInView.times = this.weekInView.times ?? {}
-    this.weekInView.times[habitId] = this.weekInView.times[habitId] ?? {}
-    this.weekInView.times[habitId][day] = time
+    this.data.times = this.data.times ?? {}
+    this.data.times[habitId] = this.data.times[habitId] ?? {}
+    this.data.times[habitId][day] = time
 
     // ☁️
-    await this.dbHandler.updateWeekDoc(this.weekInView.startDate, { times: this.weekInView.times })
+    await this.dbHandler.updateWeekDoc(this.data.startDate, { times: this.data.times })
   }
 
   public addFocusedTime = async (habitId: string, day: WeekdayId, time: number) => {
     if (time === 0) return
 
     // 💻
-    this.weekInView.times = this.weekInView.times ?? {}
-    this.weekInView.times[habitId] = this.weekInView.times[habitId] ?? {}
-    this.weekInView.times[habitId][day] = (this.weekInView.times[habitId][day] ?? 0) + time
+    this.data.times = this.data.times ?? {}
+    this.data.times[habitId] = this.data.times[habitId] ?? {}
+    this.data.times[habitId][day] = (this.data.times[habitId][day] ?? 0) + time
 
     // ☁️
-    await this.dbHandler.updateWeekDoc(this.weekInView.startDate, {
+    await this.dbHandler.updateWeekDoc(this.data.startDate, {
       times: {
         [habitId]: { [day]: increment(time) }
       }
@@ -214,18 +275,18 @@ export default class WeekHandler {
 
   public getFocusedTime = (habitId: string, period: WeekdayId | 'week') => {
     if (period === 'week') {
-      if (!this.weekInView.times?.[habitId]) return 0
-      const times = Object.values(this.weekInView.times[habitId])
+      if (!this.data.times?.[habitId]) return 0
+      const times = Object.values(this.data.times[habitId])
       return sum(times)
     } else {
-      return this.weekInView.times?.[habitId]?.[period] ?? 0
+      return this.data.times?.[habitId]?.[period] ?? 0
     }
   }
 
-  public getNotesCount = (weekInView: WeekDocumentData) => {
-    if (!weekInView.notesMetadata || !weekInView.notes) return 0
-    return Object.entries(weekInView.notes)
-      .filter(([habitId]) => this.habitsHandler.habits.find((habit) => habit.id === habitId))
+  public getNotesCount = () => {
+    if (!this.data.notesMetadata || !this.data.notes) return 0
+    return Object.entries(this.data.notes)
+      .filter(([habitId]) => this.userHabits.find((habit) => habit.id === habitId))
       .map(([_, values]) => values)
       .flat()
       .length
@@ -233,13 +294,13 @@ export default class WeekHandler {
 
   private getHabitIdsWithData = () => {
     const viewDataMap: { [key in WeekViewMode]: { [key: string]: any } } = {
-      tracker: this.weekInView.statuses ?? {},
-      notes: this.weekInView.notes ?? {},
-      focus: this.weekInView.times ?? {}
+      tracker: this.data.statuses ?? {},
+      notes: this.data.notes ?? {},
+      focus: this.data.times ?? {}
     }
-    return Object.keys(viewDataMap[this.viewMode])
+    return Object.keys(viewDataMap[this.weekHandler.viewMode])
       .filter((habitId) => {
-        const habitData = viewDataMap[this.viewMode][habitId]
+        const habitData = viewDataMap[this.weekHandler.viewMode][habitId]
         return habitData.length === undefined || habitData.length > 0
       })
   }

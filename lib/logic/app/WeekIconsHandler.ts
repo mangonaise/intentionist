@@ -10,6 +10,7 @@ type WeekIconsCache = {
 
 @singleton()
 export default class WeekIconsHandler {
+  // TODO: cache icons for multiple users
   public iconsCache: WeekIconsCache = {}
   private weekHandler
   private dbHandler
@@ -31,25 +32,25 @@ export default class WeekIconsHandler {
   }
 
   public setIcon = async (icon: string) => {
-    if (icon === this.weekHandler.weekInView.icon) return
+    if (icon === this.weekHandler.weekInView.data.icon) return
 
     // 💻
-    this.weekHandler.weekInView.icon = icon
-    const { yyyy, mmdd } = separateYYYYfromMMDD(this.weekHandler.weekInView.startDate)
+    this.weekHandler.weekInView.data.icon = icon
+    const { yyyy, mmdd } = separateYYYYfromMMDD(this.weekHandler.weekInView.data.startDate)
     this.iconsCache[yyyy] = this.iconsCache[yyyy] ?? {}
     this.iconsCache[yyyy][mmdd] = icon
 
     // ☁️
-    await this.dbHandler.updateWeekIcon(this.weekHandler.weekInView.startDate, icon)
+    await this.dbHandler.updateWeekIcon(this.weekHandler.weekInView.data.startDate, icon)
   }
 
   public removeIcon = async () => {
     // 💻
-    this.weekHandler.weekInView.icon = null
-    const { yyyy, mmdd } = separateYYYYfromMMDD(this.weekHandler.weekInView.startDate)
+    this.weekHandler.weekInView.data.icon = null
+    const { yyyy, mmdd } = separateYYYYfromMMDD(this.weekHandler.weekInView.data.startDate)
     delete this.iconsCache[yyyy]?.[mmdd]
 
     // ☁️
-    await this.dbHandler.removeWeekIcon(this.weekHandler.weekInView.startDate)
+    await this.dbHandler.removeWeekIcon(this.weekHandler.weekInView.data.startDate)
   }
 }

@@ -81,9 +81,14 @@ afterAll(async () => {
 describe('initialization', () => {
   test('if no weeks exist in database, set week in view to an empty week starting on this Monday', async () => {
     await initializeWeekHandler()
-    expect(isMonday(new Date(weekHandler.weekInView.startDate))).toEqual(true)
-    expect(weekHandler.weekInView.startDate).toEqual(formatFirstDayOfThisWeek())
-    expect(weekHandler.weekInView.statuses).toBeUndefined()
+    const weekData = weekHandler.weekInView.data
+    expect(isMonday(new Date(weekData.startDate))).toEqual(true)
+    expect(weekData.startDate).toEqual(formatFirstDayOfThisWeek())
+    expect(weekData.statuses).toBeUndefined()
+    expect(weekData.notes).toBeUndefined()
+    expect(weekData.notesMetadata).toBeUndefined()
+    expect(weekData.times).toBeUndefined()
+    expect(weekData.icon).toBeUndefined()
   })
 
   test('if some weeks already exist in the database, initialize with the most recent one', async () => {
@@ -91,13 +96,13 @@ describe('initialization', () => {
     await dbHandler.updateWeekDoc(olderWeek, {})
     await dbHandler.updateWeekDoc(newerWeek, {})
     await initializeWeekHandler()
-    expect(weekHandler.weekInView.startDate).toEqual(newerWeek)
+    expect(weekHandler.weekInView.data.startDate).toEqual(newerWeek)
   })
 
   test(`tracker statuses are correctly placed into week in view's local cache`, async () => {
     await dbHandler.updateWeekDoc('2021-09-20', { startDate: '2021-09-20', statuses: dummyTrackerStatuses })
     await initializeWeekHandler()
-    expect(weekHandler.weekInView.statuses).toEqual(dummyTrackerStatuses)
+    expect(weekHandler.weekInView.data.statuses).toEqual(dummyTrackerStatuses)
   })
 
   test(`note IDs and metadata are correctly placed into week in view's local cache`, async () => {
@@ -112,11 +117,11 @@ describe('initialization', () => {
       }
     })
     await initializeWeekHandler()
-    expect(weekHandler.weekInView.notes).toEqual({
+    expect(weekHandler.weekInView.data.notes).toEqual({
       [dummyNoteDataA.habitId]: [dummyNoteDataA.noteId],
       [dummyNoteDataB.habitId]: [dummyNoteDataB.noteId]
     })
-    expect(weekHandler.weekInView.notesMetadata).toEqual({
+    expect(weekHandler.weekInView.data.notesMetadata).toEqual({
       [dummyNoteDataA.noteId]: dummyNoteDataA.metadata,
       [dummyNoteDataB.noteId]: dummyNoteDataB.metadata
     })
@@ -132,7 +137,7 @@ describe('initialization', () => {
       }
     })
     await initializeWeekHandler()
-    expect(weekHandler.weekInView.times).toEqual({
+    expect(weekHandler.weekInView.data.times).toEqual({
       [habitIdA]: { 0: 1500, 3: 6000 },
       [habitIdB]: { 1: 600, 6: 4500 }
     })
@@ -143,7 +148,7 @@ describe('initialization', () => {
       icon: '⭐'
     })
     await initializeWeekHandler()
-    expect(weekHandler.weekInView.icon).toEqual('⭐')
+    expect(weekHandler.weekInView.data.icon).toEqual('⭐')
   })
 })
 
@@ -154,63 +159,63 @@ describe('updating tracker statuses', () => {
 
   test('setting any data on an empty week will automatically add the start date to the document', async () => {
     const weekStartDate = formatFirstDayOfThisWeek()
-    await weekHandler.setTrackerStatus(generateHabitId(), 0, ['🌱'])
+    await weekHandler.weekInView.setTrackerStatus(generateHabitId(), 0, ['🌱'])
     const weekDoc = await dbHandler.getWeekDoc(weekStartDate)
     expect(weekDoc?.startDate).toEqual(weekStartDate)
   })
 
   test('setting tracker statuses updates local cache and database correctly', async () => {
     const habitIdA = generateHabitId(), habitIdB = generateHabitId()
-    await weekHandler.setTrackerStatus(habitIdA, 1, ['😎'])
-    await weekHandler.setTrackerStatus(habitIdB, 4, ['🤔'])
+    await weekHandler.weekInView.setTrackerStatus(habitIdA, 1, ['😎'])
+    await weekHandler.weekInView.setTrackerStatus(habitIdB, 4, ['🤔'])
     const expectedStatuses = {
       [habitIdA]: { 1: ['😎'] },
       [habitIdB]: { 4: ['🤔'] }
     }
     const weekDoc = await dbHandler.getWeekDoc(formatFirstDayOfThisWeek())
-    expect(weekHandler.weekInView.statuses).toEqual(expectedStatuses)
+    expect(weekHandler.weekInView.data.statuses).toEqual(expectedStatuses)
     expect(weekDoc?.statuses).toEqual(expectedStatuses)
   })
 
   test('updating a tracker status returns the new status', async () => {
     const habitId = generateHabitId()
-    expect(await weekHandler.setTrackerStatus(habitId, 1, ['👋'])).toEqual(['👋'])
+    expect(await weekHandler.weekInView.setTrackerStatus(habitId, 1, ['👋'])).toEqual(['👋'])
   })
 
   test('attempting to update a tracker status without changing anything just returns the existing status', async () => {
     const habitId = generateHabitId()
-    const firstUpdate = await weekHandler.setTrackerStatus(habitId, 1, ['😎'])
-    const secondUpdate = await weekHandler.setTrackerStatus(habitId, 1, ['😎'])
+    const firstUpdate = await weekHandler.weekInView.setTrackerStatus(habitId, 1, ['😎'])
+    const secondUpdate = await weekHandler.weekInView.setTrackerStatus(habitId, 1, ['😎'])
     expect(firstUpdate === secondUpdate).toEqual(true)
   })
 
   test('similarly, updating an non-existent tracker status with an empty status returns the existing (undefined) value', async () => {
-    const update = await weekHandler.setTrackerStatus(generateHabitId(), 5, [])
+    const update = await weekHandler.weekInView.setTrackerStatus(generateHabitId(), 5, [])
     expect(update).toBeUndefined()
   })
 
   test('clearing all tracker statuses for a given habit removes the habit field entirely, locally and in database', async () => {
     const habitId = generateHabitId()
-    await weekHandler.setTrackerStatus(habitId, 0, ['🗑️'])
-    await weekHandler.setTrackerStatus(habitId, 1, ['🗑️'])
+    await weekHandler.weekInView.setTrackerStatus(habitId, 0, ['🗑️'])
+    await weekHandler.weekInView.setTrackerStatus(habitId, 1, ['🗑️'])
 
-    await weekHandler.setTrackerStatus(habitId, 0, [])
-    await weekHandler.setTrackerStatus(habitId, 1, [])
+    await weekHandler.weekInView.setTrackerStatus(habitId, 0, [])
+    await weekHandler.weekInView.setTrackerStatus(habitId, 1, [])
 
     const weekDoc = await dbHandler.getWeekDoc(formatFirstDayOfThisWeek())
-    expect(weekHandler.weekInView.statuses?.[habitId]).toBeUndefined()
+    expect(weekHandler.weekInView.data.statuses?.[habitId]).toBeUndefined()
     expect(weekDoc?.statuses?.[habitId]).toBeUndefined()
   })
 
   test('clearing a tracker status removes the habit\'s corresponding weekday id field, locally and in database', async () => {
     const habitId = generateHabitId()
-    await weekHandler.setTrackerStatus(habitId, 0, ['😃'])
-    await weekHandler.setTrackerStatus(habitId, 1, ['🗑️'])
+    await weekHandler.weekInView.setTrackerStatus(habitId, 0, ['😃'])
+    await weekHandler.weekInView.setTrackerStatus(habitId, 1, ['🗑️'])
 
-    await weekHandler.setTrackerStatus(habitId, 1, [])
+    await weekHandler.weekInView.setTrackerStatus(habitId, 1, [])
 
     const weekDoc = await dbHandler.getWeekDoc(formatFirstDayOfThisWeek())
-    expect(weekHandler.weekInView.statuses?.[habitId][1]).toBeUndefined()
+    expect(weekHandler.weekInView.data.statuses?.[habitId][1]).toBeUndefined()
     expect(weekDoc?.statuses?.[habitId][1]).toBeUndefined()
   })
 })
@@ -221,40 +226,40 @@ describe('updating local note metadata', () => {
   })
 
   test('setting notes correctly updates the local cache', () => {
-    weekHandler.setNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
-    weekHandler.setNoteLocally(dummyNoteDataB.habitId, dummyNoteDataB.noteId, dummyNoteDataB.metadata)
-    expect(weekHandler.weekInView.notes).toEqual({
+    weekHandler.weekInView.setNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
+    weekHandler.weekInView.setNoteLocally(dummyNoteDataB.habitId, dummyNoteDataB.noteId, dummyNoteDataB.metadata)
+    expect(weekHandler.weekInView.data.notes).toEqual({
       [dummyNoteDataA.habitId]: [dummyNoteDataA.noteId],
       [dummyNoteDataB.habitId]: [dummyNoteDataB.noteId],
     })
-    expect(weekHandler.weekInView.notesMetadata).toEqual({
+    expect(weekHandler.weekInView.data.notesMetadata).toEqual({
       [dummyNoteDataA.noteId]: dummyNoteDataA.metadata,
       [dummyNoteDataB.noteId]: dummyNoteDataB.metadata
     })
   })
 
   test('updating an existing note correctly updates the local cache and does not create a duplicate', () => {
-    weekHandler.setNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
-    weekHandler.setNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId, {
+    weekHandler.weekInView.setNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
+    weekHandler.weekInView.setNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId, {
       ...dummyNoteDataA.metadata,
       icon: '🥳'
     })
-    expect(weekHandler.weekInView.notes).toEqual({
+    expect(weekHandler.weekInView.data.notes).toEqual({
       [dummyNoteDataA.habitId]: [dummyNoteDataA.noteId],
     })
-    expect(weekHandler.weekInView.notesMetadata).toEqual({
+    expect(weekHandler.weekInView.data.notesMetadata).toEqual({
       [dummyNoteDataA.noteId]: { ...dummyNoteDataA.metadata, icon: '🥳' },
     })
   })
 
   test('clearing notes correctly updates the local cache', () => {
-    weekHandler.setNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
-    weekHandler.setNoteLocally(dummyNoteDataB.habitId, dummyNoteDataB.noteId, dummyNoteDataB.metadata)
-    weekHandler.clearNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId)
-    expect(weekHandler.weekInView.notes).toEqual({
+    weekHandler.weekInView.setNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
+    weekHandler.weekInView.setNoteLocally(dummyNoteDataB.habitId, dummyNoteDataB.noteId, dummyNoteDataB.metadata)
+    weekHandler.weekInView.clearNoteLocally(dummyNoteDataA.habitId, dummyNoteDataA.noteId)
+    expect(weekHandler.weekInView.data.notes).toEqual({
       [dummyNoteDataB.habitId]: [dummyNoteDataB.noteId]
     })
-    expect(weekHandler.weekInView.notesMetadata).toEqual({
+    expect(weekHandler.weekInView.data.notesMetadata).toEqual({
       [dummyNoteDataB.noteId]: dummyNoteDataB.metadata
     })
   })
@@ -266,13 +271,13 @@ describe('updating focused times', () => {
   })
 
   test('setting focused time updates the local cache and database correctly', async () => {
-    await weekHandler.viewWeek('2021-10-04')
+    await weekHandler.viewWeek({ startDate: '2021-10-04' })
     const habitId = generateHabitId()
 
-    await weekHandler.setFocusedTime(habitId, 2, 5000)
-    await weekHandler.setFocusedTime(habitId, 4, 10000)
+    await weekHandler.weekInView.setFocusedTime(habitId, 2, 5000)
+    await weekHandler.weekInView.setFocusedTime(habitId, 4, 10000)
 
-    expect(weekHandler.weekInView.times?.[habitId]).toEqual({
+    expect(weekHandler.weekInView.data.times?.[habitId]).toEqual({
       2: 5000,
       4: 10000
     })
@@ -287,13 +292,13 @@ describe('updating focused times', () => {
   })
 
   test('adding focused time correctly updates the local cache and database correctly', async () => {
-    await weekHandler.viewWeek('2021-10-04')
+    await weekHandler.viewWeek({ startDate: '2021-10-04' })
     const habitId = generateHabitId()
 
-    await weekHandler.addFocusedTime(habitId, 3, 400)
-    await weekHandler.addFocusedTime(habitId, 3, 600)
+    await weekHandler.weekInView.addFocusedTime(habitId, 3, 400)
+    await weekHandler.weekInView.addFocusedTime(habitId, 3, 600)
 
-    expect(weekHandler.weekInView.times?.[habitId]).toEqual({ 3: 1000 })
+    expect(weekHandler.weekInView.data.times?.[habitId]).toEqual({ 3: 1000 })
 
     const weekDoc = await dbHandler.getWeekDoc('2021-10-04')
     expect(weekDoc?.times).toEqual({ [habitId]: { 3: 1000 } })
@@ -312,8 +317,8 @@ describe('switching weeks', () => {
   })
 
   test('switching to a non-existent week in the past will generate an empty week locally but does not create a document in the database', async () => {
-    await weekHandler.viewWeek('2021-09-27')
-    const { startDate, statuses } = weekHandler.weekInView
+    await weekHandler.viewWeek({ startDate: '2021-09-27' })
+    const { startDate, statuses } = weekHandler.weekInView.data
     expect(startDate).toEqual('2021-09-27')
     expect(statuses).toBeUndefined()
     expect((await getDoc(doc(firebase.db, 'users', authUser.uid, 'weeks', '2021-09-27'))).data()).toBeUndefined()
@@ -321,8 +326,8 @@ describe('switching weeks', () => {
 
   test('switching to the new latest week will generate an empty week locally and also create a document in the database', async () => {
     const newWeekStartDate = formatYYYYMMDD(addWeeks(getFirstDayOfThisWeek(), 1))
-    await weekHandler.viewWeek(newWeekStartDate)
-    const { startDate, statuses } = weekHandler.weekInView
+    await weekHandler.viewWeek({ startDate: newWeekStartDate })
+    const { startDate, statuses } = weekHandler.weekInView.data
     expect(startDate).toEqual(newWeekStartDate)
     expect(statuses).toBeUndefined()
     expect(await dbHandler.getWeekDoc(newWeekStartDate)).toEqual({
@@ -332,8 +337,8 @@ describe('switching weeks', () => {
 
   test('switching to a week that exists in database will load that week data', async () => {
     await dbHandler.updateWeekDoc('2021-09-20', dummyWeekData)
-    await weekHandler.viewWeek('2021-09-20')
-    expect(weekHandler.weekInView).toEqual({
+    await weekHandler.viewWeek({ startDate: '2021-09-20' })
+    expect(weekHandler.weekInView.data).toEqual({
       startDate: '2021-09-20',
       statuses: dummyTrackerStatuses,
       notes: dummyWeekData.notes,
@@ -344,16 +349,16 @@ describe('switching weeks', () => {
   test(`switching weeks will immediately change week in view's start date, but will clear local data until loading is complete`, async () => {
     await dbHandler.updateWeekDoc('2021-09-20', dummyWeekData)
     await dbHandler.updateWeekDoc('2021-09-27', { statuses: dummyTrackerStatuses })
-    await weekHandler.viewWeek('2021-09-20')
-    weekHandler.viewWeek('2021-09-27')
-    expect(weekHandler.weekInView).toEqual({ startDate: '2021-09-27' })
+    await weekHandler.viewWeek({ startDate: '2021-09-20' })
+    weekHandler.viewWeek({ startDate: '2021-09-27' })
+    expect(weekHandler.weekInView.data).toEqual({ startDate: '2021-09-27' })
     await when(() => !weekHandler.isLoadingWeek)
-    expect(weekHandler.weekInView.statuses).toEqual(dummyTrackerStatuses)
+    expect(weekHandler.weekInView.data.statuses).toEqual(dummyTrackerStatuses)
   })
 
   test('attempting to switch to the same week will not load the week again', async () => {
-    await weekHandler.viewWeek('2021-10-04')
-    weekHandler.viewWeek('2021-10-04')
+    await weekHandler.viewWeek({ startDate: '2021-10-04' })
+    weekHandler.viewWeek({ startDate: '2021-10-04' })
     expect(weekHandler.isLoadingWeek).toEqual(false)
   })
 })
@@ -375,9 +380,9 @@ describe('representation of latest week', () => {
   test('after generating an empty week, set latest week to the new week\'s start date only if it is greater than the previous value', async () => {
     await initializeWeekHandler()
     const nextWeek = formatYYYYMMDD(addWeeks(getFirstDayOfThisWeek(), 1))
-    await weekHandler.viewWeek(nextWeek)
+    await weekHandler.viewWeek({ startDate: nextWeek })
     expect(weekHandler.latestWeekStartDate).toEqual(nextWeek)
-    await weekHandler.viewWeek(formatFirstDayOfThisWeek())
+    await weekHandler.viewWeek({ startDate: formatFirstDayOfThisWeek() })
     expect(weekHandler.latestWeekStartDate).toEqual(nextWeek)
   })
 })
@@ -398,95 +403,95 @@ describe('displaying correct habits', () => {
     await habitsHandler.setHabit(suspendedHabit)
     await habitsHandler.setHabit(archivedHabitA)
     await habitsHandler.setHabit(archivedHabitB)
-    weekHandler.refreshHabitsInView()
+    weekHandler.weekInView.refreshHabitsInView()
   })
 
   test('on startup, the view is not condensed and the condenser toggle is not shown', () => {
-    expect(weekHandler.condenseView).toEqual(false)
-    expect(weekHandler.showCondenseViewToggle).toEqual(false)
+    expect(weekHandler.weekInView.condenseView).toEqual(false)
+    expect(weekHandler.weekInView.showCondenseViewToggle).toEqual(false)
   })
 
   test('when a previous week with no data is viewed and user has active habits, view is condensed by default, condenser toggle is shown, and no habits are shown', async () => {
-    await weekHandler.viewWeek('2021-09-27')
-    expect(weekHandler.condenseView).toEqual(true)
-    expect(weekHandler.showCondenseViewToggle).toEqual(true)
-    expect(weekHandler.habitsInView).toEqual([])
+    await weekHandler.viewWeek({ startDate: '2021-09-27' })
+    expect(weekHandler.weekInView.condenseView).toEqual(true)
+    expect(weekHandler.weekInView.showCondenseViewToggle).toEqual(true)
+    expect(weekHandler.weekInView.habitsInView).toEqual([])
   })
 
   test('when viewing a previous week with no data and user has no active habits, condensed view is disabled and the condenser toggle is not shown', async () => {
     await habitsHandler.deleteHabitById(activeHabit.id)
-    await weekHandler.viewWeek('2021-09-27')
-    expect(weekHandler.condenseView).toEqual(false)
-    expect(weekHandler.showCondenseViewToggle).toEqual(false)
+    await weekHandler.viewWeek({ startDate: '2021-09-27' })
+    expect(weekHandler.weekInView.condenseView).toEqual(false)
+    expect(weekHandler.weekInView.showCondenseViewToggle).toEqual(false)
   })
 
   test('after switching back to the latest week, condensed view is disabled and the condenser toggle is hidden', async () => {
-    await weekHandler.viewWeek('2021-09-27')
-    await weekHandler.viewWeek(formatFirstDayOfThisWeek())
-    expect(weekHandler.condenseView).toEqual(false)
-    expect(weekHandler.showCondenseViewToggle).toEqual(false)
+    await weekHandler.viewWeek({ startDate: '2021-09-27' })
+    await weekHandler.viewWeek({ startDate: formatFirstDayOfThisWeek() })
+    expect(weekHandler.weekInView.condenseView).toEqual(false)
+    expect(weekHandler.weekInView.showCondenseViewToggle).toEqual(false)
   })
 
   test('after generating the new latest week, condensed view is disabled and the condenser toggle is hidden', async () => {
-    await weekHandler.viewWeek(formatYYYYMMDD(addWeeks(getFirstDayOfThisWeek(), 1)))
-    expect(weekHandler.condenseView).toEqual(false)
-    expect(weekHandler.showCondenseViewToggle).toEqual(false)
+    await weekHandler.viewWeek({ startDate: formatYYYYMMDD(addWeeks(getFirstDayOfThisWeek(), 1)) })
+    expect(weekHandler.weekInView.condenseView).toEqual(false)
+    expect(weekHandler.weekInView.showCondenseViewToggle).toEqual(false)
   })
 
   test('when viewing previous weeks with no data, if condensed view is disabled, only active habits are shown', async () => {
-    await weekHandler.viewWeek('2021-09-27')
-    weekHandler.setCondensedView(false)
-    expect(weekHandler.habitsInView).toEqual([activeHabit])
+    await weekHandler.viewWeek({ startDate: '2021-09-27' })
+    weekHandler.weekInView.setCondensedView(false)
+    expect(weekHandler.weekInView.habitsInView).toEqual([activeHabit])
   })
 
   test('when viewing latest week with no data, only active habits are shown', () => {
     weekHandler.setViewMode('tracker')
-    expect(weekHandler.habitsInView).toEqual([activeHabit])
+    expect(weekHandler.weekInView.habitsInView).toEqual([activeHabit])
     weekHandler.setViewMode('notes')
-    expect(weekHandler.habitsInView).toEqual([activeHabit])
+    expect(weekHandler.weekInView.habitsInView).toEqual([activeHabit])
     weekHandler.setViewMode('focus')
-    expect(weekHandler.habitsInView).toEqual([activeHabit])
+    expect(weekHandler.weekInView.habitsInView).toEqual([activeHabit])
   })
 
   describe('when view mode is habit tracker', () => {
     beforeEach(() => weekHandler.setViewMode('tracker'))
 
     test('when viewing latest week, all active habits, plus any habits with tracker data, are shown', async () => {
-      await weekHandler.setTrackerStatus(suspendedHabit.id, 1, ['👍'])
-      await weekHandler.setTrackerStatus(archivedHabitA.id, 5, ['👍'])
-      expect(weekHandler.habitsInView).toEqual([activeHabit, suspendedHabit, archivedHabitA])
+      await weekHandler.weekInView.setTrackerStatus(suspendedHabit.id, 1, ['👍'])
+      await weekHandler.weekInView.setTrackerStatus(archivedHabitA.id, 5, ['👍'])
+      expect(weekHandler.weekInView.habitsInView).toEqual([activeHabit, suspendedHabit, archivedHabitA])
     })
 
     test('when viewing previous weeks with tracker data, only habits with tracker data are shown by default', async () => {
-      await weekHandler.viewWeek('2021-09-27')
-      await weekHandler.setTrackerStatus(archivedHabitB.id, 3, ['👍'])
-      expect(weekHandler.habitsInView).toEqual([archivedHabitB])
+      await weekHandler.viewWeek({ startDate: '2021-09-27' })
+      await weekHandler.weekInView.setTrackerStatus(archivedHabitB.id, 3, ['👍'])
+      expect(weekHandler.weekInView.habitsInView).toEqual([archivedHabitB])
     })
 
     test('when viewing previous weeks with tracker data, if condensed view is disabled, show habits with tracker data and all active habits', async () => {
-      await weekHandler.viewWeek('2021-09-27')
-      await weekHandler.setTrackerStatus(suspendedHabit.id, 6, ['👍'])
-      weekHandler.setCondensedView(false)
-      expect(weekHandler.habitsInView).toEqual([activeHabit, suspendedHabit])
+      await weekHandler.viewWeek({ startDate: '2021-09-27' })
+      await weekHandler.weekInView.setTrackerStatus(suspendedHabit.id, 6, ['👍'])
+      weekHandler.weekInView.setCondensedView(false)
+      expect(weekHandler.weekInView.habitsInView).toEqual([activeHabit, suspendedHabit])
     })
 
     test('when viewing previous weeks, if all active habits have tracker data, the condenser toggle is not shown', async () => {
-      await weekHandler.viewWeek('2021-08-30')
-      await weekHandler.setTrackerStatus(activeHabit.id, 5, ['😎'])
-      await weekHandler.viewWeek(formatFirstDayOfThisWeek())
-      await weekHandler.viewWeek('2021-08-30')
-      expect(weekHandler.showCondenseViewToggle).toEqual(false)
+      await weekHandler.viewWeek({ startDate: '2021-08-30' })
+      await weekHandler.weekInView.setTrackerStatus(activeHabit.id, 5, ['😎'])
+      await weekHandler.viewWeek({ startDate: formatFirstDayOfThisWeek() })
+      await weekHandler.viewWeek({ startDate: '2021-08-30' })
+      expect(weekHandler.weekInView.showCondenseViewToggle).toEqual(false)
 
-      await weekHandler.setTrackerStatus(activeHabit.id, 5, [])
-      expect(weekHandler.showCondenseViewToggle).toEqual(true)
+      await weekHandler.weekInView.setTrackerStatus(activeHabit.id, 5, [])
+      expect(weekHandler.weekInView.showCondenseViewToggle).toEqual(true)
     })
 
     test('after clearing tracker data for archived or suspended habits, that habit is removed from view', async () => {
-      await weekHandler.setTrackerStatus(suspendedHabit.id, 3, ['🙃'])
-      await weekHandler.setTrackerStatus(archivedHabitA.id, 6, ['🙃'])
-      await weekHandler.setTrackerStatus(suspendedHabit.id, 3, [])
-      await weekHandler.setTrackerStatus(archivedHabitA.id, 6, [])
-      expect(weekHandler.habitsInView).toEqual([activeHabit])
+      await weekHandler.weekInView.setTrackerStatus(suspendedHabit.id, 3, ['🙃'])
+      await weekHandler.weekInView.setTrackerStatus(archivedHabitA.id, 6, ['🙃'])
+      await weekHandler.weekInView.setTrackerStatus(suspendedHabit.id, 3, [])
+      await weekHandler.weekInView.setTrackerStatus(archivedHabitA.id, 6, [])
+      expect(weekHandler.weekInView.habitsInView).toEqual([activeHabit])
     })
   })
 
@@ -494,45 +499,45 @@ describe('displaying correct habits', () => {
     beforeEach(() => weekHandler.setViewMode('notes'))
 
     test('when viewing latest week, all active habits, plus any habits with notes data, are shown', () => {
-      weekHandler.setNoteLocally(suspendedHabit.id, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
-      weekHandler.setNoteLocally(archivedHabitA.id, dummyNoteDataB.noteId, dummyNoteDataB.metadata)
-      weekHandler.refreshHabitsInView()
-      expect(weekHandler.habitsInView).toEqual([activeHabit, suspendedHabit, archivedHabitA])
+      weekHandler.weekInView.setNoteLocally(suspendedHabit.id, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
+      weekHandler.weekInView.setNoteLocally(archivedHabitA.id, dummyNoteDataB.noteId, dummyNoteDataB.metadata)
+      weekHandler.weekInView.refreshHabitsInView()
+      expect(weekHandler.weekInView.habitsInView).toEqual([activeHabit, suspendedHabit, archivedHabitA])
     })
 
     test('when viewing previous weeks with notes data, only habits with notes data are shown by default', async () => {
-      await weekHandler.viewWeek('2021-09-27')
-      weekHandler.setNoteLocally(archivedHabitB.id, dummyNoteDataB.noteId, dummyNoteDataB.metadata)
-      weekHandler.refreshHabitsInView()
-      expect(weekHandler.habitsInView).toEqual([archivedHabitB])
+      await weekHandler.viewWeek({ startDate: '2021-09-27' })
+      weekHandler.weekInView.setNoteLocally(archivedHabitB.id, dummyNoteDataB.noteId, dummyNoteDataB.metadata)
+      weekHandler.weekInView.refreshHabitsInView()
+      expect(weekHandler.weekInView.habitsInView).toEqual([archivedHabitB])
     })
 
     test('when viewing previous weeks with notes data, if condensed view is disabled, show habits with notes data and all active habits', async () => {
-      await weekHandler.viewWeek('2021-09-27')
-      weekHandler.setNoteLocally(suspendedHabit.id, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
-      weekHandler.setCondensedView(false)
-      expect(weekHandler.habitsInView).toEqual([activeHabit, suspendedHabit])
+      await weekHandler.viewWeek({ startDate: '2021-09-27' })
+      weekHandler.weekInView.setNoteLocally(suspendedHabit.id, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
+      weekHandler.weekInView.setCondensedView(false)
+      expect(weekHandler.weekInView.habitsInView).toEqual([activeHabit, suspendedHabit])
     })
 
     test('when viewing previous weeks, if all active habits have notes data, the condenser toggle is not shown', async () => {
-      await weekHandler.viewWeek('2021-08-30')
-      weekHandler.setNoteLocally(activeHabit.id, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
-      weekHandler.refreshHabitsInView()
-      expect(weekHandler.showCondenseViewToggle).toEqual(false)
-      weekHandler.clearNoteLocally(activeHabit.id, dummyNoteDataA.noteId)
-      weekHandler.refreshHabitsInView()
-      expect(weekHandler.showCondenseViewToggle).toEqual(true)
+      await weekHandler.viewWeek({ startDate: '2021-08-30' })
+      weekHandler.weekInView.setNoteLocally(activeHabit.id, dummyNoteDataA.noteId, dummyNoteDataA.metadata)
+      weekHandler.weekInView.refreshHabitsInView()
+      expect(weekHandler.weekInView.showCondenseViewToggle).toEqual(false)
+      weekHandler.weekInView.clearNoteLocally(activeHabit.id, dummyNoteDataA.noteId)
+      weekHandler.weekInView.refreshHabitsInView()
+      expect(weekHandler.weekInView.showCondenseViewToggle).toEqual(true)
     })
   })
 
   describe('when switching between views', () => {
     test('habits in view are refreshed when the view mode is changed', async () => {
-      await weekHandler.viewWeek('2021-09-20')
-      await weekHandler.setTrackerStatus(suspendedHabit.id, 2, ['👋'])
+      await weekHandler.viewWeek({ startDate: '2021-09-20' })
+      await weekHandler.weekInView.setTrackerStatus(suspendedHabit.id, 2, ['👋'])
       weekHandler.setViewMode('tracker')
-      expect(weekHandler.habitsInView).toEqual([suspendedHabit])
+      expect(weekHandler.weekInView.habitsInView).toEqual([suspendedHabit])
       weekHandler.setViewMode('notes')
-      expect(weekHandler.habitsInView).toEqual([])
+      expect(weekHandler.weekInView.habitsInView).toEqual([])
     })
   })
 })

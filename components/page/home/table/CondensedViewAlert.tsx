@@ -8,7 +8,7 @@ import Text from '@/components/primitives/Text'
 import UpLeftArrowIcon from '@/components/icons/UpLeftArrowIcon'
 
 const CondensedViewAlert = () => {
-  const { condenseView, habitsInView } = container.resolve(WeekHandler)
+  const { habitsInView, condenseView } = container.resolve(WeekHandler).weekInView
 
   if (!condenseView || habitsInView.length > 0) return null
 

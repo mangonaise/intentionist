@@ -50,17 +50,17 @@ async function deleteWeekIcons() {
 // 🧪
 
 test('the week icon is initially undefined', () => {
-  expect(weekHandler.weekInView.icon).toBeUndefined()
+  expect(weekHandler.weekInView.data.icon).toBeUndefined()
 })
 
 describe('updating week data', () => {
   test('setting week icon correctly updates the week in view locally', () => {
     weekIconsHandler.setIcon('🌱')
-    expect(weekHandler.weekInView.icon).toEqual('🌱')
+    expect(weekHandler.weekInView.data.icon).toEqual('🌱')
   })
 
   test('setting week icon correctly updates the corresponding week document in the database', async () => {
-    await weekHandler.viewWeek('2021-10-11')
+    await weekHandler.viewWeek({ startDate: '2021-10-11' })
     await weekIconsHandler.setIcon('⭐')
     const weekDoc = await dbHandler.getWeekDoc('2021-10-11')
     expect(weekDoc?.icon).toEqual('⭐')
@@ -70,11 +70,11 @@ describe('updating week data', () => {
   test('removing week icon sets the value to null in the week in view locally', () => {
     weekIconsHandler.setIcon('🗑️')
     weekIconsHandler.removeIcon()
-    expect(weekHandler.weekInView.icon).toEqual(null)
+    expect(weekHandler.weekInView.data.icon).toEqual(null)
   })
 
   test('removing week icon deletes the icon field from the week document in the database', async () => {
-    await weekHandler.viewWeek('2021-10-18')
+    await weekHandler.viewWeek({ startDate: '2021-10-18' })
     await weekIconsHandler.setIcon('😢')
     await weekIconsHandler.removeIcon()
     const weekDoc = await dbHandler.getWeekDoc('2021-10-18')
@@ -84,18 +84,18 @@ describe('updating week data', () => {
 
 describe('updating weekIcons collection in database', () => {
   test(`setting a week icon updates the field corresponding to the week's start date in a document corresponding to the week's year`, async () => {
-    await weekHandler.viewWeek('2021-10-04')
+    await weekHandler.viewWeek({ startDate: '2021-10-04' })
     await weekIconsHandler.setIcon('👨‍💻')
     const iconsDoc = await dbHandler.getDocData(dbHandler.weekIconsDocRef('2021'))
     expect(iconsDoc?.['10-04']).toEqual('👨‍💻')
   })
 
   test('adding multiple week icons in the same year works', async () => {
-    await weekHandler.viewWeek('2020-09-06')
+    await weekHandler.viewWeek({ startDate: '2020-09-06' })
     await weekIconsHandler.setIcon('😎')
-    await weekHandler.viewWeek('2020-09-13')
+    await weekHandler.viewWeek({ startDate: '2020-09-13' })
     await weekIconsHandler.setIcon('⭐')
-    await weekHandler.viewWeek('2020-09-20')
+    await weekHandler.viewWeek({ startDate: '2020-09-20' })
     await weekIconsHandler.setIcon('😃')
     const iconsDoc = await dbHandler.getDocData(dbHandler.weekIconsDocRef('2020'))
     expect(iconsDoc).toEqual({
@@ -106,7 +106,7 @@ describe('updating weekIcons collection in database', () => {
   })
 
   test('removing a week icon deletes the field from the corresponding week icons document', async () => {
-    await weekHandler.viewWeek('2021-10-25')
+    await weekHandler.viewWeek({ startDate: '2021-10-25' })
     await weekIconsHandler.setIcon('😢')
     await weekIconsHandler.removeIcon()
     const iconsDoc = await dbHandler.getDocData(dbHandler.weekIconsDocRef('2021'))
@@ -139,13 +139,13 @@ describe('handling cached icons', () => {
   })
 
   test('setting week icon correctly updates the corresponding field in the cache', async () => {
-    await weekHandler.viewWeek('2021-10-25')
+    await weekHandler.viewWeek({ startDate: '2021-10-25' })
     weekIconsHandler.setIcon('⭐')
     expect(weekIconsHandler.iconsCache['2021']?.['10-25']).toEqual('⭐')
   })
 
   test('removing a week icon deletes the corresponding field from the cache', async () => {
-    await weekHandler.viewWeek('2021-10-18')
+    await weekHandler.viewWeek({ startDate: '2021-10-18' })
     weekIconsHandler.setIcon('😎')
     weekIconsHandler.removeIcon()
     expect(weekIconsHandler.iconsCache['2021']['10-18']).toBeUndefined()

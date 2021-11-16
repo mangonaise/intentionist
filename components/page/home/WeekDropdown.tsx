@@ -21,7 +21,7 @@ import ChevronRightIcon from '@/components/icons/ChevronRightIcon'
 import CheckIcon from '@/components/icons/CheckIcon'
 
 const WeekDropdown = observer(() => {
-  const { startDate } = container.resolve(WeekHandler).weekInView
+  const { data: { startDate } } = container.resolve(WeekHandler).weekInView
   const { thisWeekStartDate } = container.resolve(NewWeekPromptHandler)
 
   let title: string
@@ -42,13 +42,13 @@ const WeekDropdown = observer(() => {
 
 const WeekSelectMenu = () => {
   const weekHandler = container.resolve(WeekHandler)
-  const [selectedDate] = useState(new Date(weekHandler.weekInView.startDate))
+  const [selectedDate] = useState(new Date(weekHandler.weekInView.data.startDate))
   const [displayedMonth, setDisplayedMonth] = useState(startOfMonth(selectedDate))
   const [displayedWeeks, setDisplayedWeeks] = useState(getWeeksInMonth(displayedMonth))
   const [isDisplayingCurrentMonth, setIsDisplayingCurrentMonth] = useState(isSameMonth(displayedMonth, new Date()))
 
   function handleSelectWeek(startDate: Date, cachedIcon?: string) {
-    weekHandler.viewWeek(formatYYYYMMDD(startDate), cachedIcon)
+    weekHandler.viewWeek({ startDate: formatYYYYMMDD(startDate), cachedIcon })
   }
 
   function changeDisplayedMonth(delta: 1 | -1) {
@@ -141,7 +141,7 @@ const ViewThisWeekButton = () => {
   const { hidePrompt: hideNewWeekPrompt } = container.resolve(NewWeekPromptHandler)
 
   function handleViewThisWeek() {
-    container.resolve(WeekHandler).viewWeek(formatFirstDayOfThisWeek())
+    container.resolve(WeekHandler).viewWeek({ startDate: formatFirstDayOfThisWeek() })
     hideNewWeekPrompt()
   }
 

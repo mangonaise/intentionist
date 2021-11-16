@@ -13,7 +13,7 @@ import Flex from '@/components/primitives/Flex'
 import PencilIcon from '@/components/icons/PencilIcon'
 
 const WeekIconDropdown = observer(() => {
-  const { weekInView: { icon }, isLoadingWeek } = container.resolve(WeekHandler)
+  const { weekInView: { data: { icon } }, isLoadingWeek } = container.resolve(WeekHandler)
   const { setIcon, removeIcon } = container.resolve(WeekIconsHandler)
   const { narrow } = useContext(HomePageContext)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
@@ -45,7 +45,7 @@ const WeekIconDropdown = observer(() => {
 })
 
 const DropdownTitle = observer(() => {
-  const { weekInView: { icon } } = container.resolve(WeekHandler)
+  const { weekInView: { data: { icon } } } = container.resolve(WeekHandler)
 
   if (icon) {
     return (

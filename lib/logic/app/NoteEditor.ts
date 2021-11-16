@@ -75,8 +75,8 @@ export default class NoteEditor {
     this.isNewNote = false
 
     // 💻
-    if (this.weekHandler.weekInView.startDate === this.note.weekStartDate) {
-      this.weekHandler.setNoteLocally(this.note.habitId, this.note.id, {
+    if (this.weekHandler.weekInView.data.startDate === this.note.weekStartDate) {
+      this.weekHandler.weekInView.setNoteLocally(this.note.habitId, this.note.id, {
         icon: this.note.icon,
         title: this.note.title
       })
@@ -95,7 +95,7 @@ export default class NoteEditor {
   public deleteNote = async () => {
     if (!this.note) return
     this.hasUnsavedChanges = false
-    this.weekHandler.clearNoteLocally(this.note.habitId, this.note.id)
+    this.weekHandler.weekInView.clearNoteLocally(this.note.habitId, this.note.id)
     this.router.push('/home')
     if (!this.isNewNote) {
       await this.dbHandler.deleteNote(this.note)
@@ -115,7 +115,7 @@ export default class NoteEditor {
       icon: '📝',
       habitId: habitId,
       date: formatYYYYMMDD(new Date()),
-      weekStartDate: this.weekHandler.weekInView.startDate,
+      weekStartDate: this.weekHandler.weekInView.data.startDate,
       content: ''
     }
   }

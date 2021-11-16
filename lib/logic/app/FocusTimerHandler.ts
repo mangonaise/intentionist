@@ -41,13 +41,13 @@ export default class FocusTimerHandler {
   }
 
   public getIsUntrackedWeek = () => {
-    return formatFirstDayOfThisWeek() !== this.weekHandler.weekInView.startDate
+    return formatFirstDayOfThisWeek() !== this.weekHandler.weekInView.data.startDate
   }
 
   public getTimeSpentThisWeek = (period: WeekdayId | 'all') => {
     if (!this.selectedHabit) return 0
-    if (this.weekHandler.weekInView.startDate === formatFirstDayOfThisWeek()) {
-      return this.weekHandler.getFocusedTime(this.selectedHabit.id, period === 'all' ? 'week' : period)
+    if (this.weekHandler.weekInView.data.startDate === formatFirstDayOfThisWeek()) {
+      return this.weekHandler.weekInView.getFocusedTime(this.selectedHabit.id, period === 'all' ? 'week' : period)
     }
     return 0
   }
@@ -68,9 +68,8 @@ export default class FocusTimerHandler {
     if (!this.selectedHabit) return
     if (this.status === 'not started') {
       this.progress = 0
-      const weekStartDate = formatFirstDayOfThisWeek()
       if (this.getIsUntrackedWeek()) {
-        this.weekHandler.viewWeek(weekStartDate)
+        this.weekHandler.viewWeek({ startDate: formatFirstDayOfThisWeek() })
       }
     }
     this.status = 'playing'
@@ -124,7 +123,7 @@ export default class FocusTimerHandler {
 
   private saveProgress = () => {
     if (!this.selectedHabit) return
-    this.weekHandler.addFocusedTime(this.selectedHabit?.id, this.weekdayId, this.progress)
+    this.weekHandler.weekInView.addFocusedTime(this.selectedHabit?.id, this.weekdayId, this.progress)
   }
 
   private clearCountdownInterval() {
@@ -132,8 +131,8 @@ export default class FocusTimerHandler {
   }
 
   private ensureViewingLatestWeek() {
-    if (this.weekHandler.weekInView.startDate !== this.weekHandler.latestWeekStartDate) {
-      this.weekHandler.viewWeek(this.weekHandler.latestWeekStartDate)
+    if (this.weekHandler.weekInView.data.startDate !== this.weekHandler.latestWeekStartDate) {
+      this.weekHandler.viewWeek({ startDate: this.weekHandler.latestWeekStartDate })
     }
   }
 }

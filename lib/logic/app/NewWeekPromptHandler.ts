@@ -17,7 +17,7 @@ export default class NewWeekPromptHandler {
   }
 
   public trackNewWeek = () => {
-    this.weekHandler.viewWeek(formatFirstDayOfThisWeek())
+    this.weekHandler.viewWeek({ startDate: formatFirstDayOfThisWeek() })
     this.hidePrompt()
   }
 
