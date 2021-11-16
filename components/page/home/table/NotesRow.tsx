@@ -13,7 +13,7 @@ import ChevronRightIcon from '@/components/icons/ChevronRightIcon'
 import PlusIcon from '@/components/icons/PlusIcon'
 import NextLink from 'next/link'
 
-const NotesRow = ({ habitId }: { habitId: string }) => {
+const NotesRow = observer(({ habitId }: { habitId: string }) => {
   const { weekInView: { getNoteDataForHabit }, isLoadingWeek } = container.resolve(WeekHandler)
   const cellNotesData = isLoadingWeek ? [] : getNoteDataForHabit(habitId)
 
@@ -26,7 +26,7 @@ const NotesRow = ({ habitId }: { habitId: string }) => {
       <AddNoteButton habitId={habitId} />
     </Flex>
   )
-}
+})
 
 const NotePreview = ({ cellNotesData }: { cellNotesData: Array<{ noteId: string, metadata: NoteMetadata }> }) => {
   const router = useRouter()
@@ -34,6 +34,11 @@ const NotePreview = ({ cellNotesData }: { cellNotesData: Array<{ noteId: string,
   const isViewingLatestWeek = startDate === latestWeekStartDate
   const [viewedNoteIndex, setViewedNoteIndex] = useState(isViewingLatestWeek ? cellNotesData.length - 1 : 0)
   const viewedNoteData = cellNotesData[viewedNoteIndex]
+
+  if (!viewedNoteData && viewedNoteIndex > 0) {
+    setViewedNoteIndex(0)
+    return null
+  }
 
   function changeViewedNote(delta: 1 | -1) {
     let newIndex = viewedNoteIndex + delta
@@ -159,4 +164,4 @@ const AddNoteButton = ({ habitId }: { habitId: string }) => {
   )
 }
 
-export default observer(NotesRow)
+export default NotesRow

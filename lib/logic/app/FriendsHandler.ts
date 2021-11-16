@@ -15,7 +15,7 @@ export default class FriendsHandler {
   public hasLoadedFriends = false
   private dbHandler
   private functions
-  private listenerUnsubscribe: Unsubscribe | null = null
+  private friendsDocListenerUnsubscribe: Unsubscribe | null = null
 
   constructor(dbHandler: DbHandler, @inject('Functions') functions: Functions) {
     this.dbHandler = dbHandler
@@ -24,16 +24,16 @@ export default class FriendsHandler {
   }
 
   public listenToFriendsDoc = () => {
-    if (this.listenerUnsubscribe) return
-    this.listenerUnsubscribe = onSnapshot(
+    if (this.friendsDocListenerUnsubscribe) return
+    this.friendsDocListenerUnsubscribe = onSnapshot(
       this.dbHandler.friendsDocRef,
       (snapshot) => this.handleFriendsDocSnapshot(snapshot.data())
     )
   }
 
-  public stopListener = () => {
-    this.listenerUnsubscribe?.()
-    this.listenerUnsubscribe = null
+  public stopFriendsDocListener = () => {
+    this.friendsDocListenerUnsubscribe?.()
+    this.friendsDocListenerUnsubscribe = null
   }
 
   public removeFriend = async (uid: string) => {

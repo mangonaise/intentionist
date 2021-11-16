@@ -21,7 +21,7 @@ let dbHandler: DbHandler, habitsHandler: HabitsHandler
 const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '🧪', status: 'active' }
 const dummyHabitB: Habit = { id: generateHabitId(), name: 'Build app', icon: '👨‍💻', status: 'active' }
 const dummyHabitC: Habit = { id: generateHabitId(), name: 'Fix bugs', icon: '🐛', status: 'active' }
-const getHabitsDoc = async () => await dbHandler.getDocData(dbHandler.habitsDocRef)
+const getHabitsDoc = async () => await dbHandler.getDocData(dbHandler.habitsDocRef())
 
 let testUserUid: string
 
@@ -57,7 +57,7 @@ describe('initialization', () => {
   })
 
   test('fetched habit is placed in an array in local cache', async () => {
-    await dbHandler.update(dbHandler.habitsDocRef, {
+    await dbHandler.update(dbHandler.habitsDocRef(), {
       habits: { [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') } },
       order: [dummyHabitA.id]
     })
@@ -66,7 +66,7 @@ describe('initialization', () => {
   })
 
   test('fetched habits are ordered correctly', async () => {
-    await dbHandler.update(dbHandler.habitsDocRef, {
+    await dbHandler.update(dbHandler.habitsDocRef(), {
       habits: {
         [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') },
         [dummyHabitB.id]: { ...exclude(dummyHabitB, 'id') }
@@ -78,7 +78,7 @@ describe('initialization', () => {
   })
 
   test('if habit ids are missing from the fetched habit order, they are placed at the end of the local habits array', async () => {
-    await dbHandler.update(dbHandler.habitsDocRef, {
+    await dbHandler.update(dbHandler.habitsDocRef(), {
       habits: {
         [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') },
         [dummyHabitB.id]: { ...exclude(dummyHabitB, 'id') },

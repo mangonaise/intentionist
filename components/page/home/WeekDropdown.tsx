@@ -48,7 +48,11 @@ const WeekSelectMenu = () => {
   const [isDisplayingCurrentMonth, setIsDisplayingCurrentMonth] = useState(isSameMonth(displayedMonth, new Date()))
 
   function handleSelectWeek(startDate: Date, cachedIcon?: string) {
-    weekHandler.viewWeek({ startDate: formatYYYYMMDD(startDate), cachedIcon })
+    weekHandler.viewWeek({
+      startDate: formatYYYYMMDD(startDate),
+      friendUid: weekHandler.weekInView.friendUid,
+      cachedIcon
+    })
   }
 
   function changeDisplayedMonth(delta: 1 | -1) {
@@ -96,7 +100,13 @@ const WeekSelectMenu = () => {
         </Text>
       </Flex>
       {displayedWeeks.map((weekStart, index) => (
-        <WeekButton weekStart={weekStart} selectedDate={selectedDate} onSelectWeek={handleSelectWeek} key={index} />
+        <WeekButton
+          weekStart={weekStart}
+          selectedDate={selectedDate}
+          onSelectWeek={handleSelectWeek}
+          showIcon={!weekHandler.weekInView.friendUid}
+          key={index}
+        />
       ))}
     </Flex>
   )
@@ -105,10 +115,11 @@ const WeekSelectMenu = () => {
 interface WeekButtonProps {
   weekStart: Date,
   selectedDate: Date,
+  showIcon: boolean,
   onSelectWeek: (startDate: Date, cachedIcon: string) => void
 }
 
-const WeekButton = observer(({ weekStart, selectedDate, onSelectWeek }: WeekButtonProps) => {
+const WeekButton = observer(({ weekStart, selectedDate, showIcon, onSelectWeek }: WeekButtonProps) => {
   const { iconsCache, cacheIconsInYear } = container.resolve(WeekIconsHandler)
   const { yyyy, mmdd } = separateYYYYfromMMDD(formatYYYYMMDD(weekStart))
   const isSelectedDate = isSameDay(weekStart, selectedDate)
@@ -127,7 +138,7 @@ const WeekButton = observer(({ weekStart, selectedDate, onSelectWeek }: WeekButt
         {isSelectedDate && (
           <Icon icon={CheckIcon} sx={{ ml: 3 }} />
         )}
-        {!!weekIcon && (
+        {(showIcon && !!weekIcon) && (
           <Box sx={{ ml: 'auto' }}>
             <SmartEmoji nativeEmoji={weekIcon} rem={1.2} />
           </Box>
@@ -141,7 +152,11 @@ const ViewThisWeekButton = () => {
   const { hidePrompt: hideNewWeekPrompt } = container.resolve(NewWeekPromptHandler)
 
   function handleViewThisWeek() {
-    container.resolve(WeekHandler).viewWeek({ startDate: formatFirstDayOfThisWeek() })
+    const { viewWeek, weekInView } = container.resolve(WeekHandler)
+    viewWeek({
+      startDate: formatFirstDayOfThisWeek(),
+      friendUid: weekInView.friendUid
+    })
     hideNewWeekPrompt()
   }
 

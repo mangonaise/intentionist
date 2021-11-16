@@ -10,7 +10,7 @@ type WeekIconsCache = {
 
 @singleton()
 export default class WeekIconsHandler {
-  // TODO: cache icons for multiple users
+  // TODO: handle icons for friends
   public iconsCache: WeekIconsCache = {}
   private weekHandler
   private dbHandler

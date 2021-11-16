@@ -5,8 +5,10 @@ import { InitialState } from '@/logic/app/InitialFetchHandler'
 import { formatFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import DbHandler from '@/logic/app/DbHandler'
+import FriendsHandler from '@/logic/app/FriendsHandler'
 import isEqual from 'lodash/isEqual'
 import sum from 'lodash/sum'
+import FriendActivityHandler from '@/logic/app/FriendActivityHandler'
 
 export type WeekDocumentData = {
   startDate: string,
@@ -45,11 +47,13 @@ export default class WeekHandler {
   public latestWeekStartDate: string
   private dbHandler
   private habitsHandler
+  private friendActivityHandler
 
-  constructor(initialAppState: InitialState, dbHandler: DbHandler, habitsHandler: HabitsHandler) {
+  constructor(initialAppState: InitialState, dbHandler: DbHandler, habitsHandler: HabitsHandler, friendActivityHandler: FriendActivityHandler) {
     const thisWeekStartDate = formatFirstDayOfThisWeek()
     this.dbHandler = dbHandler
     this.habitsHandler = habitsHandler
+    this.friendActivityHandler = friendActivityHandler
 
     this.latestWeekStartDate = initialAppState.data.latestWeekDoc?.startDate ?? thisWeekStartDate
 
@@ -70,9 +74,6 @@ export default class WeekHandler {
     if (startDate === this.weekInView.data.startDate && friendUid === this.weekInView.friendUid) return
 
     this.isLoadingWeek = true
-
-    // TODO: make sure user exists and has been loaded
-
     this.weekInView = new WeekInView({
       loadingState: this.weekInView,
       userHabits: [],
@@ -82,10 +83,16 @@ export default class WeekHandler {
 
     await when(() => this.dbHandler.isWriteComplete)
 
-    const weekData = await this.dbHandler.getWeekDoc(startDate, friendUid)
+    let weekData: WeekDocumentData
+    let habits: Habit[]
 
-    // TODO: get correct habits based on user (fetch or load from a cache, no need to listen to habits docs)
-    const habits = this.habitsHandler.habits
+    if (friendUid) {
+      [weekData, habits] = await this.friendActivityHandler.listenToFriendActivity(startDate, friendUid, this)
+    } else {
+      weekData = await this.dbHandler.getWeekDoc(startDate, friendUid) ?? { startDate }
+      habits = this.habitsHandler.habits
+      this.friendActivityHandler.stopListeningToFriendActivity()
+    }
 
     runInAction(() => {
       if (!friendUid && new Date(startDate) > new Date(this.latestWeekStartDate)) {
@@ -94,7 +101,7 @@ export default class WeekHandler {
       }
       this.weekInView = new WeekInView({
         friendUid,
-        data: weekData ?? { startDate },
+        data: weekData,
         userHabits: habits
       }, this)
       this.isLoadingWeek = false
@@ -143,6 +150,10 @@ export class WeekInView {
     }
 
     makeAutoObservable(this)
+  }
+
+  public refreshWeekData = (newData: WeekDocumentData) => {
+    this.data = newData
   }
 
   public refreshHabitsInView = (newHabits?: Habit[]) => {
