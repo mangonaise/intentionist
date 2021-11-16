@@ -14,7 +14,7 @@ import PlusIcon from '@/components/icons/PlusIcon'
 import NextLink from 'next/link'
 
 const NotesRow = ({ habitId }: { habitId: string }) => {
-  const { isLoadingWeek, getNoteDataForHabit } = container.resolve(WeekHandler)
+  const { weekInView: { getNoteDataForHabit }, isLoadingWeek } = container.resolve(WeekHandler)
   const cellNotesData = isLoadingWeek ? [] : getNoteDataForHabit(habitId)
 
   return (
@@ -30,7 +30,7 @@ const NotesRow = ({ habitId }: { habitId: string }) => {
 
 const NotePreview = ({ cellNotesData }: { cellNotesData: Array<{ noteId: string, metadata: NoteMetadata }> }) => {
   const router = useRouter()
-  const { weekInView: { startDate }, latestWeekStartDate } = container.resolve(WeekHandler)
+  const { weekInView: { data: { startDate } }, latestWeekStartDate } = container.resolve(WeekHandler)
   const isViewingLatestWeek = startDate === latestWeekStartDate
   const [viewedNoteIndex, setViewedNoteIndex] = useState(isViewingLatestWeek ? cellNotesData.length - 1 : 0)
   const viewedNoteData = cellNotesData[viewedNoteIndex]

@@ -10,7 +10,7 @@ import TimerIcon from '@/components/icons/TimerIcon'
 import NextLink from 'next/link'
 
 const FocusedTimeRow = observer(({ habitId }: { habitId: string }) => {
-  const { getFocusedTime } = container.resolve(WeekHandler)
+  const { getFocusedTime } = container.resolve(WeekHandler).weekInView
   const { collapseColumns, weekdayId } = useContext(ColumnsDisplayContext)
 
   return (

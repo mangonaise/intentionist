@@ -91,7 +91,7 @@ describe('initialization', () => {
       content: '',
       habitId: dummyHabit.id,
       date: formatYYYYMMDD(new Date()),
-      weekStartDate: weekHandler.weekInView.startDate,
+      weekStartDate: weekHandler.weekInView.data.startDate,
       id: noteEditor.note?.id
     })
   })
@@ -153,8 +153,8 @@ describe('behavior', () => {
     noteEditor.updateNote('icon', '🌟')
     noteEditor.finishEditing()
     const note = noteEditor.note!
-    expect(weekHandler.weekInView.notes).toEqual({ [dummyHabit.id]: [note.id] })
-    expect(weekHandler.weekInView.notesMetadata?.[note.id]).toEqual({
+    expect(weekHandler.weekInView.data.notes).toEqual({ [dummyHabit.id]: [note.id] })
+    expect(weekHandler.weekInView.data.notesMetadata?.[note.id]).toEqual({
       title: 'Hello!',
       icon: '🌟'
     })
@@ -173,8 +173,8 @@ describe('behavior', () => {
     startNoteEditor()
     noteEditor.updateNote('title', 'A fresh new title')
     noteEditor.finishEditing()
-    expect(weekHandler.weekInView.notes).toBeUndefined()
-    expect(weekHandler.weekInView.notesMetadata).toBeUndefined()
+    expect(weekHandler.weekInView.data.notes).toBeUndefined()
+    expect(weekHandler.weekInView.data.notesMetadata).toBeUndefined()
   })
 
   test('if editing completes but the note title is empty, it is automatically set to "Untitled note"', () => {
@@ -265,7 +265,7 @@ describe('behavior', () => {
     await dbHandler.updateNote(dummyNoteA)
     await dbHandler.updateNote(dummyNoteB)
 
-    await weekHandler.viewWeek(dummyWeekStartDate)
+    await weekHandler.viewWeek({ startDate: dummyWeekStartDate })
 
     router.setQuery({ id: dummyNoteB.id })
     startNoteEditor()
@@ -273,7 +273,7 @@ describe('behavior', () => {
     await noteEditor.deleteNote()
 
     const weekInView = weekHandler.weekInView
-    expect(weekInView.notes?.[dummyNoteB.habitId]?.includes(dummyNoteB.id)).toEqual(false)
-    expect(weekInView.notesMetadata?.[dummyNoteB.id]).toBeUndefined()
+    expect(weekInView.data.notes?.[dummyNoteB.habitId]?.includes(dummyNoteB.id)).toEqual(false)
+    expect(weekInView.data.notesMetadata?.[dummyNoteB.id]).toBeUndefined()
   })
 })

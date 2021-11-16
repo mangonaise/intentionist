@@ -9,7 +9,7 @@ import EyeHiddenIcon from '@/components/icons/EyeHiddenIcon'
 import EyeIcon from '@/components/icons/EyeIcon'
 
 const CondenseViewToggle = () => {
-  const { condenseView, setCondensedView, showCondenseViewToggle } = container.resolve(WeekHandler)
+  const { condenseView, setCondensedView, showCondenseViewToggle } = container.resolve(WeekHandler).weekInView
 
   return (
     <Flex center sx={{ height: 'row' }}>

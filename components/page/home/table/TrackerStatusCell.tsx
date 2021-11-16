@@ -15,7 +15,7 @@ interface TrackerStatusCellProps {
 }
 
 const TrackerStatusCell = ({ habitId, weekday, rowIndex }: TrackerStatusCellProps) => {
-  const { isLoadingWeek, weekInView: { statuses } } = container.resolve(WeekHandler)
+  const { weekInView: { data: { statuses } }, isLoadingWeek } = container.resolve(WeekHandler)
   const status = statuses?.[habitId]?.[weekday] ?? []
   const [isEditing, setIsEditing] = useState(false)
   const [draft, setDraft] = useState(status)
@@ -33,7 +33,7 @@ const TrackerStatusCell = ({ habitId, weekday, rowIndex }: TrackerStatusCellProp
   }
 
   function saveDraft() {
-    container.resolve(WeekHandler).setTrackerStatus(habitId, weekday, draft)
+    container.resolve(WeekHandler).weekInView.setTrackerStatus(habitId, weekday, draft)
   }
 
   // Save status in an effect because the draft editor is closed by the focus trap, which doesn't have access to current state

@@ -33,9 +33,9 @@ const TrackerTitleRow = () => {
 }
 
 const NotesTitleRow = observer(() => {
-  const { weekInView, getNotesCount, isLoadingWeek } = container.resolve(WeekHandler)
+  const { weekInView: { getNotesCount }, isLoadingWeek } = container.resolve(WeekHandler)
 
-  const notesCount = getNotesCount(weekInView)
+  const notesCount = getNotesCount()
 
   return (
     <Flex center sx={{ height: 'row' }}>
@@ -110,10 +110,10 @@ const FocusWeekdayDropdown = observer(() => {
 })
 
 const WeekdayLabels = observer(() => {
-  const { viewMode, weekInView, isLoadingWeek } = container.resolve(WeekHandler)
+  const { viewMode, isLoadingWeek, weekInView: { data: weekData } } = container.resolve(WeekHandler)
   const { thisWeekStartDate } = container.resolve(NewWeekPromptHandler)
   const { weekdayId } = useCurrentDay()
-  const weekInViewStartDate = new Date(weekInView.startDate)
+  const weekInViewStartDate = new Date(weekData.startDate)
   const isViewingCurrentWeek = isSameDay(weekInViewStartDate, thisWeekStartDate)
   const dayNames = useMediaQuery<string[]>('(max-width: 600px)', weekdayInitials, weekdaysShort)
 

@@ -3,6 +3,7 @@ import { makeAutoObservable } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { createContext, FC, Fragment, useEffect, useLayoutEffect, useRef } from 'react'
 import WeekHandler, { WeekdayId, WeekViewMode } from '@/logic/app/WeekHandler'
+import HabitsHandler from '@/logic/app/HabitsHandler'
 import useMediaQuery from '@/hooks/useMediaQuery'
 import Grid from '@/components/primitives/Grid'
 import CondensedViewAlert from './table/CondensedViewAlert'
@@ -27,15 +28,17 @@ class ColumnsDisplayHandler {
 export const ColumnsDisplayContext = createContext<ColumnsDisplayHandler>(null!)
 
 const WeekTable = () => {
-  const { habitsInView, viewMode, refreshHabitsInView } = container.resolve(WeekHandler)
+  const { viewMode, weekInView: { habitsInView, refreshHabitsInView, friendUid } } = container.resolve(WeekHandler)
   const columnsDisplayHandler = useRef(new ColumnsDisplayHandler())
   const showHabitNames = useMediaQuery('(max-width: 500px)', false, true)
 
   useWeekTableArrowNavigation()
 
   useLayoutEffect(() => {
-    refreshHabitsInView()
-  }, [refreshHabitsInView])
+    if (!friendUid) {
+      refreshHabitsInView(container.resolve(HabitsHandler).habits)
+    }
+  }, [])
 
   useLayoutEffect(() => {
     columnsDisplayHandler.current.setShowHabitNames(showHabitNames)

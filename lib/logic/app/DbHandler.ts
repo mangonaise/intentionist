@@ -46,8 +46,8 @@ export default class DbHandler {
     return data as AvatarAndDisplayName
   }
 
-  public getWeekDoc = async (weekStartDate: string) => {
-    const weekDoc = await this.getDocData(this.weekDocRef(weekStartDate)) ?? null
+  public getWeekDoc = async (weekStartDate: string, friendUid?: string) => {
+    const weekDoc = await this.getDocData(this.weekDocRef(weekStartDate, friendUid)) ?? null
     if (weekDoc && !weekDoc.startDate) {
       console.error('The week document is missing a startDate. This is a bug.')
       weekDoc.startDate = weekStartDate
@@ -144,8 +144,8 @@ export default class DbHandler {
     this.completeWrite()
   }
 
-  public userDocRef = (path?: string, uid?: string) => {
-    return doc(this.db, USERS, uid ?? this.uid, path ?? '')
+  public userDocRef = (path?: string, friendUid?: string) => {
+    return doc(this.db, USERS, friendUid ?? this.uid, path ?? '')
   }
 
   public get habitsDocRef() {
@@ -160,8 +160,8 @@ export default class DbHandler {
     return this.userDocRef(FRIENDS)
   }
 
-  public weekDocRef = (weekStartDate: string) => {
-    return this.userDocRef(WEEKS + '/' + weekStartDate)
+  public weekDocRef = (weekStartDate: string, friendUid?: string) => {
+    return this.userDocRef(WEEKS + '/' + weekStartDate, friendUid)
   }
 
   public weekIconsDocRef = (year: string) => {
