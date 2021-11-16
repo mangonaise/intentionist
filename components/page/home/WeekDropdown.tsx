@@ -48,10 +48,11 @@ const WeekSelectMenu = () => {
   const [isDisplayingCurrentMonth, setIsDisplayingCurrentMonth] = useState(isSameMonth(displayedMonth, new Date()))
 
   function handleSelectWeek(startDate: Date, cachedIcon?: string) {
+    const friendUid = weekHandler.weekInView.friendUid
     weekHandler.viewWeek({
       startDate: formatYYYYMMDD(startDate),
-      friendUid: weekHandler.weekInView.friendUid,
-      cachedIcon
+      cachedIcon: friendUid ? undefined : cachedIcon,
+      friendUid,
     })
   }
 
