@@ -13,7 +13,7 @@ import Flex from '@/components/primitives/Flex'
 import PencilIcon from '@/components/icons/PencilIcon'
 
 const WeekIconDropdown = observer(() => {
-  const { weekInView: { data: { icon } }, isLoadingWeek } = container.resolve(WeekHandler)
+  const { weekInView: { data: { icon }, friendUid }, isLoadingWeek } = container.resolve(WeekHandler)
   const { setIcon, removeIcon } = container.resolve(WeekIconsHandler)
   const { narrow } = useContext(HomePageContext)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
@@ -22,9 +22,26 @@ const WeekIconDropdown = observer(() => {
     setIcon(emoji.native)
   }
 
+  if (!icon && friendUid) {
+    return null
+  }
+
   return (
     <>
-      <Dropdown title={<DropdownTitle />} anchorRight={narrow} disabled={isLoadingWeek}>
+      <Dropdown
+        title={<DropdownTitle />}
+        anchorRight={narrow}
+        disabled={isLoadingWeek || !!friendUid}
+        noArrow={!!friendUid}
+        sx={{
+          marginLeft: 2,
+          '& button:disabled': friendUid ? {
+            opacity: 1,
+            backgroundColor: 'transparent',
+            paddingX: 2
+          } : {}
+        }}
+      >
         <Dropdown.Item itemAction={() => setShowEmojiPicker(true)}>
           {!!icon ? 'Change' : 'Add'} week icon
         </Dropdown.Item>

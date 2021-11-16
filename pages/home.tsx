@@ -35,7 +35,6 @@ const Home = () => {
           <Flex sx={{ width: narrowLayout ? '100%' : 'fit-content' }}>
             <WeekDropdown />
             {userHasHabits && <>
-              <Spacer mr={2} />
               <WeekIconDropdown />
             </>}
           </Flex>
