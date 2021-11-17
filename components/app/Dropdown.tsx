@@ -83,7 +83,7 @@ const DropdownButton = () => {
         '&:disabled': { opacity: 0.75 }
       }}
     >
-      <Flex align="center" sx={{ textAlign: 'left', wordBreak: 'break-word' }}>
+      <Flex align="center" sx={{ textAlign: 'left', wordBreak: 'break-word', height: '100%' }}>
         {title}
         {!noArrow && (
           <Icon

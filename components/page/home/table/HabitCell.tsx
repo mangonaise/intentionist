@@ -1,22 +1,20 @@
 import type { Habit } from '@/logic/app/HabitsHandler'
+import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { ColumnsDisplayContext } from '../WeekTable'
 import accentColor from '@/logic/utils/accentColor'
+import FriendsHandler from '@/logic/app/FriendsHandler'
 import SmartEmoji from '@/components/app/SmartEmoji'
-import Flex from '@/components/primitives/Flex'
 import Dropdown from '@/components/app/Dropdown'
-import NextLink from 'next/link'
+import Flex from '@/components/primitives/Flex'
 import Button from '@/components/primitives/Button'
 import Text from '@/components/primitives/Text'
+import NextLink from 'next/link'
 
-interface Props {
-  habit: Habit
-  readonly: boolean
-}
-
-const HabitCell = observer(({ habit, readonly }: Props) => {
+const HabitCell = observer(({ habit }: { habit: Habit }) => {
   const { showHabitNames } = useContext(ColumnsDisplayContext)
+  const readonly = !!habit.friendUid
 
   return (
     <Flex
@@ -37,17 +35,17 @@ const HabitCell = observer(({ habit, readonly }: Props) => {
       }}
     >
       {showHabitNames
-        ? <HabitCellWithName habit={habit} readonly={readonly} />
-        : <HabitCellWithoutName habit={habit} readonly={readonly} />}
+        ? <HabitCellWithName habit={habit} />
+        : <HabitCellWithoutName habit={habit} />}
     </Flex>
   )
 })
 
-const HabitCellWithName = ({ habit, readonly }: Props) => {
+const HabitCellWithName = ({ habit }: { habit: Habit }) => {
   return (
     <NextLink href={{ pathname: 'habit', query: { id: habit.id, returnHome: true } }}>
       <Button
-        disabled={readonly}
+        disabled={!!habit.friendUid}
         sx={{
           size: '100%',
           padding: 0,
@@ -61,9 +59,10 @@ const HabitCellWithName = ({ habit, readonly }: Props) => {
             paddingLeft: 2,
             opacity: 0,
             animation: 'fade-in forwards 600ms',
+            height: '100%'
           }}
         >
-          <HabitCellIcon habitIcon={habit.icon} />
+          <EmojiSection habit={habit} />
           <Text
             type="span"
             sx={{
@@ -84,10 +83,12 @@ const HabitCellWithName = ({ habit, readonly }: Props) => {
   )
 }
 
-const HabitCellWithoutName = ({ habit, readonly }: Props) => {
+const HabitCellWithoutName = ({ habit }: { habit: Habit }) => {
+  const readonly = !!habit.friendUid
+
   return (
     <Dropdown
-      title={<HabitCellIcon habitIcon={habit.icon} />}
+      title={<EmojiSection habit={habit} />}
       noGap
       noArrow={readonly}
       disabled={readonly}
@@ -95,7 +96,7 @@ const HabitCellWithoutName = ({ habit, readonly }: Props) => {
         size: '100%',
         '& > button': {
           paddingY: 0,
-          paddingX: 3,
+          paddingX: 2,
           background: 'none',
           borderRadius: 0
         }
@@ -111,8 +112,34 @@ const HabitCellWithoutName = ({ habit, readonly }: Props) => {
   )
 }
 
-const HabitCellIcon = ({ habitIcon }: { habitIcon: string }) => {
-  return <SmartEmoji nativeEmoji={habitIcon} rem={1.2} />
+const EmojiSection = ({ habit }: { habit: Habit }) => {
+  const friend = getFriendByUid(habit.friendUid)
+
+  return (
+    <>
+      {!!friend && <Avatar emoji={friend.avatar} />}
+      <HabitCellIcon icon={habit.icon} />
+    </>
+  )
+}
+
+const Avatar = ({ emoji }: { emoji: string }) => {
+  return (
+    <Flex
+      center
+      sx={{ mr: 2, pr: 2, minHeight: '100%', borderRight: 'solid 1px', borderColor: 'grid' }}
+    >
+      <HabitCellIcon icon={emoji} />
+    </Flex>
+  )
+}
+
+const HabitCellIcon = ({ icon }: { icon: string }) => {
+  return <SmartEmoji nativeEmoji={icon} rem={1.2} />
+}
+
+function getFriendByUid(uid?: string) {
+  return uid ? container.resolve(FriendsHandler).friends.find((friend) => friend.uid === uid) : undefined
 }
 
 export default HabitCell

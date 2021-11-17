@@ -61,7 +61,9 @@ export default class FriendActivityHandler {
         if (data) {
           newListener.weekData = data
           weekHandler.weekInView.refreshWeekData(data)
-          if (!weekHandler.isLoadingWeek) weekHandler.weekInView.refreshHabitsInView()
+          if (!weekHandler.isLoadingWeek) {
+            weekHandler.weekInView.refreshHabitsInView()
+          }
         }
         newListener.isInitialLoadComplete = true
       })
@@ -83,7 +85,7 @@ export default class FriendActivityHandler {
         newListener.habits = order
           .map((id) => ({ id, ...data.habits[id] }))
           .filter((item) => !!item.name) // data for private habits will be undefined, so filter out these
-        weekHandler.weekInView.refreshHabitsInView(newListener.habits)
+        weekHandler.weekInView.refreshHabitsInView(newListener.habits.map((habit) => ({ ...habit, friendUid })))
         newListener.isInitialLoadComplete = true
       })
     })

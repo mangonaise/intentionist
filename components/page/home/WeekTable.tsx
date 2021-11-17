@@ -51,10 +51,10 @@ const WeekTable = () => {
         <CondenseViewToggle />
         <WeekTableColumnTitles />
         {habitsInView.map((habit, rowIndex) => {
-          const readonly = userHabitIds.indexOf(habit.id) < 0
+          const readonly = !!habit.friendUid
           return (
             <Fragment key={habit.id}>
-              <HabitCell habit={habit} readonly={readonly} />
+              <HabitCell habit={habit} />
               {getRowContent(viewMode, habit.id, readonly, rowIndex)}
             </Fragment>
           )

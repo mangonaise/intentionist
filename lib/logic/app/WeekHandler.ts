@@ -5,10 +5,9 @@ import { InitialState } from '@/logic/app/InitialFetchHandler'
 import { formatFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import DbHandler from '@/logic/app/DbHandler'
-import FriendsHandler from '@/logic/app/FriendsHandler'
+import FriendActivityHandler from '@/logic/app/FriendActivityHandler'
 import isEqual from 'lodash/isEqual'
 import sum from 'lodash/sum'
-import FriendActivityHandler from '@/logic/app/FriendActivityHandler'
 
 export type WeekDocumentData = {
   startDate: string,
@@ -102,7 +101,7 @@ export default class WeekHandler {
       this.weekInView = new WeekInView({
         friendUid,
         data: weekData,
-        userHabits: habits
+        userHabits: habits.map((habit) => ({ ...habit, friendUid }))
       }, this)
       this.isLoadingWeek = false
     })
