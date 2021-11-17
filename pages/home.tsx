@@ -1,6 +1,8 @@
 import { container } from 'tsyringe'
-import { createContext } from 'react'
+import { observer } from 'mobx-react-lite'
+import { createContext, useLayoutEffect } from 'react'
 import HabitsHandler from '@/logic/app/HabitsHandler'
+import WeekHandler from '@/logic/app/WeekHandler'
 import useMediaQuery from '@/hooks/useMediaQuery'
 import withApp from '@/components/app/withApp'
 import NewWeekPrompt from '@/components/page/home/NewWeekPrompt'
@@ -18,10 +20,17 @@ import Head from 'next/head'
 
 export const HomePageContext = createContext({ narrow: false })
 
-const Home = () => {
+const Home = observer(() => {
   const { habits } = container.resolve(HabitsHandler)
-  const userHasHabits = !!habits.length
+  const { weekInView: { friendUid, refreshHabitsInView } } = container.resolve(WeekHandler)
+  const showTable = !!habits.length || !!friendUid
   const narrowLayout = useMediaQuery('(max-width: 700px)', true, false)
+
+  useLayoutEffect(() => {
+    if (!friendUid) {
+      refreshHabitsInView(container.resolve(HabitsHandler).habits)
+    }
+  }, [])
 
   return (
     <HomePageContext.Provider value={{ narrow: narrowLayout }}>
@@ -34,17 +43,17 @@ const Home = () => {
           <FriendsDropdown />
           <Flex sx={{ width: narrowLayout ? '100%' : 'fit-content' }}>
             <WeekDropdown />
-            {userHasHabits && <>
+            {showTable && <>
               <WeekIconDropdown />
             </>}
           </Flex>
-          {userHasHabits && <OpenFocusButton />}
+          {showTable && <OpenFocusButton />}
         </Flex>
         <Spacer mb={narrowLayout ? 4 : 6} />
-        {userHasHabits ? <WeekTable /> : <GetStartedSection />}
+        {showTable ? <WeekTable /> : <GetStartedSection />}
       </Box>
     </HomePageContext.Provider>
   )
-}
+})
 
 export default withApp(Home)
