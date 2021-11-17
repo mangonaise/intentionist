@@ -20,7 +20,8 @@ export type HabitProperties = {
   icon: string
   status: HabitStatus,
   palette?: string[],
-  timeable?: boolean
+  timeable?: boolean,
+  friendUid?: string
 }
 
 @singleton()
