@@ -95,12 +95,14 @@ const DefaultNavSection = () => {
       <NextLink href="/home">
         <IconButton icon={BackIcon} sx={{ bg: 'transparent' }} />
       </NextLink>
-      <IconButton
-        icon={PencilIcon}
-        onClick={editor.startEditing}
-        sx={{ bg: 'notes', ml: 2 }}
-        hoverEffect="opacity"
-      />
+      {editor.allowEditing && (
+        <IconButton
+          icon={PencilIcon}
+          onClick={editor.startEditing}
+          sx={{ bg: 'notes', ml: 2 }}
+          hoverEffect="opacity"
+        />
+      )}
     </Flex>
   )
 }

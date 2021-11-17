@@ -1,7 +1,7 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
-import { useRouter } from 'next/router'
+import { Habit } from '@/logic/app/HabitsHandler'
 import WeekHandler, { NoteMetadata } from '@/logic/app/WeekHandler'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Button from '@/components/primitives/Button'
@@ -12,10 +12,11 @@ import ChevronLeftIcon from '@/components/icons/ChevronLeftIcon'
 import ChevronRightIcon from '@/components/icons/ChevronRightIcon'
 import PlusIcon from '@/components/icons/PlusIcon'
 import NextLink from 'next/link'
+import FriendsHandler from '@/logic/app/FriendsHandler'
 
-const NotesRow = observer(({ habitId, readonly }: { habitId: string, readonly: boolean }) => {
+const NotesRow = observer(({ habit, readonly }: { habit: Habit, readonly: boolean }) => {
   const { weekInView: { getNoteDataForHabit, friendUid }, isLoadingWeek } = container.resolve(WeekHandler)
-  const cellNotesData = isLoadingWeek ? [] : getNoteDataForHabit(habitId)
+  const cellNotesData = isLoadingWeek ? [] : getNoteDataForHabit(habit.id)
 
   return (
     <Flex
@@ -33,14 +34,13 @@ const NotesRow = observer(({ habitId, readonly }: { habitId: string, readonly: b
         } : {}
       }}
     >
-      {cellNotesData.length > 0 && <NotePreview cellNotesData={cellNotesData} />}
-      {!friendUid && <AddNoteButton habitId={habitId} disabled={readonly} />}
+      {cellNotesData.length > 0 && <NotePreview cellNotesData={cellNotesData} friendUid={habit.friendUid} />}
+      {!friendUid && <AddNoteButton habitId={habit.id} disabled={readonly} />}
     </Flex>
   )
 })
 
-const NotePreview = ({ cellNotesData }: { cellNotesData: Array<{ noteId: string, metadata: NoteMetadata }> }) => {
-  const router = useRouter()
+const NotePreview = ({ cellNotesData, friendUid }: { cellNotesData: Array<{ noteId: string, metadata: NoteMetadata }>, friendUid?: string }) => {
   const { weekInView: { data: { startDate } }, latestWeekStartDate } = container.resolve(WeekHandler)
   const isViewingLatestWeek = startDate === latestWeekStartDate
   const [viewedNoteIndex, setViewedNoteIndex] = useState(isViewingLatestWeek ? cellNotesData.length - 1 : 0)
@@ -61,39 +61,49 @@ const NotePreview = ({ cellNotesData }: { cellNotesData: Array<{ noteId: string,
     setViewedNoteIndex(newIndex)
   }
 
-  function openViewedNote() {
-    router.push(`/note?id=${viewedNoteData.noteId}`)
+  function generateQuery() {
+    const id = viewedNoteData.noteId
+
+    if (friendUid) {
+      return {
+        id,
+        user: container.resolve(FriendsHandler).friends.find((friend) => friend.uid === friendUid)?.username
+      }
+    }
+
+    return { id }
   }
 
   return (
     <>
-      <Button
-        onClick={openViewedNote}
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          width: '100%',
-          height: '100%',
-          paddingY: 0,
-          paddingLeft: [2, 3],
-          backgroundColor: 'whiteAlpha.3',
-          borderRadius: 0
-        }}
-      >
-        <SmartEmoji nativeEmoji={viewedNoteData.metadata.icon} rem={1.2} />
-        <Text
-          type="span"
+      <NextLink href={{ pathname: '/note', query: generateQuery() }} prefetch={false}>
+        <Button
           sx={{
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            height: '100%',
+            paddingY: 0,
             paddingLeft: [2, 3],
-            paddingY: '2px',
-            overflowWrap: 'break-word',
-            wordBreak: 'break-word',
-            textAlign: 'left'
+            backgroundColor: 'whiteAlpha.3',
+            borderRadius: 0
           }}
         >
-          {viewedNoteData.metadata.title}
-        </Text>
-      </Button>
+          <SmartEmoji nativeEmoji={viewedNoteData.metadata.icon} rem={1.2} />
+          <Text
+            type="span"
+            sx={{
+              paddingLeft: [2, 3],
+              paddingY: '2px',
+              overflowWrap: 'break-word',
+              wordBreak: 'break-word',
+              textAlign: 'left'
+            }}
+          >
+            {viewedNoteData.metadata.title}
+          </Text>
+        </Button>
+      </NextLink>
       {cellNotesData.length > 1 && (
         <NoteChanger
           currentIndex={viewedNoteIndex}
