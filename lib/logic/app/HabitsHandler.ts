@@ -26,13 +26,13 @@ export type HabitProperties = {
 @singleton()
 export default class HabitsHandler {
   public habits: Habit[]
-  public order: string[]
+  public orderedIds: string[]
   private dbHandler
 
   constructor(initialState: InitialState, dbHandler: DbHandler) {
     const { habits, order } = this.processFetchedHabits(initialState.data.habitsDoc)
     this.habits = habits
-    this.order = order
+    this.orderedIds = order
     this.dbHandler = dbHandler
     makeAutoObservable(this)
   }
@@ -47,6 +47,7 @@ export default class HabitsHandler {
     // 💻
     const index = this.habits.indexOf(existingHabit)
     this.habits[index] = habitToSet
+    this.refreshOrderedIds()
 
     // ☁️
     await this.dbHandler.update(this.dbHandler.habitsDocRef(), {
@@ -73,6 +74,7 @@ export default class HabitsHandler {
 
     // 💻
     this.habits = this.habits.filter(habit => habit !== habitToDelete)
+    this.refreshOrderedIds()
 
     // ☁️
     await this.dbHandler.deleteHabit(id)
@@ -85,6 +87,7 @@ export default class HabitsHandler {
 
     // 💻
     this.habits = arrayMove(this.habits, oldIndex, newIndex)
+    this.refreshOrderedIds()
 
     // ☁️
     await this.dbHandler.update(this.dbHandler.habitsDocRef(), {
@@ -95,6 +98,7 @@ export default class HabitsHandler {
   private addNewHabit = async (newHabit: Habit) => {
     // 💻
     this.habits.push(newHabit)
+    this.refreshOrderedIds()
 
     // ☁️
     await this.dbHandler.update(this.dbHandler.habitsDocRef(), {
@@ -103,6 +107,10 @@ export default class HabitsHandler {
     })
 
     return this.habits[this.habits.length - 1]
+  }
+
+  private refreshOrderedIds = () => {
+    this.orderedIds = this.habits.map((habit) => habit.id)
   }
 
   private processFetchedHabits = (habitsDoc: Fetched<HabitsDocumentData>) => {
