@@ -1,6 +1,6 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { useContext, useLayoutEffect, useRef, useState } from 'react'
+import { useContext, useLayoutEffect, useRef } from 'react'
 import { isSameDay } from 'date-fns'
 import { ColumnsDisplayContext } from '../WeekTable'
 import { weekdayNames } from '@/logic/utils/_consts'
@@ -29,7 +29,11 @@ const WeekTableColumnTitles = () => {
 }
 
 const TrackerTitleRow = () => {
-  return <WeekdayLabels />
+  return (
+    <Flex>
+      <WeekdayLabels />
+    </Flex>
+  )
 }
 
 const NotesTitleRow = observer(() => {
@@ -45,6 +49,7 @@ const NotesTitleRow = observer(() => {
 })
 
 const FocusTitleRow = observer(() => {
+  const { weekInView: { friendUid }} = container.resolve(WeekHandler)
   const { collapseColumns, setCollapseColumns } = useContext(ColumnsDisplayContext)
   const rowWrapperRef = useRef<HTMLDivElement>(null!)
   const width = useElementWidth(rowWrapperRef)
@@ -63,7 +68,7 @@ const FocusTitleRow = observer(() => {
         center
         sx={{
           flex: 1,
-          marginRight: '2.25rem',
+          marginRight: friendUid ? 0 : '2.25rem',
           height: 'row',
           color: 'focus',
           fontWeight: 'semibold',

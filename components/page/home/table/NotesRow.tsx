@@ -13,17 +13,28 @@ import ChevronRightIcon from '@/components/icons/ChevronRightIcon'
 import PlusIcon from '@/components/icons/PlusIcon'
 import NextLink from 'next/link'
 
-const NotesRow = observer(({ habitId }: { habitId: string }) => {
-  const { weekInView: { getNoteDataForHabit }, isLoadingWeek } = container.resolve(WeekHandler)
+const NotesRow = observer(({ habitId, readonly }: { habitId: string, readonly: boolean }) => {
+  const { weekInView: { getNoteDataForHabit, friendUid }, isLoadingWeek } = container.resolve(WeekHandler)
   const cellNotesData = isLoadingWeek ? [] : getNoteDataForHabit(habitId)
 
   return (
     <Flex
       align="center"
-      sx={{ borderTop: 'solid 1px', borderLeft: 'solid 1px', borderColor: 'grid' }}
+      sx={{
+        position: 'relative',
+        borderTop: 'solid 1px', borderLeft: 'solid 1px', borderColor: 'grid',
+        '&::before': readonly ? {
+          zIndex: -1,
+          position: 'absolute',
+          inset: 0,
+          content: '""',
+          backgroundColor: 'notes',
+          opacity: 0.085
+        } : {}
+      }}
     >
       {cellNotesData.length > 0 && <NotePreview cellNotesData={cellNotesData} />}
-      <AddNoteButton habitId={habitId} />
+      {!friendUid && <AddNoteButton habitId={habitId} disabled={readonly} />}
     </Flex>
   )
 })
@@ -141,11 +152,12 @@ const NoteChanger = ({ currentIndex, totalNotes, change }: NoteChangerProps) => 
   )
 }
 
-const AddNoteButton = ({ habitId }: { habitId: string }) => {
+const AddNoteButton = ({ habitId, disabled }: { habitId: string, disabled: boolean }) => {
   return (
     <NextLink href={`/note?habitId=${habitId}`}>
       <IconButton
         icon={PlusIcon}
+        disabled={disabled}
         sx={{
           height: '100%',
           width: '2.25rem',
