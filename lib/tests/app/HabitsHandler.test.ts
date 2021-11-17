@@ -23,10 +23,8 @@ const dummyHabitB: Habit = { id: generateHabitId(), name: 'Build app', icon: 'ðŸ
 const dummyHabitC: Habit = { id: generateHabitId(), name: 'Fix bugs', icon: 'ðŸ›', status: 'active' }
 const getHabitsDoc = async () => await dbHandler.getDocData(dbHandler.habitsDocRef())
 
-let testUserUid: string
-
 beforeAll(async () => {
-  testUserUid = (await signInDummyUser()).uid
+  await signInDummyUser()
 })
 
 beforeEach(async () => {
@@ -101,6 +99,7 @@ describe('behavior', () => {
     await habitsHandler.setHabit(dummyHabitB)
 
     expect(habitsHandler.habits).toEqual([dummyHabitA, dummyHabitB])
+    expect(habitsHandler.orderedIds).toEqual([dummyHabitA.id, dummyHabitB.id])
 
     expect(await getHabitsDoc()).toEqual({
       habits: {
@@ -144,6 +143,7 @@ describe('behavior', () => {
     const c = await habitsHandler.setHabit(dummyHabitC)
     await habitsHandler.reorderHabits(a, c)
     expect(habitsHandler.habits).toEqual([b, c, a])
+    expect(habitsHandler.orderedIds).toEqual([b.id, c.id, a.id])
     expect((await getHabitsDoc())?.order).toEqual([b.id, c.id, a.id])
   })
 
@@ -153,6 +153,7 @@ describe('behavior', () => {
     await habitsHandler.deleteHabitById(dummyHabitA.id)
 
     expect(habitsHandler.habits).toEqual([dummyHabitB])
+    expect(habitsHandler.orderedIds).toEqual([dummyHabitB.id])
 
     expect(await getHabitsDoc()).toEqual({
       habits: {
