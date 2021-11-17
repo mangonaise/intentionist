@@ -9,19 +9,32 @@ import IconButton from '@/components/primitives/IconButton'
 import TimerIcon from '@/components/icons/TimerIcon'
 import NextLink from 'next/link'
 
-const FocusedTimeRow = observer(({ habitId }: { habitId: string }) => {
-  const { getFocusedTime } = container.resolve(WeekHandler).weekInView
+const FocusedTimeRow = observer(({ habitId, readonly }: { habitId: string, readonly: boolean }) => {
+  const { getFocusedTime, friendUid } = container.resolve(WeekHandler).weekInView
   const { collapseColumns, weekdayId } = useContext(ColumnsDisplayContext)
 
   return (
-    <Flex center sx={{ borderTop: 'solid 1px', borderColor: 'grid' }}>
+    <Flex center
+      sx={{
+        position: 'relative',
+        borderTop: 'solid 1px', borderColor: 'grid',
+        '&::before': readonly ? {
+          zIndex: -1,
+          position: 'absolute',
+          inset: 0,
+          content: '""',
+          backgroundColor: 'focus',
+          opacity: 0.085
+        } : {}
+      }}
+    >
       {collapseColumns
         ? <TimeCell time={getFocusedTime(habitId, weekdayId)} />
         : Array.from({ length: 7 }).map((_, weekdayId) => (
           <TimeCell time={getFocusedTime(habitId, weekdayId as WeekdayId)} key={weekdayId} />
         ))}
       <TimeCell isSum time={getFocusedTime(habitId, 'week')} />
-      <OpenTimerButton habitId={habitId} />
+      {!friendUid && <OpenTimerButton habitId={habitId} disabled={readonly} />}
     </Flex>
   )
 })
@@ -50,25 +63,27 @@ const TimeCell = ({ time, isSum }: { time: number, isSum?: boolean }) => {
   )
 }
 
-const OpenTimerButton = ({ habitId }: { habitId: string }) => {
+const OpenTimerButton = ({ habitId, disabled }: { habitId: string, disabled: boolean }) => {
   return (
     <NextLink href={`/focus?habitId=${habitId}`}>
-      <IconButton
-        icon={TimerIcon}
-        sx={{
-          height: '100%',
-          width: '2.25rem',
-          paddingY: 0,
-          paddingX: '0.6rem',
-          color: 'focus',
-          backgroundColor: 'transparent',
-          borderRadius: 0,
-          borderLeft: 'solid 1px',
-          borderColor: 'grid',
-          fontSize: '0.95rem',
-          filter: 'brightness(1.2)'
-        }}
-      />
+      <Flex>
+        <div sx={{ minHeight: '100%', width: '1px', backgroundColor: 'grid' }} />
+        <IconButton
+          icon={TimerIcon}
+          disabled={disabled}
+          sx={{
+            height: '100%',
+            width: '2.25rem',
+            paddingY: 0,
+            paddingX: '0.6rem',
+            color: 'focus',
+            backgroundColor: 'transparent',
+            borderRadius: 0,
+            fontSize: '0.95rem',
+            filter: 'brightness(1.2)'
+          }}
+        />
+      </Flex>
     </NextLink>
   )
 }

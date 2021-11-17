@@ -1,17 +1,17 @@
 import { container } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import { createContext, FC, Fragment, useEffect, useLayoutEffect, useRef } from 'react'
+import { createContext, FC, Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import WeekHandler, { WeekdayId, WeekViewMode } from '@/logic/app/WeekHandler'
 import HabitsHandler from '@/logic/app/HabitsHandler'
 import useMediaQuery from '@/hooks/useMediaQuery'
 import Grid from '@/components/primitives/Grid'
 import CondensedViewAlert from './table/CondensedViewAlert'
 import CondenseViewToggle from './table/CondenseViewToggle'
-import FocusedTimeRow from './table/FocusedTimeRow'
 import HabitCell from './table/HabitCell'
-import TrackerStatusCell from './table/TrackerStatusCell'
+import TrackerStatusRow from './table/TrackerStatusRow'
 import NotesRow from './table/NotesRow'
+import FocusedTimeRow from './table/FocusedTimeRow'
 import WeekTableColumnTitles from './table/WeekTableColumnTitles'
 import ViewHabitsButton from './ViewHabitsButton'
 
@@ -29,6 +29,7 @@ export const ColumnsDisplayContext = createContext<ColumnsDisplayHandler>(null!)
 
 const WeekTable = () => {
   const { viewMode, weekInView: { habitsInView, refreshHabitsInView, friendUid } } = container.resolve(WeekHandler)
+  const [userHabitIds] = useState(container.resolve(HabitsHandler).orderedIds)
   const columnsDisplayHandler = useRef(new ColumnsDisplayHandler())
   const showHabitNames = useMediaQuery('(max-width: 500px)', false, true)
 
@@ -44,35 +45,20 @@ const WeekTable = () => {
     columnsDisplayHandler.current.setShowHabitNames(showHabitNames)
   }, [showHabitNames])
 
-  function getRowContent(habitId: string, rowIndex: number) {
-    switch (viewMode) {
-      case 'tracker':
-        return Array.from({ length: 7 }).map((_, weekdayId) => (
-          <TrackerStatusCell
-            habitId={habitId}
-            weekday={weekdayId as WeekdayId}
-            rowIndex={rowIndex}
-            key={weekdayId}
-          />
-        ))
-      case 'notes':
-        return <NotesRow habitId={habitId} />
-      case 'focus':
-        return <FocusedTimeRow habitId={habitId} />
-    }
-  }
-
   return (
     <ColumnsDisplayContext.Provider value={columnsDisplayHandler.current}>
       <Table>
         <CondenseViewToggle />
         <WeekTableColumnTitles />
-        {habitsInView.map((habit, rowIndex) => (
-          <Fragment key={habit.id}>
-            <HabitCell habit={habit} />
-            {getRowContent(habit.id, rowIndex)}
-          </Fragment>
-        ))}
+        {habitsInView.map((habit, rowIndex) => {
+          const readonly = userHabitIds.indexOf(habit.id) < 0
+          return (
+            <Fragment key={habit.id}>
+              <HabitCell habit={habit} readonly={readonly} />
+              {getRowContent(viewMode, habit.id, readonly, rowIndex)}
+            </Fragment>
+          )
+        })}
         <CondensedViewAlert />
         <ViewHabitsButton />
       </Table>
@@ -80,18 +66,24 @@ const WeekTable = () => {
   )
 }
 
-const Table: FC = observer(({ children }) => {
-  const { viewMode, isLoadingWeek } = container.resolve(WeekHandler)
-  const templateColumnsMap: { [key in WeekViewMode]: string } = {
-    tracker: 'auto repeat(7, minmax(2.5ch, 1fr))',
-    notes: 'auto 1fr',
-    focus: 'auto 1fr'
+function getRowContent(viewMode: WeekViewMode, habitId: string, readonly: boolean, rowIndex: number) {
+  switch (viewMode) {
+    case 'tracker':
+      return <TrackerStatusRow habitId={habitId} readonly={readonly} rowIndex={rowIndex} />
+    case 'notes':
+      return <NotesRow habitId={habitId} readonly={readonly} />
+    case 'focus':
+      return <FocusedTimeRow habitId={habitId} readonly={readonly} />
   }
+}
+
+const Table: FC = observer(({ children }) => {
+  const { isLoadingWeek } = container.resolve(WeekHandler)
 
   return (
     <Grid
       sx={{
-        gridTemplateColumns: templateColumnsMap[viewMode],
+        gridTemplateColumns: 'auto 1fr',
         marginX: ['-0.5rem', 0],
         opacity: isLoadingWeek ? 0.5 : 1,
         pointerEvents: isLoadingWeek ? 'none' : 'auto',

@@ -11,10 +11,11 @@ import Flex from '@/components/primitives/Flex'
 interface TrackerStatusCellProps {
   habitId: string,
   weekday: WeekdayId,
-  rowIndex: number
+  rowIndex: number,
+  readonly: boolean
 }
 
-const TrackerStatusCell = ({ habitId, weekday, rowIndex }: TrackerStatusCellProps) => {
+const TrackerStatusCell = ({ habitId, weekday, rowIndex, readonly }: TrackerStatusCellProps) => {
   const { weekInView: { data: { statuses } }, isLoadingWeek } = container.resolve(WeekHandler)
   const status = statuses?.[habitId]?.[weekday] ?? []
   const [isEditing, setIsEditing] = useState(false)
@@ -48,6 +49,7 @@ const TrackerStatusCell = ({ habitId, weekday, rowIndex }: TrackerStatusCellProp
     <Flex
       center
       sx={{
+        flex: 1,
         position: 'relative',
         borderLeft: 'solid 1px',
         borderColor: 'grid',
@@ -66,6 +68,7 @@ const TrackerStatusCell = ({ habitId, weekday, rowIndex }: TrackerStatusCellProp
         isEditing={isEditing}
         isLoading={isLoadingWeek}
         hasStatus={!!visibleEmojis.length}
+        readonly={readonly}
         id={`cell-${weekday},${rowIndex}`}
       >
         <Flex center flexWrap sx={{ py: '4px' }}>
@@ -95,15 +98,17 @@ interface CellButtonProps {
   isEditing: boolean,
   isLoading: boolean,
   hasStatus: boolean,
+  readonly: boolean,
   id: string,
 }
 
 const CellButton: FC<CellButtonProps> = (props) => {
-  const { onClickCell, isEditing, isLoading, hasStatus, id, children } = props
+  const { onClickCell, isEditing, isLoading, hasStatus, readonly, id, children } = props
 
   return (
     <Button
       onClick={onClickCell}
+      disabled={readonly}
       sx={{
         '--highlight': '0 0 0 2px #747474 inset',
         padding: 0,
@@ -126,6 +131,9 @@ const CellButton: FC<CellButtonProps> = (props) => {
             boxShadow: isEditing ? 'var(--highlight)' : 'none',
             transition: 'none',
           }
+        },
+        '&:disabled': {
+          opacity: 1
         }
       }}
       id={id}
