@@ -1,6 +1,6 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import { Global } from '@emotion/react'
 import { css } from '@theme-ui/css'
@@ -22,9 +22,15 @@ import Head from 'next/head'
 export const NoteContext = createContext<{ editor: NoteEditor, noteData: NoteDocumentData }>(null!)
 
 const NotePage = observer(() => {
-  const [editor] = useState(container.resolve(NoteEditor))
+  const [editor, setEditor] = useState<null | NoteEditor>(null)
 
-  if (!editor.note) return (
+  // NoteEditor needs to be set in an effect
+  // Otherwise (for some reason) the observer causes state to re-initialize - including unnecessary calls to database!
+  useEffect(() => {
+    setEditor(container.resolve(NoteEditor))
+  }, [])
+
+  if (!editor || !editor.note) return (
     <>
       <Head><title>...</title></Head>
       <LoadingScreen />
