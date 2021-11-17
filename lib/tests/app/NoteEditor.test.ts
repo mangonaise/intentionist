@@ -5,10 +5,12 @@ import { formatYYYYMMDD } from '@/logic/utils/dateUtilities'
 import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
 import generateNoteId from '@/logic/utils/generateNoteId'
 import generateHabitId from '@/logic/utils/generateHabitId'
+import exclude from '@/logic/utils/exclude'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import NoteEditor, { NoteDocumentData } from '@/logic/app/NoteEditor'
 import WeekHandler from '@/logic/app/WeekHandler'
 import DbHandler from '@/logic/app/DbHandler'
+import FriendsHandler from '@/logic/app/FriendsHandler'
 import MockRouter from '@/test-setup/mock/MockRouter'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
@@ -17,14 +19,18 @@ import deleteNotes from '@/test-setup/deleteNotes'
 import deleteWeeks from '@/test-setup/deleteWeeks'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import teardownFirebase from '@/test-setup/teardownFirebase'
+import getDbShortcuts from '@/test-setup/getDbShortcuts'
+import waitForRealtimeUpdates from '@/test-setup/waitForRealtimeUpdates'
 
 // 🔨
 
 const projectId = 'test-noteeditor'
 const firebase = initializeFirebase(projectId)
 const { db: adminDb } = getFirebaseAdmin(projectId)
+const { friendsDoc, userDoc, userDataCollection } = getDbShortcuts(adminDb)
 
 let noteEditor: NoteEditor, weekHandler: WeekHandler, dbHandler: DbHandler
+let authUserUid: string
 let router: MockRouter
 
 const dummyHabit: Habit = { id: generateHabitId(), name: 'Note editor test habit A', icon: '✏️', status: 'active' }
@@ -49,7 +55,7 @@ const dummyNoteB: NoteDocumentData = {
 }
 
 beforeAll(async () => {
-  await signInDummyUser()
+  authUserUid = (await signInDummyUser()).uid
 })
 
 beforeEach(async () => {
@@ -101,8 +107,10 @@ describe('initialization', () => {
     router.setQuery({ id: dummyNoteA.id })
     startNoteEditor()
     await when(() => !!noteEditor.note)
+
     expect(noteEditor.isNewNote).toEqual(false)
     expect(noteEditor.note).toEqual(dummyNoteA)
+    expect(noteEditor.habit).toEqual(dummyHabit)
   })
 
   test(`if trying to generate an empty note but habitId does not correspond to any of the user's habits, routes back home`, () => {
@@ -115,6 +123,32 @@ describe('initialization', () => {
     router.setQuery({})
     startNoteEditor()
     expect(router.push).toHaveBeenCalledWith('/home')
+  })
+
+  test(`if router query param "user" is supplied, correctly loads note belonging to the friend whose username is equal to "user"`, async () => {
+    const friendUid = 'note-editor-test-friend-uid'
+    const friendUsername = 'note_editor_test_friend_username'
+    await friendsDoc(friendUid).set({ friends: { [authUserUid]: { time: 123 } } })
+    await userDataCollection(friendUid).doc('habits').set({ habits: { [dummyHabit.id]: { ...exclude(dummyHabit, 'id') } }})
+    await friendsDoc(authUserUid).set({ friends: { [friendUid]: { time: 123, username: friendUsername } } })
+
+    const noteDocRef = userDoc(friendUid).collection('notes').doc(dummyNoteB.id)
+    await noteDocRef.set(dummyNoteB)
+
+    const friendsHandler = container.resolve(FriendsHandler)
+    friendsHandler.listenToFriendsDoc()
+    await waitForRealtimeUpdates()
+
+    router.setQuery({ id: dummyNoteB.id, user: friendUsername })
+    startNoteEditor()
+    await when(() => !!noteEditor.note)
+
+    expect(noteEditor.note).toEqual(dummyNoteB)
+    expect(noteEditor.habit).toEqual(dummyHabit)
+
+    friendsHandler.stopFriendsDocListener()
+    await adminDb.recursiveDelete(userDoc(friendUid))
+    await adminDb.recursiveDelete(userDoc(authUserUid))
   })
 })
 

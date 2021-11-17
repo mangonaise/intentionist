@@ -22,8 +22,8 @@ type HabitsDocListener = DocListenerBase & {
 
 @singleton()
 export default class FriendActivityHandler {
+  public habitsDocListeners: HabitsDocListener[] = []
   private weekDocListeners: WeekDocListener[] = []
-  private habitsDocListeners: HabitsDocListener[] = []
   private dbHandler
 
   constructor(dbHandler: DbHandler) {

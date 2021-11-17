@@ -55,8 +55,7 @@ const NotePage = observer(() => {
 })
 
 const DateAndHabit = () => {
-  const { noteData } = useContext(NoteContext)
-  const [habit] = useState(container.resolve(HabitsHandler).habits.find((habit) => habit.id === noteData.habitId))
+  const { noteData, editor: { habit } } = useContext(NoteContext)
   if (!habit) return null
 
   return (

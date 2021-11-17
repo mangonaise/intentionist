@@ -8,6 +8,7 @@ import FriendRequestsHandler from '@/logic/app/FriendRequestsHandler'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import getDbShortcuts from '@/test-setup/getDbShortcuts'
+import waitForRealtimeUpdates from '@/test-setup/waitForRealtimeUpdates'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import teardownFirebase from '@/test-setup/teardownFirebase'
 
@@ -58,10 +59,6 @@ afterAll(async () => {
   await usernameDoc(testUserProfile.username).delete()
   await teardownFirebase(firebase)
 })
-
-async function waitForRealtimeUpdates() {
-  return new Promise((resolve) => setTimeout(resolve, 200))
-}
 
 // 🧪
 

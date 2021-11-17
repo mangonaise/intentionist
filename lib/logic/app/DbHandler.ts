@@ -1,7 +1,7 @@
 import type { Firestore, DocumentReference, DocumentData } from '@firebase/firestore'
 import type { Fetched } from '@/logic/app/InitialFetchHandler'
 import type { WeekDocumentData } from '@/logic/app/WeekHandler'
-import type { NoteDocumentData as NoteDocumentData } from '@/logic/app/NoteEditor'
+import type { NoteDocumentData } from '@/logic/app/NoteEditor'
 import type { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
 import { inject, singleton } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
@@ -100,8 +100,8 @@ export default class DbHandler {
     this.completeWrite()
   }
 
-  public getNoteDoc = async (noteId: string) => {
-    const noteDoc = await this.getDocData(this.noteDocRef(noteId)) ?? null
+  public getNoteDoc = async (noteId: string, friendUid?: string) => {
+    const noteDoc = await this.getDocData(this.noteDocRef(noteId, friendUid)) ?? null
     return noteDoc as Fetched<NoteDocumentData>
   }
 
@@ -168,8 +168,8 @@ export default class DbHandler {
     return this.userDocRef(WEEK_ICONS + '/' + year)
   }
 
-  public noteDocRef = (noteId: string) => {
-    return this.userDocRef(NOTES + '/' + noteId)
+  public noteDocRef = (noteId: string, friendUid?: string) => {
+    return this.userDocRef(NOTES + '/' + noteId, friendUid)
   }
 
   public get weeksCollectionRef() {

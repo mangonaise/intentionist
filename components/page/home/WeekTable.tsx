@@ -2,6 +2,7 @@ import { container } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { createContext, FC, Fragment, useEffect, useLayoutEffect, useRef } from 'react'
+import { Habit } from '@/logic/app/HabitsHandler'
 import WeekHandler, { WeekdayId, WeekViewMode } from '@/logic/app/WeekHandler'
 import useMediaQuery from '@/hooks/useMediaQuery'
 import Grid from '@/components/primitives/Grid'
@@ -47,7 +48,7 @@ const WeekTable = () => {
           return (
             <Fragment key={habit.id}>
               <HabitCell habit={habit} />
-              {getRowContent(viewMode, habit.id, readonly, rowIndex)}
+              {getRowContent(viewMode, habit, readonly, rowIndex)}
             </Fragment>
           )
         })}
@@ -58,14 +59,14 @@ const WeekTable = () => {
   )
 }
 
-function getRowContent(viewMode: WeekViewMode, habitId: string, readonly: boolean, rowIndex: number) {
+function getRowContent(viewMode: WeekViewMode, habit: Habit, readonly: boolean, rowIndex: number) {
   switch (viewMode) {
     case 'tracker':
-      return <TrackerStatusRow habitId={habitId} readonly={readonly} rowIndex={rowIndex} />
+      return <TrackerStatusRow habitId={habit.id} readonly={readonly} rowIndex={rowIndex} />
     case 'notes':
-      return <NotesRow habitId={habitId} readonly={readonly} />
+      return <NotesRow habit={habit} readonly={readonly} />
     case 'focus':
-      return <FocusedTimeRow habitId={habitId} readonly={readonly} />
+      return <FocusedTimeRow habitId={habit.id} readonly={readonly} />
   }
 }
 
