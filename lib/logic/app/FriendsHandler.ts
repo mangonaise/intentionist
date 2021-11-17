@@ -48,7 +48,7 @@ export default class FriendsHandler {
     const friends = friendsDocData?.friends as undefined | { [uid: string]: UserProfileInfo & { time: number } }
     if (!friends) return
     this.friends = Object.entries(friends)
-      .sort(([_keyA, friendA], [_keyB, friendB]) => friendB.time ?? 0 - friendA.time ?? 0)
+      .sort(([_keyA, friendA], [_keyB, friendB]) => (friendB.time ?? 0) - (friendA.time ?? 0))
       .map(([uid, profileInfo]) => ({ uid, ...profileInfo }))
   }
 }
