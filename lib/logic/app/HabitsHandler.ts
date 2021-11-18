@@ -39,7 +39,7 @@ export default class HabitsHandler {
   }
 
   public setHabit = async (habitToSet: Habit) => {
-    let existingHabit = this.habits.find(habit => habit.id === habitToSet.id)
+    let existingHabit = this.findHabitById(habitToSet.id)
     if (!existingHabit) {
       return await this.addNewHabit(habitToSet)
     }
@@ -70,7 +70,7 @@ export default class HabitsHandler {
   }
 
   public deleteHabitById = async (id: string) => {
-    const habitToDelete = this.habits.find(habit => habit.id === id)
+    const habitToDelete = this.findHabitById(id)
     if (!habitToDelete) throw new Error('Cannot delete a habit that does not exist')
 
     // 💻
@@ -109,6 +109,10 @@ export default class HabitsHandler {
 
     return this.habits[this.habits.length - 1]
   }
+
+  public findHabitById = (id: string) => {
+    return this.habits.find((habit) => habit.id === id)
+  } 
 
   private refreshOrderedIds = () => {
     this.orderedIds = this.habits.map((habit) => habit.id)

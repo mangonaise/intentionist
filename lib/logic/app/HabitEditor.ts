@@ -29,7 +29,7 @@ export default class HabitEditor {
       this.habit = this.generateEmptyHabit()
     } else {
       this.isNewHabit = false
-      const existingHabit = habitsHandler.habits.find(habit => habit.id === query.id)
+      const existingHabit = query.id ? habitsHandler.findHabitById(query.id) : null
       if (existingHabit) {
         this.habit = existingHabit
       } else {
