@@ -1,7 +1,7 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
-import WeekHandler, { WeekViewMode } from '@/logic/app/WeekHandler'
+import WeekInView, { WeekViewMode } from '@/logic/app/WeekInView'
 import accentColor from '@/logic/utils/accentColor'
 import useMediaQuery from '@/hooks/useMediaQuery'
 import SlidingTabPicker from '@/components/app/SlidingTabPicker'
@@ -15,8 +15,8 @@ const tabData: Array<{ view: WeekViewMode, text: string, icon: () => JSX.Element
   { view: 'focus', text: 'Focused time', icon: TimerIcon }
 ]
 
-const WeekViewModePicker = () => {
-  const { viewMode, setViewMode } = container.resolve(WeekHandler)
+const WeekViewModePicker = observer(() => {
+  const { viewMode, setViewMode } = container.resolve(WeekInView)
 
   const isSmallScreen = useMediaQuery('(max-width: 500px)', true, false)
 
@@ -36,6 +36,6 @@ const WeekViewModePicker = () => {
       activeIndex={tabData.indexOf(tabData.find((data) => data.view === viewMode)!)}
     />
   )
-}
+})
 
-export default observer(WeekViewModePicker)
+export default WeekViewModePicker

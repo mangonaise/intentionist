@@ -5,6 +5,7 @@ import { addMonths, eachWeekOfInterval, endOfMonth, format, isFuture, isSameDay,
 import { formatFirstDayOfThisWeek, formatYYYYMMDD, separateYYYYfromMMDD } from '@/logic/utils/dateUtilities'
 import NewWeekPromptHandler from '@/logic/app/NewWeekPromptHandler'
 import WeekHandler from '@/logic/app/WeekHandler'
+import WeekInView from '@/logic/app/WeekInView'
 import accentColor from '@/logic/utils/accentColor'
 import WeekIconsHandler from '@/logic/app/WeekIconsHandler'
 import SmartEmoji from '@/components/app/SmartEmoji'
@@ -21,7 +22,7 @@ import ChevronRightIcon from '@/components/icons/ChevronRightIcon'
 import CheckIcon from '@/components/icons/CheckIcon'
 
 const WeekDropdown = observer(() => {
-  const { data: { startDate } } = container.resolve(WeekHandler).weekInView
+  const { weekData: { startDate } } = container.resolve(WeekInView)
   const { thisWeekStartDate } = container.resolve(NewWeekPromptHandler)
 
   let title: string
@@ -41,15 +42,16 @@ const WeekDropdown = observer(() => {
 })
 
 const WeekSelectMenu = () => {
-  const weekHandler = container.resolve(WeekHandler)
-  const [selectedDate] = useState(new Date(weekHandler.weekInView.data.startDate))
+  const weekInView = container.resolve(WeekInView)
+  const { viewWeek } = container.resolve(WeekHandler)
+  const [selectedDate] = useState(new Date(weekInView.weekData.startDate))
   const [displayedMonth, setDisplayedMonth] = useState(startOfMonth(selectedDate))
   const [displayedWeeks, setDisplayedWeeks] = useState(getWeeksInMonth(displayedMonth))
   const [isDisplayingCurrentMonth, setIsDisplayingCurrentMonth] = useState(isSameMonth(displayedMonth, new Date()))
 
   function handleSelectWeek(startDate: Date, cachedIcon?: string) {
-    const friendUid = weekHandler.weekInView.friendUid
-    weekHandler.viewWeek({
+    const friendUid = weekInView.friendUid
+    viewWeek({
       startDate: formatYYYYMMDD(startDate),
       cachedIcon: friendUid ? undefined : cachedIcon,
       friendUid,
@@ -105,7 +107,7 @@ const WeekSelectMenu = () => {
           weekStart={weekStart}
           selectedDate={selectedDate}
           onSelectWeek={handleSelectWeek}
-          showIcon={!weekHandler.weekInView.friendUid}
+          showIcon={!weekInView.friendUid}
           key={index}
         />
       ))}

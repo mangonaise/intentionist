@@ -4,7 +4,7 @@ import { useContext, useState } from 'react'
 import { BaseEmoji } from 'emoji-mart'
 import { HomePageContext } from 'pages/home'
 import WeekIconsHandler from '@/logic/app/WeekIconsHandler'
-import WeekHandler from '@/logic/app/WeekHandler'
+import WeekInView from '@/logic/app/WeekInView'
 import EmojiPicker from '@/components/app/EmojiPicker'
 import Dropdown from '@/components/app/Dropdown'
 import SmartEmoji from '@/components/app/SmartEmoji'
@@ -13,7 +13,7 @@ import Flex from '@/components/primitives/Flex'
 import PencilIcon from '@/components/icons/PencilIcon'
 
 const WeekIconDropdown = observer(() => {
-  const { weekInView: { data: { icon }, friendUid }, isLoadingWeek } = container.resolve(WeekHandler)
+  const { weekData: { icon }, friendUid, isLoadingWeek } = container.resolve(WeekInView)
   const { setIcon, removeIcon } = container.resolve(WeekIconsHandler)
   const { narrow } = useContext(HomePageContext)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
@@ -62,7 +62,7 @@ const WeekIconDropdown = observer(() => {
 })
 
 const DropdownTitle = observer(() => {
-  const { weekInView: { data: { icon } } } = container.resolve(WeekHandler)
+  const { weekData: { icon }} = container.resolve(WeekInView)
 
   if (icon) {
     return (

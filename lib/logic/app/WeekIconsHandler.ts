@@ -2,7 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import { singleton } from 'tsyringe'
 import { separateYYYYfromMMDD } from '@/logic/utils/dateUtilities'
 import DbHandler from '@/logic/app/DbHandler'
-import WeekHandler from '@/logic/app/WeekHandler'
+import WeekInView from '@/logic/app/WeekInView'
 
 type WeekIconsCache = {
   [yyyy: string]: { [mmdd: string]: string }
@@ -12,12 +12,8 @@ type WeekIconsCache = {
 export default class WeekIconsHandler {
   // TODO: handle icons for friends
   public iconsCache: WeekIconsCache = {}
-  private weekHandler
-  private dbHandler
 
-  constructor(weekHandler: WeekHandler, dbHandler: DbHandler) {
-    this.weekHandler = weekHandler
-    this.dbHandler = dbHandler
+  constructor(private weekInView: WeekInView, private dbHandler: DbHandler) {
     this.cacheIconsInYear(new Date().getFullYear().toString())
     makeAutoObservable(this)
   }
@@ -32,25 +28,25 @@ export default class WeekIconsHandler {
   }
 
   public setIcon = async (icon: string) => {
-    if (icon === this.weekHandler.weekInView.data.icon) return
+    if (icon === this.weekInView.weekData.icon) return
 
     // 💻
-    this.weekHandler.weekInView.data.icon = icon
-    const { yyyy, mmdd } = separateYYYYfromMMDD(this.weekHandler.weekInView.data.startDate)
+    this.weekInView.weekData.icon = icon
+    const { yyyy, mmdd } = separateYYYYfromMMDD(this.weekInView.weekData.startDate)
     this.iconsCache[yyyy] = this.iconsCache[yyyy] ?? {}
     this.iconsCache[yyyy][mmdd] = icon
 
     // ☁️
-    await this.dbHandler.updateWeekIcon(this.weekHandler.weekInView.data.startDate, icon)
+    await this.dbHandler.updateWeekIcon(this.weekInView.weekData.startDate, icon)
   }
 
   public removeIcon = async () => {
     // 💻
-    this.weekHandler.weekInView.data.icon = null
-    const { yyyy, mmdd } = separateYYYYfromMMDD(this.weekHandler.weekInView.data.startDate)
+    this.weekInView.weekData.icon = null
+    const { yyyy, mmdd } = separateYYYYfromMMDD(this.weekInView.weekData.startDate)
     delete this.iconsCache[yyyy]?.[mmdd]
 
     // ☁️
-    await this.dbHandler.removeWeekIcon(this.weekHandler.weekInView.data.startDate)
+    await this.dbHandler.removeWeekIcon(this.weekInView.weekData.startDate)
   }
 }

@@ -1,5 +1,5 @@
 import type { HabitsDocumentData } from '@/logic/app/HabitsHandler'
-import type { WeekDocumentData } from '@/logic/app/WeekHandler'
+import type { WeekDocumentData } from '@/logic/app/WeekInView'
 import type { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import { makeAutoObservable, runInAction } from 'mobx'
 import { singleton } from 'tsyringe'

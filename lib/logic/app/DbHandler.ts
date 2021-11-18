@@ -1,6 +1,6 @@
 import type { Firestore, DocumentReference, DocumentData } from '@firebase/firestore'
 import type { Fetched } from '@/logic/app/InitialFetchHandler'
-import type { WeekDocumentData } from '@/logic/app/WeekHandler'
+import type { WeekDocumentData } from '@/logic/app/WeekInView'
 import type { NoteDocumentData } from '@/logic/app/NoteEditor'
 import type { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
 import { inject, singleton } from 'tsyringe'

@@ -97,7 +97,7 @@ describe('initialization', () => {
       content: '',
       habitId: dummyHabit.id,
       date: formatYYYYMMDD(new Date()),
-      weekStartDate: weekHandler.weekInView.data.startDate,
+      weekStartDate: weekHandler.weekInView.weekData.startDate,
       id: noteEditor.note?.id
     })
   })
@@ -187,8 +187,8 @@ describe('behavior', () => {
     noteEditor.updateNote('icon', '🌟')
     noteEditor.finishEditing()
     const note = noteEditor.note!
-    expect(weekHandler.weekInView.data.notes).toEqual({ [dummyHabit.id]: [note.id] })
-    expect(weekHandler.weekInView.data.notesMetadata?.[note.id]).toEqual({
+    expect(weekHandler.weekInView.weekData.notes).toEqual({ [dummyHabit.id]: [note.id] })
+    expect(weekHandler.weekInView.weekData.notesMetadata?.[note.id]).toEqual({
       title: 'Hello!',
       icon: '🌟'
     })
@@ -207,8 +207,8 @@ describe('behavior', () => {
     startNoteEditor()
     noteEditor.updateNote('title', 'A fresh new title')
     noteEditor.finishEditing()
-    expect(weekHandler.weekInView.data.notes).toBeUndefined()
-    expect(weekHandler.weekInView.data.notesMetadata).toBeUndefined()
+    expect(weekHandler.weekInView.weekData.notes).toBeUndefined()
+    expect(weekHandler.weekInView.weekData.notesMetadata).toBeUndefined()
   })
 
   test('if editing completes but the note title is empty, it is automatically set to "Untitled note"', () => {
@@ -307,7 +307,7 @@ describe('behavior', () => {
     await noteEditor.deleteNote()
 
     const weekInView = weekHandler.weekInView
-    expect(weekInView.data.notes?.[dummyNoteB.habitId]?.includes(dummyNoteB.id)).toEqual(false)
-    expect(weekInView.data.notesMetadata?.[dummyNoteB.id]).toBeUndefined()
+    expect(weekInView.weekData.notes?.[dummyNoteB.habitId]?.includes(dummyNoteB.id)).toEqual(false)
+    expect(weekInView.weekData.notesMetadata?.[dummyNoteB.id]).toBeUndefined()
   })
 })

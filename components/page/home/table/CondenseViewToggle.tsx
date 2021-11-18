@@ -1,6 +1,6 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import WeekHandler from '@/logic/app/WeekHandler'
+import WeekInView from '@/logic/app/WeekInView'
 import accentColor from '@/logic/utils/accentColor'
 import Button from '@/components/primitives/Button'
 import Flex from '@/components/primitives/Flex'
@@ -9,7 +9,7 @@ import EyeHiddenIcon from '@/components/icons/EyeHiddenIcon'
 import EyeIcon from '@/components/icons/EyeIcon'
 
 const CondenseViewToggle = () => {
-  const { condenseView, setCondensedView, showCondenseViewToggle } = container.resolve(WeekHandler).weekInView
+  const { condenseView, setCondensedView, showCondenseViewToggle } = container.resolve(WeekInView)
 
   return (
     <Flex center sx={{ height: 'row' }}>

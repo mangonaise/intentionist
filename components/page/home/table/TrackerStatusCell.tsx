@@ -1,7 +1,8 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { FC, useEffect, useState } from 'react'
-import WeekHandler, { WeekdayId } from '@/logic/app/WeekHandler'
+import { WeekdayId } from '@/logic/app/WeekInView'
+import WeekInView from '@/logic/app/WeekInView'
 import TrackerStatusEditor from './TrackerStatusEditor'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Button from '@/components/primitives/Button'
@@ -16,7 +17,7 @@ interface TrackerStatusCellProps {
 }
 
 const TrackerStatusCell = ({ habitId, weekday, rowIndex, readonly }: TrackerStatusCellProps) => {
-  const { weekInView: { data: { statuses } }, isLoadingWeek } = container.resolve(WeekHandler)
+  const { weekData: { statuses }, isLoadingWeek, setTrackerStatus } = container.resolve(WeekInView)
   const status = statuses?.[habitId]?.[weekday] ?? []
   const [isEditing, setIsEditing] = useState(false)
   const [draft, setDraft] = useState(status)
@@ -34,7 +35,7 @@ const TrackerStatusCell = ({ habitId, weekday, rowIndex, readonly }: TrackerStat
   }
 
   function saveDraft() {
-    container.resolve(WeekHandler).weekInView.setTrackerStatus(habitId, weekday, draft)
+    setTrackerStatus(habitId, weekday, draft)
   }
 
   // Save status in an effect because the draft editor is closed by the focus trap, which doesn't have access to current state

@@ -3,7 +3,7 @@ import { makeAutoObservable, runInAction, when } from 'mobx'
 import { onSnapshot } from '@firebase/firestore'
 import { Unsubscribe } from '@firebase/util'
 import { Habit, HabitsDocumentData } from '@/logic/app/HabitsHandler'
-import WeekHandler, { WeekDocumentData } from '@/logic/app/WeekHandler'
+import WeekInView, { WeekDocumentData } from '@/logic/app/WeekInView'
 import DbHandler from '@/logic/app/DbHandler'
 
 type DocListenerBase = {
@@ -24,16 +24,14 @@ type HabitsDocListener = DocListenerBase & {
 export default class FriendActivityHandler {
   public habitsDocListeners: HabitsDocListener[] = []
   private weekDocListeners: WeekDocListener[] = []
-  private dbHandler
 
-  constructor(dbHandler: DbHandler) {
-    this.dbHandler = dbHandler
+  constructor(private dbHandler: DbHandler, private weekInView: WeekInView) {
     makeAutoObservable(this)
   }
 
-  public listenToFriendActivity = async (startDate: string, friendUid: string, weekHandler: WeekHandler) => {
-    //? existingWeekDocListener is currently always undefined because every time this function is called, it's a new week being listened to.
-    //? however, that won't be the case when shared habits are added, so i'll just leave this here for now
+  public listenToFriendActivity = async (startDate: string, friendUid: string) => {
+    // existingWeekDocListener is currently always undefined because every time this function is called, it's a new week being listened to.
+    // however, that won't be the case when shared habits are added, so i'll just leave this here for now
     const existingWeekDocListener = this.weekDocListeners
       .find((listener) => listener.friendUid === friendUid && listener.weekData.startDate === startDate)
 
@@ -44,13 +42,15 @@ export default class FriendActivityHandler {
       habitsDocListenerToKeep: existingHabitsDocListener
     })
 
-    return await Promise.all([
-      existingWeekDocListener?.weekData ?? this.addWeekDocListener(startDate, friendUid, weekHandler),
-      existingHabitsDocListener?.habits ?? this.addHabitsDocListener(friendUid, weekHandler)
+    const [weekData, habits] = await Promise.all([
+      existingWeekDocListener?.weekData ?? this.addWeekDocListener(startDate, friendUid),
+      existingHabitsDocListener?.habits ?? this.addHabitsDocListener(friendUid)
     ])
+
+    return { weekData, habits }
   }
 
-  private addWeekDocListener = async (startDate: string, friendUid: string, weekHandler: WeekHandler) => {
+  private addWeekDocListener = async (startDate: string, friendUid: string) => {
     this.weekDocListeners.push({ friendUid, weekData: { startDate }, isInitialLoadComplete: false })
     const newListener = this.weekDocListeners[this.weekDocListeners.length - 1]
 
@@ -60,9 +60,9 @@ export default class FriendActivityHandler {
         const data = snapshot.data() as WeekDocumentData | undefined
         if (data) {
           newListener.weekData = data
-          weekHandler.weekInView.refreshWeekData(data)
-          if (!weekHandler.isLoadingWeek) {
-            weekHandler.weekInView.refreshHabitsInView()
+          this.weekInView.refreshWeekData(data)
+          if (!this.weekInView.isLoadingWeek) {
+            this.weekInView.refreshHabitsInView()
           }
         }
         newListener.isInitialLoadComplete = true
@@ -73,7 +73,7 @@ export default class FriendActivityHandler {
     return newListener.weekData
   }
 
-  private addHabitsDocListener = async (friendUid: string, weekHandler: WeekHandler) => {
+  private addHabitsDocListener = async (friendUid: string) => {
     this.habitsDocListeners.push({ friendUid, habits: [], isInitialLoadComplete: false })
     const newListener = this.habitsDocListeners[this.habitsDocListeners.length - 1]
 
@@ -85,7 +85,7 @@ export default class FriendActivityHandler {
         newListener.habits = order
           .map((id) => ({ id, ...data.habits[id] }))
           .filter((item) => !!item.name) // data for private habits will be undefined, so filter out these
-        weekHandler.weekInView.refreshHabitsInView(newListener.habits.map((habit) => ({ ...habit, friendUid })))
+        this.weekInView.refreshHabitsInView(newListener.habits.map((habit) => ({ ...habit, friendUid })))
         newListener.isInitialLoadComplete = true
       })
     })

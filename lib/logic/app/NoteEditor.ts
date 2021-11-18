@@ -93,7 +93,7 @@ export default class NoteEditor {
     this.isNewNote = false
 
     // 💻
-    if (this.weekHandler.weekInView.data.startDate === this.note.weekStartDate) {
+    if (this.weekHandler.weekInView.weekData.startDate === this.note.weekStartDate) {
       this.weekHandler.weekInView.setNoteLocally(this.note.habitId, this.note.id, {
         icon: this.note.icon,
         title: this.note.title
@@ -134,7 +134,7 @@ export default class NoteEditor {
       icon: '📝',
       habitId: habitId,
       date: formatYYYYMMDD(new Date()),
-      weekStartDate: this.weekHandler.weekInView.data.startDate,
+      weekStartDate: this.weekHandler.weekInView.weekData.startDate,
       content: ''
     }
   }
