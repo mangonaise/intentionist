@@ -170,7 +170,7 @@ export const habitPresets: HabitPreset[] = [
   {
     name: 'Read',
     icon: '📚',
-    palette: ['⭐', '👍', '🤏'],
+    palette: ['🌟', '👍', '🤏'],
     timeable: true
   },
   {
@@ -182,25 +182,25 @@ export const habitPresets: HabitPreset[] = [
   {
     name: 'Exercise',
     icon: '🏃',
-    palette: ['⭐', '👍', '🤏'],
+    palette: ['🌟', '👍', '🤏'],
     timeable: true
   },
   {
     name: 'Stretch',
     icon: '🙆',
-    palette: ['⭐', '👍', '🤏'],
+    palette: ['🌟', '👍', '🤏'],
     timeable: true
   },
   {
     name: 'Yoga',
     icon: '🧘',
-    palette: ['⭐', '👍', '🤏'],
+    palette: ['🌟', '👍', '🤏'],
     timeable: true
   },
   {
     name: 'Meditate',
     icon: '🌸',
-    palette: ['⭐', '👍', '🤏'],
+    palette: ['🌟', '👍', '🤏'],
     timeable: true
   },
   {
@@ -218,19 +218,19 @@ export const habitPresets: HabitPreset[] = [
   {
     name: 'Tidy space',
     icon: '🧹',
-    palette: ['⭐', '👍', '🆗', '👎'],
+    palette: ['🌟', '👍', '🆗', '👎'],
     timeable: true
   },
   {
     name: 'Healthy eating',
     icon: '🍎',
-    palette: ['⭐', '👍', '🆗', '👎'],
+    palette: ['🌟', '👍', '🆗', '👎'],
     timeable: false
   },
   {
     name: 'Me time',
     icon: '💖',
-    palette: ['⭐', '👍', '🤏', '👎'],
+    palette: ['🌟', '👍', '🤏', '👎'],
     timeable: true
   },
   {
