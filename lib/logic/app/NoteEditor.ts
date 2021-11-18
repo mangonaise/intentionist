@@ -3,10 +3,11 @@ import { inject, injectable } from 'tsyringe'
 import { makeAutoObservable, runInAction, when } from 'mobx'
 import { FirebaseError } from '@firebase/util'
 import { formatYYYYMMDD } from '@/logic/utils/dateUtilities'
+import ProfileHandler, { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
 import HabitsHandler, { Habit, HabitsDocumentData } from '@/logic/app/HabitsHandler'
+import FriendsHandler, { Friend } from '@/logic/app/FriendsHandler'
 import WeekHandler from '@/logic/app/WeekHandler'
 import DbHandler from '@/logic/app/DbHandler'
-import FriendsHandler from '@/logic/app/FriendsHandler'
 import FriendActivityHandler from '@/logic/app/FriendActivityHandler'
 import generateNoteId from '@/logic/utils/generateNoteId'
 
@@ -29,7 +30,8 @@ export type NoteDocumentData = {
 @injectable()
 export default class NoteEditor {
   public note?: NoteDocumentData = undefined
-  public habit?: Habit
+  public habit?: Habit = undefined
+  public userInfo?: AvatarAndDisplayName = undefined
   public allowEditing = false
   public isEditing = false
   public isNewNote = false
@@ -40,6 +42,7 @@ export default class NoteEditor {
     private weekHandler: WeekHandler,
     private habitsHandler: HabitsHandler,
     private dbHandler: DbHandler,
+    private profileHandler: ProfileHandler,
     private friendsHandler: FriendsHandler,
     private friendActivityHandler: FriendActivityHandler,
     @inject('Router') private router: Router
@@ -115,6 +118,8 @@ export default class NoteEditor {
     }
     this.isNewNote = true
     this.allowEditing = true
+    this.habit = habit
+    this.userInfo = this.getAvatarAndDisplayName()
     this.note = {
       id: generateNoteId(),
       title: '',
@@ -132,18 +137,17 @@ export default class NoteEditor {
 
     //? attempting to access a private note will result in a Firebase permission denied error.
     try {
-      const friendUid =
-        friendUsername
-          ? this.getFriendUidByUsername(friendUsername)
-          : undefined
+      const friend = friendUsername ? this.getFriendByUsername(friendUsername) : null
 
-      const noteData = await this.dbHandler.getNoteDoc(noteId, friendUid)
+      const noteData = await this.dbHandler.getNoteDoc(noteId, friend?.uid)
       if (!noteData) throw new Error('Note data not found.')
 
       this.habit =
-        friendUid
-          ? await this.getHabitOfFriend(friendUid, noteData.habitId)
+        friend
+          ? await this.getHabitOfFriend(friend.uid, noteData.habitId)
           : this.habitsHandler.findHabitById(noteData.habitId)
+
+      this.userInfo = this.getAvatarAndDisplayName(friend)
 
       runInAction(() => {
         this.note = noteData
@@ -180,11 +184,18 @@ export default class NoteEditor {
     return { ...habitProperties, id: habitId }
   }
 
-  private getFriendUidByUsername = (username: string) => {
-    const uid = this.friendsHandler.friends.find((friend) => friend.username === username)?.uid
-    if (!uid) {
+  private getFriendByUsername = (username: string) => {
+    const friend = this.friendsHandler.friends.find((friend) => friend.username === username)
+    if (!friend) {
       throw new Error(`Friend with username ${username} not found.`)
     }
-    return uid
+    return friend
+  }
+
+  private getAvatarAndDisplayName = (friend?: Friend | null) => {
+    return friend ?? {
+      avatar: this.profileHandler.profileInfo?.avatar ?? '🙂',
+      displayName: 'You'
+    }
   }
 }

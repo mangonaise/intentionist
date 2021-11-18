@@ -18,6 +18,7 @@ import Flex from '@/components/primitives/Flex'
 import Spacer from '@/components/primitives/Spacer'
 import Text from '@/components/primitives/Text'
 import Head from 'next/head'
+import Box from '@/components/primitives/Box'
 
 export const NoteContext = createContext<{ editor: NoteEditor, noteData: NoteDocumentData }>(null!)
 
@@ -44,7 +45,7 @@ const NotePage = observer(() => {
       <FadeIn sx={{ maxWidth: '750px', margin: 'auto' }}>
         <NoteNavSection />
         <Spacer mb={4} />
-        <DateAndHabit />
+        <DetailsSection />
         <Spacer mb={[2, 3]} />
         {!!editor.isEditing ? <NoteMetadataEditor /> : <NoteMetadata />}
         <NoteViewer />
@@ -54,22 +55,30 @@ const NotePage = observer(() => {
   )
 })
 
-const DateAndHabit = () => {
-  const { noteData, editor: { habit } } = useContext(NoteContext)
-  if (!habit) return null
+const DetailsSection = () => {
+  const { noteData, editor: { habit, userInfo } } = useContext(NoteContext)
+  if (!habit || !userInfo) return null
 
   return (
-    <Flex align="center" flexWrap>
-      <Text type="span" sx={{ opacity: 0.5, mr: 2 }}>
-        {format(new Date(noteData.date), 'd MMM yyyy')} in
-      </Text>
-      <Flex center sx={{ maxWidth: '100%' }}>
-        <SmartEmoji nativeEmoji={habit.icon} rem={1.2} />
-        <Text type="span" sx={{ ml: 2, opacity: 0.5, maxWidth: '100%', overflowWrap: 'break-word' }}>
-          {habit.name}
+    <Box>
+      <Flex align="center" sx={{ mb: 2 }}>
+        <SmartEmoji nativeEmoji={userInfo.avatar} rem={1.2} />
+        <Text type="span" sx={{ opacity: 0.75, ml: 2 }}>
+          {userInfo.displayName}
         </Text>
       </Flex>
-    </Flex>
+      <Flex align="center" flexWrap>
+        <Text type="span" sx={{ opacity: 0.5, mr: 2 }}>
+          {format(new Date(noteData.date), 'd MMM yyyy')} in
+        </Text>
+        <Flex center sx={{ maxWidth: '100%' }}>
+          <SmartEmoji nativeEmoji={habit.icon} rem={1.2} />
+          <Text type="span" sx={{ ml: 2, opacity: 0.5, maxWidth: '100%', overflowWrap: 'break-word' }}>
+            {habit.name}
+          </Text>
+        </Flex>
+      </Flex>
+    </Box>
   )
 }
 
