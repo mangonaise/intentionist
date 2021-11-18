@@ -1,7 +1,7 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { createContext, useEffect, useState } from 'react'
-import WeekHandler from '@/logic/app/WeekHandler'
+import WeekInView from '@/logic/app/WeekInView'
 import FocusTimerHandler from '@/logic/app/FocusTimerHandler'
 import FocusTimer from '@/components/page/focus/FocusTimer'
 import withApp from '@/components/app/withApp'
@@ -15,7 +15,7 @@ import Head from 'next/head'
 export const FocusTimerContext = createContext<FocusTimerHandler>(null!)
 
 const FocusPage = observer(() => {
-  const { isLoadingWeek } = container.resolve(WeekHandler)
+  const { isLoadingWeek } = container.resolve(WeekInView)
   const [timerHandler, setTimerHandler] = useState<FocusTimerHandler | undefined>()
 
   // Using useEffect instead of immediately creating the timer instance solves a cryptic error.

@@ -20,7 +20,7 @@ const FriendsDropdown = observer(() => {
 
   function handleSelectUser(uid?: string) {
     viewWeek({
-      startDate: weekInView.data.startDate,
+      startDate: weekInView.weekData.startDate,
       friendUid: uid
     })
   }

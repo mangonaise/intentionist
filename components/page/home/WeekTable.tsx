@@ -3,7 +3,7 @@ import { makeAutoObservable } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { createContext, FC, Fragment, useEffect, useLayoutEffect, useRef } from 'react'
 import { Habit } from '@/logic/app/HabitsHandler'
-import WeekHandler, { WeekdayId, WeekViewMode } from '@/logic/app/WeekHandler'
+import WeekInView, { WeekViewMode, WeekdayId } from '@/logic/app/WeekInView'
 import useMediaQuery from '@/hooks/useMediaQuery'
 import Grid from '@/components/primitives/Grid'
 import CondensedViewAlert from './table/CondensedViewAlert'
@@ -28,7 +28,7 @@ class ColumnsDisplayHandler {
 export const ColumnsDisplayContext = createContext<ColumnsDisplayHandler>(null!)
 
 const WeekTable = () => {
-  const { viewMode, weekInView: { habitsInView } } = container.resolve(WeekHandler)
+  const { viewMode, habitsInView } = container.resolve(WeekInView)
   const columnsDisplayHandler = useRef(new ColumnsDisplayHandler())
   const showHabitNames = useMediaQuery('(max-width: 500px)', false, true)
 
@@ -71,7 +71,7 @@ function getRowContent(viewMode: WeekViewMode, habit: Habit, readonly: boolean, 
 }
 
 const Table: FC = observer(({ children }) => {
-  const { isLoadingWeek } = container.resolve(WeekHandler)
+  const { isLoadingWeek } = container.resolve(WeekInView)
 
   return (
     <Grid

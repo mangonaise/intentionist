@@ -4,7 +4,7 @@ import { useContext, useLayoutEffect, useRef } from 'react'
 import { isSameDay } from 'date-fns'
 import { ColumnsDisplayContext } from '../WeekTable'
 import { weekdayNames } from '@/logic/utils/_consts'
-import WeekHandler, { WeekdayId, WeekViewMode } from '@/logic/app/WeekHandler'
+import WeekInView, { WeekViewMode, WeekdayId } from '@/logic/app/WeekInView'
 import NewWeekPromptHandler from '@/logic/app/NewWeekPromptHandler'
 import useMediaQuery from '@/hooks/useMediaQuery'
 import useCurrentDay from '@/hooks/useCurrentDay'
@@ -17,7 +17,7 @@ const weekdaysShort = weekdayNames.map((day) => day.slice(0, 3))
 const weekdayInitials = weekdayNames.map((day) => day.slice(0, 1))
 
 const WeekTableColumnTitles = () => {
-  const { viewMode } = container.resolve(WeekHandler)
+  const { viewMode } = container.resolve(WeekInView)
 
   const map: { [viewMode in WeekViewMode]: JSX.Element } = {
     'tracker': <TrackerTitleRow />,
@@ -37,9 +37,9 @@ const TrackerTitleRow = () => {
 }
 
 const NotesTitleRow = observer(() => {
-  const { weekInView: { getNotesCount }, isLoadingWeek } = container.resolve(WeekHandler)
+  const { getNotesCount, isLoadingWeek } = container.resolve(WeekInView)
 
-  const notesCount = getNotesCount()
+  const notesCount = isLoadingWeek ? 0 : getNotesCount()
 
   return (
     <Flex center sx={{ height: 'row' }}>
@@ -49,7 +49,7 @@ const NotesTitleRow = observer(() => {
 })
 
 const FocusTitleRow = observer(() => {
-  const { weekInView: { friendUid }} = container.resolve(WeekHandler)
+  const { friendUid } = container.resolve(WeekInView)
   const { collapseColumns, setCollapseColumns } = useContext(ColumnsDisplayContext)
   const rowWrapperRef = useRef<HTMLDivElement>(null!)
   const width = useElementWidth(rowWrapperRef)
@@ -115,7 +115,7 @@ const FocusWeekdayDropdown = observer(() => {
 })
 
 const WeekdayLabels = observer(() => {
-  const { viewMode, isLoadingWeek, weekInView: { data: weekData } } = container.resolve(WeekHandler)
+  const { viewMode, weekData, isLoadingWeek } = container.resolve(WeekInView)
   const { thisWeekStartDate } = container.resolve(NewWeekPromptHandler)
   const { weekdayId } = useCurrentDay()
   const weekInViewStartDate = new Date(weekData.startDate)

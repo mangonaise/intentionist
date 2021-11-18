@@ -49,7 +49,7 @@ describe('initialization', () => {
     const weekHandler = container.resolve(WeekHandler)
     await weekHandler.viewWeek({ startDate: '2021-10-04' })
     timerHandler = container.resolve(FocusTimerHandler)
-    expect(weekHandler.weekInView.data.startDate).toEqual(formatFirstDayOfThisWeek())
+    expect(weekHandler.weekInView.weekData.startDate).toEqual(formatFirstDayOfThisWeek())
   })
 
   test('status is initially set to "not started"', () => {
@@ -170,18 +170,18 @@ describe('behavior', () => {
 
     beforeAll(async () => {
       weekHandler = container.resolve(WeekHandler)
-      weekHandler.weekInView.data.times = {}
+      weekHandler.weekInView.weekData.times = {}
       await deleteWeeks(adminDb)
     })
 
     beforeEach(() => {
       weekHandler = container.resolve(WeekHandler)
-      weekHandler.weekInView.data.times = {}
+      weekHandler.weekInView.weekData.times = {}
     })
 
     afterEach(async () => {
       jest.useRealTimers()
-      weekHandler.weekInView.data.times = {}
+      weekHandler.weekInView.weekData.times = {}
       await deleteWeeks(adminDb)
     })
 
@@ -192,7 +192,7 @@ describe('behavior', () => {
       jest.runAllTimers()
 
       jest.useRealTimers()
-      expect(weekHandler.weekInView.data.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(3000)
+      expect(weekHandler.weekInView.weekData.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(3000)
       const weekDoc = await container.resolve(DbHandler).getWeekDoc(formatFirstDayOfThisWeek())
       expect(weekDoc?.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(3000)
     })
@@ -205,7 +205,7 @@ describe('behavior', () => {
       timerHandler.stopTimer()
 
       jest.useRealTimers()
-      expect(weekHandler.weekInView.data.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(1000)
+      expect(weekHandler.weekInView.weekData.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(1000)
       const weekDoc = await container.resolve(DbHandler).getWeekDoc(formatFirstDayOfThisWeek())
       expect(weekDoc?.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(1000)
     })
@@ -219,13 +219,13 @@ describe('behavior', () => {
       timerHandler.setDuration(3000)
 
       // Week start date will automatically be switched
-      expect(weekHandler.weekInView.data.startDate).toEqual(lastWeekStartDate)
+      expect(weekHandler.weekInView.weekData.startDate).toEqual(lastWeekStartDate)
       timerHandler.startTimer()
-      expect(weekHandler.weekInView.data.startDate).toEqual(formatFirstDayOfThisWeek())
+      expect(weekHandler.weekInView.weekData.startDate).toEqual(formatFirstDayOfThisWeek())
 
       jest.runAllTimers()
       jest.useRealTimers()
-      expect(weekHandler.weekInView.data.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(3000)
+      expect(weekHandler.weekInView.weekData.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(3000)
       const weekDoc = await container.resolve(DbHandler).getWeekDoc(formatFirstDayOfThisWeek())
       expect(weekDoc?.times?.[dummyHabit.id]?.[getCurrentWeekdayId()]).toEqual(3000)
     })

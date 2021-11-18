@@ -50,13 +50,13 @@ async function deleteWeekIcons() {
 // 🧪
 
 test('the week icon is initially undefined', () => {
-  expect(weekHandler.weekInView.data.icon).toBeUndefined()
+  expect(weekHandler.weekInView.weekData.icon).toBeUndefined()
 })
 
 describe('updating week data', () => {
   test('setting week icon correctly updates the week in view locally', () => {
     weekIconsHandler.setIcon('🌱')
-    expect(weekHandler.weekInView.data.icon).toEqual('🌱')
+    expect(weekHandler.weekInView.weekData.icon).toEqual('🌱')
   })
 
   test('setting week icon correctly updates the corresponding week document in the database', async () => {
@@ -70,7 +70,7 @@ describe('updating week data', () => {
   test('removing week icon sets the value to null in the week in view locally', () => {
     weekIconsHandler.setIcon('🗑️')
     weekIconsHandler.removeIcon()
-    expect(weekHandler.weekInView.data.icon).toEqual(null)
+    expect(weekHandler.weekInView.weekData.icon).toEqual(null)
   })
 
   test('removing week icon deletes the icon field from the week document in the database', async () => {

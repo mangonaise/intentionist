@@ -1,4 +1,4 @@
-import { WeekdayId } from '@/logic/app/WeekHandler'
+import { WeekdayId } from '@/logic/app/WeekInView'
 import TrackerStatusCell from '@/components/page/home/table/TrackerStatusCell'
 import Flex from '@/components/primitives/Flex'
 

@@ -2,7 +2,7 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { createContext, useLayoutEffect } from 'react'
 import HabitsHandler from '@/logic/app/HabitsHandler'
-import WeekHandler from '@/logic/app/WeekHandler'
+import WeekInView from '@/logic/app/WeekInView'
 import useMediaQuery from '@/hooks/useMediaQuery'
 import withApp from '@/components/app/withApp'
 import NewWeekPrompt from '@/components/page/home/NewWeekPrompt'
@@ -22,7 +22,7 @@ export const HomePageContext = createContext({ narrow: false })
 
 const Home = observer(() => {
   const { habits } = container.resolve(HabitsHandler)
-  const { weekInView: { friendUid, refreshHabitsInView } } = container.resolve(WeekHandler)
+  const { friendUid, refreshHabitsInView } = container.resolve(WeekInView)
   const showTable = !!habits.length || !!friendUid
   const narrowLayout = useMediaQuery('(max-width: 700px)', true, false)
 

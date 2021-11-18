@@ -1,7 +1,8 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import { inject, injectable } from 'tsyringe'
+import { WeekdayId } from '@/logic/app/WeekInView'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
-import WeekHandler, { WeekdayId } from '@/logic/app/WeekHandler'
+import WeekHandler from '@/logic/app/WeekHandler'
 import { formatFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import getCurrentWeekdayId from '@/logic/utils/getCurrentWeekdayId'
 import Router from '@/types/router'
@@ -41,12 +42,12 @@ export default class FocusTimerHandler {
   }
 
   public getIsUntrackedWeek = () => {
-    return formatFirstDayOfThisWeek() !== this.weekHandler.weekInView.data.startDate
+    return formatFirstDayOfThisWeek() !== this.weekHandler.weekInView.weekData.startDate
   }
 
   public getTimeSpentThisWeek = (period: WeekdayId | 'all') => {
     if (!this.selectedHabit) return 0
-    if (this.weekHandler.weekInView.data.startDate === formatFirstDayOfThisWeek()) {
+    if (this.weekHandler.weekInView.weekData.startDate === formatFirstDayOfThisWeek()) {
       return this.weekHandler.weekInView.getFocusedTime(this.selectedHabit.id, period === 'all' ? 'week' : period)
     }
     return 0
@@ -131,7 +132,7 @@ export default class FocusTimerHandler {
   }
 
   private ensureViewingLatestWeek() {
-    if (this.weekHandler.weekInView.data.startDate !== this.weekHandler.latestWeekStartDate) {
+    if (this.weekHandler.weekInView.weekData.startDate !== this.weekHandler.latestWeekStartDate) {
       this.weekHandler.viewWeek({ startDate: this.weekHandler.latestWeekStartDate })
     }
   }

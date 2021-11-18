@@ -2,14 +2,14 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { HomePageContext } from 'pages/home'
-import WeekHandler from '@/logic/app/WeekHandler'
+import WeekInView from '@/logic/app/WeekInView'
 import Box from '@/components/primitives/Box'
 import IconButton from '@/components/primitives/IconButton'
 import ArrowRightIcon from '@/components/icons/ArrowRightIcon'
 import NextLink from 'next/link'
 
 const OpenFocusButton = () => {
-  const { viewMode } = container.resolve(WeekHandler)
+  const { viewMode } = container.resolve(WeekInView)
   const { narrow } = useContext(HomePageContext)
 
   if (viewMode !== 'focus') return null

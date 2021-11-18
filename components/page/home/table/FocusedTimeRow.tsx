@@ -2,15 +2,15 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { ColumnsDisplayContext } from '../WeekTable'
+import WeekInView, { WeekdayId } from '@/logic/app/WeekInView'
 import formatSeconds from '@/logic/utils/formatSeconds'
-import WeekHandler, { WeekdayId } from '@/logic/app/WeekHandler'
 import Flex from '@/components/primitives/Flex'
-import IconButton from '@/components/primitives/IconButton'
 import TimerIcon from '@/components/icons/TimerIcon'
 import NextLink from 'next/link'
+import IconButton from '@/components/primitives/IconButton'
 
 const FocusedTimeRow = observer(({ habitId, readonly }: { habitId: string, readonly: boolean }) => {
-  const { getFocusedTime, friendUid } = container.resolve(WeekHandler).weekInView
+  const { getFocusedTime, friendUid } = container.resolve(WeekInView)
   const { collapseColumns, weekdayId } = useContext(ColumnsDisplayContext)
 
   return (
@@ -65,9 +65,8 @@ const TimeCell = ({ time, isSum }: { time: number, isSum?: boolean }) => {
 
 const OpenTimerButton = ({ habitId, disabled }: { habitId: string, disabled: boolean }) => {
   return (
-    <NextLink href={`/focus?habitId=${habitId}`}>
-      <Flex>
-        <div sx={{ minHeight: '100%', width: '1px', backgroundColor: 'grid' }} />
+    <Flex sx={{ borderLeft: 'solid 1px', borderColor: 'grid' }}>
+      <NextLink href={`/focus?habitId=${habitId}`}>
         <IconButton
           icon={TimerIcon}
           disabled={disabled}
@@ -83,8 +82,8 @@ const OpenTimerButton = ({ habitId, disabled }: { habitId: string, disabled: boo
             filter: 'brightness(1.2)'
           }}
         />
-      </Flex>
-    </NextLink>
+      </NextLink>
+    </Flex>
   )
 }
 

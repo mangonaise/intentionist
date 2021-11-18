@@ -2,7 +2,8 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { Habit } from '@/logic/app/HabitsHandler'
-import WeekHandler, { NoteMetadata } from '@/logic/app/WeekHandler'
+import WeekInView, { NoteMetadata } from '@/logic/app/WeekInView'
+import WeekHandler from '@/logic/app/WeekHandler'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Button from '@/components/primitives/Button'
 import Flex from '@/components/primitives/Flex'
@@ -15,7 +16,7 @@ import NextLink from 'next/link'
 import FriendsHandler from '@/logic/app/FriendsHandler'
 
 const NotesRow = observer(({ habit, readonly }: { habit: Habit, readonly: boolean }) => {
-  const { weekInView: { getNoteDataForHabit, friendUid }, isLoadingWeek } = container.resolve(WeekHandler)
+  const { getNoteDataForHabit, friendUid, isLoadingWeek } = container.resolve(WeekInView)
   const cellNotesData = isLoadingWeek ? [] : getNoteDataForHabit(habit.id)
 
   return (
@@ -41,7 +42,7 @@ const NotesRow = observer(({ habit, readonly }: { habit: Habit, readonly: boolea
 })
 
 const NotePreview = ({ cellNotesData, friendUid }: { cellNotesData: Array<{ noteId: string, metadata: NoteMetadata }>, friendUid?: string }) => {
-  const { weekInView: { data: { startDate } }, latestWeekStartDate } = container.resolve(WeekHandler)
+  const { weekInView: { weekData: { startDate } }, latestWeekStartDate } = container.resolve(WeekHandler)
   const isViewingLatestWeek = startDate === latestWeekStartDate
   const [viewedNoteIndex, setViewedNoteIndex] = useState(isViewingLatestWeek ? cellNotesData.length - 1 : 0)
   const viewedNoteData = cellNotesData[viewedNoteIndex]
