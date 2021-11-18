@@ -25,7 +25,7 @@ function createHabitsMap(habits: Habit[]) {
 
 const FilteredHabitsList = () => {
   const { filteredHabits, refresh } = useContext(HabitFilterContext)
-  const { habits, reorderHabits } = container.resolve(HabitsHandler)
+  const { habits, reorderHabits, findHabitById } = container.resolve(HabitsHandler)
   const [draggedHabitId, setDraggedHabitId] = useState<string | null>(null)
 
   const [habitsMap, setHabitsMap] = useState(createHabitsMap(habits))
@@ -73,8 +73,8 @@ const FilteredHabitsList = () => {
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     if (over?.id && active.id !== over.id) {
-      const habitToMove = habits.find((habit) => habit.id === active.id)
-      const takesPlaceOf = habits.find((habit) => habit.id === over.id)
+      const habitToMove = findHabitById(active.id)
+      const takesPlaceOf = findHabitById(over.id)
       if (habitToMove && takesPlaceOf) {
         reorderHabits(habitToMove, takesPlaceOf)
         refresh()

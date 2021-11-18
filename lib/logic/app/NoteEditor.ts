@@ -3,12 +3,12 @@ import { inject, injectable } from 'tsyringe'
 import { makeAutoObservable, runInAction, when } from 'mobx'
 import { FirebaseError } from '@firebase/util'
 import { formatYYYYMMDD } from '@/logic/utils/dateUtilities'
-import generateNoteId from '@/logic/utils/generateNoteId'
 import HabitsHandler, { Habit, HabitsDocumentData } from '@/logic/app/HabitsHandler'
 import WeekHandler from '@/logic/app/WeekHandler'
 import DbHandler from '@/logic/app/DbHandler'
 import FriendsHandler from '@/logic/app/FriendsHandler'
 import FriendActivityHandler from '@/logic/app/FriendActivityHandler'
+import generateNoteId from '@/logic/utils/generateNoteId'
 
 export type NotePageQueryParams = {
   id: string,
@@ -35,28 +35,15 @@ export default class NoteEditor {
   public isNewNote = false
   public hasUnsavedChanges = false
   public isSaving = false
-  private router
-  private weekHandler
-  private habitsHandler
-  private dbHandler
-  private friendsHandler
-  private friendActivityHandler
 
   constructor(
-    weekHandler: WeekHandler,
-    habitsHandler: HabitsHandler,
-    dbHandler: DbHandler,
-    friendsHandler: FriendsHandler,
-    friendActivityHandler: FriendActivityHandler,
-    @inject('Router') router: Router
+    private weekHandler: WeekHandler,
+    private habitsHandler: HabitsHandler,
+    private dbHandler: DbHandler,
+    private friendsHandler: FriendsHandler,
+    private friendActivityHandler: FriendActivityHandler,
+    @inject('Router') private router: Router
   ) {
-    this.router = router
-    this.weekHandler = weekHandler
-    this.habitsHandler = habitsHandler
-    this.dbHandler = dbHandler
-    this.friendsHandler = friendsHandler
-    this.friendActivityHandler = friendActivityHandler
-
     const query = router.query as NotePageQueryParams
     if (query.id) {
       this.loadNote(query.id, query.user)
@@ -121,7 +108,7 @@ export default class NoteEditor {
   }
 
   private initializeNewNote = (habitId?: string) => {
-    const habit = this.habitsHandler.habits.find((habit) => habit.id === habitId)
+    const habit = habitId ? this.habitsHandler.findHabitById(habitId) : null
     if (!habit || !habitId) {
       this.router.push('/home')
       return
@@ -156,7 +143,7 @@ export default class NoteEditor {
       this.habit =
         friendUid
           ? await this.getHabitOfFriend(friendUid, noteData.habitId)
-          : this.habitsHandler.habits.find((habit) => habit.id === noteData.habitId)
+          : this.habitsHandler.findHabitById(noteData.habitId)
 
       runInAction(() => {
         this.note = noteData

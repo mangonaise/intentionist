@@ -29,7 +29,7 @@ export default class FocusTimerHandler {
 
     const query = router.query as QueryParams
     if (query.habitId) {
-      this.selectedHabit = habitsHandler.habits.find((habit) => habit.id === query.habitId)
+      this.selectedHabit = habitsHandler.findHabitById(query.habitId)
     }
 
     this.ensureViewingLatestWeek()
