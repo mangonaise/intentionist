@@ -122,13 +122,13 @@ describe('behavior', () => {
     expect(secondUpdate === firstUpdate).toBe(true)
   })
 
-  xtest('reordering habits updates the local cache and database correctly', async () => {
-    // const a = await habitsHandler.setHabit(dummyHabitA)
-    // const b = await habitsHandler.setHabit(dummyHabitB)
-    // const c = await habitsHandler.setHabit(dummyHabitC)
-    // await habitsHandler.reorderHabits(a, c)
-    // expect(habitsHandler.activeHabits).toEqual([b, c, a])
-    // expect((await getActiveHabitsDocs())?.order).toEqual([b.id, c.id, a.id])
+  test('reordering habits updates the local cache and database correctly', async () => {
+    const a = await habitsHandler.setHabit(dummyHabitA)
+    const b = await habitsHandler.setHabit(dummyHabitB)
+    const c = await habitsHandler.setHabit(dummyHabitC)
+    await habitsHandler.reorderHabits(a, c)
+    expect(habitsHandler.activeHabits).toEqual([b, c, a])
+    expect((await dbHandler.getHabitDetailsDoc())?.order).toEqual([b.id, c.id, a.id])
   })
 
   test('deleting a habit removes it from local cache and database', async () => {

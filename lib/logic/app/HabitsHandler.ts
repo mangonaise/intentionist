@@ -4,6 +4,7 @@ import { Fetched, InitialState } from '@/logic/app/InitialFetchHandler'
 import DbHandler from '@/logic/app/DbHandler'
 import generateHabitId from '@/logic/utils/generateHabitId'
 import getUtcSeconds from '@/logic/utils/getUtcSeconds'
+import arrayMove from '@/logic/utils/arrayMove'
 import isEqual from 'lodash/isEqual'
 
 export type Habit = {
@@ -74,7 +75,17 @@ export default class HabitsHandler {
   }
 
   public reorderHabits = async (habitToMove: Habit, habitToTakePositionOf: Habit) => {
-    console.error('reorderHabits not implemented')
+    const oldIndex = this.activeHabits.indexOf(habitToMove)
+    const newIndex = this.activeHabits.indexOf(habitToTakePositionOf)
+    if (oldIndex < 0 || newIndex < 0 || oldIndex === newIndex) return
+
+    // 💻
+    this.activeHabits = arrayMove(this.activeHabits, oldIndex, newIndex)
+
+    // ☁️
+    await this.dbHandler.update(this.dbHandler.habitDetailsDocRef(), {
+      order: this.getOrderedIds()
+    })
   }
 
   private addNewHabit = async (newHabit: Habit) => {
