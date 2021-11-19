@@ -200,25 +200,25 @@ export const habitPresets: HabitPreset[] = [
   {
     name: 'No phone in bed',
     icon: '📴',
-    palette: ['👍', '👎'],
+    palette: ['👍'],
     timeable: false
   },
   {
     name: 'Tidy space',
     icon: '🧹',
-    palette: ['🌟', '👍', '🆗', '👎'],
+    palette: ['🌟', '👍'],
     timeable: true
   },
   {
     name: 'Healthy eating',
     icon: '🍎',
-    palette: ['🌟', '👍', '🆗', '👎'],
+    palette: ['🌟', '👍'],
     timeable: false
   },
   {
     name: 'Me time',
     icon: '💖',
-    palette: ['🌟', '👍', '🤏', '👎'],
+    palette: ['🌟', '👍', '🤏'],
     timeable: true
   },
   {
