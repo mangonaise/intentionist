@@ -71,7 +71,7 @@ export default class HabitEditor {
       palette: ['🌟', '👍', '🤏'],
       timeable: true,
       archived: false,
-      public: true,
+      visibility: 'private',
       creationTime: getUtcSeconds()
     }
   }

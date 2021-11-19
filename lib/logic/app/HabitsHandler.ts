@@ -14,10 +14,12 @@ export type Habit = {
   palette: string[]
   timeable: boolean
   archived: boolean,
-  public?: boolean,
+  visibility: HabitVisibility,
   statuses?: { [year: number]: { [day: number]: string } }
   creationTime: number
 }
+
+export type HabitVisibility = 'public' | 'private'
 
 export type HabitDetailsDocumentData = {
   order: string[],
@@ -58,6 +60,7 @@ export default class HabitsHandler {
       icon: preset.icon,
       palette: preset.palette,
       timeable: preset.timeable,
+      visibility: 'private',
       archived: false,
       creationTime: getUtcSeconds()
     })

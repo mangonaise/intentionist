@@ -30,7 +30,7 @@ let noteEditor: NoteEditor, dbHandler: DbHandler
 let authUserUid: string
 let router: MockRouter
 
-const dummyHabit: Habit = { id: generateHabitId(), name: 'Note editor test habit A', icon: '✏️', creationTime: 123, palette: [], timeable: true, archived: false }
+const dummyHabit: Habit = { id: generateHabitId(), name: 'Note editor test habit A', icon: '✏️', creationTime: 123, palette: [], timeable: true, archived: false, visibility: 'public' }
 const dummyNoteA: NoteDocumentData = {
   id: generateNoteId(),
   title: 'Dummy note',
@@ -119,7 +119,7 @@ describe('initialization', () => {
     const friendUid = 'note-editor-test-friend-uid'
     const friendUsername = 'note_editor_test_friend_username'
     await friendsDoc(friendUid).set({ friends: { [authUserUid]: { time: 123 } } })
-    await userDataCollection(friendUid).doc('habits').set({ habits: { [dummyHabit.id]: { ...exclude(dummyHabit, 'id') } }})
+    await userDataCollection(friendUid).doc('habits').set({ habits: { [dummyHabit.id]: { ...exclude(dummyHabit, 'id') } } })
     await friendsDoc(authUserUid).set({ friends: { [friendUid]: { time: 123, username: friendUsername } } })
 
     const noteDocRef = userDoc(friendUid).collection('notes').doc(dummyNoteB.id)

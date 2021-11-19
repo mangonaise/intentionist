@@ -19,7 +19,7 @@ let habitEditor: HabitEditor
 const router = container.resolve(MockRouter)
 container.register('Router', { useValue: router })
 
-const dummyHabit: Habit = { id: 'abcdefgh', name: 'Test habit editor', icon: '📝', timeable: true, palette: [], creationTime: 123, archived: false }
+const dummyHabit: Habit = { id: 'abcdefgh', name: 'Test habit editor', icon: '📝', timeable: true, palette: [], creationTime: 123, archived: false, visibility: 'public' }
 
 function startHabitEditor() {
   habitEditor = container.resolve(HabitEditor)

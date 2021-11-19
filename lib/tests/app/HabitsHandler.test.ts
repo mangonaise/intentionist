@@ -17,9 +17,11 @@ const firebase = initializeFirebase(projectId)
 const { db: adminDb } = getFirebaseAdmin(projectId)
 
 let dbHandler: DbHandler, habitsHandler: HabitsHandler
-const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '🧪', archived: false, creationTime: 123, timeable: true, palette: [] }
-const dummyHabitB: Habit = { id: generateHabitId(), name: 'Build app', icon: '👨‍💻', archived: false, creationTime: 123, timeable: true, palette: [] }
-const dummyHabitC: Habit = { id: generateHabitId(), name: 'Fix bugs', icon: '🐛', archived: false, creationTime: 123, timeable: true, palette: [] }
+
+const commonHabitData = { archived: false, creationTime: 123, timeable: true, palette: [] as string[], visibility: 'public' } as const
+const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '🧪', ...commonHabitData }
+const dummyHabitB: Habit = { id: generateHabitId(), name: 'Build app', icon: '👨‍💻', ...commonHabitData }
+const dummyHabitC: Habit = { id: generateHabitId(), name: 'Fix bugs', icon: '🐛', ...commonHabitData }
 
 const sortByHabitId = (habits: Habit[]) => habits.sort((a: Habit, b: Habit) => a.id < b.id ? 1 : -1)
 
