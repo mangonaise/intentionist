@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { container } from 'tsyringe'
 import { useRouter } from 'next/dist/client/router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import InitialFetchHandler from '@/logic/app/InitialFetchHandler'
 import DbHandler from '@/logic/app/DbHandler'
 import ProfileHandler from '@/logic/app/ProfileHandler'
@@ -15,12 +15,15 @@ import Navbar from './Navbar'
 import GradientBackground from './GradientBackground'
 import theme from 'styles/theme'
 
+const getProfileHandler = () => container.resolve(ProfileHandler)
+let disableFading = false
+
 const withApp = (WrappedComponent: () => JSX.Element) => withAuthUser(observer(() => {
   const router = useRouter()
   const { isWriteComplete } = container.resolve(DbHandler)
   const { hasCompletedInitialFetches } = container.resolve(InitialFetchHandler)
-  const [profileExists, setProfileExists] = useState(hasCompletedInitialFetches && !!container.resolve(ProfileHandler).profileInfo)
-  const [fade] = useState(!hasCompletedInitialFetches)
+  const [profileExists, setProfileExists] = useState(hasCompletedInitialFetches && !!getProfileHandler().profileInfo)
+  const [fade] = useState(!disableFading)
 
   useWarnUnsavedChanges({
     unload: !isWriteComplete,
@@ -29,9 +32,10 @@ const withApp = (WrappedComponent: () => JSX.Element) => withAuthUser(observer((
 
   useAutorun(() => {
     if (hasCompletedInitialFetches) {
-      if (container.resolve(ProfileHandler).profileInfo === null) {
+      if (getProfileHandler().profileInfo === null) {
         router.push('/welcome')
       } else {
+        disableFading = true
         setProfileExists(true)
       }
     }
