@@ -30,7 +30,7 @@ let noteEditor: NoteEditor, dbHandler: DbHandler
 let authUserUid: string
 let router: MockRouter
 
-const dummyHabit: Habit = { id: generateHabitId(), name: 'Note editor test habit A', icon: '✏️', creationTime: 123, palette: [], timeable: true }
+const dummyHabit: Habit = { id: generateHabitId(), name: 'Note editor test habit A', icon: '✏️', creationTime: 123, palette: [], timeable: true, archived: false }
 const dummyNoteA: NoteDocumentData = {
   id: generateNoteId(),
   title: 'Dummy note',

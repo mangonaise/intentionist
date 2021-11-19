@@ -33,7 +33,6 @@ const HabitEditorPage = () => {
         </Flex>
         <Spacer mb={2} />
         {editor.isNewHabit && <HabitEditorPresetsSection />}
-        <Spacer mb={3} />
         <InitiallyHiddenOptions />
       </Box>
     </HabitEditorContext.Provider>
@@ -54,8 +53,7 @@ const InitiallyHiddenOptions = observer(() => {
 
   return (
     <FadeIn time={fadeIn ? 350 : 0} delay={400}>
-      <HabitTimeableCheckbox />
-      <Spacer mb={[3, 8]} />
+      <Spacer mb={[2, 4]} />
       <EmojiPaletteEditor />
     </FadeIn>
   )

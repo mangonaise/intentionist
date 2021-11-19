@@ -1,4 +1,4 @@
-import type { Habit } from '@/logic/app/HabitsHandler'
+import type { Habit, HabitDetailsDocumentData } from '@/logic/app/HabitsHandler'
 import type { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import { makeAutoObservable, runInAction } from 'mobx'
 import { singleton } from 'tsyringe'
@@ -9,7 +9,8 @@ export type Fetched<T> = T | null
 
 type InitialFetches = {
   userProfile: Fetched<UserProfileInfo>
-  habitsDocs: Habit[]
+  activeHabitsDocs: Habit[],
+  habitDetailsDoc: Fetched<HabitDetailsDocumentData>
 }
 
 @singleton()
@@ -28,12 +29,14 @@ export default class InitialFetchHandler {
   private makeInitialFetches = async () => {
     const results = await Promise.all([
       this.fetchUserProfile(),
-      this.fetchHabitsDocs(),
+      this.fetchActiveHabitsDocs(),
+      this.fetchHabitDetailsDoc()
     ])
     runInAction(() => {
       this.initialFetches = {
         userProfile: results[0],
-        habitsDocs: results[1],
+        activeHabitsDocs: results[1],
+        habitDetailsDoc: results[2]
       }
       this.hasCompletedInitialFetches = true
     })
@@ -44,9 +47,14 @@ export default class InitialFetchHandler {
     return userDoc ? userDoc as UserProfileInfo : null
   }
 
-  private fetchHabitsDocs = async () => {
-    console.warn('fetchHabitsDocs not implemented')
-    return []
+  private fetchActiveHabitsDocs = async () => {
+    const activeHabitsDocs = await this.dbHandler.getActiveHabitsDocs()
+    return activeHabitsDocs
+  }
+
+  private fetchHabitDetailsDoc = async () => {
+    const habitDetailsDoc = await this.dbHandler.getHabitDetailsDoc()
+    return habitDetailsDoc ? habitDetailsDoc as HabitDetailsDocumentData : null
   }
 }
 

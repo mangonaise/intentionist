@@ -77,7 +77,7 @@ export default class NoteEditor {
 
     this.isNewNote = false
 
-    console.warn('Saving note changes not fully implemented')
+    console.error('saveChanges changes not fully implemented')
 
     // ☁️️
     await this.dbHandler.updateNote(this.note)
@@ -151,7 +151,7 @@ export default class NoteEditor {
   }
 
   private getHabitOfFriend = async (friendUid: string, habitId: string) => {
-    console.warn('getHabitOfFriend not implemented')
+    console.error('getHabitOfFriend not implemented')
     return undefined
   }
 

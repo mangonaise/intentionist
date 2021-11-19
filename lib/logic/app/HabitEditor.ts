@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { inject, injectable } from 'tsyringe'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import generateHabitId from '@/logic/utils/generateHabitId'
+import getUtcSeconds from '@/logic/utils/getUtcSeconds'
 import Router from '@/types/router'
 
 type QueryParams = {
@@ -62,7 +63,16 @@ export default class HabitEditor {
     this.router.push(this.returnHomeOnExit ? '/home' : '/habits')
   }
 
-  private generateEmptyHabit = () => {
-    console.warn('generateEmptyHabit not implemented')
+  private generateEmptyHabit = (): Habit => {
+    return {
+      id: generateHabitId(),
+      name: '',
+      icon: '🙂',
+      palette: ['🌟', '👍', '🤏'],
+      timeable: true,
+      archived: false,
+      public: true,
+      creationTime: getUtcSeconds()
+    }
   }
 }

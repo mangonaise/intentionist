@@ -1,6 +1,5 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { useContext } from 'react'
 import HabitsHandler, { HabitPreset } from '@/logic/app/HabitsHandler'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import HabitPresetsList from '@/components/app/HabitPresetsList'
@@ -19,9 +18,9 @@ const EmptyHabitsPageGuide = () => {
 }
 
 const SetHabitsPrompt = observer(() => {
-  const { habits } = container.resolve(HabitsHandler)
+  const { activeHabits } = container.resolve(HabitsHandler)
 
-  if (habits.length) return null
+  if (activeHabits.length) return null
 
   return (
     <Flex column align="center" sx={{ pt: [2, 4], pb: [4, 6], textAlign: 'center' }}>
@@ -36,7 +35,7 @@ const SetHabitsPrompt = observer(() => {
           Add custom habits with the "<b>Add habit</b>" button, or get started quickly by choosing some presets below.
         </Text>
         <Text>
-          If you stop focusing on a habit at any time in the future, you can easily suspend or archive it.
+          If you stop focusing on a habit at any time in the future, you can easily archive it.
         </Text>
       </Box>
     </Flex>

@@ -4,7 +4,8 @@ import type { NoteDocumentData } from '@/logic/app/NoteEditor'
 import type { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
 import { inject, singleton } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
-import { collection, doc, getDoc, getDocs, query, setDoc, limit, orderBy, writeBatch, arrayUnion, arrayRemove, deleteField, where, deleteDoc } from '@firebase/firestore'
+import { collection, doc, getDoc, getDocs, query, setDoc, writeBatch, where, deleteDoc } from '@firebase/firestore'
+import { Habit } from '@/logic/app/HabitsHandler'
 import AuthUser from '@/logic/app/AuthUser'
 
 const USERS = 'users'
@@ -43,6 +44,47 @@ export default class DbHandler {
     return data as AvatarAndDisplayName
   }
 
+  public getActiveHabitsDocs = async (friendUid?: string) => {
+    const docs = await getDocs(query(this.habitsCollectionRef(friendUid), where('archived', '==', false)))
+    let habits = [] as Habit[]
+    docs.forEach((doc) => {
+      habits.push(doc.data() as Habit)
+    })
+    return habits
+  }
+
+  public getHabitDetailsDoc = async (friendUid?: string) => {
+    return await this.getDocData(this.habitDetailsDocRef(friendUid))
+  }
+
+  public updateHabit = async (habit: Habit, order: string[]) => {
+    this.isWriteComplete = false
+    const batch = writeBatch(this.db)
+
+    batch.set(this.habitDocRef(habit.id), habit, { merge: true })
+    batch.set(this.habitDetailsDocRef(), {
+      order,
+      activeIds: {
+        [habit.id]: true
+      }
+    }, { merge: true })
+
+    await batch.commit()
+    this.completeWrite()
+  }
+
+  public deleteHabit = async (habitId: string) => {
+    this.isWriteComplete = false
+    const deleteHabitPromise = () => deleteDoc(this.habitDocRef(habitId))
+    console.error('updating habit details not implemented')
+    const deleteNotesPromise = () => this.deleteNotesWithHabitId(habitId)
+    await Promise.all([
+      deleteHabitPromise(),
+      deleteNotesPromise()
+    ])
+    this.completeWrite()
+  }
+
   public getNoteDoc = async (noteId: string, friendUid?: string) => {
     const noteDoc = await this.getDocData(this.noteDocRef(noteId, friendUid)) ?? null
     return noteDoc as Fetched<NoteDocumentData>
@@ -60,20 +102,8 @@ export default class DbHandler {
     this.completeWrite()
   }
 
-  public deleteHabit = async (habitId: string) => {
-    this.isWriteComplete = false
-    const deleteHabitPromise = () => deleteDoc(this.habitDocRef(habitId))
-    console.warn('Updating habit details not implemented')
-    const deleteNotesPromise = () => this.deleteNotesWithHabitId(habitId)
-    await Promise.all([
-      deleteHabitPromise(),
-      deleteNotesPromise()
-    ])
-    this.completeWrite()
-  }
-
-  public userDocRef = (path?: string, friendUid?: string) => {
-    return doc(this.db, USERS, friendUid ?? this.uid, path ?? '')
+  public userDocRef = (path?: string, options?: { friendUid?: string }) => {
+    return doc(this.db, USERS, options?.friendUid ?? this.uid, path ?? '')
   }
 
   public get friendRequestsDocRef() {
@@ -84,12 +114,20 @@ export default class DbHandler {
     return this.userDocRef(FRIENDS)
   }
 
+  public habitDetailsDocRef(friendUid?: string) {
+    return this.userDocRef(HABIT_DETAILS, { friendUid })
+  }
+
+  public habitsCollectionRef(friendUid?: string) {
+    return collection(this.db, USERS, friendUid ?? this.uid, HABITS)
+  }
+
   public habitDocRef(habitId: string) {
-    return this.userDocRef(HABITS, habitId)
+    return this.userDocRef(HABITS + '/' + habitId)
   }
 
   public noteDocRef = (noteId: string, friendUid?: string) => {
-    return this.userDocRef(NOTES + '/' + noteId, friendUid)
+    return this.userDocRef(NOTES + '/' + noteId, { friendUid })
   }
 
   public get notesCollectionRef() {

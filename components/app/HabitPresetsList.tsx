@@ -16,10 +16,10 @@ interface Props {
 }
 
 const HabitPresetsList = observer(({ onSelectPreset }: Props) => {
-  const { habits } = container.resolve(HabitsHandler)
+  const { activeHabits } = container.resolve(HabitsHandler)
 
   const presetsToDisplay = habitPresets.filter((preset) => {
-    for (const habit of habits) {
+    for (const habit of activeHabits) {
       if (habit.name.toLowerCase().includes(preset.uniqueText?.toLowerCase() ?? preset.name.toLowerCase())) {
         return false
       }

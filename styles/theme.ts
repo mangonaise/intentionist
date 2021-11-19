@@ -6,6 +6,8 @@ const theme = {
     divider: 'var(--divider-color)',
     grid: 'var(--grid-color)',
     button: 'var(--button-color)',
+    buttonAccent: 'var(--button-accent-color)',
+    buttonWarning: 'var(--button-warning-color)',
     buttonHighlight: 'var(--button-highlight-color)',
     warning: 'var(--warning-color)',
     accent: 'var(--accent-color)',

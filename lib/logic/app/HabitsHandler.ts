@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { singleton } from 'tsyringe'
-import { InitialState } from '@/logic/app/InitialFetchHandler'
+import { Fetched, InitialState } from '@/logic/app/InitialFetchHandler'
 import DbHandler from '@/logic/app/DbHandler'
 import isEqual from 'lodash/isEqual'
 
@@ -10,17 +10,24 @@ export type Habit = {
   icon: string
   palette: string[]
   timeable: boolean
-  archived?: boolean
+  archived: boolean,
+  public?: boolean,
   statuses?: { [year: number]: { [day: number]: string } }
   creationTime: number
 }
 
+export type HabitDetailsDocumentData = {
+  order: string[],
+  activeIds: { [habitId: string]: true }
+}
+
 @singleton()
 export default class HabitsHandler {
-  public habits: Habit[]
+  public activeHabits: Habit[]
 
   constructor(initialState: InitialState, private dbHandler: DbHandler) {
-    this.habits = this.processFetchedHabits(initialState.data.habitsDocs)
+    const { activeHabitsDocs, habitDetailsDoc } = initialState.data
+    this.activeHabits = this.processFetchedHabitData(activeHabitsDocs, habitDetailsDoc)
     makeAutoObservable(this)
   }
 
@@ -31,38 +38,61 @@ export default class HabitsHandler {
     }
     if (isEqual(existingHabit, habitToSet)) return existingHabit
 
-    console.warn('setHabit not implemented')
+    console.error('setHabit not implemented')
 
     // 💻
     // ☁️
   }
 
   public addHabitFromPreset = async (preset: HabitPreset) => {
-    console.warn('addHabitFromPreset not implemented')
+    console.error('addHabitFromPreset not implemented')
   }
 
   public deleteHabitById = async (id: string) => {
     const habitToDelete = this.findHabitById(id)
     if (!habitToDelete) throw new Error('Cannot delete a habit that does not exist')
 
-    console.warn('deleteHabitById not implemented')
+    console.error('deleteHabitById not implemented')
   }
 
   public reorderHabits = async (habitToMove: Habit, habitToTakePositionOf: Habit) => {
-    console.warn('reorderHabits not implemented')
+    console.error('reorderHabits not implemented')
   }
 
   private addNewHabit = async (newHabit: Habit) => {
-    console.warn('addNewHabit not implemented')
+    // 💻
+    this.activeHabits.push(newHabit)
+
+    // ☁️
+    await this.dbHandler.updateHabit(newHabit, this.getOrderedIds())
+
+    return this.activeHabits[this.activeHabits.length - 1]
   }
 
   public findHabitById = (id: string) => {
-    return this.habits.find((habit) => habit.id === id)
+    return this.activeHabits.find((habit) => habit.id === id)
   }
 
-  private processFetchedHabits = (habitsDocs: Habit[]) => {
-    console.warn('processFetchedHabits not implemented')
-    return [] as Habit[]
+  private getOrderedIds = () => {
+    return this.activeHabits.map((habit) => habit.id)
+  }
+
+  private processFetchedHabitData = (habitsDocs: Habit[], habitDetails: Fetched<HabitDetailsDocumentData>) => {
+    const order = habitDetails?.order ?? []
+    const activeIds = Object.keys(habitDetails?.activeIds ?? {})
+    for (const habitId of activeIds) {
+      if (!order.includes(habitId)) {
+        order.push(habitId)
+      }
+    }
+
+    let orderedHabits = [] as Habit[]
+    for (const orderedId of order) {
+      const habit = habitsDocs.find((habit) => habit.id === orderedId)
+      if (habit) orderedHabits.push(habit)
+    }
+
+    return orderedHabits
   }
 }
 

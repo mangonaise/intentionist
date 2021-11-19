@@ -14,7 +14,7 @@ const FriendsDropdown = observer(() => {
   const { friends } = container.resolve(FriendsHandler)
 
   function handleSelectUser(friendUid?: string) {
-    console.warn('Not implemented')
+    console.error('handleSelectUser not implemented')
   }
 
   return (
