@@ -11,7 +11,7 @@ const GradientBackground = () => {
         left: 0,
         height: '130px',
         width: '100%',
-        opacity: 0.45,
+        opacity: 0.3,
         transition: 'opacity 500ms'
       }}
     >
