@@ -20,7 +20,7 @@ const HabitTitleSection = () => {
         <Text
           type="span"
           sx={{
-            ml: [2, 3], maxWidth: 'calc(100vw - 2.5rem)',
+            ml: [2, 3], maxWidth: 'min(700px, calc(100vw - 2.5rem))',
             overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'
           }}
         >

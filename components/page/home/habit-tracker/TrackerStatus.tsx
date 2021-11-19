@@ -10,7 +10,7 @@ const TrackerStatus = ({ weekdayIndex }: { weekdayIndex: number }) => {
       <Button
         sx={{
           px: 0, minHeight: '2.5rem', minWidth: '2.5rem',
-          border: 'solid 2px', borderColor: 'buttonAccent', borderRadius: '0.7rem',
+          border: 'solid 2px', borderColor: 'buttonAccent', borderRadius: '0.75rem',
           bg: 'whiteAlpha.3'
         }}
       >

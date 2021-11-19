@@ -20,14 +20,16 @@ const HabitWrapper = ({ habit, isLargeScreen, isSmallScreen }: HabitProps) => {
   return (
     <HabitContext.Provider value={{ habit, isLargeScreen, isSmallScreen }}>
       <Box sx={{ mb: [4, 7] }}>
-        <HabitTitleSection />
-        <Spacer mb={2} />
-        <Flex align="center">
-          <HabitVisibilityDropdown />
-          <Spacer mr={2} />
-          <HabitStreak />
+        <Flex sx={{ flexDirection: isLargeScreen ? 'row' : 'column' }}>
+          <HabitTitleSection />
+          <Spacer mb={2} mr={isLargeScreen ? 'auto' : 0} />
+          <Flex align="center" sx={{ flexDirection: isLargeScreen ? 'row-reverse' : 'row' }}>
+            <HabitVisibilityDropdown />
+            <Spacer mr={2} />
+            <HabitStreak />
+          </Flex>
         </Flex>
-        <Spacer mb={4} />
+        <Spacer mb={isLargeScreen ? 6 : 4} />
         <TrackerStatusRow />
       </Box>
     </HabitContext.Provider>

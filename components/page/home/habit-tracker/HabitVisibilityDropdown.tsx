@@ -21,9 +21,10 @@ const HabitVisibilityDropdown = () => {
     <Dropdown
       title={isPrivate ? 'Private' : 'Public'}
       noArrow
+      anchorRight={[false, false, true]}
       sx={{
         '& > button': {
-          minHeight: ['1.55rem', '1.75rem'],
+          minHeight: ['1.6rem', '1.6rem', '1.75rem'],
           paddingX: 3,
           backgroundColor: isPrivate ? 'whiteAlpha.5' : 'buttonAccent',
           borderRadius: '99px',

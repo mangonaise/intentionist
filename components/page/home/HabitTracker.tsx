@@ -36,7 +36,7 @@ const HabitTracker = observer(() => {
     <HabitTrackerContext.Provider value={{ weekStartDate, incrementWeek, decrementWeek }}>
       <Box sx={{ maxWidth: '850px', mt: '4rem', marginX: 'auto' }}>
         <WeekdayRow expand={isLargeScreen} />
-        <Spacer mb={[4, 6]} />
+        <Spacer mb={[4, 6, 8]} />
         {activeHabits.map((habit) => (
           <HabitWrapper habit={habit} isLargeScreen={isLargeScreen} isSmallScreen={isSmallScreen} key={habit.id} />
         ))}
