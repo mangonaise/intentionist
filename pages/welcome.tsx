@@ -8,6 +8,7 @@ import AuthHandler from '@/logic/app/AuthHandler'
 import InitialFetchHandler from '@/logic/app/InitialFetchHandler'
 import useAutorun from '@/hooks/useAutorun'
 import withAuthUser from '@/components/app/withAuthUser'
+import SmartEmoji from '@/components/app/SmartEmoji'
 import UserProfileEditor from '@/components/app/UserProfileEditor'
 import LoadingScreen from '@/components/app/LoadingScreen'
 import FadeIn from '@/components/primitives/FadeIn'
@@ -41,7 +42,11 @@ const NewUserPage = withAuthUser(observer(() => {
       <Head><title>Welcome</title></Head>
       <IconButton icon={BackIcon} onClick={handleSignOut} sx={{ bg: 'transparent' }} />
       <Flex justify="center" column sx={{ width: ['100%', '25rem'], minHeight: ['80vh', '70vh'], margin: 'auto', textAlign: 'center' }}>
-        <Heading level={1} sx={{ mb: 3 }}>Hello! 👋</Heading>
+        <Heading level={1} sx={{ mb: 3, display: 'flex', alignItems: 'center', alignSelf: 'center' }}>
+          Hello!
+          <Text type="span" sx={{ mr: 3 }} />
+          <SmartEmoji nativeEmoji="👋" rem={1.5} />
+        </Heading>
         <Text sx={{ mb: 8 }}>Welcome to intentionist.</Text>
         <UserProfileEditor
           isNewUser={true}
