@@ -1,3 +1,5 @@
+@use "sass:color";
+
 @font-face {
   font-family: 'Inter';
   src: url('/fonts/Inter-var.woff2') format('woff2');
@@ -6,19 +8,23 @@
   font-display: swap;
 }
 
+$accent-color: #608faf;
+$warning-color: #e07785;
+
 :root {
   font-size: 14px;
+  --accent-color: #{$accent-color};
+  --warning-color: #{$warning-color};
   --background-color: #181818;
   --text-color: white;
+  --text-accent-color: #{color.scale($accent-color, $lightness: 25%, $saturation: 20%)};
   --divider-color: rgba(255, 255, 255, 0.1);
   --grid-color: rgba(255, 255, 255, 0.1);
+  --focus-color: rgba(255, 255, 255, 0.75);
   --button-color: rgba(255, 255, 255, 0.06);
   --button-highlight-color: rgba(255, 255, 255, 0.1);
-  --warning-color: #E07785;
-  --focus-color: rgba(255, 255, 255, 0.75);
-  --accent-color: #608FAF;
-  --button-accent-color: #55809c;
-  --button-warning-color: #b4616c;
+  --button-accent-color: #{color.scale($accent-color, $lightness: -5%, $saturation: -5%)};
+  --button-warning-color: #{color.scale($warning-color, $lightness: -30%, $saturation: -40%)};
 }
 
 html,
@@ -33,7 +39,7 @@ body {
 
   :focus {      
     outline: none;
-    box-shadow: 0 0 0 2px var(--background-color), 0 0 0 4px var(--focus-color);
+    box-shadow: 0 0 0 2px var(--focus-color);
     &:not(:focus-visible) {
       outline: none;
       box-shadow: none;

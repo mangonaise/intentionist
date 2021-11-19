@@ -2,6 +2,7 @@ const theme = {
   breakpoints: ['501px', '1251px'],
   colors: {
     text: 'var(--text-color)',
+    textAccent: 'var(--text-accent-color)',
     bg: 'var(--background-color)',
     divider: 'var(--divider-color)',
     grid: 'var(--grid-color)',
