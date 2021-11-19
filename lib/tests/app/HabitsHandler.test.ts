@@ -131,7 +131,7 @@ describe('behavior', () => {
     // expect((await getActiveHabitsDocs())?.order).toEqual([b.id, c.id, a.id])
   })
 
-  xtest('deleting a habit removes it from local cache and database', async () => {
+  test('deleting a habit removes it from local cache and database', async () => {
     await habitsHandler.setHabit(dummyHabitA)
     await habitsHandler.setHabit(dummyHabitB)
     await habitsHandler.deleteHabitById(dummyHabitA.id)
@@ -145,7 +145,7 @@ describe('behavior', () => {
     })
   })
 
-  xtest('deleting a habit removes associated notes from database', async () => {
+  test('deleting a habit removes associated notes from database', async () => {
     await habitsHandler.setHabit(dummyHabitA)
     await dbHandler.update(dbHandler.noteDocRef('a1'), { habitId: dummyHabitA.id })
     await dbHandler.update(dbHandler.noteDocRef('a2'), { habitId: dummyHabitA.id })

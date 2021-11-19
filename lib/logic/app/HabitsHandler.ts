@@ -56,7 +56,11 @@ export default class HabitsHandler {
     const habitToDelete = this.findHabitById(id)
     if (!habitToDelete) throw new Error('Cannot delete a habit that does not exist')
 
-    console.error('deleteHabitById not implemented')
+    // 💻
+    this.activeHabits = this.activeHabits.filter((habit) => habit !== habitToDelete)
+
+    // ☁️
+    await this.dbHandler.deleteHabit(id)
   }
 
   public reorderHabits = async (habitToMove: Habit, habitToTakePositionOf: Habit) => {

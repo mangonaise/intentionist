@@ -4,7 +4,7 @@ import type { NoteDocumentData } from '@/logic/app/NoteEditor'
 import type { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
 import { inject, singleton } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
-import { collection, doc, getDoc, getDocs, query, setDoc, arrayUnion, writeBatch, where, deleteDoc } from '@firebase/firestore'
+import { collection, doc, getDoc, getDocs, query, setDoc, arrayUnion, arrayRemove, writeBatch, where, deleteDoc, deleteField } from '@firebase/firestore'
 import { Habit } from '@/logic/app/HabitsHandler'
 import AuthUser from '@/logic/app/AuthUser'
 
@@ -75,12 +75,22 @@ export default class DbHandler {
 
   public deleteHabit = async (habitId: string) => {
     this.isWriteComplete = false
-    const deleteHabitPromise = () => deleteDoc(this.habitDocRef(habitId))
-    console.error('updating habit details not implemented')
-    const deleteNotesPromise = () => this.deleteNotesWithHabitId(habitId)
+
+    const deleteNotes = () => this.deleteNotesWithHabitId(habitId)
+
+    const deleteHabitData = async () => {
+      const batch = writeBatch(this.db)
+      batch.delete(this.habitDocRef(habitId))
+      batch.set(this.habitDetailsDocRef(), {
+        activeIds: { [habitId]: deleteField() },
+        order: arrayRemove(habitId)
+      }, { merge: true })
+      await batch.commit()
+    }
+
     await Promise.all([
-      deleteHabitPromise(),
-      deleteNotesPromise()
+      deleteHabitData(),
+      deleteNotes()
     ])
     this.completeWrite()
   }
