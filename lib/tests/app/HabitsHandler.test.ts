@@ -21,6 +21,8 @@ const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '�
 const dummyHabitB: Habit = { id: generateHabitId(), name: 'Build app', icon: '👨‍💻', archived: false, creationTime: 123, timeable: true, palette: [] }
 const dummyHabitC: Habit = { id: generateHabitId(), name: 'Fix bugs', icon: '🐛', archived: false, creationTime: 123, timeable: true, palette: [] }
 
+const sortByHabitId = (habits: Habit[]) => habits.sort((a: Habit, b: Habit) => a.id < b.id ? 1 : -1)
+
 beforeAll(async () => {
   await signInDummyUser()
 })
@@ -53,23 +55,24 @@ describe('initialization', () => {
   })
 
   test('when a habit is fetched, it is placed in an array in local cache', async () => {
-    await dbHandler.updateHabit(dummyHabitA, [dummyHabitA.id])
+    await dbHandler.addHabit(dummyHabitA)
     await initialize()
     expect(habitsHandler.activeHabits).toEqual([dummyHabitA])
   })
 
   test('fetched habits are ordered correctly', async () => {
-    await dbHandler.updateHabit(dummyHabitA, [dummyHabitA.id])
-    await dbHandler.updateHabit(dummyHabitB, [dummyHabitB.id, dummyHabitA.id])
+    await dbHandler.addHabit(dummyHabitA)
+    await dbHandler.addHabit(dummyHabitB)
 
     await initialize()
-    expect(habitsHandler.activeHabits).toEqual([dummyHabitB, dummyHabitA])
+    expect(habitsHandler.activeHabits).toEqual([dummyHabitA, dummyHabitB])
   })
 
   test('if habit ids are missing from the fetched habit order, they are placed at the end of the local habits array', async () => {
-    await dbHandler.updateHabit(dummyHabitA, [])
-    await dbHandler.updateHabit(dummyHabitB, [])
-    await dbHandler.updateHabit(dummyHabitC, [dummyHabitC.id, dummyHabitB.id])
+    await dbHandler.addHabit(dummyHabitA)
+    await dbHandler.addHabit(dummyHabitB)
+    await dbHandler.addHabit(dummyHabitC)
+    await dbHandler.update(dbHandler.habitDetailsDocRef(), { order: [dummyHabitC.id, dummyHabitB.id] })
     await initialize()
     expect(habitsHandler.activeHabits).toEqual([dummyHabitC, dummyHabitB, dummyHabitA])
   })
@@ -87,8 +90,7 @@ describe('behavior', () => {
     expect(habitsHandler.activeHabits).toEqual([dummyHabitA, dummyHabitB])
 
     const activeHabitsDocs = await dbHandler.getActiveHabitsDocs()
-    const byId = (a: Habit, b: Habit) => a.id < b.id ? 1 : -1
-    expect(activeHabitsDocs.sort(byId)).toEqual(habitsHandler.activeHabits.sort(byId))
+    expect(sortByHabitId(activeHabitsDocs)).toEqual(sortByHabitId(habitsHandler.activeHabits))
 
     expect(await dbHandler.getHabitDetailsDoc()).toEqual({
       activeIds: { [dummyHabitA.id]: true, [dummyHabitB.id]: true },
@@ -96,28 +98,25 @@ describe('behavior', () => {
     })
   })
 
-  xtest('updating a habit updates local cache and database correctly', async () => {
+  test('updating a habit updates local cache and database correctly', async () => {
     await habitsHandler.setHabit(dummyHabitA)
     await habitsHandler.setHabit(dummyHabitB)
 
-    const updatedHabit = { ...dummyHabitA, icon: '🤓' } as Habit
+    const updatedHabit = { ...dummyHabitA, icon: '🤓' }
     await habitsHandler.setHabit(updatedHabit)
 
     expect(habitsHandler.activeHabits).toEqual([updatedHabit, dummyHabitB])
 
-    expect((await dbHandler.getActiveHabitsDocs())).toEqual([
-      dummyHabitA,
-      dummyHabitB
-    ])
+    expect(sortByHabitId(await dbHandler.getActiveHabitsDocs())).toEqual(sortByHabitId(habitsHandler.activeHabits))
   })
 
-  xtest('adding or updating a habit returns the updated habit when changes are made', async () => {
+  test('adding or updating a habit returns the updated habit when changes are made', async () => {
     expect(await habitsHandler.setHabit(dummyHabitA)).toEqual(dummyHabitA)
     const updatedHabit = { ...dummyHabitA, icon: '🤓' } as Habit
     expect(await habitsHandler.setHabit(updatedHabit)).toEqual(updatedHabit)
   })
 
-  xtest('attempting to update a habit without changing anything just returns the existing habit', async () => {
+  test('attempting to update a habit without changing anything just returns the existing habit', async () => {
     const firstUpdate = await habitsHandler.setHabit(dummyHabitA)
     const secondUpdate = await habitsHandler.setHabit(dummyHabitA)
     expect(secondUpdate === firstUpdate).toBe(true)

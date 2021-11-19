@@ -38,10 +38,14 @@ export default class HabitsHandler {
     }
     if (isEqual(existingHabit, habitToSet)) return existingHabit
 
-    console.error('setHabit not implemented')
-
     // 💻
+    const index = this.activeHabits.indexOf(existingHabit)
+    this.activeHabits[index] = habitToSet
+
     // ☁️
+    await this.dbHandler.update(this.dbHandler.habitDocRef(habitToSet.id), habitToSet)
+
+    return this.activeHabits[index]
   }
 
   public addHabitFromPreset = async (preset: HabitPreset) => {
@@ -64,7 +68,7 @@ export default class HabitsHandler {
     this.activeHabits.push(newHabit)
 
     // ☁️
-    await this.dbHandler.updateHabit(newHabit, this.getOrderedIds())
+    await this.dbHandler.addHabit(newHabit)
 
     return this.activeHabits[this.activeHabits.length - 1]
   }

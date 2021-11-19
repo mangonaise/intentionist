@@ -4,7 +4,7 @@ import type { NoteDocumentData } from '@/logic/app/NoteEditor'
 import type { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
 import { inject, singleton } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
-import { collection, doc, getDoc, getDocs, query, setDoc, writeBatch, where, deleteDoc } from '@firebase/firestore'
+import { collection, doc, getDoc, getDocs, query, setDoc, arrayUnion, writeBatch, where, deleteDoc } from '@firebase/firestore'
 import { Habit } from '@/logic/app/HabitsHandler'
 import AuthUser from '@/logic/app/AuthUser'
 
@@ -57,13 +57,13 @@ export default class DbHandler {
     return await this.getDocData(this.habitDetailsDocRef(friendUid))
   }
 
-  public updateHabit = async (habit: Habit, order: string[]) => {
+  public addHabit = async (habit: Habit) => {
     this.isWriteComplete = false
     const batch = writeBatch(this.db)
 
     batch.set(this.habitDocRef(habit.id), habit, { merge: true })
     batch.set(this.habitDetailsDocRef(), {
-      order,
+      order: arrayUnion(habit.id),
       activeIds: {
         [habit.id]: true
       }
