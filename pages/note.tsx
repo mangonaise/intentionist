@@ -99,4 +99,4 @@ const FontPreload = () => {
   )
 }
 
-export default withApp(NotePage, 'notes')
+export default withApp(NotePage)

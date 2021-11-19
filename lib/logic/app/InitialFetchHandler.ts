@@ -1,5 +1,4 @@
-import type { HabitsDocumentData } from '@/logic/app/HabitsHandler'
-import type { WeekDocumentData } from '@/logic/app/WeekInView'
+import type { Habit } from '@/logic/app/HabitsHandler'
 import type { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import { makeAutoObservable, runInAction } from 'mobx'
 import { singleton } from 'tsyringe'
@@ -10,8 +9,7 @@ export type Fetched<T> = T | null
 
 type InitialFetches = {
   userProfile: Fetched<UserProfileInfo>
-  habitsDoc: Fetched<HabitsDocumentData>,
-  latestWeekDoc: Fetched<WeekDocumentData>
+  habitsDocs: Habit[]
 }
 
 @singleton()
@@ -30,14 +28,12 @@ export default class InitialFetchHandler {
   private makeInitialFetches = async () => {
     const results = await Promise.all([
       this.fetchUserProfile(),
-      this.fetchHabitsDoc(),
-      this.fetchLatestWeekDoc()
+      this.fetchHabitsDocs(),
     ])
     runInAction(() => {
       this.initialFetches = {
         userProfile: results[0],
-        habitsDoc: results[1],
-        latestWeekDoc: results[2]
+        habitsDocs: results[1],
       }
       this.hasCompletedInitialFetches = true
     })
@@ -48,14 +44,9 @@ export default class InitialFetchHandler {
     return userDoc ? userDoc as UserProfileInfo : null
   }
 
-  private fetchHabitsDoc = async () => {
-    const habitsDoc = await this.dbHandler.getDocData(this.dbHandler.habitsDocRef())
-    return habitsDoc ? habitsDoc as HabitsDocumentData : null
-  }
-
-  private fetchLatestWeekDoc = async () => {
-    const weekDoc = await this.dbHandler.getLatestWeekDoc()
-    return weekDoc ? weekDoc : null
+  private fetchHabitsDocs = async () => {
+    console.warn('fetchHabitsDocs not implemented')
+    return []
   }
 }
 

@@ -59,4 +59,4 @@ const SettingsPage = () => {
   )
 }
 
-export default withApp(SettingsPage, 'neutral')
+export default withApp(SettingsPage)

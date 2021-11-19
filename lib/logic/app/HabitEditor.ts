@@ -63,13 +63,6 @@ export default class HabitEditor {
   }
 
   private generateEmptyHabit = () => {
-    return {
-      id: generateHabitId(),
-      name: '',
-      icon: '🙂',
-      status: 'active',
-      palette: ['⭐', '👍', '🤏'],
-      timeable: true
-    } as Habit
+    console.warn('generateEmptyHabit not implemented')
   }
 }

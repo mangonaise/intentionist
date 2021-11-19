@@ -1,18 +1,7 @@
 import { observer } from 'mobx-react-lite'
-import accentColor, { AccentColor } from '@/logic/utils/accentColor'
 import theme from 'styles/theme'
 
-const gradientData: { [id in AccentColor]: { color: string, opacity: number } } = {
-  tracker: { color: theme.colors.tracker, opacity: 0.45 },
-  notes: { color: theme.colors.notes, opacity: 0.45 },
-  focus: { color: theme.colors.focus, opacity: 0.4 },
-  neutral: { color: '#8a8a8a', opacity: 0.4 },
-  off: { color: 'transparent', opacity: 0 }
-}
-
 const GradientBackground = () => {
-  const activeColor = accentColor.current
-
   return (
     <div
       sx={{
@@ -22,7 +11,7 @@ const GradientBackground = () => {
         left: 0,
         height: '130px',
         width: '100%',
-        opacity: gradientData[activeColor].opacity,
+        opacity: 0.45,
         transition: 'opacity 500ms'
       }}
     >
@@ -31,7 +20,7 @@ const GradientBackground = () => {
           <linearGradient id="gradient" gradientTransform="rotate(90)">
             <stop
               offset="0%"
-              stopColor={gradientData[activeColor].color}
+              stopColor={theme.colors.accent}
               style={{ transition: 'stop-color 500ms' }}
             />
             <stop offset="100%" stopColor="var(--background-color)" />

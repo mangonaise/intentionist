@@ -1,7 +1,6 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
-import { HabitFilterContext } from 'pages/habits'
 import HabitsHandler, { HabitPreset } from '@/logic/app/HabitsHandler'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import HabitPresetsList from '@/components/app/HabitPresetsList'
@@ -45,11 +44,8 @@ const SetHabitsPrompt = observer(() => {
 })
 
 const HabitPresetsSection = () => {
-  const { refresh } = useContext(HabitFilterContext)
-
   function handleAddPreset(preset: HabitPreset) {
     container.resolve(HabitsHandler).addHabitFromPreset(preset)
-    refresh()
   }
 
   return (

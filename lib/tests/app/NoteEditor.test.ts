@@ -8,15 +8,12 @@ import generateHabitId from '@/logic/utils/generateHabitId'
 import exclude from '@/logic/utils/exclude'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import NoteEditor, { NoteDocumentData } from '@/logic/app/NoteEditor'
-import WeekHandler from '@/logic/app/WeekHandler'
 import DbHandler from '@/logic/app/DbHandler'
 import FriendsHandler from '@/logic/app/FriendsHandler'
 import MockRouter from '@/test-setup/mock/MockRouter'
 import signInDummyUser from '@/test-setup/signInDummyUser'
-import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import deleteNotes from '@/test-setup/deleteNotes'
-import deleteWeeks from '@/test-setup/deleteWeeks'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import teardownFirebase from '@/test-setup/teardownFirebase'
 import getDbShortcuts from '@/test-setup/getDbShortcuts'
@@ -29,12 +26,11 @@ const firebase = initializeFirebase(projectId)
 const { db: adminDb } = getFirebaseAdmin(projectId)
 const { friendsDoc, userDoc, userDataCollection } = getDbShortcuts(adminDb)
 
-let noteEditor: NoteEditor, weekHandler: WeekHandler, dbHandler: DbHandler
+let noteEditor: NoteEditor, dbHandler: DbHandler
 let authUserUid: string
 let router: MockRouter
 
-const dummyHabit: Habit = { id: generateHabitId(), name: 'Note editor test habit A', icon: '✏️', status: 'active' }
-const dummyWeekStartDate = '2021-09-27'
+const dummyHabit: Habit = { id: generateHabitId(), name: 'Note editor test habit A', icon: '✏️', creationTime: 123, palette: [], timeable: true }
 const dummyNoteA: NoteDocumentData = {
   id: generateNoteId(),
   title: 'Dummy note',
@@ -42,7 +38,6 @@ const dummyNoteA: NoteDocumentData = {
   content: 'Some cool content',
   habitId: dummyHabit.id,
   date: '2021-09-30',
-  weekStartDate: dummyWeekStartDate
 }
 const dummyNoteB: NoteDocumentData = {
   id: generateNoteId(),
@@ -51,7 +46,6 @@ const dummyNoteB: NoteDocumentData = {
   content: 'Some awesome content',
   habitId: dummyHabit.id,
   date: '2021-09-29',
-  weekStartDate: dummyWeekStartDate
 }
 
 beforeAll(async () => {
@@ -64,15 +58,12 @@ beforeEach(async () => {
   const habitsHandler = container.resolve(HabitsHandler)
   habitsHandler.setHabit(dummyHabit)
   dbHandler = container.resolve(DbHandler)
-  weekHandler = container.resolve(WeekHandler)
   router = container.resolve(MockRouter)
   container.register('Router', { useValue: router })
 })
 
 afterEach(async () => {
-  await deleteHabitsDoc(adminDb)
   await deleteNotes()
-  await deleteWeeks(adminDb)
   container.clearInstances()
 })
 
@@ -97,7 +88,6 @@ describe('initialization', () => {
       content: '',
       habitId: dummyHabit.id,
       date: formatYYYYMMDD(new Date()),
-      weekStartDate: weekHandler.weekInView.weekData.startDate,
       id: noteEditor.note?.id
     })
   })
@@ -179,36 +169,11 @@ describe('behavior', () => {
     expect(noteEditor.note).toHaveProperty('content', 'Some content')
   })
 
-  test('finishing editing updates local note metadata if the note is in the week in view', () => {
-    // The above condition is true for new notes. See first test.
-    router.setQuery({ habitId: dummyHabit.id })
-    startNoteEditor()
-    noteEditor.updateNote('title', 'Hello!')
-    noteEditor.updateNote('icon', '🌟')
-    noteEditor.finishEditing()
-    const note = noteEditor.note!
-    expect(weekHandler.weekInView.weekData.notes).toEqual({ [dummyHabit.id]: [note.id] })
-    expect(weekHandler.weekInView.weekData.notesMetadata?.[note.id]).toEqual({
-      title: 'Hello!',
-      icon: '🌟'
-    })
-  })
-
   test('saving first changes on a new note sets isNewNote to false', () => {
     router.setQuery({ habitId: dummyHabit.id })
     startNoteEditor()
     noteEditor.finishEditing()
     expect(noteEditor.isNewNote).toEqual(false)
-  })
-
-  test('finishing editing does not update local note metadata if the note is not in the week in view', async () => {
-    await dbHandler.updateNote(dummyNoteA)
-    router.setQuery({ id: dummyNoteA.id })
-    startNoteEditor()
-    noteEditor.updateNote('title', 'A fresh new title')
-    noteEditor.finishEditing()
-    expect(weekHandler.weekInView.weekData.notes).toBeUndefined()
-    expect(weekHandler.weekInView.weekData.notesMetadata).toBeUndefined()
   })
 
   test('if editing completes but the note title is empty, it is automatically set to "Untitled note"', () => {
@@ -230,48 +195,6 @@ describe('behavior', () => {
     expect(noteDoc).toEqual(noteEditor.note)
   })
 
-  test('finishing editing updates the metadata in the corresponding week document', async () => {
-    await dbHandler.updateNote(dummyNoteA)
-    await dbHandler.updateNote(dummyNoteB)
-
-    router.setQuery({ id: dummyNoteA.id })
-    startNoteEditor()
-    await when(() => !!noteEditor.note)
-    noteEditor.updateNote('title', 'A cool new title')
-    noteEditor.updateNote('icon', '😎')
-    await noteEditor.finishEditing()
-
-    router.setQuery({ id: dummyNoteB.id })
-    startNoteEditor()
-    await when(() => !!noteEditor.note)
-    noteEditor.updateNote('title', 'Another awesome title')
-    noteEditor.updateNote('icon', '⭐')
-    await noteEditor.finishEditing()
-
-    const weekDoc = await dbHandler.getWeekDoc(dummyWeekStartDate)
-    expect(weekDoc?.notes).toEqual({
-      [dummyHabit.id]: [dummyNoteA.id, dummyNoteB.id]
-    })
-    expect(weekDoc?.notesMetadata).toEqual({
-      [dummyNoteA.id]: {
-        title: 'A cool new title',
-        icon: '😎'
-      },
-      [dummyNoteB.id]: {
-        title: 'Another awesome title',
-        icon: '⭐'
-      }
-    })
-  })
-
-  test('creating a note sets the startDate field in the corresponding week document', async () => {
-    router.setQuery({ habitId: dummyHabit.id })
-    startNoteEditor()
-    await noteEditor.finishEditing()
-    const weekDoc = await dbHandler.getWeekDoc(noteEditor.note!.weekStartDate)
-    expect(weekDoc?.startDate).toEqual(noteEditor.note!.weekStartDate)
-  })
-
   test('deleting a note removes the corresponding note document from the database', async () => {
     await dbHandler.updateNote(dummyNoteA)
     router.setQuery({ id: dummyNoteA.id })
@@ -280,34 +203,5 @@ describe('behavior', () => {
     await noteEditor.deleteNote()
     const noteDoc = await dbHandler.getNoteDoc(dummyNoteA.id)
     expect(noteDoc).toBeNull()
-  })
-
-  test('deleting a note removes the metadata from the corresponding week document', async () => {
-    await dbHandler.updateNote(dummyNoteA)
-
-    router.setQuery({ id: dummyNoteA.id })
-    startNoteEditor()
-    await when(() => !!noteEditor.note)
-    await noteEditor.deleteNote()
-
-    const weekDoc = await dbHandler.getWeekDoc(dummyNoteA.weekStartDate)
-    expect(weekDoc?.notes?.[dummyNoteA.habitId]?.includes(dummyNoteA.id)).toEqual(false)
-    expect(weekDoc?.notesMetadata?.[dummyNoteA.id]).toBeUndefined()
-  })
-
-  test('deleting a note of the week in view clears the metadata from the local cache', async () => {
-    await dbHandler.updateNote(dummyNoteA)
-    await dbHandler.updateNote(dummyNoteB)
-
-    await weekHandler.viewWeek({ startDate: dummyWeekStartDate })
-
-    router.setQuery({ id: dummyNoteB.id })
-    startNoteEditor()
-    await when(() => !!noteEditor.note)
-    await noteEditor.deleteNote()
-
-    const weekInView = weekHandler.weekInView
-    expect(weekInView.weekData.notes?.[dummyNoteB.habitId]?.includes(dummyNoteB.id)).toEqual(false)
-    expect(weekInView.weekData.notesMetadata?.[dummyNoteB.id]).toBeUndefined()
   })
 })

@@ -1,40 +1,26 @@
-import { arrayUnion } from '@firebase/firestore'
 import { makeAutoObservable } from 'mobx'
 import { singleton } from 'tsyringe'
-import { Fetched, InitialState } from '@/logic/app/InitialFetchHandler'
+import { InitialState } from '@/logic/app/InitialFetchHandler'
 import DbHandler from '@/logic/app/DbHandler'
-import exclude from '@/logic/utils/exclude'
-import arrayMove from '@/logic/utils/arrayMove'
-import generateHabitId from '@/logic/utils/generateHabitId'
 import isEqual from 'lodash/isEqual'
 
-export type HabitsDocumentData = {
-  habits: { [id: string]: HabitProperties },
-  order: string[]
-}
-
-export type HabitStatus = 'active' | 'suspended' | 'archived'
-export type Habit = { id: string } & HabitProperties
-export type HabitProperties = {
+export type Habit = {
+  id: string
   name: string
   icon: string
-  status: HabitStatus,
-  palette?: string[],
-  timeable?: boolean,
-  friendUid?: string
+  palette: string[]
+  timeable: boolean
+  archived?: boolean
+  statuses?: { [year: number]: { [day: number]: string } }
+  creationTime: number
 }
 
 @singleton()
 export default class HabitsHandler {
   public habits: Habit[]
-  public orderedIds: string[]
-  private dbHandler
 
-  constructor(initialState: InitialState, dbHandler: DbHandler) {
-    const { habits, order } = this.processFetchedHabits(initialState.data.habitsDoc)
-    this.habits = habits
-    this.orderedIds = order
-    this.dbHandler = dbHandler
+  constructor(initialState: InitialState, private dbHandler: DbHandler) {
+    this.habits = this.processFetchedHabits(initialState.data.habitsDocs)
     makeAutoObservable(this)
   }
 
@@ -45,95 +31,38 @@ export default class HabitsHandler {
     }
     if (isEqual(existingHabit, habitToSet)) return existingHabit
 
+    console.warn('setHabit not implemented')
+
     // 💻
-    const index = this.habits.indexOf(existingHabit)
-    this.habits[index] = habitToSet
-    this.refreshOrderedIds()
-
     // ☁️
-    await this.dbHandler.update(this.dbHandler.habitsDocRef(), {
-      habits: { [habitToSet.id]: { ...exclude(habitToSet, 'id') } }
-    })
-
-    return this.habits[index]
   }
 
   public addHabitFromPreset = async (preset: HabitPreset) => {
-    await this.setHabit({
-      id: generateHabitId(),
-      status: 'active',
-      name: preset.name,
-      icon: preset.icon,
-      palette: preset.palette,
-      timeable: preset.timeable
-    })
+    console.warn('addHabitFromPreset not implemented')
   }
 
   public deleteHabitById = async (id: string) => {
     const habitToDelete = this.findHabitById(id)
     if (!habitToDelete) throw new Error('Cannot delete a habit that does not exist')
 
-    // 💻
-    this.habits = this.habits.filter(habit => habit !== habitToDelete)
-    this.refreshOrderedIds()
-
-    // ☁️
-    await this.dbHandler.deleteHabit(id)
+    console.warn('deleteHabitById not implemented')
   }
 
   public reorderHabits = async (habitToMove: Habit, habitToTakePositionOf: Habit) => {
-    const oldIndex = this.habits.indexOf(habitToMove)
-    const newIndex = this.habits.indexOf(habitToTakePositionOf)
-    if (oldIndex < 0 || newIndex < 0 || oldIndex === newIndex) return
-
-    // 💻
-    this.habits = arrayMove(this.habits, oldIndex, newIndex)
-    this.refreshOrderedIds()
-
-    // ☁️
-    await this.dbHandler.update(this.dbHandler.habitsDocRef(), {
-      order: this.habits.map((habit) => habit.id)
-    })
+    console.warn('reorderHabits not implemented')
   }
 
   private addNewHabit = async (newHabit: Habit) => {
-    // 💻
-    this.habits.push(newHabit)
-    this.refreshOrderedIds()
-
-    // ☁️
-    await this.dbHandler.update(this.dbHandler.habitsDocRef(), {
-      habits: { [newHabit.id]: { ...exclude(newHabit, 'id') } },
-      order: arrayUnion(newHabit.id)
-    })
-
-    return this.habits[this.habits.length - 1]
+    console.warn('addNewHabit not implemented')
   }
 
   public findHabitById = (id: string) => {
     return this.habits.find((habit) => habit.id === id)
-  } 
-
-  private refreshOrderedIds = () => {
-    this.orderedIds = this.habits.map((habit) => habit.id)
   }
 
-  private processFetchedHabits = (habitsDoc: Fetched<HabitsDocumentData>) => {
-    if (!habitsDoc) return { habits: [], order: [] }
-
-    const habitIds = Object.keys(habitsDoc.habits)
-    const order = habitsDoc.order
-
-    for (const habitId of habitIds) {
-      if (!order.includes(habitId)) {
-        order.push(habitId)
-      }
-    }
-
-    return {
-      habits: order.map((id) => ({ id, ...habitsDoc.habits[id] })),
-      order
-    }
+  private processFetchedHabits = (habitsDocs: Habit[]) => {
+    console.warn('processFetchedHabits not implemented')
+    return [] as Habit[]
   }
 }
 
@@ -242,6 +171,7 @@ export const habitPresets: HabitPreset[] = [
   {
     name: 'Mood',
     icon: '🙂',
-    palette: ['😊', '🙂', '😐', '😢', '😒', '😬', '😠']
+    palette: ['😊', '🙂', '😐', '😢', '😒', '😬', '😠'],
+    timeable: false
   }
 ]

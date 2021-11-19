@@ -8,9 +8,7 @@ const theme = {
     button: 'var(--button-color)',
     buttonHighlight: 'var(--button-highlight-color)',
     warning: 'var(--warning-color)',
-    tracker: 'var(--tracker-accent-color)',
-    notes: 'var(--notes-accent-color)',
-    focus: 'var(--focus-accent-color)',
+    accent: 'var(--accent-color)',
     whiteAlpha: {
       0: 'rgba(255, 255, 255, 0)',
       3: 'rgba(255, 255, 255, 0.03)',

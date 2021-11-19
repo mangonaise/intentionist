@@ -1,6 +1,5 @@
-import { WeekdayId } from '@/logic/app/WeekInView'
 import { weekdayNames } from './_consts'
 
-export default function getWeekdayName(weekdayId: WeekdayId) {
+export default function getWeekdayName(weekdayId: number) {
   return weekdayNames[weekdayId]
 }

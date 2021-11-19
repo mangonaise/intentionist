@@ -7,7 +7,6 @@ import EmojiPaletteEditor from '@/components/page/habit-editor/EmojiPaletteEdito
 import HabitEditorNavSection from '@/components/page/habit-editor/HabitEditorNavSection'
 import HabitIconPicker from '@/components/page/habit-editor/HabitIconPicker'
 import HabitNameInput from '@/components/page/habit-editor/HabitNameInput'
-import HabitStatusPicker from '@/components/page/habit-editor/HabitStatusPicker'
 import HabitTimeableCheckbox from '@/components/page/habit-editor/HabitTimeableCheckbox'
 import HabitEditorPresetsSection from '@/components/page/habit-editor/HabitEditorPresetsSection'
 import Box from '@/components/primitives/Box'
@@ -33,7 +32,7 @@ const HabitEditorPage = () => {
           <HabitNameInput />
         </Flex>
         <Spacer mb={2} />
-        {editor.isNewHabit ? <HabitEditorPresetsSection /> : <HabitStatusPicker />}
+        {editor.isNewHabit && <HabitEditorPresetsSection />}
         <Spacer mb={3} />
         <InitiallyHiddenOptions />
       </Box>
@@ -62,4 +61,4 @@ const InitiallyHiddenOptions = observer(() => {
   )
 })
 
-export default withApp(HabitEditorPage, 'neutral')
+export default withApp(HabitEditorPage)
