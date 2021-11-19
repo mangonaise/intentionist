@@ -14,7 +14,7 @@ const TrackerStatusRow = () => {
       align="center"
       sx={{
         position: 'relative', mx: '-0.5rem',
-        width: isLargeScreen ? '110%' : 'auto', right: isLargeScreen ? '5%' : 0
+        width: isLargeScreen ? '950px' : 'auto', right: isLargeScreen ? '43px' : 0
       }}
     >
       {shellArray.map((_, index) => (

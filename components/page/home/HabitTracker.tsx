@@ -5,6 +5,8 @@ import { getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import HabitsHandler from '@/logic/app/HabitsHandler'
 import useMediaQuery from '@/hooks/useMediaQuery'
 import HabitWrapper from '@/components/page/home/habit-tracker/HabitWrapper'
+import WeekdayRow from '@/components/page/home/habit-tracker/WeekdayRow'
+import Spacer from '@/components/primitives/Spacer'
 import Box from '@/components/primitives/Box'
 import IconButton from '@/components/primitives/IconButton'
 import PencilIcon from '@/components/icons/PencilIcon'
@@ -33,6 +35,8 @@ const HabitTracker = observer(() => {
   return (
     <HabitTrackerContext.Provider value={{ weekStartDate, incrementWeek, decrementWeek }}>
       <Box sx={{ maxWidth: '850px', mt: '4rem', marginX: 'auto' }}>
+        <WeekdayRow expand={isLargeScreen} />
+        <Spacer mb={[4, 6]} />
         {activeHabits.map((habit) => (
           <HabitWrapper habit={habit} isLargeScreen={isLargeScreen} isSmallScreen={isSmallScreen} key={habit.id} />
         ))}
