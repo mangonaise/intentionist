@@ -2,6 +2,8 @@ import { makeAutoObservable } from 'mobx'
 import { singleton } from 'tsyringe'
 import { Fetched, InitialState } from '@/logic/app/InitialFetchHandler'
 import DbHandler from '@/logic/app/DbHandler'
+import generateHabitId from '@/logic/utils/generateHabitId'
+import getUtcSeconds from '@/logic/utils/getUtcSeconds'
 import isEqual from 'lodash/isEqual'
 
 export type Habit = {
@@ -49,7 +51,15 @@ export default class HabitsHandler {
   }
 
   public addHabitFromPreset = async (preset: HabitPreset) => {
-    console.error('addHabitFromPreset not implemented')
+    await this.setHabit({
+      id: generateHabitId(),
+      name: preset.name,
+      icon: preset.icon,
+      palette: preset.palette,
+      timeable: preset.timeable,
+      archived: false,
+      creationTime: getUtcSeconds()
+    })
   }
 
   public deleteHabitById = async (id: string) => {

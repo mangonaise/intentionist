@@ -16,7 +16,7 @@ const HabitsPageNavSection = () => {
         <IconButton icon={BackIcon} sx={{ bg: 'transparent' }} />
       </NextLink>
       <Spacer ml={2} />
-      <Heading level={2} sx={{ fontSize: ['1.2rem', '1.5rem'] }}>Active habits</Heading>
+      <Heading level={2} sx={{ fontSize: ['1.2rem', '1.5rem'] }}>Your habits</Heading>
       <NextLink href="/habit?new">
         <IconButton
           icon={PlusIcon}

@@ -32,7 +32,7 @@ const SetHabitsPrompt = observer(() => {
       </Heading>
       <Box sx={{ maxWidth: '800px', px: 2, margin: 'auto', fontWeight: 'light' }}>
         <Text sx={{ mb: 4 }}>
-          Add custom habits with the "<b>Add habit</b>" button, or get started quickly by choosing some presets below.
+          Add custom habits with the <b>+</b> button above, or get started quickly by choosing some presets below.
         </Text>
         <Text>
           If you stop focusing on a habit at any time in the future, you can easily archive it.
