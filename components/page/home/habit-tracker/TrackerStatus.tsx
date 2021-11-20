@@ -3,10 +3,16 @@ import Box from '@/components/primitives/Box'
 import Button from '@/components/primitives/Button'
 import Flex from '@/components/primitives/Flex'
 
-const TrackerStatus = ({ weekdayIndex }: { weekdayIndex: number }) => {
+interface Props {
+  weekdayIndex: number,
+  connectLeft: boolean,
+  connectRight: boolean
+}
+
+const TrackerStatus = ({ weekdayIndex, connectLeft, connectRight }: Props) => {
   return (
     <>
-      <ConnectingLine fade={weekdayIndex === 0 ? 'left' : null} />
+      <ConnectingLine visible={connectLeft} fade={weekdayIndex === 0 ? 'left' : null} />
       <Button
         sx={{
           px: 0, minHeight: '2.5rem', minWidth: '2.5rem',
@@ -18,7 +24,7 @@ const TrackerStatus = ({ weekdayIndex }: { weekdayIndex: number }) => {
           <SmartEmoji nativeEmoji="🌟" rem={1} />
         </Flex>
       </Button>
-      <ConnectingLine fade={weekdayIndex === 6 ? 'right' : null} />
+      <ConnectingLine visible={connectRight} fade={weekdayIndex === 6 ? 'right' : null} />
     </>
   )
 }
@@ -26,11 +32,11 @@ const TrackerStatus = ({ weekdayIndex }: { weekdayIndex: number }) => {
 const leftGradient = 'linear-gradient(to right, transparent, var(--button-accent-color) 50%)'
 const RightGradient = 'linear-gradient(to left, transparent, var(--button-accent-color) 50%)'
 
-const ConnectingLine = ({ fade }: { fade?: 'left' | 'right' | null }) => {
+const ConnectingLine = ({ visible, fade }: { visible: boolean, fade?: 'left' | 'right' | null }) => {
   return (
-
     <Box
       sx={{
+        visibility: visible ? 'visible' : 'hidden',
         height: '2px',
         flex: 1,
         zIndex: -1,

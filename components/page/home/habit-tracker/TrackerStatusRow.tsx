@@ -18,7 +18,7 @@ const TrackerStatusRow = () => {
       }}
     >
       {shellArray.map((_, index) => (
-        <TrackerStatus weekdayIndex={index} key={index} />
+        <TrackerStatus connectRight={true} connectLeft={true} weekdayIndex={index} key={index} />
       ))}
     </Flex>
   )
