@@ -66,7 +66,8 @@ const TrackerStatusButton: FC<{ onClick: () => void, hasValue: boolean }> = ({ o
           border: 'solid 2px',
           borderColor: 'buttonAccent',
           borderRadius: 'inherit',
-          opacity: hasValue ? 1 : 0.6
+          opacity: hasValue ? 1 : 0.6,
+          transition: 'opacity 175ms'
         }
       }}
     >
@@ -82,12 +83,13 @@ const ConnectingLine = ({ visible, fade }: { visible: boolean, fade?: 'left' | '
   return (
     <Box
       sx={{
-        visibility: visible ? 'visible' : 'hidden',
         height: '2px',
         flex: 1,
         zIndex: -1,
         backgroundColor: fade ? 'transparent' : 'buttonAccent',
-        backgroundImage: fade ? (fade === 'left' ? leftGradient : RightGradient) : 'none'
+        backgroundImage: fade ? (fade === 'left' ? leftGradient : RightGradient) : 'none',
+        opacity: visible ? 1 : 0,
+        transition: 'opacity 175ms'
       }}
       role="presentation"
     />
