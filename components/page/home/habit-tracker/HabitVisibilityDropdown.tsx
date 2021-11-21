@@ -9,7 +9,7 @@ import CheckIcon from '@/components/icons/CheckIcon'
 import Flex from '@/components/primitives/Flex'
 
 const HabitVisibilityDropdown = () => {
-  const { habit } = useContext(HabitContext)
+  const { habit, isLargeScreen } = useContext(HabitContext)
   const isPrivate = habit.visibility === 'private'
 
   function handleChangeVisibility(visibility: HabitVisibility) {
@@ -21,7 +21,7 @@ const HabitVisibilityDropdown = () => {
     <Dropdown
       title={isPrivate ? 'Private' : 'Public'}
       noArrow
-      anchorRight={[false, false, true]}
+      anchorRight={isLargeScreen}
       sx={{
         '& > button': {
           minHeight: ['1.6rem', '1.6rem', '1.75rem'],
