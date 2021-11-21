@@ -6,12 +6,14 @@ export default function getDbShortcuts(db: Firestore) {
   const userDataCollection = (uid: string) => userDoc(uid).collection('userData')
   const friendsDoc = (uid: string) => userDataCollection(uid).doc('friends')
   const friendRequestsDoc = (uid: string) => userDataCollection(uid).doc('friendRequests')
+  const habitDoc = (uid: string, habitId: string) => userDoc(uid).collection('habits').doc(habitId)
 
   return {
     userDoc,
     usernameDoc,
     userDataCollection,
     friendsDoc,
-    friendRequestsDoc
+    friendRequestsDoc,
+    habitDoc
   }
 }

@@ -90,7 +90,7 @@ export default class HabitsHandler {
       order: this.getOrderedIds()
     })
   }
-
+  
   private addNewHabit = async (newHabit: Habit) => {
     // 💻
     this.activeHabits.push(newHabit)

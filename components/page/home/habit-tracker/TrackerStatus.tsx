@@ -1,31 +1,77 @@
+import { container } from 'tsyringe'
+import { FC, useCallback, useContext, useState } from 'react'
+import { HabitContext } from '@/components/page/home/habit-tracker/HabitWrapper'
+import TrackerStatusEditor from '@/components/page/home/habit-tracker/TrackerStatusEditor'
+import HabitStatusesHandler, { YearAndDay } from '@/logic/app/HabitStatusesHandler'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Box from '@/components/primitives/Box'
 import Button from '@/components/primitives/Button'
 import Flex from '@/components/primitives/Flex'
 
 interface Props {
+  value: string | null,
+  date: YearAndDay,
   weekdayIndex: number,
   connectLeft: boolean,
   connectRight: boolean
 }
 
-const TrackerStatus = ({ weekdayIndex, connectLeft, connectRight }: Props) => {
+const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }: Props) => {
+  const { habit } = useContext(HabitContext)
+  const [isEditing, setIsEditing] = useState(false)
+  const hasValue = !!value
+
+  const handleChangeStatus = useCallback((status: string | null) => {
+    container.resolve(HabitStatusesHandler).setHabitStatus(habit, date, status)
+    setIsEditing(false)
+  }, [habit, date])
+
   return (
-    <>
-      <ConnectingLine visible={connectLeft} fade={weekdayIndex === 0 ? 'left' : null} />
-      <Button
-        sx={{
-          px: 0, minHeight: '2.5rem', minWidth: '2.5rem',
-          border: 'solid 2px', borderColor: 'buttonAccent', borderRadius: '0.75rem',
-          bg: 'whiteAlpha.3'
-        }}
-      >
+    <Flex align="center" sx={{ position: 'relative', flexGrow: 1 }}>
+      <ConnectingLine visible={hasValue && connectLeft} fade={weekdayIndex === 0 ? 'left' : null} />
+      <TrackerStatusButton onClick={() => setIsEditing(true)} hasValue={hasValue}>
         <Flex center asSpan>
-          <SmartEmoji nativeEmoji="🌟" rem={1} />
+          {!!value && <SmartEmoji nativeEmoji={value} rem={1} />}
         </Flex>
-      </Button>
-      <ConnectingLine visible={connectRight} fade={weekdayIndex === 6 ? 'right' : null} />
-    </>
+      </TrackerStatusButton>
+      {isEditing && (
+        <TrackerStatusEditor
+          hasValue={hasValue}
+          palette={habit.palette}
+          onSelectStatus={(status) => handleChangeStatus(status)}
+          onCancelEditing={() => setIsEditing(false)}
+        />
+      )}
+      <ConnectingLine visible={hasValue && connectRight} fade={weekdayIndex === 6 ? 'right' : null} />
+    </Flex>
+  )
+}
+
+const TrackerStatusButton: FC<{ onClick: () => void, hasValue: boolean }> = ({ onClick, hasValue, children }) => {
+  return (
+    <Button
+      onClick={onClick}
+      sx={{
+        position: 'relative', px: 0, minHeight: '2.5rem', minWidth: '2.5rem',
+        borderRadius: 'trackerStatus', bg: hasValue ? 'whiteAlpha.3' : 'transparent',
+        '&:focus': {
+          boxShadow: '0 0 0 2px var(--focus-color) inset',
+          '&:not(:focus-visible)': { boxShadow: 'none' }
+        },
+        '&::before': {
+          position: 'absolute',
+          inset: 0,
+          zIndex: -1,
+          content: '""',
+          border: 'solid 2px',
+          borderColor: 'buttonAccent',
+          borderRadius: 'inherit',
+          opacity: hasValue ? 1 : 0.6
+        }
+      }}
+    >
+      {children}
+    </Button>
   )
 }
 

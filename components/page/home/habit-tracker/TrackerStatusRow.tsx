@@ -1,27 +1,39 @@
+import { container } from 'tsyringe'
+import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { HabitContext } from '@/components/page/home/habit-tracker/HabitWrapper'
-import Flex from '@/components/primitives/Flex'
+import { HabitTrackerContext } from '@/components/page/home/HabitTracker'
+import HabitStatusesHandler from '@/logic/app/HabitStatusesHandler'
 import TrackerStatus from '@/components/page/home/habit-tracker/TrackerStatus'
+import Flex from '@/components/primitives/Flex'
 
-const shellArray = Array.from({ length: 7 })
+const TrackerStatusRow = observer(() => {
+  const { getWeeklyHabitStatusData } = container.resolve(HabitStatusesHandler)
+  const { weekStart } = useContext(HabitTrackerContext)
+  const { habit, isLargeScreen } = useContext(HabitContext)
 
-const TrackerStatusRow = () => {
-  const { isLargeScreen } = useContext(HabitContext)
+  const weeklyData = getWeeklyHabitStatusData(habit, weekStart)
 
   return (
     <Flex
-      justify="space-around"
       align="center"
       sx={{
         position: 'relative', mx: '-0.5rem',
         width: isLargeScreen ? '950px' : 'auto', right: isLargeScreen ? '43px' : 0
       }}
     >
-      {shellArray.map((_, index) => (
-        <TrackerStatus connectRight={true} connectLeft={true} weekdayIndex={index} key={index} />
+      {weeklyData.map(({ value, date, hasPreviousValue, hasNextValue }, index) => (
+        <TrackerStatus
+          value={value}
+          date={date}
+          connectLeft={hasPreviousValue}
+          connectRight={hasNextValue}
+          weekdayIndex={index}
+          key={index}
+        />
       ))}
     </Flex>
   )
-}
+})
 
 export default TrackerStatusRow

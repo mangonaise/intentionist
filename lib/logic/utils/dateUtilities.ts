@@ -8,6 +8,10 @@ export function getFirstDayOfThisWeek() {
   return startOfWeek(new Date(), { weekStartsOn: 1 })
 }
 
+export function getFirstDayOfLastWeek() {
+  return startOfWeek(addWeeks(new Date(), -1), { weekStartsOn: 1 })
+}
+
 export function getFirstDayOfNextWeek() {
   return startOfWeek(addWeeks(new Date(), 1), { weekStartsOn: 1 })
 }

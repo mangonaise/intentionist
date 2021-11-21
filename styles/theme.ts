@@ -42,7 +42,8 @@ const theme = {
     bold: 700
   },
   radii: {
-    default: '4px'
+    default: '4px',
+    trackerStatus: '10px'
   },
   sizes: {
     max: '1200px',
