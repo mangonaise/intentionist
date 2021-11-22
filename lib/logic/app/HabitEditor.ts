@@ -7,8 +7,7 @@ import Router from '@/types/router'
 
 type QueryParams = {
   id: string | undefined,
-  new: any,
-  returnHome: boolean | undefined
+  new: any
 }
 
 @injectable()
@@ -17,14 +16,12 @@ export default class HabitEditor {
   public isNewHabit
   private habitsHandler
   private router
-  private returnHomeOnExit
 
   constructor(habitsHandler: HabitsHandler, @inject('Router') router: Router) {
     this.habitsHandler = habitsHandler
     this.router = router
 
     const query = router.query as QueryParams
-    this.returnHomeOnExit = query?.returnHome
     if (query.new !== undefined) {
       this.isNewHabit = true
       this.habit = this.generateEmptyHabit()
@@ -34,7 +31,7 @@ export default class HabitEditor {
       if (existingHabit) {
         this.habit = existingHabit
       } else {
-        router.push('/habits')
+        router.push('/home')
         return
       }
     }
@@ -60,7 +57,7 @@ export default class HabitEditor {
   }
 
   public exit = () => {
-    this.router.push(this.returnHomeOnExit ? '/home' : '/habits')
+    this.router.push('/home')
   }
 
   private generateEmptyHabit = (): Habit => {

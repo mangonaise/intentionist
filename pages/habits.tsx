@@ -3,7 +3,7 @@ import { useState } from 'react'
 import HabitsHandler from '@/logic/app/HabitsHandler'
 import HabitsPageNavSection from '@/components/page/habits/HabitsPageNavSection'
 import EmptyHabitsPageGuide from '@/components/page/habits/EmptyHabitsPageGuide'
-import ActiveHabitsList from '@/components/page/habits/ActiveHabitsList'
+import ReorderHabitsList from '@/components/page/habits/ReorderHabitsList'
 import withApp from '@/components/app/withApp'
 import Box from '@/components/primitives/Box'
 import Head from 'next/head'
@@ -18,7 +18,7 @@ const HabitsPage = () => {
       <Box sx={{ maxWidth: 'habits', margin: 'auto' }}>
         <HabitsPageNavSection />
         <Spacer mb={[2, 3]} />
-        <ActiveHabitsList />
+        <ReorderHabitsList />
         {showGuide && <EmptyHabitsPageGuide />}
         <Spacer mb={4} />
       </Box>

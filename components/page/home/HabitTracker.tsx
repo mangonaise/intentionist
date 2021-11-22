@@ -3,17 +3,16 @@ import { observer } from 'mobx-react-lite'
 import { createContext, Dispatch, SetStateAction, useState } from 'react'
 import { getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import { YearAndDay } from '@/logic/app/HabitStatusesHandler'
+import useMediaQuery from '@/hooks/useMediaQuery'
 import getYearAndDay from '@/logic/utils/getYearAndDay'
 import HabitsHandler from '@/logic/app/HabitsHandler'
-import useMediaQuery from '@/hooks/useMediaQuery'
 import HabitWrapper from '@/components/page/home/habit-tracker/HabitWrapper'
+import HabitActions from '@/components/page/home/HabitActions'
 import WeekdayRow from '@/components/page/home/habit-tracker/WeekdayRow'
 import WeekPicker from '@/components/page/home/habit-tracker/WeekPicker'
 import Spacer from '@/components/primitives/Spacer'
 import Box from '@/components/primitives/Box'
-import IconButton from '@/components/primitives/IconButton'
-import PencilIcon from '@/components/icons/PencilIcon'
-import NextLink from 'next/link'
+import Flex from '@/components/primitives/Flex'
 
 export const HabitTrackerContext = createContext<{
   weekStart: YearAndDay,
@@ -29,16 +28,17 @@ const HabitTracker = observer(() => {
   return (
     <HabitTrackerContext.Provider value={{ weekStart, setWeekStart }}>
       <Box sx={{ maxWidth: '850px', mt: [0, '4rem', '4rem'], marginX: 'auto' }}>
-        <WeekPicker />
+        <Flex>
+          <WeekPicker />
+          <Spacer ml="auto" />
+          <HabitActions />
+        </Flex>
         <Spacer mb={[4, 6, 8]} />
         <WeekdayRow expand={isLargeScreen} />
         <Spacer mb={[4, 6, 8]} />
         {activeHabits.map((habit) => (
           <HabitWrapper habit={habit} isLargeScreen={isLargeScreen} isSmallScreen={isSmallScreen} key={habit.id} />
         ))}
-        <NextLink href="/habits">
-          <IconButton icon={PencilIcon} sx={{ mt: 8, margin: 'auto', bg: 'transparent' }}>Your habits</IconButton>
-        </NextLink>
       </Box>
     </HabitTrackerContext.Provider>
   )

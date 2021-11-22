@@ -27,7 +27,7 @@ const DeleteHabitDropdown = () => {
 
   return (
     <>
-      <Dropdown anchorRight sx={{ ml: 2 }}>
+      <Dropdown anchorRight sx={{ ml: '5px', '& > button': { bg: 'transparent' } }}>
         <Dropdown.Item itemAction={openModal}>Delete</Dropdown.Item>
       </Dropdown>
       <ModalPopup isOpen={showModal} closeModal={closeModal}>

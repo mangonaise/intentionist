@@ -73,7 +73,7 @@ const Preset = ({ preset, onSelectPreset }: { preset: HabitPreset } & Props) => 
         return (
           <Fragment key={index}>
             {index === 1 && presetOptions
-              ? (<Dropdown title={selectedPresetOption ?? '...'} sx={{ mx: 2 }}>
+              ? (<Dropdown title={<Text type="span" sx={{ minWidth: '1.15rem' }}>{selectedPresetOption ?? '...'}</Text>} sx={{ mx: 2 }}>
                 {presetOptions.map((option) => (
                   <Dropdown.Item itemAction={() => setSelectedPresetOption(option)} key={option}>
                     {option}

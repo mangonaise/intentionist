@@ -9,11 +9,8 @@ import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import useAutorun from '@/hooks/useAutorun'
 import DragHandle, { DragHandleProps } from '@/components/app/DragHandle'
 import SmartEmoji from '@/components/app/SmartEmoji'
-import Button from '@/components/primitives/Button'
 import Flex from '@/components/primitives/Flex'
-import Icon from '@/components/primitives/Icon'
-import PencilIcon from '@/components/icons/PencilIcon'
-import NextLink from 'next/link'
+import Text from '@/components/primitives/Text'
 
 function createHabitsMap(habits: Habit[]) {
   return habits.reduce<{ [habitId: string]: Habit }>((map, habit) => {
@@ -22,7 +19,7 @@ function createHabitsMap(habits: Habit[]) {
   }, {})
 }
 
-const FilteredHabitsList = () => {
+const ReorderHabitsList = () => {
   const { activeHabits, reorderHabits, findHabitById } = container.resolve(HabitsHandler)
   const [draggedHabitId, setDraggedHabitId] = useState<string | null>(null)
 
@@ -123,6 +120,7 @@ const HabitWrapper = forwardRef(function HabitWrapper(props: HabitWrapperProps, 
   return (
     <Flex
       ref={ref}
+      align="center"
       sx={{
         marginBottom: 2,
         backgroundColor: isDragOverlay ? 'whiteAlpha.20' : 'transparent',
@@ -133,36 +131,23 @@ const HabitWrapper = forwardRef(function HabitWrapper(props: HabitWrapperProps, 
     >
       <DragHandle listeners={listeners} attributes={attributes} isDragOverlay={isDragOverlay} />
       <div sx={{ pointerEvents: isDragOverlay ? 'none' : 'auto', width: '100%' }}>
-        <HabitLink habit={habit} />
+        <HabitPreview habit={habit} />
       </div>
     </Flex>
   )
 })
 
-const HabitLink = observer(({ habit }: { habit: Habit }) => {
+const HabitPreview = observer(({ habit }: { habit: Habit }) => {
   return (
-    <NextLink href={`/habit?id=${habit.id}`}>
-      <Button
-        sx={{
-          width: '100%', px: 3,
-          backgroundColor: 'transparent',
-          textAlign: 'left',
-          'svg': { opacity: 0.25, },
-          '&:hover svg': {
-            opacity: 1
-          }
-        }}
-      >
-        <Flex center justify="flex-start" sx={{ maxWidth: '100%', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
-          <Flex center sx={{ mr: [3, 4], width: '1.3rem' }}>
-            <SmartEmoji nativeEmoji={habit.icon} rem={1.3} />
-          </Flex>
-          {habit.name}
-          <Icon icon={PencilIcon} sx={{ ml: 'auto', pl: 2, fontSize: '1.1rem' }} />
-        </Flex>
-      </Button>
-    </NextLink>
+    <Flex center justify="flex-start" sx={{ pr: 3 }}>
+      <Flex center sx={{ mr: [3, 4], minWidth: '1.3rem' }}>
+        <SmartEmoji nativeEmoji={habit.icon} rem={1.3} />
+      </Flex>
+      <Text type="span" sx={{ maxWidth: '800px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {habit.name}
+      </Text>
+    </Flex>
   )
 })
 
-export default observer(FilteredHabitsList)
+export default observer(ReorderHabitsList)

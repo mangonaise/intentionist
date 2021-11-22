@@ -9,7 +9,7 @@ const HabitTitleSection = () => {
   const { habit, isSmallScreen } = useContext(HabitContext)
 
   return (
-    <NextLink href={{ pathname: 'habit', query: { id: habit.id, returnHome: true } }}>
+    <NextLink href={{ pathname: 'habit', query: { id: habit.id } }}>
       <Link
         sx={{
           display: 'flex', alignItems: 'center', width: 'fit-content', px: 1,

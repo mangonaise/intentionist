@@ -1,5 +1,4 @@
 import BackIcon from '@/components/icons/BackIcon'
-import PlusIcon from '@/components/icons/PlusIcon'
 import Flex from '@/components/primitives/Flex'
 import Heading from '@/components/primitives/Heading'
 import IconButton from '@/components/primitives/IconButton'
@@ -16,18 +15,7 @@ const HabitsPageNavSection = () => {
         <IconButton icon={BackIcon} sx={{ bg: 'transparent' }} />
       </NextLink>
       <Spacer ml={2} />
-      <Heading level={2} sx={{ fontSize: ['1.2rem', '1.5rem'] }}>Your habits</Heading>
-      <NextLink href="/habit?new">
-        <IconButton
-          icon={PlusIcon}
-          hoverEffect="opacity"
-          sx={{
-            bg: 'buttonAccent',
-            ml: 'auto',
-            fontWeight: 'medium',
-          }}
-        />
-      </NextLink>
+      <Heading level={2} sx={{ fontSize: ['1.2rem', '1.5rem'] }}>Reorder habits</Heading>
     </Flex>
   )
 }
