@@ -16,6 +16,7 @@ interface DropdownProps {
   noGap?: boolean,
   noArrow?: boolean,
   disabled?: boolean,
+  highlightWhenOpen?: boolean,
   menuMaxWidth?: string | string[],
   className?: string,
   children: ReactNode
@@ -59,7 +60,7 @@ const Dropdown = (props: DropdownProps) => {
 
 const DropdownButton = () => {
   const [preventOpen, setPreventOpen] = useState(false)
-  const { isOpen, openDropdown, title, noArrow, disabled } = useContext(DropdownContext)
+  const { isOpen, openDropdown, title, noArrow, disabled, highlightWhenOpen = true } = useContext(DropdownContext)
 
   function handleClick() {
     if (!preventOpen) {
@@ -80,6 +81,7 @@ const DropdownButton = () => {
       sx={{
         paddingX: title ? undefined : 3,
         size: '100%',
+        backgroundColor: highlightWhenOpen && isOpen ? 'var(--button-highlight-color) !important' : null,
         '&:disabled': { opacity: 0.75 }
       }}
     >

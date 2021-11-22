@@ -22,6 +22,7 @@ const HabitVisibilityDropdown = () => {
       title={isPrivate ? 'Private' : 'Public'}
       noArrow
       anchorRight={isLargeScreen}
+      highlightWhenOpen={false}
       sx={{
         '& > button': {
           minHeight: ['1.6rem', '1.6rem', '1.75rem'],
