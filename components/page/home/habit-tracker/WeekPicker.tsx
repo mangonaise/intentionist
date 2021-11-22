@@ -1,7 +1,7 @@
-import { FC, useContext, useMemo, useState } from 'react'
+import { FC, useCallback, useContext, useMemo, useState } from 'react'
 import { HabitTrackerContext } from '@/components/page/home/HabitTracker'
 import { getFirstDayOfLastWeek, getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
-import { startOfMonth, format, isSameMonth, addMonths, endOfMonth, eachWeekOfInterval, isFuture, isSameWeek, isSameDay, setDayOfYear } from 'date-fns'
+import { startOfMonth, format, isSameMonth, addMonths, endOfMonth, eachWeekOfInterval, isFuture, isSameWeek, isSameDay, setDayOfYear, addWeeks } from 'date-fns'
 import getYearAndDay from '@/logic/utils/getYearAndDay'
 import useCurrentDay from '@/hooks/useCurrentDay'
 import Dropdown from '@/components/app/Dropdown'
@@ -17,7 +17,7 @@ import ArrowRightIcon from '@/components/icons/ArrowRightIcon'
 import IconButton from '@/components/primitives/IconButton'
 
 const WeekSelector = () => {
-  const { weekStart } = useContext(HabitTrackerContext)
+  const { weekStart, setWeekStart } = useContext(HabitTrackerContext)
   const { weekdayId } = useCurrentDay()
 
   const selectedDate = useMemo(() => {
@@ -36,10 +36,30 @@ const WeekSelector = () => {
     return `Week of ${format(selectedDate, 'd MMM yyyy')}`
   }, [selectedDate, weekdayId])
 
+  const disableNextWeekButton = useMemo(() => {
+    return selectedDate >= getFirstDayOfThisWeek()
+  }, [selectedDate, weekdayId])
+
+  const changeWeek = useCallback((delta: -1 | 1) => {
+    const newDate = addWeeks(selectedDate, delta)
+    setWeekStart(getYearAndDay(newDate))
+  }, [selectedDate])
+
   return (
-    <Dropdown title={title} sx={{ width: 'fit-content' }}>
-      <MenuContent selectedDate={selectedDate} />
-    </Dropdown>
+    <Flex sx={{ '& > button': { bg: 'transparent' } }}>
+      <IconButton icon={ChevronLeftIcon} onClick={() => changeWeek(-1)} />
+      <Dropdown
+        title={title}
+        noArrow
+        sx={{
+          minWidth: '11.5rem',
+          '& > button': { display: 'flex', justifyContent: 'center', px: 0, bg: 'transparent' }
+        }}
+      >
+        <MenuContent selectedDate={selectedDate} />
+      </Dropdown>
+      <IconButton icon={ChevronRightIcon} onClick={() => changeWeek(1)} disabled={disableNextWeekButton} />
+    </Flex>
   )
 }
 
