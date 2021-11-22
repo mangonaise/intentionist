@@ -29,7 +29,11 @@ const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }:
   return (
     <Flex align="center" sx={{ position: 'relative', flexGrow: 1 }}>
       <ConnectingLine visible={hasValue && connectLeft} fade={weekdayIndex === 0 ? 'left' : null} />
-      <TrackerStatusButton onClick={() => setIsEditing(true)} hasValue={hasValue}>
+      <TrackerStatusButton
+        onClick={() => setIsEditing(true)}
+        hasValue={hasValue}
+        isEditing={isEditing}
+      >
         <Flex center asSpan>
           {!!value && <SmartEmoji nativeEmoji={value} rem={1} />}
         </Flex>
@@ -47,13 +51,19 @@ const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }:
   )
 }
 
-const TrackerStatusButton: FC<{ onClick: () => void, hasValue: boolean }> = ({ onClick, hasValue, children }) => {
+interface TrackerStatusButtonProps {
+  onClick: () => void
+  hasValue: boolean
+  isEditing: boolean
+}
+
+const TrackerStatusButton: FC<TrackerStatusButtonProps> = ({ onClick, hasValue, isEditing, children }) => {
   return (
     <Button
       onClick={onClick}
       sx={{
-        position: 'relative', px: 0, minHeight: '2.5rem', minWidth: '2.5rem',
-        borderRadius: 'trackerStatus', bg: hasValue ? 'whiteAlpha.3' : 'transparent',
+        position: 'relative', px: 0, minHeight: '2.5rem', minWidth: '2.5rem', borderRadius: 'trackerStatus',
+        bg: isEditing ? 'buttonHighlight' : (hasValue ? 'whiteAlpha.3' : 'transparent'),
         '&:focus': {
           boxShadow: '0 0 0 2px var(--focus-color) inset',
           '&:not(:focus-visible)': { boxShadow: 'none' }
@@ -61,12 +71,11 @@ const TrackerStatusButton: FC<{ onClick: () => void, hasValue: boolean }> = ({ o
         '&::before': {
           position: 'absolute',
           inset: 0,
-          zIndex: -1,
           content: '""',
           border: 'solid 2px',
           borderColor: 'buttonAccent',
           borderRadius: 'inherit',
-          opacity: hasValue ? 1 : 0.6,
+          opacity: isEditing || hasValue ? 1 : 0.6,
           transition: 'opacity 175ms'
         }
       }}
