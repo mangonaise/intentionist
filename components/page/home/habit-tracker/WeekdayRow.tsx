@@ -22,7 +22,7 @@ const WeekdayRow = ({ expand }: { expand: boolean }) => {
     <Flex
       sx={{
         position: 'relative', justifyContent: 'space-around', mx: '-0.5rem',
-        width: expand ? '950px' : 'auto', right: expand ? '43px' : 0
+        width: expand ? '950px' : 'auto', right: expand ? '43px' : 0, userSelect: 'none'
       }}
     >
       {shellArray.map((_, index) => (
