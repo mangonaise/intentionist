@@ -77,20 +77,22 @@ export default class HabitsHandler {
     await this.dbHandler.deleteHabit(id)
   }
 
-  public reorderHabits = async (habitToMove: Habit, habitToTakePositionOf: Habit) => {
+  public reorderHabitsLocally = (habitToMove: Habit, habitToTakePositionOf: Habit) => {
     const oldIndex = this.activeHabits.indexOf(habitToMove)
     const newIndex = this.activeHabits.indexOf(habitToTakePositionOf)
     if (oldIndex < 0 || newIndex < 0 || oldIndex === newIndex) return
 
     // 💻
     this.activeHabits = arrayMove(this.activeHabits, oldIndex, newIndex)
+  }
 
+  public uploadHabitOrder = async () => {
     // ☁️
     await this.dbHandler.update(this.dbHandler.habitDetailsDocRef(), {
       order: this.getOrderedIds()
     })
   }
-  
+
   private addNewHabit = async (newHabit: Habit) => {
     // 💻
     this.activeHabits.push(newHabit)
@@ -105,7 +107,7 @@ export default class HabitsHandler {
     return this.activeHabits.find((habit) => habit.id === id)
   }
 
-  private getOrderedIds = () => {
+  public getOrderedIds = () => {
     return this.activeHabits.map((habit) => habit.id)
   }
 

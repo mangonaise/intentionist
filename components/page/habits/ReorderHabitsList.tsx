@@ -20,7 +20,7 @@ function createHabitsMap(habits: Habit[]) {
 }
 
 const ReorderHabitsList = () => {
-  const { activeHabits, reorderHabits, findHabitById } = container.resolve(HabitsHandler)
+  const { activeHabits, reorderHabitsLocally, findHabitById } = container.resolve(HabitsHandler)
   const [draggedHabitId, setDraggedHabitId] = useState<string | null>(null)
 
   const [habitsMap, setHabitsMap] = useState(createHabitsMap(activeHabits))
@@ -71,7 +71,7 @@ const ReorderHabitsList = () => {
       const habitToMove = findHabitById(active.id)
       const takesPlaceOf = findHabitById(over.id)
       if (habitToMove && takesPlaceOf) {
-        reorderHabits(habitToMove, takesPlaceOf)
+        reorderHabitsLocally(habitToMove, takesPlaceOf)
       }
     }
     setDraggedHabitId(null)
