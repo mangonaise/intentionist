@@ -1,17 +1,11 @@
-import { container } from 'tsyringe'
-import { useState } from 'react'
-import HabitsHandler from '@/logic/app/HabitsHandler'
 import HabitsPageNavSection from '@/components/page/habits/HabitsPageNavSection'
-import EmptyHabitsPageGuide from '@/components/page/habits/EmptyHabitsPageGuide'
 import ReorderHabitsList from '@/components/page/habits/ReorderHabitsList'
 import withApp from '@/components/app/withApp'
 import Box from '@/components/primitives/Box'
-import Head from 'next/head'
 import Spacer from '@/components/primitives/Spacer'
+import Head from 'next/head'
 
 const HabitsPage = () => {
-  const [showGuide] = useState(container.resolve(HabitsHandler).activeHabits.length === 0)
-
   return (
     <>
       <Head><title>Habits</title></Head>
@@ -19,7 +13,6 @@ const HabitsPage = () => {
         <HabitsPageNavSection />
         <Spacer mb={[2, 3]} />
         <ReorderHabitsList />
-        {showGuide && <EmptyHabitsPageGuide />}
         <Spacer mb={4} />
       </Box>
     </>

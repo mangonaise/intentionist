@@ -10,6 +10,7 @@ import HabitWrapper from '@/components/page/home/habit-tracker/HabitWrapper'
 import HabitActions from '@/components/page/home/HabitActions'
 import WeekdayRow from '@/components/page/home/habit-tracker/WeekdayRow'
 import WeekPicker from '@/components/page/home/habit-tracker/WeekPicker'
+import NewUserHabitsGuide from '@/components/page/home/NewUserHabitsGuide'
 import Spacer from '@/components/primitives/Spacer'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
@@ -36,11 +37,13 @@ const HabitTracker = observer(() => {
           <HabitActions />
         </Flex>
         <Spacer mb={[4, 6, 8]} />
-        <WeekdayRow expand={isLargeScreen} />
-        <Spacer mb={[4, 6, 8]} />
-        {activeHabits.map((habit) => (
-          <HabitWrapper habit={habit} key={habit.id} />
-        ))}
+        {activeHabits.length ? <>
+          <WeekdayRow expand={isLargeScreen} />
+          <Spacer mb={[4, 6, 8]} />
+          {activeHabits.map((habit) => (
+            <HabitWrapper habit={habit} key={habit.id} />
+          ))}</>
+          : <NewUserHabitsGuide />}
       </Box>
     </HabitTrackerContext.Provider>
   )

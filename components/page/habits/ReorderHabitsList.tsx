@@ -39,6 +39,8 @@ const ReorderHabitsList = () => {
     }),
   )
 
+  if (!activeHabits.length) return <NoHabitsText />
+
   return (
     <DndContext
       sensors={sensors}
@@ -149,5 +151,15 @@ const HabitPreview = observer(({ habit }: { habit: Habit }) => {
     </Flex>
   )
 })
+
+const NoHabitsText = () => {
+  return (
+    <Flex center sx={{ height: '4rem' }}>
+      <Text sx={{ fontSize: '1.2rem', textAlign: 'center', color: 'whiteAlpha.60' }}>
+        Nothing to see here!
+      </Text>
+    </Flex>
+  )
+}
 
 export default observer(ReorderHabitsList)
