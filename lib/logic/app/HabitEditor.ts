@@ -69,6 +69,7 @@ export default class HabitEditor {
       timeable: true,
       archived: false,
       visibility: 'private',
+      weeklyFrequency: 7,
       creationTime: getUtcSeconds()
     }
   }

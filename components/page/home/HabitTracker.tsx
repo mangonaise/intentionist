@@ -16,7 +16,9 @@ import Flex from '@/components/primitives/Flex'
 
 export const HabitTrackerContext = createContext<{
   weekStart: YearAndDay,
-  setWeekStart: Dispatch<SetStateAction<YearAndDay>>
+  setWeekStart: Dispatch<SetStateAction<YearAndDay>>,
+  isLargeScreen: boolean,
+  isSmallScreen: boolean
 }>(null!)
 
 const HabitTracker = observer(() => {
@@ -26,7 +28,7 @@ const HabitTracker = observer(() => {
   const isSmallScreen = useMediaQuery('(max-width: 500px', true, false)
 
   return (
-    <HabitTrackerContext.Provider value={{ weekStart, setWeekStart }}>
+    <HabitTrackerContext.Provider value={{ weekStart, setWeekStart, isLargeScreen, isSmallScreen }}>
       <Box sx={{ maxWidth: '850px', mt: [0, '4rem', '4rem'], marginX: 'auto' }}>
         <Flex>
           <WeekPicker />
@@ -37,7 +39,7 @@ const HabitTracker = observer(() => {
         <WeekdayRow expand={isLargeScreen} />
         <Spacer mb={[4, 6, 8]} />
         {activeHabits.map((habit) => (
-          <HabitWrapper habit={habit} isLargeScreen={isLargeScreen} isSmallScreen={isSmallScreen} key={habit.id} />
+          <HabitWrapper habit={habit} key={habit.id} />
         ))}
       </Box>
     </HabitTrackerContext.Provider>

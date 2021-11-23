@@ -15,9 +15,12 @@ export type Habit = {
   timeable: boolean
   archived: boolean,
   visibility: HabitVisibility,
-  statuses?: { [year: number]: { [day: number]: string } }
+  weeklyFrequency?: null | 1 | 2 | 3 | 4 | 5 | 6 | 7
+  statuses?: HabitStatuses
   creationTime: number
 }
+
+export type HabitStatuses = { [year: number]: { [day: number]: string } }
 
 export type HabitVisibility = 'public' | 'private'
 
@@ -61,6 +64,7 @@ export default class HabitsHandler {
       palette: preset.palette,
       timeable: preset.timeable,
       visibility: 'private',
+      weeklyFrequency: preset.weeklyFrequency,
       archived: false,
       creationTime: getUtcSeconds()
     })
@@ -130,7 +134,7 @@ export default class HabitsHandler {
   }
 }
 
-export type HabitPreset = Pick<Habit, 'name' | 'icon' | 'palette' | 'timeable'> & { uniqueText?: string }
+export type HabitPreset = Pick<Habit, 'name' | 'icon' | 'palette' | 'timeable' | 'weeklyFrequency'> & { uniqueText?: string }
 
 export const habitPresets: HabitPreset[] = [
   {
@@ -139,6 +143,7 @@ export const habitPresets: HabitPreset[] = [
     icon: '⏰',
     palette: ['👍'],
     timeable: false,
+    weeklyFrequency: 7
   },
   {
     name: 'Sleep by [10,10:30,11,11:30,12]',
@@ -146,96 +151,112 @@ export const habitPresets: HabitPreset[] = [
     icon: '🌙',
     palette: ['👍'],
     timeable: false,
+    weeklyFrequency: 7
   },
   {
     name: 'Drink [6,7,8,9,10] glasses of water',
     uniqueText: 'glasses of water',
     icon: '💧',
     palette: ['👍'],
-    timeable: false
+    timeable: false,
+    weeklyFrequency: 7
   },
   {
     name: 'Make bed',
     icon: '🛏️',
     palette: ['👍'],
-    timeable: false
+    timeable: false,
+    weeklyFrequency: 7
   },
   {
     name: 'Read',
     icon: '📚',
     palette: ['🌟', '👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Podcast',
     icon: '📻',
     palette: ['👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Exercise',
     icon: '🏃',
     palette: ['🌟', '👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Stretch',
     icon: '🙆',
     palette: ['🌟', '👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Yoga',
     icon: '🧘',
     palette: ['🌟', '👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Meditate',
     icon: '🌸',
     palette: ['🌟', '👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Journal',
     icon: '✏️',
     palette: ['👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'No phone in bed',
     icon: '📴',
     palette: ['👍'],
-    timeable: false
+    timeable: false,
+    weeklyFrequency: 7
   },
   {
     name: 'Tidy space',
     icon: '🧹',
     palette: ['🌟', '👍'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Healthy eating',
     icon: '🍎',
     palette: ['🌟', '👍'],
-    timeable: false
+    timeable: false,
+    weeklyFrequency: 7
   },
   {
     name: 'Me time',
     icon: '💖',
     palette: ['🌟', '👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Wakefulness',
     icon: '⚡',
     palette: ['🤩', '👍', '🆗', '🥱'],
-    timeable: false
+    timeable: false,
+    weeklyFrequency: null
   },
   {
     name: 'Mood',
     icon: '🙂',
     palette: ['😊', '🙂', '😐', '😢', '😒', '😬', '😠'],
-    timeable: false
+    timeable: false,
+    weeklyFrequency: null
   }
 ]

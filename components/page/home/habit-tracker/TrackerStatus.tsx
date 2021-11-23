@@ -1,6 +1,7 @@
 import { container } from 'tsyringe'
 import { FC, useCallback, useContext, useState } from 'react'
 import { HabitContext } from '@/components/page/home/habit-tracker/HabitWrapper'
+import { CurrentDateContext } from '@/components/app/withApp'
 import TrackerStatusEditor from '@/components/page/home/habit-tracker/TrackerStatusEditor'
 import HabitStatusesHandler, { YearAndDay } from '@/logic/app/HabitStatusesHandler'
 import SmartEmoji from '@/components/app/SmartEmoji'
@@ -18,8 +19,11 @@ interface Props {
 
 const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }: Props) => {
   const { habit } = useContext(HabitContext)
+  const { yearAndDay: { year: currentYear, dayOfYear: today } } = useContext(CurrentDateContext)
   const [isEditing, setIsEditing] = useState(false)
   const hasValue = !!value
+
+  const isFuture = (date.year === currentYear && date.dayOfYear > today) || date.year > currentYear
 
   const handleChangeStatus = useCallback((status: string | null) => {
     container.resolve(HabitStatusesHandler).setHabitStatus(habit, date, status)
@@ -33,6 +37,7 @@ const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }:
         onClick={() => setIsEditing(true)}
         hasValue={hasValue}
         isEditing={isEditing}
+        disabled={isFuture}
       >
         <Flex center asSpan>
           {!!value && <SmartEmoji nativeEmoji={value} rem={1} />}
@@ -54,18 +59,20 @@ const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }:
 interface TrackerStatusButtonProps {
   onClick: () => void
   hasValue: boolean
-  isEditing: boolean
+  isEditing: boolean,
+  disabled: boolean
 }
 
-const TrackerStatusButton: FC<TrackerStatusButtonProps> = ({ onClick, hasValue, isEditing, children }) => {
+const TrackerStatusButton: FC<TrackerStatusButtonProps> = ({ onClick, hasValue, isEditing, disabled, children }) => {
   return (
     <Button
       onClick={onClick}
+      disabled={disabled && !hasValue}
       sx={{
         position: 'relative', px: 0, minHeight: '2.5rem', minWidth: '2.5rem', borderRadius: 'trackerStatus',
         bg: isEditing ? 'buttonHighlight' : (hasValue ? 'whiteAlpha.3' : 'transparent'),
         '&:focus': {
-          boxShadow: '0 0 0 2px var(--focus-color) inset',
+          boxShadow: '0 0 0 4px var(--focus-color) inset',
           '&:not(:focus-visible)': { boxShadow: 'none' }
         },
         '&::before': {

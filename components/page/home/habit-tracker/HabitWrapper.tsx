@@ -1,5 +1,9 @@
+import { container } from 'tsyringe'
 import { Habit } from '@/logic/app/HabitsHandler'
-import { createContext } from 'react'
+import { createContext, useContext, useEffect } from 'react'
+import { CurrentDateContext } from '@/components/app/withApp'
+import { HabitTrackerContext } from '@/components/page/home/HabitTracker'
+import HabitStatusesHandler from '@/logic/app/HabitStatusesHandler'
 import HabitVisibilityDropdown from '@/components/page/home/habit-tracker/HabitVisibilityDropdown'
 import HabitTitleSection from '@/components/page/home/habit-tracker/HabitTitleSection'
 import TrackerStatusRow from '@/components/page/home/habit-tracker/TrackerStatusRow'
@@ -10,15 +14,20 @@ import Flex from '@/components/primitives/Flex'
 
 type HabitProps = {
   habit: Habit
-  isLargeScreen: boolean
-  isSmallScreen: boolean
 }
 
 export const HabitContext = createContext<HabitProps>(null!)
 
-const HabitWrapper = ({ habit, isLargeScreen, isSmallScreen }: HabitProps) => {
+const HabitWrapper = ({ habit }: HabitProps) => {
+  const { isLargeScreen } = useContext(HabitTrackerContext)
+  const { yearAndDay } = useContext(CurrentDateContext)
+
+  useEffect(() => {
+    container.resolve(HabitStatusesHandler).refreshStreak(habit)
+  }, [yearAndDay])
+
   return (
-    <HabitContext.Provider value={{ habit, isLargeScreen, isSmallScreen }}>
+    <HabitContext.Provider value={{ habit }}>
       <Box sx={{ mb: [4, 7] }}>
         <Flex sx={{ flexDirection: isLargeScreen ? 'row' : 'column' }}>
           <HabitTitleSection />

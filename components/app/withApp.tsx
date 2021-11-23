@@ -1,11 +1,12 @@
 import { observer } from 'mobx-react-lite'
 import { container } from 'tsyringe'
 import { useRouter } from 'next/dist/client/router'
-import { useEffect, useState } from 'react'
+import { createContext, useState } from 'react'
+import useCurrentDate, { CurrentDateInfo } from '@/hooks/useCurrentDate'
+import useAutorun from '@/hooks/useAutorun'
 import InitialFetchHandler from '@/logic/app/InitialFetchHandler'
 import DbHandler from '@/logic/app/DbHandler'
 import ProfileHandler from '@/logic/app/ProfileHandler'
-import useAutorun from '@/hooks/useAutorun'
 import useWarnUnsavedChanges from '@/hooks/useWarnUnsavedChanges'
 import FadeIn from '@/components/primitives/FadeIn'
 import Spacer from '@/components/primitives/Spacer'
@@ -14,6 +15,8 @@ import LoadingScreen from './LoadingScreen'
 import Navbar from './Navbar'
 import GradientBackground from './GradientBackground'
 import theme from 'styles/theme'
+
+export const CurrentDateContext = createContext<CurrentDateInfo>(null!)
 
 const getProfileHandler = () => container.resolve(ProfileHandler)
 let disableFading = false
@@ -24,6 +27,8 @@ const withApp = (WrappedComponent: () => JSX.Element) => withAuthUser(observer((
   const { hasCompletedInitialFetches } = container.resolve(InitialFetchHandler)
   const [profileExists, setProfileExists] = useState(hasCompletedInitialFetches && !!getProfileHandler().profileInfo)
   const [fade] = useState(!disableFading)
+
+  const currentDateInfo = useCurrentDate()
 
   useWarnUnsavedChanges({
     unload: !isWriteComplete,
@@ -43,7 +48,7 @@ const withApp = (WrappedComponent: () => JSX.Element) => withAuthUser(observer((
 
   if (!hasCompletedInitialFetches || !profileExists) return <LoadingScreen />
   return (
-    <>
+    <CurrentDateContext.Provider value={currentDateInfo}>
       <FadeIn time={fade ? 500 : 0} delay={100} sx={{ zIndex: 100 }}>
         <Navbar />
         <Spacer mb={theme.navbarHeights} />
@@ -52,7 +57,7 @@ const withApp = (WrappedComponent: () => JSX.Element) => withAuthUser(observer((
           <WrappedComponent />
         </FadeIn>
       </FadeIn>
-    </>
+    </CurrentDateContext.Provider>
   )
 }))
 

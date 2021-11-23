@@ -15,11 +15,14 @@ const HabitEditorPresetsSection = observer(() => {
   if (!isVisible && !habitEditor.habit?.name) setIsVisible(true)
 
   function handleSelectPreset(preset: HabitPreset) {
+    habitEditor.updateHabit({ ...preset })
+
     habitEditor.updateHabit({
       name: preset.name,
       palette: preset.palette,
       timeable: preset.timeable,
-      icon: preset.icon
+      icon: preset.icon,
+      weeklyFrequency: preset.weeklyFrequency
     })
   }
 

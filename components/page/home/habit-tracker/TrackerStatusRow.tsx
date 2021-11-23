@@ -9,8 +9,8 @@ import Flex from '@/components/primitives/Flex'
 
 const TrackerStatusRow = observer(() => {
   const { getWeeklyHabitStatusData } = container.resolve(HabitStatusesHandler)
-  const { weekStart } = useContext(HabitTrackerContext)
-  const { habit, isLargeScreen } = useContext(HabitContext)
+  const { weekStart, isLargeScreen } = useContext(HabitTrackerContext)
+  const { habit } = useContext(HabitContext)
 
   const weeklyData = getWeeklyHabitStatusData(habit, weekStart)
 

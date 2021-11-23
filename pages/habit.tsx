@@ -8,6 +8,7 @@ import HabitEditorNavSection from '@/components/page/habit-editor/HabitEditorNav
 import HabitIconPicker from '@/components/page/habit-editor/HabitIconPicker'
 import HabitNameInput from '@/components/page/habit-editor/HabitNameInput'
 import HabitEditorPresetsSection from '@/components/page/habit-editor/HabitEditorPresetsSection'
+import HabitStreakSettings from '@/components/page/habit-editor/HabitStreakSettings'
 import Box from '@/components/primitives/Box'
 import FadeIn from '@/components/primitives/FadeIn'
 import Flex from '@/components/primitives/Flex'
@@ -49,7 +50,9 @@ const InitiallyHiddenOptions = observer(() => {
 
   return (
     <FadeIn time={fadeIn ? 350 : 0} delay={400}>
-      <Spacer mb={[2, 4]} />
+      <Spacer mb={[3, 4]} />
+      <HabitStreakSettings />
+      <Spacer mb={[3, 4]} />
       <EmojiPaletteEditor />
     </FadeIn>
   )

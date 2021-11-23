@@ -2,8 +2,8 @@ import { FC, useCallback, useContext, useMemo, useState } from 'react'
 import { HabitTrackerContext } from '@/components/page/home/HabitTracker'
 import { getFirstDayOfLastWeek, getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import { startOfMonth, format, isSameMonth, addMonths, endOfMonth, eachWeekOfInterval, isFuture, isSameWeek, isSameDay, setDayOfYear, addWeeks } from 'date-fns'
+import { CurrentDateContext } from '@/components/app/withApp'
 import getYearAndDay from '@/logic/utils/getYearAndDay'
-import useCurrentDay from '@/hooks/useCurrentDay'
 import Dropdown from '@/components/app/Dropdown'
 import Flex from '@/components/primitives/Flex'
 import Divider from '@/components/primitives/Divider'
@@ -18,7 +18,7 @@ import IconButton from '@/components/primitives/IconButton'
 
 const WeekSelector = () => {
   const { weekStart, setWeekStart } = useContext(HabitTrackerContext)
-  const { weekdayId } = useCurrentDay()
+  const { weekdayId } = useContext(CurrentDateContext)
 
   const selectedDate = useMemo(() => {
     const date = new Date(`${weekStart.year}`)

@@ -1,8 +1,8 @@
 import { useContext, useMemo } from 'react'
-import { HabitTrackerContext } from '@/components/page/home/HabitTracker'
 import { getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
+import { HabitTrackerContext } from '@/components/page/home/HabitTracker'
+import { CurrentDateContext } from '@/components/app/withApp'
 import getYearAndDay from '@/logic/utils/getYearAndDay'
-import useCurrentDay from '@/hooks/useCurrentDay'
 import Flex from '@/components/primitives/Flex'
 import Text from '@/components/primitives/Text'
 
@@ -10,7 +10,7 @@ const shellArray = Array.from({ length: 7 })
 const weekdayInitials = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
 const WeekdayRow = ({ expand }: { expand: boolean }) => {
-  const { weekdayId } = useCurrentDay()
+  const { weekdayId } = useContext(CurrentDateContext)
   const { weekStart } = useContext(HabitTrackerContext)
 
   const isViewingThisWeek = useMemo(() => {
