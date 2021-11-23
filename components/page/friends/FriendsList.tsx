@@ -2,10 +2,10 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
 import FriendsHandler from '@/logic/app/FriendsHandler'
-import EmptyFriendsViewText from '@/components/page/friends/EmptyFriendsViewText'
 import FriendsLoadingIndicator from '@/components/page/friends/FriendsLoadingIndicator'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import ModalPopup from '@/components/app/ModalPopup'
+import EmptyPageText from '@/components/app/EmptyPageText'
 import FadeIn from '@/components/primitives/FadeIn'
 import Flex from '@/components/primitives/Flex'
 import Spacer from '@/components/primitives/Spacer'
@@ -29,7 +29,7 @@ const FriendsList = observer(() => {
       <RemoveFriendModal removingFriendUid={removingFriendUid} closeModal={() => setRemovingFriendUid(null)} />
       <FadeIn>
         {friends.length === 0
-          ? <EmptyFriendsViewText text="You haven't added any friends yet." />
+          ? <EmptyPageText text="You haven't added any friends yet." />
           : <>
             {friends.map((friend) => (
               <Flex align="center" sx={{ mb: 2 }} key={friend.username}>

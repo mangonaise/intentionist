@@ -9,6 +9,7 @@ import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import useAutorun from '@/hooks/useAutorun'
 import DragHandle, { DragHandleProps } from '@/components/app/DragHandle'
 import SmartEmoji from '@/components/app/SmartEmoji'
+import EmptyPageText from '@/components/app/EmptyPageText'
 import Flex from '@/components/primitives/Flex'
 import Text from '@/components/primitives/Text'
 
@@ -39,7 +40,7 @@ const ReorderHabitsList = () => {
     }),
   )
 
-  if (!activeHabits.length) return <NoHabitsText />
+  if (!activeHabits.length) return <EmptyPageText text="Nothing to see here!" />
 
   return (
     <DndContext
@@ -151,15 +152,5 @@ const HabitPreview = observer(({ habit }: { habit: Habit }) => {
     </Flex>
   )
 })
-
-const NoHabitsText = () => {
-  return (
-    <Flex center sx={{ height: '4rem' }}>
-      <Text sx={{ fontSize: '1.2rem', textAlign: 'center', color: 'whiteAlpha.60' }}>
-        Nothing to see here!
-      </Text>
-    </Flex>
-  )
-}
 
 export default observer(ReorderHabitsList)
