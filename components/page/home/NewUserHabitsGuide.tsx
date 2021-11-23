@@ -18,7 +18,7 @@ const NewUserHabitsGuide = () => {
           Progress is made one day at a time.
         </Text>
         <Text>
-          Start by pressing the <b sx={{ color: 'textAccent' }}>New habit</b> button above.
+          Start by pressing the <b sx={{ color: 'textAccent' }}>+</b> button above.
         </Text>
       </Box>
     </Flex>

@@ -8,9 +8,12 @@ const HabitActions = observer(() => {
   return (
     <>
       <NextLink href="/habit?new">
-        <IconButton icon={PlusIcon} hoverEffect="opacity" sx={{ bg: 'buttonAccent' }}>
-          New habit
-        </IconButton>
+        <IconButton
+          icon={PlusIcon}
+          hoverEffect="opacity"
+          sx={{ bg: 'buttonAccent' }}
+          title="New habit"
+        />
       </NextLink>
       <Dropdown anchorRight sx={{ marginLeft: '5px', '& > button': { bg: 'transparent' } }}>
         <Dropdown.Item href="/habits">Reorder habits</Dropdown.Item>
