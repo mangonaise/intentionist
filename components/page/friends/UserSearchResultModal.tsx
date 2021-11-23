@@ -85,7 +85,7 @@ const UserSearchResultModal = ({ isOpen, closeModal, searchResult, onSendFriendR
           <Button
             onClick={onSendFriendRequest}
             hoverEffect="opacity"
-            sx={{ flex: 1, minWidth: ['100%', 'auto'], color: 'bg', backgroundColor: 'text', fontWeight: 'medium' }}
+            sx={{ flex: 1, minWidth: ['100%', 'auto'], backgroundColor: 'accent', fontWeight: 'medium' }}
           >
             Send request
           </Button>

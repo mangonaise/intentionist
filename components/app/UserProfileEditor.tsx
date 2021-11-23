@@ -96,8 +96,7 @@ const UserProfileEditor = ({ initialProfile, isNewUser }: Props) => {
                   opacity: isSubmittingProfile ? 0.7 : null,
                 },
                 '&:not(:disabled)': {
-                  color: 'bg',
-                  backgroundColor: 'text',
+                  backgroundColor: 'accent',
                   fontWeight: 'medium',
                 }
               }}

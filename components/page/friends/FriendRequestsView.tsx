@@ -111,7 +111,7 @@ const IncomingRequest = ({ request }: { request: FriendRequest }) => {
         disabled={isDeclining}
         icon={CheckIcon}
         hoverEffect="opacity"
-        sx={{ flex: 1, bg: 'text', color: 'bg', fontWeight: 'medium' }}
+        sx={{ flex: 1, bg: 'accent', fontWeight: 'medium' }}
       >
         Accept
       </IconButton>
