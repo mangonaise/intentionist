@@ -20,7 +20,8 @@ const TrackerStatusEditor = ({ hasValue, palette, onSelectStatus, onCancelEditin
 
   useStatusEditorArrowNavigation()
 
-  function handleEmojiPickerResult(emoji: BaseEmoji) {
+  async function handleEmojiPickerResult(emoji: BaseEmoji) {
+    await new Promise(resolve => setTimeout(resolve, 250))
     onSelectStatus(emoji.native)
   }
 
