@@ -2,7 +2,7 @@ import { container } from 'tsyringe'
 import { useContext } from 'react'
 import HabitsHandler, { HabitVisibility } from '@/logic/app/HabitsHandler'
 import { HabitContext } from '@/components/page/home/habit-tracker/HabitWrapper'
-import { HabitTrackerContext } from '@/components/page/home/HabitTracker'
+import { HabitTrackerScreenContext } from '@/components/page/home/HabitTracker'
 import Dropdown from '@/components/app/Dropdown'
 import Text from '@/components/primitives/Text'
 import Icon from '@/components/primitives/Icon'
@@ -10,7 +10,7 @@ import Flex from '@/components/primitives/Flex'
 import CheckIcon from '@/components/icons/CheckIcon'
 
 const HabitVisibilityDropdown = () => {
-  const { isLargeScreen } = useContext(HabitTrackerContext)
+  const { isLargeScreen } = useContext(HabitTrackerScreenContext)
   const { habit } = useContext(HabitContext)
   const isPrivate = habit.visibility === 'private'
 

@@ -8,18 +8,16 @@ service cloud.firestore {
         && isUsernameAvailable(request.resource.data.username);
       allow update: if requestedByUserWithId(userId)
 	      && isValidUserProfile(request.resource.data)
-        && (request.resource.data.username == resource.data.username 
-          || isUsernameAvailable(request.resource.data.username));
+        && (request.resource.data.username == resource.data.username || isUsernameAvailable(request.resource.data.username));
 
       match /habits/{habitId} {
-        allow read, write: if requestedByUserWithId(userId);
-        allow get: if requestedByUserWithId(userId)
-          || isUserXFriendOfUserY(request.auth.uid, userId);
+        allow write: if requestedByUserWithId(userId);
+        allow read: if requestedByUserWithId(userId) || 
+          (resource.data.visibility == 'public' && isUserXFriendOfUserY(request.auth.uid, userId));
       }
 
       match /notes/{noteId} {
         allow read, write: if requestedByUserWithId(userId);
-        allow get: if isUserXFriendOfUserY(request.auth.uid, userId);
       }
 
       match /userData/friends {

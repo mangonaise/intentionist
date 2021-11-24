@@ -1,7 +1,9 @@
+import { container } from 'tsyringe'
+import { observer } from 'mobx-react-lite'
 import { useContext, useMemo } from 'react'
 import { getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
-import { HabitTrackerContext } from '@/components/page/home/HabitTracker'
 import { CurrentDateContext } from '@/components/app/withApp'
+import HomeViewHandler from '@/logic/app/HomeViewHandler'
 import getYearAndDay from '@/logic/utils/getYearAndDay'
 import Flex from '@/components/primitives/Flex'
 import Text from '@/components/primitives/Text'
@@ -9,14 +11,14 @@ import Text from '@/components/primitives/Text'
 const shellArray = Array.from({ length: 7 })
 const weekdayInitials = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
-const WeekdayRow = ({ expand }: { expand: boolean }) => {
+const WeekdayRow = observer(({ expand }: { expand: boolean }) => {
   const { weekdayId } = useContext(CurrentDateContext)
-  const { weekStart } = useContext(HabitTrackerContext)
+  const { selectedWeekStartDate } = container.resolve(HomeViewHandler)
 
   const isViewingThisWeek = useMemo(() => {
     const { year: thisYear, dayOfYear: today } = getYearAndDay(getFirstDayOfThisWeek())
-    return weekStart.year === thisYear && weekStart.dayOfYear === today
-  }, [weekdayId, weekStart])
+    return selectedWeekStartDate.year === thisYear && selectedWeekStartDate.dayOfYear === today
+  }, [weekdayId, selectedWeekStartDate])
 
   return (
     <Flex
@@ -45,6 +47,6 @@ const WeekdayRow = ({ expand }: { expand: boolean }) => {
       ))}
     </Flex>
   )
-}
+})
 
 export default WeekdayRow

@@ -2,17 +2,19 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { HabitContext } from '@/components/page/home/habit-tracker/HabitWrapper'
-import { HabitTrackerContext } from '@/components/page/home/HabitTracker'
+import { HabitTrackerScreenContext } from '@/components/page/home/HabitTracker'
 import HabitStatusesHandler from '@/logic/app/HabitStatusesHandler'
+import HomeViewHandler from '@/logic/app/HomeViewHandler'
 import TrackerStatus from '@/components/page/home/habit-tracker/TrackerStatus'
 import Flex from '@/components/primitives/Flex'
 
 const TrackerStatusRow = observer(() => {
   const { getWeeklyHabitStatusData } = container.resolve(HabitStatusesHandler)
-  const { weekStart, isLargeScreen } = useContext(HabitTrackerContext)
+  const { selectedWeekStartDate } = container.resolve(HomeViewHandler)
+  const { isLargeScreen } = useContext(HabitTrackerScreenContext)
   const { habit } = useContext(HabitContext)
 
-  const weeklyData = getWeeklyHabitStatusData(habit, weekStart)
+  const weeklyData = getWeeklyHabitStatusData(habit, selectedWeekStartDate)
 
   return (
     <Flex

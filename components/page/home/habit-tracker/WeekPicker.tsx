@@ -1,8 +1,10 @@
+import { container } from 'tsyringe'
+import { observer } from 'mobx-react-lite'
 import { FC, useCallback, useContext, useMemo, useState } from 'react'
-import { HabitTrackerContext } from '@/components/page/home/HabitTracker'
 import { getFirstDayOfLastWeek, getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import { startOfMonth, format, isSameMonth, addMonths, endOfMonth, eachWeekOfInterval, isFuture, isSameWeek, isSameDay, setDayOfYear, addWeeks } from 'date-fns'
 import { CurrentDateContext } from '@/components/app/withApp'
+import HomeViewHandler from '@/logic/app/HomeViewHandler'
 import getYearAndDay from '@/logic/utils/getYearAndDay'
 import Dropdown from '@/components/app/Dropdown'
 import Flex from '@/components/primitives/Flex'
@@ -16,14 +18,12 @@ import Box from '@/components/primitives/Box'
 import ArrowRightIcon from '@/components/icons/ArrowRightIcon'
 import IconButton from '@/components/primitives/IconButton'
 
-const WeekSelector = () => {
-  const { weekStart, setWeekStart } = useContext(HabitTrackerContext)
+const WeekSelector = observer(() => {
+  const { selectedWeekStartDate, setSelectedWeekStartDate } = container.resolve(HomeViewHandler)
   const { weekdayId } = useContext(CurrentDateContext)
 
-  const selectedDate = useMemo(() => {
-    const date = new Date(`${weekStart.year}`)
-    return setDayOfYear(date, weekStart.dayOfYear)
-  }, [weekStart])
+  const { year: selectedYear, dayOfYear: selectedDay } = selectedWeekStartDate
+  const selectedDate = setDayOfYear(new Date(`${selectedYear}`), selectedDay)
 
   const title = useMemo(() => {
     const selectedDateValue = selectedDate.valueOf()
@@ -42,35 +42,41 @@ const WeekSelector = () => {
 
   const changeWeek = useCallback((delta: -1 | 1) => {
     const newDate = addWeeks(selectedDate, delta)
-    setWeekStart(getYearAndDay(newDate))
+    setSelectedWeekStartDate(getYearAndDay(newDate))
   }, [selectedDate])
 
   return (
-    <Flex sx={{ '& > button': { bg: 'transparent' } }}>
-      <IconButton icon={ChevronLeftIcon} onClick={() => changeWeek(-1)} />
-      <Dropdown
-        title={title}
-        noArrow
-        sx={{
-          minWidth: '11.5rem',
-          '& > button': { display: 'flex', justifyContent: 'center', px: 0, bg: 'transparent' }
-        }}
-      >
-        <MenuContent selectedDate={selectedDate} />
-      </Dropdown>
-      <IconButton icon={ChevronRightIcon} onClick={() => changeWeek(1)} disabled={disableNextWeekButton} />
+    <Flex align="center">
+      <Divider sx={{ flex: 1 }} />
+      <Flex sx={{ '& > button': { bg: 'transparent' }, width: ['100%', 'auto'], mx: [0, 2] }}>
+        <IconButton icon={ChevronLeftIcon} onClick={() => changeWeek(-1)} />
+        <Dropdown
+          title={title}
+          noArrow
+          sx={{
+            mx: '5px', flex: 1,
+            '& > button': {
+              display: 'flex', justifyContent: 'center', px: 0, bg: 'transparent', width: ['100%', '15rem']
+            }
+          }}
+        >
+          <MenuContent selectedDate={selectedDate} />
+        </Dropdown>
+        <IconButton icon={ChevronRightIcon} onClick={() => changeWeek(1)} disabled={disableNextWeekButton} />
+      </Flex>
+      <Divider sx={{ flex: 1 }} />
     </Flex>
   )
-}
+})
 
 const MenuContent = ({ selectedDate }: { selectedDate: Date }) => {
-  const { setWeekStart } = useContext(HabitTrackerContext)
+  const { setSelectedWeekStartDate } = container.resolve(HomeViewHandler)
   const [displayedMonth, setDisplayedMonth] = useState(startOfMonth(selectedDate))
   const [displayedWeeks, setDisplayedWeeks] = useState(getWeeksInMonth(displayedMonth))
   const [isDisplayingCurrentMonth, setIsDisplayingCurrentMonth] = useState(isSameMonth(displayedMonth, new Date()))
 
   function handleSelectWeek(startDate: Date) {
-    setWeekStart(getYearAndDay(startDate))
+    setSelectedWeekStartDate(getYearAndDay(startDate))
   }
 
   function changeDisplayedMonth(delta: 1 | -1) {

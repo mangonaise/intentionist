@@ -37,7 +37,8 @@ const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }:
         onClick={() => setIsEditing(true)}
         hasValue={hasValue}
         isEditing={isEditing}
-        disabled={isFuture}
+        isFuture={isFuture}
+        belongsToFriend={!!habit.friendUid}
       >
         <Flex center asSpan>
           {!!value && <SmartEmoji nativeEmoji={value} rem={1} />}
@@ -60,17 +61,21 @@ interface TrackerStatusButtonProps {
   onClick: () => void
   hasValue: boolean
   isEditing: boolean,
-  disabled: boolean
+  isFuture: boolean,
+  belongsToFriend: boolean
 }
 
-const TrackerStatusButton: FC<TrackerStatusButtonProps> = ({ onClick, hasValue, isEditing, disabled, children }) => {
+const TrackerStatusButton: FC<TrackerStatusButtonProps> = ({ onClick, hasValue, isEditing, isFuture, belongsToFriend, children }) => {
   return (
     <Button
       onClick={onClick}
-      disabled={disabled && !hasValue}
+      disabled={belongsToFriend || (isFuture && !hasValue)}
       sx={{
         position: 'relative', px: 0, minHeight: '2.5rem', minWidth: '2.5rem', borderRadius: 'trackerStatus',
         bg: isEditing ? 'buttonHighlight' : (hasValue ? 'whiteAlpha.3' : 'transparent'),
+        '&:disabled': {
+          opacity: belongsToFriend ? 1 : 0.3
+        },
         '&:focus': {
           boxShadow: '0 0 0 4px var(--focus-color) inset',
           '&:not(:focus-visible)': { boxShadow: 'none' }

@@ -1,7 +1,9 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
+import { useEffect } from 'react'
 import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import FriendsHandler, { Friend } from '@/logic/app/FriendsHandler'
+import HomeViewHandler from '@/logic/app/HomeViewHandler'
 import Dropdown from '@/components/app/Dropdown'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Flex from '@/components/primitives/Flex'
@@ -12,19 +14,25 @@ import ArrowRightIcon from '@/components/icons/ArrowRightIcon'
 
 const FriendsDropdown = observer(() => {
   const { friends } = container.resolve(FriendsHandler)
+  const { viewUser, selectedFriendUid } = container.resolve(HomeViewHandler)
 
-  function handleSelectUser(friendUid?: string) {
-    console.error('handleSelectUser not implemented')
+  function handleSelectFriend(friendUid: string | null) {
+    viewUser(friendUid)
   }
+
+  useEffect(() => {
+    if (!selectedFriendUid) viewUser(null)
+  }, [])
 
   return (
     <Dropdown
-      title={<DropdownTitle />}
+      title={<DropdownTitle friendUid={selectedFriendUid} />}
+      sx={{ '& > button': { bg: 'transparent', px: 3 } }}
     >
-      <FriendButton friend={null} onClick={() => handleSelectUser()} />
+      <FriendButton friend={null} onClick={() => handleSelectFriend(null)} />
       {!!friends.length && <Divider />}
       {friends.map((friend) => (
-        <FriendButton friend={friend} onClick={() => handleSelectUser(friend.uid)} key={friend.uid} />
+        <FriendButton friend={friend} onClick={() => handleSelectFriend(friend.uid)} key={friend.uid} />
       ))}
       <Divider />
       <Dropdown.Item href="/friends" sx={{ color: 'whiteAlpha.70', '&:hover': { color: 'text' } }}>
@@ -59,7 +67,7 @@ const FriendButton = ({ friend, onClick }: { friend: Friend | null, onClick: () 
   )
 }
 
-const DropdownTitle = observer(({ friendUid }: { friendUid?: string }) => {
+const DropdownTitle = observer(({ friendUid }: { friendUid: string | null }) => {
   const { profileInfo } = container.resolve(ProfileHandler)
   const { friends } = container.resolve(FriendsHandler)
 

@@ -2,7 +2,7 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { HabitContext } from '@/components/page/home/habit-tracker/HabitWrapper'
-import { HabitTrackerContext } from '@/components/page/home/HabitTracker'
+import { HabitTrackerScreenContext } from '@/components/page/home/HabitTracker'
 import HabitStatusesHandler from '@/logic/app/HabitStatusesHandler'
 import Icon from '@/components/primitives/Icon'
 import Text from '@/components/primitives/Text'
@@ -11,7 +11,7 @@ import FlameIcon from '@/components/icons/FlameIcon'
 
 const HabitStreak = observer(() => {
   const { streaks } = container.resolve(HabitStatusesHandler)
-  const { isLargeScreen } = useContext(HabitTrackerContext)
+  const { isLargeScreen } = useContext(HabitTrackerScreenContext)
   const { habit } = useContext(HabitContext)
 
   if (habit.weeklyFrequency === null) return null
