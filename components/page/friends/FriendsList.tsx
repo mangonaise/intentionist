@@ -127,7 +127,7 @@ const RemoveFriendModal = ({ removingFriendUid, closeModal }: { removingFriendUi
             <Button
               onClick={handleRemoveFriend}
               hoverEffect="opacity"
-              sx={{ flex: 1, minWidth: ['100%', 'auto'], bg: 'focus', fontWeight: 'medium' }}
+              sx={{ flex: 1, minWidth: ['100%', 'auto'], bg: 'buttonWarning', fontWeight: 'medium' }}
             >
               Remove
             </Button>
