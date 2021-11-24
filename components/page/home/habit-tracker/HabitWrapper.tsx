@@ -2,7 +2,6 @@ import { container } from 'tsyringe'
 import { Habit } from '@/logic/app/HabitsHandler'
 import { createContext, useContext, useEffect } from 'react'
 import { CurrentDateContext } from '@/components/app/withApp'
-import { HabitTrackerScreenContext } from '@/components/page/home/HabitTracker'
 import HabitStatusesHandler from '@/logic/app/HabitStatusesHandler'
 import HabitVisibilityDropdown from '@/components/page/home/habit-tracker/HabitVisibilityDropdown'
 import HabitTitleSection from '@/components/page/home/habit-tracker/HabitTitleSection'
@@ -19,7 +18,6 @@ type HabitProps = {
 export const HabitContext = createContext<HabitProps>(null!)
 
 const HabitWrapper = ({ habit }: HabitProps) => {
-  const { isLargeScreen } = useContext(HabitTrackerScreenContext)
   const { yearAndDay } = useContext(CurrentDateContext)
 
   useEffect(() => {
@@ -29,10 +27,10 @@ const HabitWrapper = ({ habit }: HabitProps) => {
   return (
     <HabitContext.Provider value={{ habit }}>
       <Box sx={{ mb: [4, 7] }}>
-        <Flex sx={{ flexDirection: isLargeScreen ? 'row' : 'column' }}>
+        <Flex sx={{ maxWidth: 'max', mx: 'auto', flexDirection: ['column', 'column', 'row'] }}>
           <HabitTitleSection />
-          <Spacer mb={2} mr={isLargeScreen ? 'auto' : 0} />
-          <Flex align="center" sx={{ flexDirection: isLargeScreen ? 'row-reverse' : 'row' }}>
+          <Spacer mb={2} mr={[0, 0, 'auto']} />
+          <Flex align="center" sx={{ flexDirection: ['row', 'row', 'row-reverse'] }}>
             {!habit.friendUid && <>
               <HabitVisibilityDropdown />
               <Spacer mr={2} />
@@ -40,7 +38,7 @@ const HabitWrapper = ({ habit }: HabitProps) => {
             <HabitStreak />
           </Flex>
         </Flex>
-        <Spacer mb={isLargeScreen ? 6 : 4} />
+        <Spacer mb={[4, 4, 6]} />
         <TrackerStatusRow />
       </Box>
     </HabitContext.Provider>

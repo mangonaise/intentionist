@@ -11,7 +11,7 @@ import Text from '@/components/primitives/Text'
 const shellArray = Array.from({ length: 7 })
 const weekdayInitials = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
-const WeekdayRow = observer(({ expand }: { expand: boolean }) => {
+const WeekdayRow = observer(() => {
   const { weekdayId } = useContext(CurrentDateContext)
   const { selectedWeekStartDate } = container.resolve(HomeViewHandler)
 
@@ -23,8 +23,7 @@ const WeekdayRow = observer(({ expand }: { expand: boolean }) => {
   return (
     <Flex
       sx={{
-        position: 'relative', justifyContent: 'space-around', mx: '-0.5rem',
-        width: expand ? '950px' : 'auto', right: expand ? '43px' : 0, userSelect: 'none'
+        position: 'relative', maxWidth: 'max', mx: ['-0.5rem', 'auto'], justifyContent: 'space-around', userSelect: 'none'
       }}
     >
       {shellArray.map((_, index) => (

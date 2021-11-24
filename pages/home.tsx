@@ -5,7 +5,7 @@ import Head from 'next/head'
 
 const Home = () => {
   return (
-    <Box sx={{ maxWidth: 'max', margin: 'auto' }}>
+    <Box>
       <Head><title>Home</title></Head>
       <HabitTracker />
     </Box>
