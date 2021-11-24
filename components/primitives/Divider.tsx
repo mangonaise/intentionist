@@ -8,6 +8,7 @@ interface Props {
 const Divider: StyledComponent<Props> = ({ color, className }) => {
   return (
     <Box
+      role="presentation"
       sx={{ borderTop: 'solid 1px', borderColor: color ?? 'divider' }}
       className={className}
     />
