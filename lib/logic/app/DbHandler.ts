@@ -95,6 +95,26 @@ export default class DbHandler {
     this.completeWrite()
   }
 
+  public addSharedHabit = async (args: { friendUid: string, habitId: string }) => {
+    const { friendUid, habitId } = args
+    await this.update(this.habitDetailsDocRef(), {
+      shared: {
+        [friendUid]: arrayUnion(habitId)
+      },
+      order: arrayUnion(habitId)
+    })
+  }
+
+  public removeSharedHabit = async (args: { friendUid: string, habitId: string, noneRemaining: boolean }) => {
+    const { friendUid, habitId, noneRemaining } = args
+    await this.update(this.habitDetailsDocRef(), {
+      shared: {
+        [friendUid]: noneRemaining ? deleteField() : arrayRemove(habitId)
+      },
+      order: arrayRemove(habitId)
+    })
+  }
+
   public getNoteDoc = async (noteId: string, friendUid?: string) => {
     const noteDoc = await this.getDocData(this.noteDocRef(noteId, friendUid)) ?? null
     return noteDoc as Fetched<NoteDocumentData>

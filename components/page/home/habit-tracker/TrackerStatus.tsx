@@ -74,7 +74,7 @@ const TrackerStatusButton: FC<TrackerStatusButtonProps> = ({ onClick, hasValue, 
         position: 'relative', px: 0, minHeight: '2.5rem', minWidth: '2.5rem', borderRadius: 'trackerStatus',
         bg: isEditing ? 'buttonHighlight' : (hasValue ? 'whiteAlpha.3' : 'transparent'),
         '&:disabled': {
-          opacity: belongsToFriend ? 1 : 0.3
+          opacity: belongsToFriend && !isFuture ? 1 : 0.3
         },
         '&:focus': {
           boxShadow: '0 0 0 4px var(--focus-color) inset',

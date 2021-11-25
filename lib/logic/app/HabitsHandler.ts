@@ -26,16 +26,19 @@ export type HabitVisibility = 'public' | 'private'
 
 export type HabitDetailsDocumentData = {
   order: string[],
-  activeIds: { [habitId: string]: true }
+  activeIds: { [habitId: string]: true },
+  shared: { [friendUid: string]: string[] }
 }
 
 @singleton()
 export default class HabitsHandler {
-  public activeHabits: Habit[]
+  public activeHabits: Habit[] = []
+  public sharedHabitsIdsByFriend: { [friendUid: string]: string[] } = {}
+  public order: string[] = []
 
   constructor(initialState: InitialState, private dbHandler: DbHandler) {
     const { activeHabitsDocs, habitDetailsDoc } = initialState.data
-    this.activeHabits = this.processFetchedHabitData(activeHabitsDocs, habitDetailsDoc)
+    this.processFetchedHabitData(activeHabitsDocs, habitDetailsDoc)
     makeAutoObservable(this)
   }
 
@@ -54,6 +57,17 @@ export default class HabitsHandler {
     await this.dbHandler.update(this.dbHandler.habitDocRef(habitToSet.id), habitToSet)
 
     return this.activeHabits[index]
+  }
+
+  public changeHabitVisibility = async (habit: Habit, visibility: HabitVisibility) => {
+    if (habit.visibility === visibility) return
+    if(this.activeHabits.indexOf(habit) < 0) return
+
+    // 💻
+    habit.visibility = visibility
+
+    // ☁️
+    await this.dbHandler.update(this.dbHandler.habitDocRef(habit.id), habit)
   }
 
   public addHabitFromPreset = async (preset: HabitPreset) => {
@@ -82,19 +96,21 @@ export default class HabitsHandler {
   }
 
   public reorderHabitsLocally = (habitToMove: Habit, habitToTakePositionOf: Habit) => {
-    const oldIndex = this.activeHabits.indexOf(habitToMove)
-    const newIndex = this.activeHabits.indexOf(habitToTakePositionOf)
-    if (oldIndex < 0 || newIndex < 0 || oldIndex === newIndex) return
+    console.error('reimplementation required')
+    // const oldIndex = this.activeHabits.indexOf(habitToMove)
+    // const newIndex = this.activeHabits.indexOf(habitToTakePositionOf)
+    // if (oldIndex < 0 || newIndex < 0 || oldIndex === newIndex) return
 
-    // 💻
-    this.activeHabits = arrayMove(this.activeHabits, oldIndex, newIndex)
+    // // 💻
+    // this.activeHabits = arrayMove(this.activeHabits, oldIndex, newIndex)
   }
 
   public uploadHabitOrder = async () => {
-    // ☁️
-    await this.dbHandler.update(this.dbHandler.habitDetailsDocRef(), {
-      order: this.getOrderedIds()
-    })
+    console.error('reimplementation required')
+    // // ☁️
+    // await this.dbHandler.update(this.dbHandler.habitDetailsDocRef(), {
+    //   order: this.getOrderedIds()
+    // })
   }
 
   private addNewHabit = async (newHabit: Habit) => {
@@ -107,16 +123,37 @@ export default class HabitsHandler {
     return this.activeHabits[this.activeHabits.length - 1]
   }
 
+  public addSharedHabit = async (args: { friendUid: string, habitId: string }) => {
+    const { friendUid, habitId } = args
+
+    // 💻
+    this.sharedHabitsIdsByFriend[friendUid] = this.sharedHabitsIdsByFriend[friendUid] ?? []
+    this.sharedHabitsIdsByFriend[friendUid].push(habitId)
+
+    // ☁️
+    await this.dbHandler.addSharedHabit(args)
+  }
+
+  public removeSharedHabit = async (args: { friendUid: string, habitId: string }) => {
+    const { friendUid, habitId } = args
+
+    const sharedHabit = this.sharedHabitsIdsByFriend[friendUid]?.find((id) => id === habitId)
+    if (!sharedHabit) return
+
+    // 💻
+    this.sharedHabitsIdsByFriend[friendUid] = this.sharedHabitsIdsByFriend[friendUid].filter((id) => id !== habitId)
+    const noneRemaining = this.sharedHabitsIdsByFriend[friendUid].length === 0
+
+    // ☁️
+    await this.dbHandler.removeSharedHabit({ ...args, noneRemaining })
+  }
+
   public findHabitById = (id: string) => {
     return this.activeHabits.find((habit) => habit.id === id)
   }
 
-  public getOrderedIds = () => {
-    return this.activeHabits.map((habit) => habit.id)
-  }
-
-  private processFetchedHabitData = (habitsDocs: Habit[], habitDetails: Fetched<HabitDetailsDocumentData>) => {
-    const order = habitDetails?.order ?? []
+  private processFetchedHabitData = (activeHabits: Habit[], habitDetails: Fetched<HabitDetailsDocumentData>) => {
+    const order: string[] = habitDetails?.order ?? []
     const activeIds = Object.keys(habitDetails?.activeIds ?? {})
     for (const habitId of activeIds) {
       if (!order.includes(habitId)) {
@@ -124,13 +161,9 @@ export default class HabitsHandler {
       }
     }
 
-    let orderedHabits = [] as Habit[]
-    for (const orderedId of order) {
-      const habit = habitsDocs.find((habit) => habit.id === orderedId)
-      if (habit) orderedHabits.push(habit)
-    }
-
-    return orderedHabits
+    this.sharedHabitsIdsByFriend = habitDetails?.shared ?? {}
+    this.activeHabits = activeHabits
+    this.order = order
   }
 }
 

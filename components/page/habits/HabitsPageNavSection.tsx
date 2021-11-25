@@ -11,11 +11,10 @@ import NextLink from 'next/link'
 
 
 const HabitsPageNavSection = () => {
-  const { getOrderedIds, uploadHabitOrder } = container.resolve(HabitsHandler)
-  const [initialOrder] = useState(getOrderedIds())
+  const [initialOrder] = useState(container.resolve(HabitsHandler).order)
 
   function handleSaveHabitOrder() {
-    const newOrder = getOrderedIds()
+    const { order: newOrder, uploadHabitOrder } = container.resolve(HabitsHandler)
     if (!isEqual(initialOrder, newOrder)) {
       uploadHabitOrder()
     }

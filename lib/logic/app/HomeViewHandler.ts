@@ -10,12 +10,11 @@ import getYearAndDay from '@/logic/utils/getYearAndDay'
 export default class HomeViewHandler {
   public selectedFriendUid: string | null = null
   public selectedWeekStartDate = getYearAndDay(getFirstDayOfThisWeek())
-  public habitsInView: Array<Habit & { friendUid?: string }>
-  public isLoadingFriendActivity = false
+  public habitsInView: Array<Habit & { friendUid?: string }> = []
+  public isLoading = true
   private selectedFriendHabitOrder: string[] = []
-
+  
   constructor(private habitsHandler: HabitsHandler, private friendActivityHandler: FriendActivityHandler) {
-    this.habitsInView = habitsHandler.activeHabits
     makeAutoObservable(this)
   }
 
@@ -26,28 +25,49 @@ export default class HomeViewHandler {
   public viewUser = (friendUid: string | null) => {
     if (this.selectedFriendUid === friendUid) return
     if (!friendUid) {
-      this.selectedFriendUid = null
-      this.habitsInView = this.habitsHandler.activeHabits
-      this.friendActivityHandler.stopListeningToFriendActivity()
+      this.viewActiveAndSharedHabits()
     } else {
-      this.viewFriend(friendUid)
+      this.viewFriendHabits(friendUid)
     }
   }
 
-  private viewFriend = async (friendUid: string) => {
+  public viewActiveAndSharedHabits = async () => {
+    this.selectedFriendUid = null
+    this.friendActivityHandler.stopListeningToUnsharedHabits()
+
+    this.isLoading = true
+
+    await new Promise<void>(resolve => resolve()) // * listen to shared habits here
+
+    let newHabitsInView = [] as Habit[]
+    for (const habitId of this.habitsHandler.order) {
+      const activeHabit = this.habitsHandler.activeHabits.find((habit) => habit.id === habitId)
+      if (activeHabit) newHabitsInView.push(activeHabit)
+    }
+
+    runInAction(() => {
+      this.habitsInView = newHabitsInView
+      this.isLoading = false
+    })
+  }
+
+  private viewFriendHabits = async (friendUid: string) => {
     this.selectedFriendUid = friendUid
     this.habitsInView = []
-    this.isLoadingFriendActivity = true
-    await this.friendActivityHandler.listenToFriendActivity(friendUid, this.handleFriendHabitsChange)
+    this.isLoading = true
+    await this.friendActivityHandler.listenToUnsharedHabits(friendUid, this.handleFriendHabitsChange)
     runInAction(() => {
-      this.isLoadingFriendActivity = false
+      this.isLoading = false
     })
   }
 
   private handleFriendHabitsChange = (newOrder?: string[]) => {
     if (newOrder) this.selectedFriendHabitOrder = newOrder
-    this.habitsInView = this.selectedFriendHabitOrder
-      .map((habitId) => this.friendActivityHandler.friendHabits.find((habit) => habitId === habit.id))
-      .filter((habit) => !!habit) as Array<Habit & { friendUid?: string }>
+    let newHabitsInView = []
+    for (const habitId of this.selectedFriendHabitOrder) {
+      const habit = this.friendActivityHandler.friendHabits.find((habit) => habitId === habit.id)
+      if (habit) newHabitsInView.push(habit)
+    }
+    this.habitsInView = newHabitsInView
   }
 }

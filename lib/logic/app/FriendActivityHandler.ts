@@ -1,63 +1,118 @@
 import { singleton } from 'tsyringe'
 import { makeAutoObservable, runInAction, when } from 'mobx'
-import { onSnapshot, query, where } from '@firebase/firestore'
-import { Habit } from '@/logic/app/HabitsHandler'
+import { QuerySnapshot, DocumentSnapshot, DocumentData, onSnapshot, query, where } from '@firebase/firestore'
 import { Unsubscribe } from '@firebase/util'
+import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import DbHandler from '@/logic/app/DbHandler'
 import HabitStatusesHandler from '@/logic/app/HabitStatusesHandler'
 
+type HabitWithFriendUid = Habit & { friendUid: string }
+
 @singleton()
 export default class FriendActivityHandler {
-  public friendHabits: Array<Habit & { friendUid: string }> = []
-  private habitOrderListenerUnsubscribe: Unsubscribe | null = null
-  private habitsListenerUnsubscribe: Unsubscribe | null = null
-  private listenerLoadingStates = { hasLoadedHabitOrder: false, hasLoadedHabits: false }
+  public friendHabits: HabitWithFriendUid[] = []
 
-  constructor(private dbHandler: DbHandler, private statusesHandler: HabitStatusesHandler) {
+  // keep track of listeners for shared habits (for viewing your own habits page)
+  private sharedHabitListenerUnsubscribes: { [friendUid: string]: Unsubscribe } = {}
+  private hasLoadedSharedHabits = false
+
+  // keep track of listeners for unshared habits (for viewing a friend's habits page)
+  private habitOrderListenerUnsubscribe: Unsubscribe | null = null
+  private unsharedHabitsListenerUnsubscribe: Unsubscribe | null = null
+  private unsharedListenerLoadingStates = { hasLoadedHabitOrder: false, hasLoadedHabits: false }
+
+  constructor(private dbHandler: DbHandler, private statusesHandler: HabitStatusesHandler, private habitsHandler: HabitsHandler) {
     makeAutoObservable(this)
   }
 
-  public listenToFriendActivity = async (friendUid: string, onChange: (order?: string[]) => void) => {
-    this.stopListeningToFriendActivity()
+  public listenToSharedHabits = async () => {
+    this.hasLoadedSharedHabits = false
 
-    this.habitOrderListenerUnsubscribe = onSnapshot(this.dbHandler.habitDetailsDocRef(friendUid), (snapshot) => {
-      const order = snapshot.data()?.order ?? []
-      onChange(order)
+    // todo: some things
 
-      runInAction(() => {
-        this.listenerLoadingStates.hasLoadedHabitOrder = true
-      })
+    runInAction(() => {
+      this.hasLoadedSharedHabits = true
     })
-
-    const habitsQuery = query(
-      this.dbHandler.habitsCollectionRef(friendUid),
-      where('visibility', '==', 'public'),
-      where('archived', '==', false)
-    )
-
-    this.habitsListenerUnsubscribe = onSnapshot(habitsQuery, (snapshot) => {
-      const habits = snapshot.docs.map((doc) => {
-        const habit = doc.data() as Habit
-        this.statusesHandler.refreshStreak(habit)
-        return { ...habit, friendUid }
-      })
-      this.friendHabits = this.friendHabits.filter((habit) => habit.friendUid !== friendUid)
-      this.friendHabits = habits
-      onChange()
-
-      runInAction(() => {
-        this.listenerLoadingStates.hasLoadedHabits = true
-      })
-    })
-
-    await when(() => this.listenerLoadingStates.hasLoadedHabitOrder && this.listenerLoadingStates.hasLoadedHabits)
   }
 
-  public stopListeningToFriendActivity = () => {
+  public listenToUnsharedHabits = async (friendUid: string, onChange: (order?: string[]) => void) => {
+    this.stopListeningToUnsharedHabits()
+
+    this.habitOrderListenerUnsubscribe = onSnapshot(
+      this.dbHandler.habitDetailsDocRef(friendUid),
+      (snapshot) => this.handleHabitDetailsDocSnapshot({ snapshot, onChange }))
+
+    this.unsharedHabitsListenerUnsubscribe = onSnapshot(
+      this.generateUnsharedHabitsListenerQuery(friendUid),
+      (snapshot) => this.handleUnsharedHabitsSnapshot({ snapshot, friendUid, onChange })
+    )
+
+    await when(() =>
+      this.unsharedListenerLoadingStates.hasLoadedHabitOrder &&
+      this.unsharedListenerLoadingStates.hasLoadedHabits
+    )
+  }
+
+  public stopListeningToUnsharedHabits = () => {
     this.habitOrderListenerUnsubscribe?.()
-    this.habitsListenerUnsubscribe?.()
+    this.unsharedHabitsListenerUnsubscribe?.()
     this.habitOrderListenerUnsubscribe = null
-    this.habitsListenerUnsubscribe = null
-    this.listenerLoadingStates = { hasLoadedHabitOrder: false, hasLoadedHabits: false }
+    this.unsharedHabitsListenerUnsubscribe = null
+    this.unsharedListenerLoadingStates = { hasLoadedHabitOrder: false, hasLoadedHabits: false }
+  }
+
+  private generateUnsharedHabitsListenerQuery = (friendUid: string) => {
+    const sharedHabitIds = this.habitsHandler.sharedHabitsIdsByFriend[friendUid]
+    let queryConditions = [where('visibility', '==', 'public'), where('archived', '==', false)]
+
+    if (sharedHabitIds?.length) {
+      queryConditions.push(where('id', 'not-in', this.habitsHandler.sharedHabitsIdsByFriend[friendUid]))
+    }
+
+    return query(this.dbHandler.habitsCollectionRef(friendUid), ...queryConditions)
+  }
+
+  private handleUnsharedHabitsSnapshot = (args: { snapshot: QuerySnapshot<DocumentData>, friendUid: string, onChange: () => void }) => {
+    const { snapshot, friendUid, onChange } = args
+
+    const habitsInSnapshot = snapshot.docs.map((doc) => {
+      const habit = doc.data() as Habit
+      this.statusesHandler.refreshStreak(habit)
+      return { ...habit, friendUid }
+    })
+
+    // * when data changes, refresh the relevant habits in friendHabits (i.e. the unshared ones)
+    // you can't just compare against habitsInSnapshot because the query contents might change
+    // (e.g. if the friend removes a habit or makes it private)
+    this.friendHabits = this.removeUnsharedHabitsFromArrayByFriend(this.friendHabits, friendUid)
+    this.friendHabits.push(...habitsInSnapshot)
+
+    onChange()
+
+    runInAction(() => {
+      this.unsharedListenerLoadingStates.hasLoadedHabits = true
+    })
+  }
+
+  private handleHabitDetailsDocSnapshot = (args: { snapshot: DocumentSnapshot<DocumentData>, onChange: (order: string[]) => void }) => {
+    const { snapshot, onChange } = args
+
+    const order = snapshot.data()?.order ?? []
+    onChange(order)
+
+    runInAction(() => {
+      this.unsharedListenerLoadingStates.hasLoadedHabitOrder = true
+    })
+  }
+
+  private removeUnsharedHabitsFromArrayByFriend = (habitsArray: HabitWithFriendUid[], friendUid: string) => {
+    return habitsArray.filter((habit) => {
+      const matchesFriend = habit.friendUid === friendUid
+      const isSharedHabit = () => this.habitsHandler.sharedHabitsIdsByFriend[friendUid]?.some((habitId) => habitId === habit.id)
+      if (matchesFriend && !isSharedHabit()) {
+        return false
+      }
+      return true
+    })
   }
 }

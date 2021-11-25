@@ -21,6 +21,7 @@ function createHabitsMap(habits: Habit[]) {
 }
 
 const ReorderHabitsList = () => {
+  // todo: show active and shared habits
   const { activeHabits, reorderHabitsLocally, findHabitById } = container.resolve(HabitsHandler)
   const [draggedHabitId, setDraggedHabitId] = useState<string | null>(null)
 

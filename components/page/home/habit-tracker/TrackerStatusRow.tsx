@@ -17,7 +17,7 @@ const TrackerStatusRow = observer(() => {
   return (
     <Flex
       align="center"
-      sx={{ maxWidth: 'max', mx: ['-0.5rem', 'auto'], position: 'relative' }}
+      sx={{ mx: ['-0.5rem', 'auto'] }}
     >
       {weeklyData.map(({ value, date, hasPreviousValue, hasNextValue }, index) => (
         <TrackerStatus
