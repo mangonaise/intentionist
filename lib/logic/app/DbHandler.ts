@@ -95,13 +95,13 @@ export default class DbHandler {
     this.completeWrite()
   }
 
-  public addSharedHabit = async (args: { friendUid: string, habitId: string }) => {
-    const { friendUid, habitId } = args
+  public addSharedHabit = async (args: { friendUid: string, habitId: string, newOrder: string[] }) => {
+    const { friendUid, habitId, newOrder } = args
     await this.update(this.habitDetailsDocRef(), {
       shared: {
         [friendUid]: arrayUnion(habitId)
       },
-      order: arrayUnion(habitId)
+      order: newOrder
     })
   }
 
@@ -152,8 +152,8 @@ export default class DbHandler {
     return collection(this.db, USERS, friendUid ?? this.uid, HABITS)
   }
 
-  public habitDocRef(habitId: string) {
-    return this.userDocRef(HABITS + '/' + habitId)
+  public habitDocRef(habitId: string, options?: { friendUid?: string }) {
+    return this.userDocRef(HABITS + '/' + habitId, { friendUid: options?.friendUid })
   }
 
   public noteDocRef = (noteId: string, friendUid?: string) => {

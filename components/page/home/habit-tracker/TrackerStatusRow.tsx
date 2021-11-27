@@ -3,13 +3,13 @@ import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { HabitContext } from '@/components/page/home/habit-tracker/HabitWrapper'
 import HabitStatusesHandler from '@/logic/app/HabitStatusesHandler'
-import HomeViewHandler from '@/logic/app/HomeViewHandler'
+import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
 import TrackerStatus from '@/components/page/home/habit-tracker/TrackerStatus'
 import Flex from '@/components/primitives/Flex'
 
 const TrackerStatusRow = observer(() => {
   const { getWeeklyHabitStatusData } = container.resolve(HabitStatusesHandler)
-  const { selectedWeekStartDate } = container.resolve(HomeViewHandler)
+  const { selectedWeekStartDate } = container.resolve(DisplayedHabitsHandler)
   const { habit } = useContext(HabitContext)
 
   const weeklyData = getWeeklyHabitStatusData(habit, selectedWeekStartDate)

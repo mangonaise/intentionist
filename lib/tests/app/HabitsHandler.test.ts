@@ -62,21 +62,22 @@ describe('initialization', () => {
     expect(habitsHandler.activeHabits).toEqual([dummyHabitA])
   })
 
-  test('fetched habits are ordered correctly', async () => {
+  test('habit order is fetched correctly', async () => {
     await dbHandler.addHabit(dummyHabitA)
     await dbHandler.addHabit(dummyHabitB)
 
     await initialize()
-    expect(habitsHandler.activeHabits).toEqual([dummyHabitA, dummyHabitB])
+    expect(habitsHandler.order).toEqual([dummyHabitA.id, dummyHabitB.id])
   })
 
-  test('if habit ids are missing from the fetched habit order, they are placed at the end of the local habits array', async () => {
+  test('if habit ids are missing from the fetched habit order, the missing habit ids are placed at the end of the "order" array', async () => {
     await dbHandler.addHabit(dummyHabitA)
     await dbHandler.addHabit(dummyHabitB)
     await dbHandler.addHabit(dummyHabitC)
     await dbHandler.update(dbHandler.habitDetailsDocRef(), { order: [dummyHabitC.id, dummyHabitB.id] })
     await initialize()
-    expect(habitsHandler.activeHabits).toEqual([dummyHabitC, dummyHabitB, dummyHabitA])
+    expect(habitsHandler.order).toEqual([dummyHabitC.id, dummyHabitB.id, dummyHabitA.id])
+    expect(sortByHabitId(habitsHandler.activeHabits)).toEqual(sortByHabitId([dummyHabitC, dummyHabitB, dummyHabitA]))
   })
 })
 
@@ -130,7 +131,7 @@ describe('behavior', () => {
     const c = await habitsHandler.setHabit(dummyHabitC)
     habitsHandler.reorderHabitsLocally(a, c)
     await habitsHandler.uploadHabitOrder()
-    expect(habitsHandler.activeHabits).toEqual([b, c, a])
+    expect(habitsHandler.order).toEqual([b.id, c.id, a.id])
     expect((await dbHandler.getHabitDetailsDoc())?.order).toEqual([b.id, c.id, a.id])
   })
 

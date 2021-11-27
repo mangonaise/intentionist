@@ -51,7 +51,7 @@ export default class HabitsHandler {
 
     // 💻
     const index = this.activeHabits.indexOf(existingHabit)
-    this.activeHabits[index] = habitToSet
+    Object.assign(this.activeHabits[index], habitToSet)
 
     // ☁️
     await this.dbHandler.update(this.dbHandler.habitDocRef(habitToSet.id), habitToSet)
@@ -61,7 +61,7 @@ export default class HabitsHandler {
 
   public changeHabitVisibility = async (habit: Habit, visibility: HabitVisibility) => {
     if (habit.visibility === visibility) return
-    if(this.activeHabits.indexOf(habit) < 0) return
+    if (this.activeHabits.indexOf(habit) < 0) return
 
     // 💻
     habit.visibility = visibility
@@ -90,6 +90,7 @@ export default class HabitsHandler {
 
     // 💻
     this.activeHabits = this.activeHabits.filter((habit) => habit !== habitToDelete)
+    this.order = this.order.filter((habitId) => id !== habitId)
 
     // ☁️
     await this.dbHandler.deleteHabit(id)
@@ -116,6 +117,7 @@ export default class HabitsHandler {
   private addNewHabit = async (newHabit: Habit) => {
     // 💻
     this.activeHabits.push(newHabit)
+    this.order.push(newHabit.id)
 
     // ☁️
     await this.dbHandler.addHabit(newHabit)
@@ -129,9 +131,10 @@ export default class HabitsHandler {
     // 💻
     this.sharedHabitsIdsByFriend[friendUid] = this.sharedHabitsIdsByFriend[friendUid] ?? []
     this.sharedHabitsIdsByFriend[friendUid].push(habitId)
+    this.order.unshift(habitId)
 
     // ☁️
-    await this.dbHandler.addSharedHabit(args)
+    await this.dbHandler.addSharedHabit({ friendUid, habitId, newOrder: this.order })
   }
 
   public removeSharedHabit = async (args: { friendUid: string, habitId: string }) => {
@@ -143,6 +146,8 @@ export default class HabitsHandler {
     // 💻
     this.sharedHabitsIdsByFriend[friendUid] = this.sharedHabitsIdsByFriend[friendUid].filter((id) => id !== habitId)
     const noneRemaining = this.sharedHabitsIdsByFriend[friendUid].length === 0
+    if (noneRemaining) delete this.sharedHabitsIdsByFriend[friendUid]
+    this.order = this.order.filter((id) => id !== habitId)
 
     // ☁️
     await this.dbHandler.removeSharedHabit({ ...args, noneRemaining })

@@ -1,9 +1,8 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { useEffect } from 'react'
 import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import FriendsHandler, { Friend } from '@/logic/app/FriendsHandler'
-import HomeViewHandler from '@/logic/app/HomeViewHandler'
+import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
 import Dropdown from '@/components/app/Dropdown'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Flex from '@/components/primitives/Flex'
@@ -14,15 +13,13 @@ import ArrowRightIcon from '@/components/icons/ArrowRightIcon'
 
 const FriendsDropdown = observer(() => {
   const { friends } = container.resolve(FriendsHandler)
-  const { viewUser, selectedFriendUid } = container.resolve(HomeViewHandler)
+  const { viewUser, selectedFriendUid } = container.resolve(DisplayedHabitsHandler)
 
   function handleSelectFriend(friendUid: string | null) {
-    viewUser(friendUid)
+    if (selectedFriendUid !== friendUid) {
+      viewUser(friendUid)
+    }
   }
-
-  useEffect(() => {
-    if (!selectedFriendUid) viewUser(null)
-  }, [])
 
   return (
     <Dropdown

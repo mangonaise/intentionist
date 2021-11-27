@@ -1,7 +1,7 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
-import HomeViewHandler from '@/logic/app/HomeViewHandler'
+import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
 import HabitWrapper from '@/components/page/home/habit-tracker/HabitWrapper'
 import HabitActions from '@/components/page/home/HabitActions'
 import FriendsDropdown from '@/components/page/home/FriendsDropdown'
@@ -15,11 +15,11 @@ import Flex from '@/components/primitives/Flex'
 import FadeIn from '@/components/primitives/FadeIn'
 
 const HabitTracker = observer(() => {
-  const { habitsInView, selectedFriendUid, isLoading, viewActiveAndSharedHabits } = container.resolve(HomeViewHandler)
-  const displayNewUserGuide = !isLoading && !selectedFriendUid && !habitsInView.length
+  const { habitsInView, selectedFriendUid, isLoadingHabits, refreshHabitsInView } = container.resolve(DisplayedHabitsHandler)
+  const displayNewUserGuide = !isLoadingHabits && !selectedFriendUid && !habitsInView.length
 
   useEffect(() => {
-    viewActiveAndSharedHabits()
+    refreshHabitsInView()
   }, [])
 
   return (
@@ -36,11 +36,11 @@ const HabitTracker = observer(() => {
         <WeekdayRow />
         <Spacer mb={[4, 5, 6]} />
       </Box>}
-      {isLoading ? <EmptyPageText text="Loading..." />
+      {isLoadingHabits ? <EmptyPageText text="Loading..." />
         : <FadeIn>
           {(habitsInView.length
             ? habitsInView.map((habit) => <HabitWrapper habit={habit} key={habit.id} />)
-            : <EmptyPageText text="Nothing to see here!" />)}
+            : (!displayNewUserGuide && <EmptyPageText text="Nothing to see here!" />))}
         </FadeIn>}
       {displayNewUserGuide && <NewUserHabitsGuide />}
     </Box>
