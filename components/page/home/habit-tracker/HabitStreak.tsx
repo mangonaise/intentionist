@@ -21,14 +21,14 @@ const HabitStreak = observer(() => {
   const color = isPending ? '#888' : 'textAccent'
 
   return (
-    <Flex center sx={{ flexDirection: ['row', 'row', 'row-reverse'] }}>
-      <Icon icon={FlameIcon} sx={{ color, fontSize: ['1.2rem', '1.3rem'] }} />
+    <Flex center>
       <Text
         type="span"
         sx={{ mx: 1, color, fontWeight: 'medium', fontVariantNumeric: 'tabular-nums' }}
       >
         {count ?? 0}{habit.weeklyFrequency === 7 ? 'd' : 'w'}
       </Text>
+      <Icon icon={FlameIcon} sx={{ color, fontSize: ['1.2rem', '1.3rem'] }} />
     </Flex>
   )
 })

@@ -4,7 +4,7 @@ import { FC, useCallback, useContext, useMemo, useState } from 'react'
 import { getFirstDayOfLastWeek, getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import { startOfMonth, format, isSameMonth, addMonths, endOfMonth, eachWeekOfInterval, isFuture, isSameWeek, isSameDay, setDayOfYear, addWeeks } from 'date-fns'
 import { CurrentDateContext } from '@/components/app/withApp'
-import HomeViewHandler from '@/logic/app/HomeViewHandler'
+import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
 import getYearAndDay from '@/logic/utils/getYearAndDay'
 import Dropdown from '@/components/app/Dropdown'
 import Flex from '@/components/primitives/Flex'
@@ -19,7 +19,7 @@ import ArrowRightIcon from '@/components/icons/ArrowRightIcon'
 import IconButton from '@/components/primitives/IconButton'
 
 const WeekSelector = observer(() => {
-  const { selectedWeekStartDate, setSelectedWeekStartDate } = container.resolve(HomeViewHandler)
+  const { selectedWeekStartDate, setSelectedWeekStartDate } = container.resolve(DisplayedHabitsHandler)
   const { weekdayId } = useContext(CurrentDateContext)
 
   const { year: selectedYear, dayOfYear: selectedDay } = selectedWeekStartDate
@@ -70,7 +70,7 @@ const WeekSelector = observer(() => {
 })
 
 const MenuContent = ({ selectedDate }: { selectedDate: Date }) => {
-  const { setSelectedWeekStartDate } = container.resolve(HomeViewHandler)
+  const { setSelectedWeekStartDate } = container.resolve(DisplayedHabitsHandler)
   const [displayedMonth, setDisplayedMonth] = useState(startOfMonth(selectedDate))
   const [displayedWeeks, setDisplayedWeeks] = useState(getWeeksInMonth(displayedMonth))
   const [isDisplayingCurrentMonth, setIsDisplayingCurrentMonth] = useState(isSameMonth(displayedMonth, new Date()))

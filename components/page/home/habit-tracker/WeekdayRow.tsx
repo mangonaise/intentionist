@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { useContext, useMemo } from 'react'
 import { getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import { CurrentDateContext } from '@/components/app/withApp'
-import HomeViewHandler from '@/logic/app/HomeViewHandler'
+import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
 import getYearAndDay from '@/logic/utils/getYearAndDay'
 import Flex from '@/components/primitives/Flex'
 import Text from '@/components/primitives/Text'
@@ -13,7 +13,7 @@ const weekdayInitials = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
 const WeekdayRow = observer(() => {
   const { weekdayId } = useContext(CurrentDateContext)
-  const { selectedWeekStartDate } = container.resolve(HomeViewHandler)
+  const { selectedWeekStartDate } = container.resolve(DisplayedHabitsHandler)
 
   const isViewingThisWeek = useMemo(() => {
     const { year: thisYear, dayOfYear: today } = getYearAndDay(getFirstDayOfThisWeek())
@@ -21,11 +21,7 @@ const WeekdayRow = observer(() => {
   }, [weekdayId, selectedWeekStartDate])
 
   return (
-    <Flex
-      sx={{
-        position: 'relative', maxWidth: 'max', mx: ['-0.5rem', 'auto'], justifyContent: 'space-around', userSelect: 'none'
-      }}
-    >
+    <Flex sx={{ mx: ['-0.5rem', 'auto'], justifyContent: 'space-around', userSelect: 'none' }}>
       {shellArray.map((_, index) => (
         <Text
           type="span"

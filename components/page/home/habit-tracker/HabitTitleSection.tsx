@@ -24,8 +24,7 @@ const HabitTitleSection = () => {
           <Text
             type="span"
             sx={{
-              // todo: adjust maxWidth based on whether screen has excess width
-              ml: [2, 3], maxWidth: 'min(700px, calc(100vw - 3.25rem))',
+              ml: [2, 3], maxWidth: 'calc(100vw - 3.25rem)',
               overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'
             }}
           >
