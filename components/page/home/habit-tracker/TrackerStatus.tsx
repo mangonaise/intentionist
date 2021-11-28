@@ -103,18 +103,18 @@ const TrackerStatusButton: FC<TrackerStatusButtonProps> = ({ onClick, hasValue, 
   )
 }
 
-const leftGradient = 'linear-gradient(to right, transparent, var(--status-color) 50%)'
-const RightGradient = 'linear-gradient(to left, transparent, var(--status-color) 50%)'
+const leftGradient = 'linear-gradient(to left, rgba(0,0,0,1) 50%, rgba(0,0,0,0))'
+const rightGradient = 'linear-gradient(to right, rgba(0,0,0,1) 50%, rgba(0,0,0,0))'
 
 const ConnectingLine = ({ visible, fade }: { visible: boolean, fade?: 'left' | 'right' | null }) => {
   return (
     <Box
       sx={{
-        height: '2px',
+        maskImage: fade ? (fade === 'left' ? leftGradient : rightGradient) : null,
+        borderBottom: 'solid 2px',
+        borderColor: 'var(--status-color)',
         flex: 1,
         zIndex: -1,
-        backgroundColor: fade ? 'transparent' : 'var(--status-color)',
-        backgroundImage: fade ? (fade === 'left' ? leftGradient : RightGradient) : 'none',
         opacity: visible ? 1 : 0,
         transition: 'opacity 175ms'
       }}
