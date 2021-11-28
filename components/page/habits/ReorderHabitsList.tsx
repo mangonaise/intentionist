@@ -21,13 +21,15 @@ function createHabitsMap(habits: Habit[]) {
   }, {})
 }
 
-const ReorderHabitsList = () => {
+const ReorderHabitsList = observer(() => {
   const router = useRouter()
-  const { selectedFriendUid, habitsInView, refreshHabitsInView } = container.resolve(DisplayedHabitsHandler)
+  const { isLoadingHabits, selectedFriendUid, habitsInView, refreshHabitsInView } = container.resolve(DisplayedHabitsHandler)
   const { reorderHabitsLocally } = container.resolve(HabitsHandler)
   const [draggedHabitId, setDraggedHabitId] = useState<string | null>(null)
 
-  const [habitsMap] = useState(createHabitsMap(habitsInView))
+  const [habitsMap, setHabitsMap] = useState<{ [habitId: string]: Habit } | null>(null)
+
+  if (!isLoadingHabits && !habitsMap) setHabitsMap(createHabitsMap(habitsInView))
 
   useEffect(() => {
     if (selectedFriendUid) {
@@ -43,6 +45,7 @@ const ReorderHabitsList = () => {
     }),
   )
 
+  if (!habitsMap) return null
   if (!habitsInView.length || selectedFriendUid) return <EmptyPageText text="Nothing to see here!" />
 
   return (
@@ -79,7 +82,7 @@ const ReorderHabitsList = () => {
     }
     setDraggedHabitId(null)
   }
-}
+})
 
 const SortableHabit = ({ habit }: { habit: Habit }) => {
   const {
@@ -159,4 +162,4 @@ const HabitPreview = observer(({ habit }: { habit: Habit & { friendUid?: string 
   )
 })
 
-export default observer(ReorderHabitsList)
+export default ReorderHabitsList
