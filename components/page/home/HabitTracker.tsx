@@ -37,7 +37,7 @@ const HabitTracker = observer(() => {
         <Spacer mb={[4, 5, 6]} />
       </Box>}
       {isLoadingHabits ? <EmptyPageText text="Loading..." />
-        : <FadeIn>
+        : <FadeIn delay={50}>
           {(habitsInView.length
             ? habitsInView.map((habit) => <HabitWrapper habit={habit} key={habit.id} />)
             : (!displayNewUserGuide && <EmptyPageText text="Nothing to see here!" />))}
