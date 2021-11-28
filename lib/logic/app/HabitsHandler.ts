@@ -169,10 +169,14 @@ export default class HabitsHandler {
         order.push(habitId)
       }
     }
+    this.order = order
+    this.activeHabits = activeHabits
 
     this.sharedHabitsIdsByFriend = habitDetails?.shared ?? {}
-    this.activeHabits = activeHabits
-    this.order = order
+
+    Object.entries(this.sharedHabitsIdsByFriend).forEach(([_, habitIds]) => {
+      habitIds.forEach((habitId) => this.sharedHabitIds[habitId] = true)
+    })
   }
 }
 
