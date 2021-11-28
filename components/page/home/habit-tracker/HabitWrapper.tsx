@@ -1,7 +1,6 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { createContext, useContext, useEffect } from 'react'
-import { FriendHabit } from '@/logic/app/DisplayedHabitsHandler'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import { CurrentDateContext } from '@/components/app/withApp'
 import HabitStatusesHandler from '@/logic/app/HabitStatusesHandler'
@@ -13,11 +12,11 @@ import Flex from '@/components/primitives/Flex'
 import Box from '@/components/primitives/Box'
 
 export const HabitContext = createContext<{
-  habit: Habit | FriendHabit,
+  habit: Habit & { friendUid?: string },
   isSharedHabit: boolean
 }>(null!)
 
-const HabitWrapper = observer(({ habit }: { habit: Habit | FriendHabit }) => {
+const HabitWrapper = observer(({ habit }: { habit: Habit & { friendUid?: string } }) => {
   const { yearAndDay } = useContext(CurrentDateContext)
   const isSharedHabit = !!container.resolve(HabitsHandler).sharedHabitIds[habit.id]
 

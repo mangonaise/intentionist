@@ -7,7 +7,7 @@ import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalList
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
-import DisplayedHabitsHandler, { FriendHabit } from '@/logic/app/DisplayedHabitsHandler'
+import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
 import DragHandle, { DragHandleProps } from '@/components/app/DragHandle'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import EmptyPageText from '@/components/app/EmptyPageText'
