@@ -32,9 +32,10 @@ export type HabitDetailsDocumentData = {
 
 @singleton()
 export default class HabitsHandler {
+  public order: string[] = []
   public activeHabits: Habit[] = []
   public sharedHabitsIdsByFriend: { [friendUid: string]: string[] } = {}
-  public order: string[] = []
+  public sharedHabitIds: { [habitId: string]: true } = {} // for convenience only
 
   constructor(initialState: InitialState, private dbHandler: DbHandler) {
     const { activeHabitsDocs, habitDetailsDoc } = initialState.data
@@ -131,6 +132,7 @@ export default class HabitsHandler {
     // 💻
     this.sharedHabitsIdsByFriend[friendUid] = this.sharedHabitsIdsByFriend[friendUid] ?? []
     this.sharedHabitsIdsByFriend[friendUid].push(habitId)
+    this.sharedHabitIds[habitId] = true
     this.order.unshift(habitId)
 
     // ☁️
@@ -145,9 +147,11 @@ export default class HabitsHandler {
 
     // 💻
     this.sharedHabitsIdsByFriend[friendUid] = this.sharedHabitsIdsByFriend[friendUid].filter((id) => id !== habitId)
+    this.order = this.order.filter((id) => id !== habitId)
+    delete this.sharedHabitIds[habitId]
     const noneRemaining = this.sharedHabitsIdsByFriend[friendUid].length === 0
     if (noneRemaining) delete this.sharedHabitsIdsByFriend[friendUid]
-    this.order = this.order.filter((id) => id !== habitId)
+
 
     // ☁️
     await this.dbHandler.removeSharedHabit({ ...args, noneRemaining })

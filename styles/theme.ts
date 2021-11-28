@@ -3,15 +3,18 @@ const theme = {
   colors: {
     text: 'var(--text-color)',
     textAccent: 'var(--text-accent-color)',
+    textAccentAlt: 'var(--text-accent-color-alt)',
     bg: 'var(--background-color)',
     divider: 'var(--divider-color)',
     grid: 'var(--grid-color)',
     button: 'var(--button-color)',
     buttonAccent: 'var(--button-accent-color)',
+    buttonAccentAlt: 'var(--button-accent-color-alt)',
     buttonWarning: 'var(--button-warning-color)',
     buttonHighlight: 'var(--button-highlight-color)',
     warning: 'var(--warning-color)',
     accent: 'var(--accent-color)',
+    accentAlt: 'var(--accent-color-alt)',
     whiteAlpha: {
       0: 'rgba(255, 255, 255, 0)',
       3: 'rgba(255, 255, 255, 0.03)',

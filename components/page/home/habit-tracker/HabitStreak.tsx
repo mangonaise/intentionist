@@ -10,7 +10,7 @@ import FlameIcon from '@/components/icons/FlameIcon'
 
 const HabitStreak = observer(() => {
   const { streaks } = container.resolve(HabitStatusesHandler)
-  const { habit } = useContext(HabitContext)
+  const { habit, isSharedHabit } = useContext(HabitContext)
 
   if (habit.weeklyFrequency === null) return null
 
@@ -18,7 +18,7 @@ const HabitStreak = observer(() => {
   const count = streak?.count ?? 0
   const isPending = streak?.isPending ?? true
 
-  const color = isPending ? '#888' : 'textAccent'
+  const color = isPending ? '#888' : (isSharedHabit ? 'textAccentAlt' : 'textAccent')
 
   return (
     <Flex center>

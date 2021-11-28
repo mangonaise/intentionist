@@ -18,7 +18,7 @@ interface Props {
 }
 
 const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }: Props) => {
-  const { habit } = useContext(HabitContext)
+  const { habit, isSharedHabit } = useContext(HabitContext)
   const { yearAndDay: { year: currentYear, dayOfYear: today } } = useContext(CurrentDateContext)
   const [isEditing, setIsEditing] = useState(false)
   const hasValue = !!value
@@ -31,7 +31,13 @@ const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }:
   }, [habit, date])
 
   return (
-    <Flex align="center" sx={{ position: 'relative', flexGrow: 1 }}>
+    <Flex
+      align="center"
+      sx={{
+        '--status-color': isSharedHabit ? 'var(--button-accent-color-alt)' : 'var(--button-accent-color)',
+        position: 'relative', flexGrow: 1
+      }}
+    >
       <ConnectingLine visible={hasValue && connectLeft} fade={weekdayIndex === 0 ? 'left' : null} />
       <TrackerStatusButton
         onClick={() => setIsEditing(true)}
@@ -85,7 +91,7 @@ const TrackerStatusButton: FC<TrackerStatusButtonProps> = ({ onClick, hasValue, 
           inset: 0,
           content: '""',
           border: 'solid 2px',
-          borderColor: 'buttonAccent',
+          borderColor: 'var(--status-color)',
           borderRadius: 'inherit',
           opacity: isEditing || hasValue ? 1 : 0.6,
           transition: 'opacity 175ms'
@@ -97,8 +103,8 @@ const TrackerStatusButton: FC<TrackerStatusButtonProps> = ({ onClick, hasValue, 
   )
 }
 
-const leftGradient = 'linear-gradient(to right, transparent, var(--button-accent-color) 50%)'
-const RightGradient = 'linear-gradient(to left, transparent, var(--button-accent-color) 50%)'
+const leftGradient = 'linear-gradient(to right, transparent, var(--status-color) 50%)'
+const RightGradient = 'linear-gradient(to left, transparent, var(--status-color) 50%)'
 
 const ConnectingLine = ({ visible, fade }: { visible: boolean, fade?: 'left' | 'right' | null }) => {
   return (
@@ -107,7 +113,7 @@ const ConnectingLine = ({ visible, fade }: { visible: boolean, fade?: 'left' | '
         height: '2px',
         flex: 1,
         zIndex: -1,
-        backgroundColor: fade ? 'transparent' : 'buttonAccent',
+        backgroundColor: fade ? 'transparent' : 'var(--status-color)',
         backgroundImage: fade ? (fade === 'left' ? leftGradient : RightGradient) : 'none',
         opacity: visible ? 1 : 0,
         transition: 'opacity 175ms'

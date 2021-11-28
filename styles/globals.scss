@@ -9,21 +9,25 @@
 }
 
 $accent-color: #608faf;
+$accent-color-alt: #a260af;
 $warning-color: #e07785;
 
 :root {
   font-size: 14px;
   --accent-color: #{$accent-color};
+  --accent-color-alt: #{$accent-color-alt};
   --warning-color: #{$warning-color};
   --background-color: #181818;
   --text-color: white;
   --text-accent-color: #{color.scale($accent-color, $lightness: 25%, $saturation: 20%)};
+  --text-accent-color-alt: #{color.scale($accent-color-alt, $lightness: 25%, $saturation: 20%)};
   --divider-color: rgba(255, 255, 255, 0.1);
   --grid-color: rgba(255, 255, 255, 0.1);
   --focus-color: rgba(255, 255, 255, 0.75);
   --button-color: rgba(255, 255, 255, 0.06);
   --button-highlight-color: rgba(255, 255, 255, 0.1);
   --button-accent-color: #{color.scale($accent-color, $lightness: -5%, $saturation: -5%)};
+  --button-accent-color-alt: #{color.scale($accent-color-alt, $lightness: -5%, $saturation: -5%)};
   --button-warning-color: #{color.scale($warning-color, $lightness: -30%, $saturation: -40%)};
 }
 

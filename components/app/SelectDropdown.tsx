@@ -8,10 +8,11 @@ import CheckIcon from '@/components/icons/CheckIcon'
 interface Props {
   title: string,
   highlight?: boolean,
+  highlightColor?: string,
   anchorRight?: boolean | boolean[]
 }
 
-const SelectDropdown: StyledComponent<Props> = ({ title, highlight, anchorRight, className, children }) => {
+const SelectDropdown: StyledComponent<Props> = ({ title, highlight, highlightColor, anchorRight, className, children }) => {
   return (
     <Dropdown
       title={title}
@@ -27,12 +28,12 @@ const SelectDropdown: StyledComponent<Props> = ({ title, highlight, anchorRight,
           justifyContent: 'center',
           alignItems: 'center',
           paddingX: 0,
-          backgroundColor: highlight ? 'buttonAccent' : 'whiteAlpha.5',
+          backgroundColor: highlight ? (highlightColor ?? 'buttonAccent') : 'whiteAlpha.5',
           borderRadius: '99px',
           color: highlight ? 'text' : 'whiteAlpha.80',
           fontWeight: highlight ? 'medium' : 'normal',
           '&:hover': {
-            backgroundColor: highlight ? 'accent' : undefined,
+            backgroundColor: highlight ? (highlightColor ?? 'buttonAccent') : undefined,
             opacity: highlight ? 0.85 : 1
           }
         }

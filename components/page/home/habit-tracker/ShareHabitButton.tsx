@@ -28,6 +28,7 @@ const ShareHabitButton = observer(() => {
       title={isSharing ? 'Sharing' : 'Not sharing'}
       sx={{ '& button': { px: '0.85rem' } }}
       highlight={isSharing}
+      highlightColor="buttonAccentAlt"
     >
       <SelectDropdown.Item
         title={isSharing ? 'Stop sharing' : 'Set as shared habit'}

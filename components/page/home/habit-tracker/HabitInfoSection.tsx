@@ -13,7 +13,7 @@ import Spacer from '@/components/primitives/Spacer'
 import Text from '@/components/primitives/Text'
 
 const HabitInfoSection = () => {
-  const { habit } = useContext(HabitContext)
+  const { habit, isSharedHabit } = useContext(HabitContext)
   const { selectedFriendUid } = container.resolve(DisplayedHabitsHandler)
   const { friends } = container.resolve(FriendsHandler)
   const { profileInfo } = container.resolve(ProfileHandler)
@@ -31,7 +31,7 @@ const HabitInfoSection = () => {
           <SmartEmoji rem={1.1} nativeEmoji={avatar} />
           <Text
             type="span"
-            sx={{ ml: 2, fontWeight: 'light', opacity: 0.5 }}
+            sx={{ ml: 2, ...(isSharedHabit ? { color: 'textAccentAlt', fontWeight: 'medium' } : { opacity: 0.5 }) }}
           >
             {displayName}
           </Text>
