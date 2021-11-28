@@ -39,10 +39,10 @@ const HabitInfoSection = () => {
       )}
       <Spacer ml="auto" />
       <HabitStreak />
-      {!habit.friendUid && <>
-        <Spacer ml={2} />
-        <HabitVisibilityDropdown />
-      </>}
+      <Spacer ml={2} />
+      {habit.friendUid
+        ? (!selectedFriendUid && <ShareHabitButton anchorRight />)
+        : <HabitVisibilityDropdown />}
     </Flex>
   )
 }

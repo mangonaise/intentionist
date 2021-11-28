@@ -3,15 +3,16 @@ import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { HabitContext } from '@/components/page/home/habit-tracker/HabitWrapper'
 import HabitsHandler from '@/logic/app/HabitsHandler'
+import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
 import SelectDropdown from '@/components/app/SelectDropdown'
 
-const ShareHabitButton = observer(() => {
+const ShareHabitButton = observer(({ anchorRight }: { anchorRight?: boolean }) => {
   const { habit } = useContext(HabitContext)
-  const { sharedHabitsIdsByFriend, addSharedHabit, removeSharedHabit } = container.resolve(HabitsHandler)
+  const { sharedHabitIds, addSharedHabit, removeSharedHabit } = container.resolve(HabitsHandler)
 
   if (!habit.friendUid) return null
 
-  const isSharing = !!sharedHabitsIdsByFriend[habit.friendUid]?.find((habitId) => habitId === habit.id)
+  const isSharing = !!sharedHabitIds[habit.id]
 
   function handleAddSharedHabit() {
     if (!habit.friendUid) return null
@@ -21,6 +22,11 @@ const ShareHabitButton = observer(() => {
   function handleRemoveSharedHabit() {
     if (!habit.friendUid) return null
     removeSharedHabit({ friendUid: habit.friendUid, habitId: habit.id })
+    
+    const { selectedFriendUid, viewUser } = container.resolve(DisplayedHabitsHandler)
+    if (!selectedFriendUid) {
+      viewUser(null)
+    }
   }
 
   return (
@@ -29,6 +35,7 @@ const ShareHabitButton = observer(() => {
       sx={{ '& button': { px: '0.85rem' } }}
       highlight={isSharing}
       highlightColor="buttonAccentAlt"
+      anchorRight={anchorRight}
     >
       <SelectDropdown.Item
         title={isSharing ? 'Stop sharing' : 'Set as shared habit'}
