@@ -8,18 +8,18 @@ import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import DbHandler from '@/logic/app/DbHandler'
 import getYearAndDay from '@/logic/utils/getYearAndDay'
 
-type HabitWithFriendUid = Habit & { friendUid: string }
+export type FriendHabit = Habit & { friendUid: string }
 
 @singleton()
 export default class DisplayedHabitsHandler {
-  public habitsInView: Array<Habit | HabitWithFriendUid> = []
+  public habitsInView: Array<Habit | FriendHabit> = []
 
   public isLoadingHabits = true
   public selectedFriendUid: string | null = null
   public selectedWeekStartDate = getYearAndDay(getFirstDayOfThisWeek())
   private selectedFriendHabitOrder: string[] = []
 
-  private friendHabits: HabitWithFriendUid[] = []
+  private friendHabits: FriendHabit[] = []
 
   // keep track of listeners for shared habits (for viewing your own habits page)
   private sharedHabitListeners: Array<{ habitId: string, friendUid: string, unsubscribe: Unsubscribe }> = []
@@ -228,7 +228,7 @@ export default class DisplayedHabitsHandler {
     })
   }
 
-  private removeUnsharedHabitsFromArrayByFriend = (habitsArray: HabitWithFriendUid[], friendUid: string) => {
+  private removeUnsharedHabitsFromArrayByFriend = (habitsArray: FriendHabit[], friendUid: string) => {
     return habitsArray.filter((habit) => {
       const matchesFriend = habit.friendUid === friendUid
       const isSharedHabit = () => this.habitsHandler.sharedHabitsIdsByFriend[friendUid]?.some((habitId) => habitId === habit.id)
