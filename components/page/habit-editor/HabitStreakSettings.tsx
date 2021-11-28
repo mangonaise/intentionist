@@ -40,13 +40,13 @@ const HabitStreakSettings = observer(() => {
 })
 
 const frequencyData: Array<{ frequency: Exclude<Habit['weeklyFrequency'], null>, text: string }> = [
-  { frequency: 1, text: '1 day per week' },
-  { frequency: 2, text: '2 days per week' },
-  { frequency: 3, text: '3 days per week' },
-  { frequency: 4, text: '4 days per week' },
-  { frequency: 5, text: '5 days per week' },
-  { frequency: 6, text: '6 days per week' },
   { frequency: 7, text: 'every day' },
+  { frequency: 6, text: '6 days per week' },
+  { frequency: 5, text: '5 days per week' },
+  { frequency: 4, text: '4 days per week' },
+  { frequency: 3, text: '3 days per week' },
+  { frequency: 2, text: '2 days per week' },
+  { frequency: 1, text: '1 day per week' },
 ]
 
 const FrequencyDropdown = () => {
