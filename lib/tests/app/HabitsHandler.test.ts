@@ -129,7 +129,7 @@ describe('behavior', () => {
     const a = await habitsHandler.setHabit(dummyHabitA)
     const b = await habitsHandler.setHabit(dummyHabitB)
     const c = await habitsHandler.setHabit(dummyHabitC)
-    habitsHandler.reorderHabitsLocally(a, c)
+    habitsHandler.reorderHabitsLocally(a.id, c.id)
     await habitsHandler.uploadHabitOrder()
     expect(habitsHandler.order).toEqual([b.id, c.id, a.id])
     expect((await dbHandler.getHabitDetailsDoc())?.order).toEqual([b.id, c.id, a.id])

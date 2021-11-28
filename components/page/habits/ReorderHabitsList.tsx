@@ -1,12 +1,13 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { forwardRef, useState } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import { DragStartEvent, DragEndEvent, DragOverlay, DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors, } from '@dnd-kit/core'
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy, } from '@dnd-kit/sortable'
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
-import useAutorun from '@/hooks/useAutorun'
+import DisplayedHabitsHandler, { FriendHabit } from '@/logic/app/DisplayedHabitsHandler'
 import DragHandle, { DragHandleProps } from '@/components/app/DragHandle'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import EmptyPageText from '@/components/app/EmptyPageText'
@@ -21,17 +22,18 @@ function createHabitsMap(habits: Habit[]) {
 }
 
 const ReorderHabitsList = () => {
-  // todo: show active and shared habits
-  const { activeHabits, reorderHabitsLocally, findHabitById } = container.resolve(HabitsHandler)
+  const router = useRouter()
+  const { selectedFriendUid, habitsInView, refreshHabitsInView } = container.resolve(DisplayedHabitsHandler)
+  const { reorderHabitsLocally } = container.resolve(HabitsHandler)
   const [draggedHabitId, setDraggedHabitId] = useState<string | null>(null)
 
-  const [habitsMap, setHabitsMap] = useState(createHabitsMap(activeHabits))
+  const [habitsMap] = useState(createHabitsMap(habitsInView))
 
-  useAutorun(() => {
-    if (activeHabits.length !== Object.keys(habitsMap).length) {
-      setHabitsMap(createHabitsMap(activeHabits))
+  useEffect(() => {
+    if (selectedFriendUid) {
+      router.push('/home')
     }
-  })
+  }, [])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -41,7 +43,7 @@ const ReorderHabitsList = () => {
     }),
   )
 
-  if (!activeHabits.length) return <EmptyPageText text="Nothing to see here!" />
+  if (!habitsInView.length || selectedFriendUid) return <EmptyPageText text="Nothing to see here!" />
 
   return (
     <DndContext
@@ -52,11 +54,11 @@ const ReorderHabitsList = () => {
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
     >
       <SortableContext
-        items={activeHabits}
+        items={habitsInView}
         strategy={verticalListSortingStrategy}
       >
         <div>
-          {activeHabits.map(habit => <SortableHabit habit={habit} key={habit.id} />)}
+          {habitsInView.map(habit => <SortableHabit habit={habit} key={habit.id} />)}
         </div>
       </SortableContext>
       <DragOverlay>
@@ -72,11 +74,8 @@ const ReorderHabitsList = () => {
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     if (over?.id && active.id !== over.id) {
-      const habitToMove = findHabitById(active.id)
-      const takesPlaceOf = findHabitById(over.id)
-      if (habitToMove && takesPlaceOf) {
-        reorderHabitsLocally(habitToMove, takesPlaceOf)
-      }
+      reorderHabitsLocally(active.id, over.id)
+      refreshHabitsInView()
     }
     setDraggedHabitId(null)
   }
@@ -141,13 +140,19 @@ const HabitWrapper = forwardRef(function HabitWrapper(props: HabitWrapperProps, 
   )
 })
 
-const HabitPreview = observer(({ habit }: { habit: Habit }) => {
+const HabitPreview = observer(({ habit }: { habit: Habit & { friendUid?: string } }) => {
+  const belongsToFriend = !!habit.friendUid
+
   return (
     <Flex center justify="flex-start" sx={{ pr: 3 }}>
       <Flex center sx={{ mr: [3, 4], minWidth: '1.3rem' }}>
         <SmartEmoji nativeEmoji={habit.icon} rem={1.3} />
       </Flex>
-      <Text type="span" sx={{ maxWidth: '800px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <Text type="span" sx={{
+        maxWidth: '800px', overflow: 'hidden', textOverflow: 'ellipsis',
+        color: belongsToFriend ? 'textAccentAlt' : undefined,
+        fontWeight: belongsToFriend ? 'semibold' : undefined
+      }}>
         {habit.name}
       </Text>
     </Flex>

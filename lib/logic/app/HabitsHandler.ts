@@ -97,22 +97,20 @@ export default class HabitsHandler {
     await this.dbHandler.deleteHabit(id)
   }
 
-  public reorderHabitsLocally = (habitToMove: Habit, habitToTakePositionOf: Habit) => {
-    console.error('reimplementation required')
-    // const oldIndex = this.activeHabits.indexOf(habitToMove)
-    // const newIndex = this.activeHabits.indexOf(habitToTakePositionOf)
-    // if (oldIndex < 0 || newIndex < 0 || oldIndex === newIndex) return
+  public reorderHabitsLocally = (habitIdToMove: string, habitIdToTakePositionOf: string) => {
+    const oldIndex = this.order.indexOf(habitIdToMove)
+    const newIndex = this.order.indexOf(habitIdToTakePositionOf)
+    if (oldIndex < 0 || newIndex < 0 || oldIndex === newIndex) return
 
-    // // 💻
-    // this.activeHabits = arrayMove(this.activeHabits, oldIndex, newIndex)
+    // 💻
+    this.order = arrayMove(this.order, oldIndex, newIndex)
   }
 
   public uploadHabitOrder = async () => {
-    console.error('reimplementation required')
-    // // ☁️
-    // await this.dbHandler.update(this.dbHandler.habitDetailsDocRef(), {
-    //   order: this.getOrderedIds()
-    // })
+    // ☁️
+    await this.dbHandler.update(this.dbHandler.habitDetailsDocRef(), {
+      order: this.order
+    })
   }
 
   private addNewHabit = async (newHabit: Habit) => {
