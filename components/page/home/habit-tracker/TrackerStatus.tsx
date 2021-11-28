@@ -1,9 +1,9 @@
 import { container } from 'tsyringe'
 import { FC, useCallback, useContext, useState } from 'react'
 import { HabitContext } from '@/components/page/home/habit-tracker/HabitWrapper'
-import { CurrentDateContext } from '@/components/app/withApp'
 import TrackerStatusEditor from '@/components/page/home/habit-tracker/TrackerStatusEditor'
 import HabitStatusesHandler, { YearAndDay } from '@/logic/app/HabitStatusesHandler'
+import CurrentDateHandler from '@/logic/app/CurrentDateHandler'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Box from '@/components/primitives/Box'
 import Button from '@/components/primitives/Button'
@@ -18,8 +18,8 @@ interface Props {
 }
 
 const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }: Props) => {
+  const { yearAndDay: { year: currentYear, dayOfYear: today } } = container.resolve(CurrentDateHandler)
   const { habit, isSharedHabit } = useContext(HabitContext)
-  const { yearAndDay: { year: currentYear, dayOfYear: today } } = useContext(CurrentDateContext)
   const [isEditing, setIsEditing] = useState(false)
   const hasValue = !!value
 

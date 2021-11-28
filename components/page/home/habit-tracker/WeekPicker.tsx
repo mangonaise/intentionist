@@ -1,11 +1,11 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { FC, useCallback, useContext, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import { getFirstDayOfLastWeek, getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import { startOfMonth, format, isSameMonth, addMonths, endOfMonth, eachWeekOfInterval, isFuture, isSameWeek, isSameDay, setDayOfYear, addWeeks } from 'date-fns'
-import { CurrentDateContext } from '@/components/app/withApp'
 import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
 import getYearAndDay from '@/logic/utils/getYearAndDay'
+import CurrentDateHandler from '@/logic/app/CurrentDateHandler'
 import Dropdown from '@/components/app/Dropdown'
 import Flex from '@/components/primitives/Flex'
 import Divider from '@/components/primitives/Divider'
@@ -20,7 +20,7 @@ import IconButton from '@/components/primitives/IconButton'
 
 const WeekSelector = observer(() => {
   const { selectedWeekStartDate, setSelectedWeekStartDate } = container.resolve(DisplayedHabitsHandler)
-  const { weekdayId } = useContext(CurrentDateContext)
+  const { weekdayId } = container.resolve(CurrentDateHandler)
 
   const { year: selectedYear, dayOfYear: selectedDay } = selectedWeekStartDate
   const selectedDate = setDayOfYear(new Date(`${selectedYear}`), selectedDay)

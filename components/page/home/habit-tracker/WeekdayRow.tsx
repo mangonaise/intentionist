@@ -1,9 +1,9 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { useContext, useMemo } from 'react'
+import { useMemo } from 'react'
 import { getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
-import { CurrentDateContext } from '@/components/app/withApp'
 import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
+import CurrentDateHandler from '@/logic/app/CurrentDateHandler'
 import getYearAndDay from '@/logic/utils/getYearAndDay'
 import Flex from '@/components/primitives/Flex'
 import Text from '@/components/primitives/Text'
@@ -12,7 +12,7 @@ const shellArray = Array.from({ length: 7 })
 const weekdayInitials = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
 const WeekdayRow = observer(() => {
-  const { weekdayId } = useContext(CurrentDateContext)
+  const { weekdayId } = container.resolve(CurrentDateHandler)
   const { selectedWeekStartDate } = container.resolve(DisplayedHabitsHandler)
 
   const isViewingThisWeek = useMemo(() => {

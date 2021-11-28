@@ -1,9 +1,9 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { createContext, useContext, useEffect } from 'react'
+import { createContext, useEffect } from 'react'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
-import { CurrentDateContext } from '@/components/app/withApp'
 import HabitStatusesHandler from '@/logic/app/HabitStatusesHandler'
+import CurrentDateHandler from '@/logic/app/CurrentDateHandler'
 import HabitTitleSection from '@/components/page/home/habit-tracker/HabitTitleSection'
 import TrackerStatusRow from '@/components/page/home/habit-tracker/TrackerStatusRow'
 import HabitInfoSection from '@/components/page/home/habit-tracker/HabitInfoSection'
@@ -17,7 +17,7 @@ export const HabitContext = createContext<{
 }>(null!)
 
 const HabitWrapper = observer(({ habit }: { habit: Habit & { friendUid?: string } }) => {
-  const { yearAndDay } = useContext(CurrentDateContext)
+  const { yearAndDay } = container.resolve(CurrentDateHandler)
   const isSharedHabit = !!container.resolve(HabitsHandler).sharedHabitIds[habit.id]
 
   useEffect(() => {
