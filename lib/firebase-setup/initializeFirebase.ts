@@ -41,7 +41,7 @@ export default function initializeFirebase(projectId = 'intentionist') {
   // PRODUCTION
   else {
     initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider(process.env.RECAPTCHA_V3_SITE_KEY ?? 'emulator_fake_site_key'),
+      provider: new ReCaptchaV3Provider('6Le45WgdAAAAAMw2xYbr_48FTYU63iKyXd0uCek1'),
       isTokenAutoRefreshEnabled: true
     })
   }
