@@ -3,6 +3,7 @@ import type { Firestore } from '@firebase/firestore'
 import type { Functions } from '@firebase/functions'
 import { container } from 'tsyringe'
 import { FirebaseApp, initializeApp } from '@firebase/app'
+import { initializeAppCheck, ReCaptchaV3Provider } from '@firebase/app-check'
 import { connectAuthEmulator, getAuth } from '@firebase/auth'
 import { connectFirestoreEmulator, getFirestore } from '@firebase/firestore'
 import { connectFunctionsEmulator, getFunctions } from '@firebase/functions'
@@ -29,12 +30,20 @@ export default function initializeFirebase(projectId = 'intentionist') {
   const db = getFirestore(app)
   const functions = getFunctions(app)
 
+  // EMULATOR
   if (typeof window === 'undefined' || window.location.hostname.includes('localhost')) {
     connectFirestoreEmulator(db, 'localhost', 8080)
     connectFunctionsEmulator(functions, 'localhost', 5001)
     console.info = () => { }
     connectAuthEmulator(auth, 'http://localhost:9099')
     console.info = consoleInfo
+  }
+  // PRODUCTION
+  else {
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(process.env.RECAPTCHA_V3_SITE_KEY ?? 'emulator_fake_site_key'),
+      isTokenAutoRefreshEnabled: true
+    })
   }
 
   const firebase: FirebaseServices = {
