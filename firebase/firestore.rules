@@ -8,31 +8,16 @@ service cloud.firestore {
         && isUsernameAvailable(request.resource.data.username);
       allow update: if requestedByUserWithId(userId)
 	      && isValidUserProfile(request.resource.data)
-        && (request.resource.data.username == resource.data.username 
-          || isUsernameAvailable(request.resource.data.username));
+        && (request.resource.data.username == resource.data.username || isUsernameAvailable(request.resource.data.username));
 
-      match /weeks/{startDate} {
-        allow read: if requestedByUserWithId(userId);
-        allow write: if requestedByUserWithId(userId)
-          && isValidWeekDoc(startDate, request.resource.data);
-        allow get: if isUserXFriendOfUserY(request.auth.uid, userId);
-      }
-
-      match /weekIcons/{year} {
+      match /habits/{habitId} {
         allow write: if requestedByUserWithId(userId);
-        allow get: if requestedByUserWithId(userId)
-          || isUserXFriendOfUserY(request.auth.uid, userId);
+        allow read: if requestedByUserWithId(userId) || 
+          (resource.data.visibility == 'public' && isUserXFriendOfUserY(request.auth.uid, userId));
       }
 
       match /notes/{noteId} {
         allow read, write: if requestedByUserWithId(userId);
-        allow get: if isUserXFriendOfUserY(request.auth.uid, userId);
-      }
-
-      match /userData/habits {
-        allow write: if requestedByUserWithId(userId);
-        allow get: if requestedByUserWithId(userId)
-          || isUserXFriendOfUserY(request.auth.uid, userId);
       }
 
       match /userData/friends {
@@ -41,6 +26,11 @@ service cloud.firestore {
 
       match /userData/friendRequests {
         allow get: if requestedByUserWithId(userId);
+      }
+
+      match /userData/habitDetails {
+        allow write: if requestedByUserWithId(userId);
+        allow get: if requestedByUserWithId(userId) || isUserXFriendOfUserY(request.auth.uid, userId);
       }
     }
 
@@ -64,12 +54,6 @@ service cloud.firestore {
 
     function isUsernameAvailable(username) {
       return isValidUsername(username) && !exists(/databases/$(database)/documents/usernames/$(username));
-    }
-
-    function isValidWeekDoc(docId, docData) {
-      return docData.startDate == docId
-        && docId.matches('^[0-9]+-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$')
-        && docData.keys().hasOnly(['startDate', 'icon', 'statuses', 'notes', 'times', 'notesMetadata']);
     }
 
     function isUserXFriendOfUserY(uidX, uidY) {

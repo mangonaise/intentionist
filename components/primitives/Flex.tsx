@@ -6,14 +6,16 @@ interface FlexProps extends BoxProps {
   column?: boolean,
   flexWrap?: boolean,
   justify?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'space-evenly'
-  align?: 'stretch' | 'center' | 'flex-start' | 'flex-end' | 'baseline'
+  align?: 'stretch' | 'center' | 'flex-start' | 'flex-end' | 'baseline',
+  asSpan?: boolean
 }
 
 const Flex = forwardRef<HTMLDivElement, PropsWithChildren<FlexProps>>(function Flex(props, ref) {
-  const { center, column, flexWrap, justify, align } = props
+  const { center, column, flexWrap, justify, align, asSpan } = props
+  const Element = asSpan ? 'span' : 'div'
 
   return (
-    <div
+    <Element
       sx={{
         display: 'flex',
         flexDirection: column ? 'column' : undefined,
@@ -26,7 +28,7 @@ const Flex = forwardRef<HTMLDivElement, PropsWithChildren<FlexProps>>(function F
       style={props.style}
     >
       {props.children}
-    </div>
+    </Element>
   )
 })
 

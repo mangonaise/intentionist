@@ -16,10 +16,10 @@ interface Props {
 }
 
 const HabitPresetsList = observer(({ onSelectPreset }: Props) => {
-  const { habits } = container.resolve(HabitsHandler)
+  const { activeHabits } = container.resolve(HabitsHandler)
 
   const presetsToDisplay = habitPresets.filter((preset) => {
-    for (const habit of habits) {
+    for (const habit of activeHabits) {
       if (habit.name.toLowerCase().includes(preset.uniqueText?.toLowerCase() ?? preset.name.toLowerCase())) {
         return false
       }
@@ -73,7 +73,7 @@ const Preset = ({ preset, onSelectPreset }: { preset: HabitPreset } & Props) => 
         return (
           <Fragment key={index}>
             {index === 1 && presetOptions
-              ? (<Dropdown title={selectedPresetOption ?? '...'} sx={{ mx: 2 }}>
+              ? (<Dropdown title={<Text type="span" sx={{ minWidth: '1.15rem' }}>{selectedPresetOption ?? '...'}</Text>} sx={{ mx: 2 }}>
                 {presetOptions.map((option) => (
                   <Dropdown.Item itemAction={() => setSelectedPresetOption(option)} key={option}>
                     {option}

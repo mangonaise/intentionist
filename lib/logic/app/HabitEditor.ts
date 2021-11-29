@@ -2,12 +2,12 @@ import { makeAutoObservable } from 'mobx'
 import { inject, injectable } from 'tsyringe'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import generateHabitId from '@/logic/utils/generateHabitId'
+import getUtcSeconds from '@/logic/utils/getUtcSeconds'
 import Router from '@/types/router'
 
 type QueryParams = {
   id: string | undefined,
-  new: any,
-  returnHome: boolean | undefined
+  new: any
 }
 
 @injectable()
@@ -16,14 +16,12 @@ export default class HabitEditor {
   public isNewHabit
   private habitsHandler
   private router
-  private returnHomeOnExit
 
   constructor(habitsHandler: HabitsHandler, @inject('Router') router: Router) {
     this.habitsHandler = habitsHandler
     this.router = router
 
     const query = router.query as QueryParams
-    this.returnHomeOnExit = query?.returnHome
     if (query.new !== undefined) {
       this.isNewHabit = true
       this.habit = this.generateEmptyHabit()
@@ -33,7 +31,7 @@ export default class HabitEditor {
       if (existingHabit) {
         this.habit = existingHabit
       } else {
-        router.push('/habits')
+        router.push('/home')
         return
       }
     }
@@ -59,17 +57,20 @@ export default class HabitEditor {
   }
 
   public exit = () => {
-    this.router.push(this.returnHomeOnExit ? '/home' : '/habits')
+    this.router.push('/home')
   }
 
-  private generateEmptyHabit = () => {
+  private generateEmptyHabit = (): Habit => {
     return {
       id: generateHabitId(),
       name: '',
       icon: '🙂',
-      status: 'active',
-      palette: ['⭐', '👍', '🤏'],
-      timeable: true
-    } as Habit
+      palette: ['🌟', '👍', '🤏'],
+      timeable: true,
+      archived: false,
+      visibility: 'private',
+      weeklyFrequency: 7,
+      creationTime: getUtcSeconds()
+    }
   }
 }

@@ -1,11 +1,8 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { useContext, useEffect } from 'react'
-import { HomePageContext } from 'pages/home'
 import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import FriendsHandler, { Friend } from '@/logic/app/FriendsHandler'
-import WeekHandler from '@/logic/app/WeekHandler'
-import WeekInView from '@/logic/app/WeekInView'
+import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
 import Dropdown from '@/components/app/Dropdown'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Flex from '@/components/primitives/Flex'
@@ -15,34 +12,24 @@ import Icon from '@/components/primitives/Icon'
 import ArrowRightIcon from '@/components/icons/ArrowRightIcon'
 
 const FriendsDropdown = observer(() => {
-  const { viewWeek } = container.resolve(WeekHandler)
-  const { friendUid, weekData } = container.resolve(WeekInView)
   const { friends } = container.resolve(FriendsHandler)
-  const { narrow } = useContext(HomePageContext)
+  const { viewUser, selectedFriendUid } = container.resolve(DisplayedHabitsHandler)
 
-  // handles case where friend is removed
-  useEffect(() => {
-    if (!friends.find((friend) => friend.uid === friendUid)) {
-      handleSelectUser()
+  function handleSelectFriend(friendUid: string | null) {
+    if (selectedFriendUid !== friendUid) {
+      viewUser(friendUid)
     }
-  })
-
-  function handleSelectUser(uid?: string) {
-    viewWeek({
-      startDate: weekData.startDate,
-      friendUid: uid
-    })
   }
 
   return (
     <Dropdown
-      title={<DropdownTitle friendUid={friendUid} />}
-      sx={{ mr: narrow ? 0 : 2, mb: narrow ? 2 : 0, width: narrow ? '100%' : 'auto' }}
+      title={<DropdownTitle friendUid={selectedFriendUid} />}
+      sx={{ '& > button': { bg: 'transparent', px: 3 } }}
     >
-      <FriendButton friend={null} onClick={() => handleSelectUser()} />
+      <FriendButton friend={null} onClick={() => handleSelectFriend(null)} />
       {!!friends.length && <Divider />}
       {friends.map((friend) => (
-        <FriendButton friend={friend} onClick={() => handleSelectUser(friend.uid)} key={friend.uid} />
+        <FriendButton friend={friend} onClick={() => handleSelectFriend(friend.uid)} key={friend.uid} />
       ))}
       <Divider />
       <Dropdown.Item href="/friends" sx={{ color: 'whiteAlpha.70', '&:hover': { color: 'text' } }}>
@@ -77,10 +64,9 @@ const FriendButton = ({ friend, onClick }: { friend: Friend | null, onClick: () 
   )
 }
 
-const DropdownTitle = observer(({ friendUid }: { friendUid?: string }) => {
+const DropdownTitle = observer(({ friendUid }: { friendUid: string | null }) => {
   const { profileInfo } = container.resolve(ProfileHandler)
   const { friends } = container.resolve(FriendsHandler)
-  const { narrow } = useContext(HomePageContext)
 
   let profile: UserProfileInfo | undefined
 
@@ -103,7 +89,7 @@ const DropdownTitle = observer(({ friendUid }: { friendUid?: string }) => {
       <Text
         type="span"
         sx={{
-          ml: 3, maxWidth: narrow ? 'calc(100vw - 7rem)' : 'min(25vw, 250px)',
+          ml: 3, maxWidth: 'calc(100vw - 7rem)',
           overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'
         }}
       >

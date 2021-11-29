@@ -4,11 +4,9 @@ import { makeAutoObservable, runInAction, when } from 'mobx'
 import { FirebaseError } from '@firebase/util'
 import { formatYYYYMMDD } from '@/logic/utils/dateUtilities'
 import ProfileHandler, { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
-import HabitsHandler, { Habit, HabitsDocumentData } from '@/logic/app/HabitsHandler'
+import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import FriendsHandler, { Friend } from '@/logic/app/FriendsHandler'
-import WeekHandler from '@/logic/app/WeekHandler'
 import DbHandler from '@/logic/app/DbHandler'
-import FriendActivityHandler from '@/logic/app/FriendActivityHandler'
 import generateNoteId from '@/logic/utils/generateNoteId'
 
 export type NotePageQueryParams = {
@@ -23,7 +21,6 @@ export type NoteDocumentData = {
   icon: string,
   habitId: string,
   date: string,
-  weekStartDate: string,
   content: string
 }
 
@@ -39,12 +36,10 @@ export default class NoteEditor {
   public isSaving = false
 
   constructor(
-    private weekHandler: WeekHandler,
     private habitsHandler: HabitsHandler,
     private dbHandler: DbHandler,
     private profileHandler: ProfileHandler,
     private friendsHandler: FriendsHandler,
-    private friendActivityHandler: FriendActivityHandler,
     @inject('Router') private router: Router
   ) {
     const query = router.query as NotePageQueryParams
@@ -82,13 +77,7 @@ export default class NoteEditor {
 
     this.isNewNote = false
 
-    // 💻
-    if (this.weekHandler.weekInView.weekData.startDate === this.note.weekStartDate) {
-      this.weekHandler.weekInView.setNoteLocally(this.note.habitId, this.note.id, {
-        icon: this.note.icon,
-        title: this.note.title
-      })
-    }
+    console.error('saveChanges changes not fully implemented')
 
     // ☁️️
     await this.dbHandler.updateNote(this.note)
@@ -103,7 +92,6 @@ export default class NoteEditor {
   public deleteNote = async () => {
     if (!this.note) return
     this.hasUnsavedChanges = false
-    this.weekHandler.weekInView.clearNoteLocally(this.note.habitId, this.note.id)
     this.router.push('/home')
     if (!this.isNewNote) {
       await this.dbHandler.deleteNote(this.note)
@@ -126,7 +114,6 @@ export default class NoteEditor {
       icon: '📝',
       habitId: habitId,
       date: formatYYYYMMDD(new Date()),
-      weekStartDate: this.weekHandler.weekInView.weekData.startDate,
       content: ''
     }
   }
@@ -163,25 +150,9 @@ export default class NoteEditor {
     this.router.push('/home')
   }
 
-  private getHabitOfFriend = async (friendUid: string, habitId: string): Promise<Habit> => {
-    const notFoundError = 'Could not find habit associated with this note.'
-
-    const habitsDocListener =
-      this.friendActivityHandler.habitsDocListeners.find((listener) => listener.friendUid === friendUid)
-
-    if (habitsDocListener) {
-      const habit = habitsDocListener.habits.find((habit) => habit.id === habitId)
-      if (!habit) throw new Error(notFoundError)
-      return habit
-    }
-
-    const habitsDoc = await this.dbHandler
-      .getDocData(this.dbHandler.habitsDocRef(friendUid)) as HabitsDocumentData | undefined
-
-    const habitProperties = habitsDoc?.habits?.[habitId]
-    if (!habitProperties) throw new Error(notFoundError)
-
-    return { ...habitProperties, id: habitId }
+  private getHabitOfFriend = async (friendUid: string, habitId: string) => {
+    console.error('getHabitOfFriend not implemented')
+    return undefined
   }
 
   private getFriendByUsername = (username: string) => {

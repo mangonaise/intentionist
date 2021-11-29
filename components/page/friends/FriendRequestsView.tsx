@@ -2,8 +2,8 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { FC, useState } from 'react'
 import FriendRequestsHandler, { FriendRequest } from '@/logic/app/FriendRequestsHandler'
-import EmptyFriendsViewText from '@/components/page/friends/EmptyFriendsViewText'
 import FriendsLoadingIndicator from '@/components/page/friends/FriendsLoadingIndicator'
+import EmptyPageText from '@/components/app/EmptyPageText'
 import Dropdown from '@/components/app/Dropdown'
 import SmartEmoji from '@/components/app/SmartEmoji'
 import Box from '@/components/primitives/Box'
@@ -39,7 +39,7 @@ const IncomingRequestsList = observer(() => {
   const { incomingRequests } = container.resolve(FriendRequestsHandler)
 
   if (incomingRequests.length === 0) {
-    return <EmptyFriendsViewText text="You don't have any incoming friend requests." />
+    return <EmptyPageText text="You don't have any incoming friend requests." />
   }
 
   return (
@@ -55,7 +55,7 @@ const OutgoingRequestsList = observer(() => {
   const { outgoingRequests } = container.resolve(FriendRequestsHandler)
 
   if (outgoingRequests.length === 0) {
-    return <EmptyFriendsViewText text="You don't have any outgoing friend requests." />
+    return <EmptyPageText text="You don't have any outgoing friend requests." />
   }
 
   return (
@@ -111,7 +111,7 @@ const IncomingRequest = ({ request }: { request: FriendRequest }) => {
         disabled={isDeclining}
         icon={CheckIcon}
         hoverEffect="opacity"
-        sx={{ flex: 1, bg: 'text', color: 'bg', fontWeight: 'medium' }}
+        sx={{ flex: 1, bg: 'accent', fontWeight: 'medium' }}
       >
         Accept
       </IconButton>

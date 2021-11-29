@@ -1,40 +1,48 @@
-import { arrayUnion } from '@firebase/firestore'
 import { makeAutoObservable } from 'mobx'
 import { singleton } from 'tsyringe'
 import { Fetched, InitialState } from '@/logic/app/InitialFetchHandler'
 import DbHandler from '@/logic/app/DbHandler'
-import exclude from '@/logic/utils/exclude'
-import arrayMove from '@/logic/utils/arrayMove'
 import generateHabitId from '@/logic/utils/generateHabitId'
+import getUtcSeconds from '@/logic/utils/getUtcSeconds'
+import arrayMove from '@/logic/utils/arrayMove'
 import isEqual from 'lodash/isEqual'
 
-export type HabitsDocumentData = {
-  habits: { [id: string]: HabitProperties },
-  order: string[]
-}
-
-export type HabitStatus = 'active' | 'suspended' | 'archived'
-export type Habit = { id: string } & HabitProperties
-export type HabitProperties = {
+export type Habit = {
+  id: string
   name: string
   icon: string
-  status: HabitStatus,
-  palette?: string[],
-  timeable?: boolean,
-  friendUid?: string
+  palette: string[]
+  timeable: boolean
+  archived: boolean,
+  visibility: HabitVisibility,
+  weeklyFrequency?: null | 1 | 2 | 3 | 4 | 5 | 6 | 7
+  statuses?: HabitStatuses
+  creationTime: number
+}
+
+export type HabitStatuses = { [year: number]: { [day: number]: string } }
+
+export type HabitVisibility = 'public' | 'private'
+
+export type HabitDetailsDocumentData = {
+  order: string[],
+  activeIds: {
+    public?: { [habitId: string]: true },
+    private?: { [habitId: string]: true }
+  },
+  shared: { [friendUid: string]: string[] }
 }
 
 @singleton()
 export default class HabitsHandler {
-  public habits: Habit[]
-  public orderedIds: string[]
-  private dbHandler
+  public order: string[] = []
+  public activeHabits: Habit[] = []
+  public sharedHabitsIdsByFriend: { [friendUid: string]: string[] } = {}
+  public sharedHabitIds: { [habitId: string]: true } = {} // for convenience only
 
-  constructor(initialState: InitialState, dbHandler: DbHandler) {
-    const { habits, order } = this.processFetchedHabits(initialState.data.habitsDoc)
-    this.habits = habits
-    this.orderedIds = order
-    this.dbHandler = dbHandler
+  constructor(initialState: InitialState, private dbHandler: DbHandler) {
+    const { activeHabitsDocs, habitDetailsDoc } = initialState.data
+    this.processFetchedHabitData(activeHabitsDocs, habitDetailsDoc)
     makeAutoObservable(this)
   }
 
@@ -46,26 +54,37 @@ export default class HabitsHandler {
     if (isEqual(existingHabit, habitToSet)) return existingHabit
 
     // 💻
-    const index = this.habits.indexOf(existingHabit)
-    this.habits[index] = habitToSet
-    this.refreshOrderedIds()
+    const index = this.activeHabits.indexOf(existingHabit)
+    Object.assign(this.activeHabits[index], habitToSet)
 
     // ☁️
-    await this.dbHandler.update(this.dbHandler.habitsDocRef(), {
-      habits: { [habitToSet.id]: { ...exclude(habitToSet, 'id') } }
-    })
+    await this.dbHandler.update(this.dbHandler.habitDocRef(habitToSet.id), habitToSet)
 
-    return this.habits[index]
+    return this.activeHabits[index]
+  }
+
+  public changeHabitVisibility = async (habit: Habit, visibility: HabitVisibility) => {
+    if (habit.visibility === visibility) return
+    if (this.activeHabits.indexOf(habit) < 0) return
+
+    // 💻
+    habit.visibility = visibility
+
+    // ☁️
+    await this.dbHandler.changeHabitVisibility(habit, visibility)
   }
 
   public addHabitFromPreset = async (preset: HabitPreset) => {
     await this.setHabit({
       id: generateHabitId(),
-      status: 'active',
       name: preset.name,
       icon: preset.icon,
       palette: preset.palette,
-      timeable: preset.timeable
+      timeable: preset.timeable,
+      visibility: 'private',
+      weeklyFrequency: preset.weeklyFrequency,
+      archived: false,
+      creationTime: getUtcSeconds()
     })
   }
 
@@ -74,70 +93,99 @@ export default class HabitsHandler {
     if (!habitToDelete) throw new Error('Cannot delete a habit that does not exist')
 
     // 💻
-    this.habits = this.habits.filter(habit => habit !== habitToDelete)
-    this.refreshOrderedIds()
+    this.activeHabits = this.activeHabits.filter((habit) => habit !== habitToDelete)
+    this.order = this.order.filter((habitId) => id !== habitId)
 
     // ☁️
     await this.dbHandler.deleteHabit(id)
   }
 
-  public reorderHabits = async (habitToMove: Habit, habitToTakePositionOf: Habit) => {
-    const oldIndex = this.habits.indexOf(habitToMove)
-    const newIndex = this.habits.indexOf(habitToTakePositionOf)
+  public reorderHabitsLocally = (habitIdToMove: string, habitIdToTakePositionOf: string) => {
+    const oldIndex = this.order.indexOf(habitIdToMove)
+    const newIndex = this.order.indexOf(habitIdToTakePositionOf)
     if (oldIndex < 0 || newIndex < 0 || oldIndex === newIndex) return
 
     // 💻
-    this.habits = arrayMove(this.habits, oldIndex, newIndex)
-    this.refreshOrderedIds()
+    this.order = arrayMove(this.order, oldIndex, newIndex)
+  }
 
+  public uploadHabitOrder = async () => {
     // ☁️
-    await this.dbHandler.update(this.dbHandler.habitsDocRef(), {
-      order: this.habits.map((habit) => habit.id)
+    await this.dbHandler.update(this.dbHandler.habitDetailsDocRef(), {
+      order: this.order
     })
   }
 
   private addNewHabit = async (newHabit: Habit) => {
     // 💻
-    this.habits.push(newHabit)
-    this.refreshOrderedIds()
+    this.activeHabits.push(newHabit)
+    this.order.push(newHabit.id)
 
     // ☁️
-    await this.dbHandler.update(this.dbHandler.habitsDocRef(), {
-      habits: { [newHabit.id]: { ...exclude(newHabit, 'id') } },
-      order: arrayUnion(newHabit.id)
-    })
+    await this.dbHandler.addHabit(newHabit)
 
-    return this.habits[this.habits.length - 1]
+    return this.activeHabits[this.activeHabits.length - 1]
+  }
+
+  public addSharedHabit = async (args: { friendUid: string, habitId: string }) => {
+    const { friendUid, habitId } = args
+
+    // 💻
+    this.sharedHabitsIdsByFriend[friendUid] = this.sharedHabitsIdsByFriend[friendUid] ?? []
+    this.sharedHabitsIdsByFriend[friendUid].push(habitId)
+    this.sharedHabitIds[habitId] = true
+    this.order.unshift(habitId)
+
+    // ☁️
+    await this.dbHandler.addSharedHabit({ friendUid, habitId, newOrder: this.order })
+  }
+
+  public removeSharedHabit = async (args: { friendUid: string, habitId: string }) => {
+    const { friendUid, habitId } = args
+
+    const sharedHabit = this.sharedHabitsIdsByFriend[friendUid]?.find((id) => id === habitId)
+    if (!sharedHabit) return
+
+    // 💻
+    this.sharedHabitsIdsByFriend[friendUid] = this.sharedHabitsIdsByFriend[friendUid].filter((id) => id !== habitId)
+    this.order = this.order.filter((id) => id !== habitId)
+    delete this.sharedHabitIds[habitId]
+    const noneRemaining = this.sharedHabitsIdsByFriend[friendUid].length === 0
+    if (noneRemaining) delete this.sharedHabitsIdsByFriend[friendUid]
+
+
+    // ☁️
+    await this.dbHandler.removeSharedHabit({ ...args, noneRemaining })
   }
 
   public findHabitById = (id: string) => {
-    return this.habits.find((habit) => habit.id === id)
-  } 
-
-  private refreshOrderedIds = () => {
-    this.orderedIds = this.habits.map((habit) => habit.id)
+    return this.activeHabits.find((habit) => habit.id === id)
   }
 
-  private processFetchedHabits = (habitsDoc: Fetched<HabitsDocumentData>) => {
-    if (!habitsDoc) return { habits: [], order: [] }
+  private processFetchedHabitData = (activeHabits: Habit[], habitDetails: Fetched<HabitDetailsDocumentData>) => {
+    const order: string[] = habitDetails?.order ?? []
 
-    const habitIds = Object.keys(habitsDoc.habits)
-    const order = habitsDoc.order
+    const publicIds = Object.keys(habitDetails?.activeIds?.public ?? {})
+    const privateIds = Object.keys(habitDetails?.activeIds?.private ?? {})
+    const activeIds = publicIds.concat(privateIds)
 
-    for (const habitId of habitIds) {
+    for (const habitId of activeIds) {
       if (!order.includes(habitId)) {
         order.push(habitId)
       }
     }
+    this.order = order
+    this.activeHabits = activeHabits
 
-    return {
-      habits: order.map((id) => ({ id, ...habitsDoc.habits[id] })),
-      order
-    }
+    this.sharedHabitsIdsByFriend = habitDetails?.shared ?? {}
+
+    Object.entries(this.sharedHabitsIdsByFriend).forEach(([_, habitIds]) => {
+      habitIds.forEach((habitId) => this.sharedHabitIds[habitId] = true)
+    })
   }
 }
 
-export type HabitPreset = Pick<Habit, 'name' | 'icon' | 'palette' | 'timeable'> & { uniqueText?: string }
+export type HabitPreset = Pick<Habit, 'name' | 'icon' | 'palette' | 'timeable' | 'weeklyFrequency'> & { uniqueText?: string }
 
 export const habitPresets: HabitPreset[] = [
   {
@@ -146,6 +194,7 @@ export const habitPresets: HabitPreset[] = [
     icon: '⏰',
     palette: ['👍'],
     timeable: false,
+    weeklyFrequency: 7
   },
   {
     name: 'Sleep by [10,10:30,11,11:30,12]',
@@ -153,95 +202,112 @@ export const habitPresets: HabitPreset[] = [
     icon: '🌙',
     palette: ['👍'],
     timeable: false,
+    weeklyFrequency: 7
   },
   {
     name: 'Drink [6,7,8,9,10] glasses of water',
     uniqueText: 'glasses of water',
     icon: '💧',
     palette: ['👍'],
-    timeable: false
+    timeable: false,
+    weeklyFrequency: 7
   },
   {
     name: 'Make bed',
     icon: '🛏️',
     palette: ['👍'],
-    timeable: false
+    timeable: false,
+    weeklyFrequency: 7
   },
   {
     name: 'Read',
     icon: '📚',
     palette: ['🌟', '👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Podcast',
     icon: '📻',
     palette: ['👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Exercise',
     icon: '🏃',
     palette: ['🌟', '👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Stretch',
     icon: '🙆',
     palette: ['🌟', '👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Yoga',
     icon: '🧘',
     palette: ['🌟', '👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Meditate',
     icon: '🌸',
     palette: ['🌟', '👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Journal',
     icon: '✏️',
     palette: ['👍', '🤏'],
-    timeable: true
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'No phone in bed',
     icon: '📴',
-    palette: ['👍', '👎'],
-    timeable: false
+    palette: ['👍'],
+    timeable: false,
+    weeklyFrequency: 7
   },
   {
     name: 'Tidy space',
     icon: '🧹',
-    palette: ['🌟', '👍', '🆗', '👎'],
-    timeable: true
+    palette: ['🌟', '👍'],
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Healthy eating',
     icon: '🍎',
-    palette: ['🌟', '👍', '🆗', '👎'],
-    timeable: false
+    palette: ['🌟', '👍'],
+    timeable: false,
+    weeklyFrequency: 7
   },
   {
     name: 'Me time',
     icon: '💖',
-    palette: ['🌟', '👍', '🤏', '👎'],
-    timeable: true
+    palette: ['🌟', '👍', '🤏'],
+    timeable: true,
+    weeklyFrequency: 7
   },
   {
     name: 'Wakefulness',
     icon: '⚡',
     palette: ['🤩', '👍', '🆗', '🥱'],
-    timeable: false
+    timeable: false,
+    weeklyFrequency: null
   },
   {
     name: 'Mood',
     icon: '🙂',
-    palette: ['😊', '🙂', '😐', '😢', '😒', '😬', '😠']
+    palette: ['😊', '🙂', '😐', '😢', '😒', '😬', '😠'],
+    timeable: false,
+    weeklyFrequency: null
   }
 ]

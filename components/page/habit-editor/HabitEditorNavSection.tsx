@@ -30,8 +30,7 @@ const HabitEditorNavSection = () => {
         hoverEffect="opacity"
         sx={{
           ml: 'auto',
-          bg: 'text',
-          color: 'bg',
+          bg: 'buttonAccent',
           fontWeight: 'medium'
         }}
       >

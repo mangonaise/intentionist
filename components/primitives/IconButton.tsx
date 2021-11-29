@@ -21,7 +21,8 @@ const IconButton = forwardRef<HTMLButtonElement, PropsWithChildren<Props>>(funct
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: right ? 'row-reverse' : 'row',
-        paddingX: children ? undefined: '0.8rem'
+        paddingX: children ? undefined : 0,
+        minWidth: children ? undefined : '2.5rem'
       }}
       ref={ref}
       {...exclude(props, 'icon', 'right')}

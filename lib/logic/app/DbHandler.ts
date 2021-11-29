@@ -1,22 +1,20 @@
 import type { Firestore, DocumentReference, DocumentData } from '@firebase/firestore'
 import type { Fetched } from '@/logic/app/InitialFetchHandler'
-import type { WeekDocumentData } from '@/logic/app/WeekInView'
 import type { NoteDocumentData } from '@/logic/app/NoteEditor'
 import type { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
 import { inject, singleton } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
-import { collection, doc, getDoc, getDocs, query, setDoc, limit, orderBy, writeBatch, arrayUnion, arrayRemove, deleteField, where, deleteDoc } from '@firebase/firestore'
-import { separateYYYYfromMMDD } from '@/logic/utils/dateUtilities'
+import { collection, doc, getDoc, getDocs, query, setDoc, arrayUnion, arrayRemove, writeBatch, where, deleteDoc, deleteField } from '@firebase/firestore'
+import { Habit, HabitVisibility } from '@/logic/app/HabitsHandler'
 import AuthUser from '@/logic/app/AuthUser'
 
 const USERS = 'users'
 const USERNAMES = 'usernames'
-const WEEKS = 'weeks'
-const WEEK_ICONS = 'weekIcons'
+const HABITS = 'habits'
+const HABIT_DETAILS = 'userData/habitDetails'
 const NOTES = 'notes'
 const FRIEND_REQUESTS = 'userData/friendRequests'
 const FRIENDS = 'userData/friends'
-const HABITS = 'userData/habits'
 
 @singleton()
 export default class DbHandler {
@@ -46,58 +44,100 @@ export default class DbHandler {
     return data as AvatarAndDisplayName
   }
 
-  public getWeekDoc = async (weekStartDate: string, friendUid?: string) => {
-    const weekDoc = await this.getDocData(this.weekDocRef(weekStartDate, friendUid)) ?? null
-    if (weekDoc && !weekDoc.startDate) {
-      console.error('The week document is missing a startDate. This is a bug.')
-      weekDoc.startDate = weekStartDate
-    }
-    return weekDoc as Fetched<WeekDocumentData>
+  public getActiveHabitsDocs = async (friendUid?: string) => {
+    const docs = await getDocs(query(this.habitsCollectionRef(friendUid), where('archived', '==', false)))
+    let habits = [] as Habit[]
+    docs.forEach((doc) => {
+      habits.push(doc.data() as Habit)
+    })
+    return habits
   }
 
-  public getLatestWeekDoc = async () => {
-    const recent = await getDocs(query(this.weeksCollectionRef, orderBy('startDate', 'desc'), limit(1)))
-    if (recent.size) {
-      return recent.docs[0].data() as WeekDocumentData
-    } else {
-      return null
-    }
+  public getHabitDetailsDoc = async (friendUid?: string) => {
+    return await this.getDocData(this.habitDetailsDocRef(friendUid))
   }
 
-  public updateWeekDoc = async (weekStartDate: string, data: Partial<WeekDocumentData> | object) => {
-    await this.update(this.weekDocRef(weekStartDate), { startDate: weekStartDate, ...data })
-  }
-
-  public getWeekIconsDoc = async (year: string) => {
-    const iconsDoc = await this.getDocData(this.weekIconsDocRef(year)) ?? null
-    return iconsDoc
-  }
-
-  public updateWeekIcon = async (weekStartDate: string, icon: string) => {
+  public addHabit = async (habit: Habit) => {
     this.isWriteComplete = false
-    const { yyyy, mmdd } = separateYYYYfromMMDD(weekStartDate)
     const batch = writeBatch(this.db)
-    batch.set(this.weekDocRef(weekStartDate), {
-      icon,
-      startDate: weekStartDate
+
+    batch.set(this.habitDocRef(habit.id), habit, { merge: true })
+    batch.set(this.habitDetailsDocRef(), {
+      order: arrayUnion(habit.id),
+      activeIds: {
+        private: {
+          [habit.id]: true
+        }
+      }
     }, { merge: true })
-    batch.set(this.weekIconsDocRef(yyyy), { [mmdd]: icon }, { merge: true })
+
     await batch.commit()
     this.completeWrite()
   }
 
-  public removeWeekIcon = async (weekStartDate: string) => {
+  public changeHabitVisibility = async (habit: Habit, visibility: HabitVisibility) => {
     this.isWriteComplete = false
-    const { yyyy, mmdd } = separateYYYYfromMMDD(weekStartDate)
     const batch = writeBatch(this.db)
-    batch.set(this.weekDocRef(weekStartDate), {
-      icon: deleteField()
+
+    batch.set(this.habitDocRef(habit.id), { visibility }, { merge: true })
+    batch.set(this.habitDetailsDocRef(), {
+      activeIds: {
+        public: {
+          [habit.id]: visibility === 'public' ? true : deleteField()
+        },
+        private: {
+          [habit.id]: visibility === 'private' ? true : deleteField()
+        }
+      }
     }, { merge: true })
-    batch.set(this.weekIconsDocRef(yyyy), {
-      [mmdd]: deleteField()
-    }, { merge: true })
+
     await batch.commit()
     this.completeWrite()
+  }
+
+  public deleteHabit = async (habitId: string) => {
+    this.isWriteComplete = false
+
+    const deleteNotes = () => this.deleteNotesWithHabitId(habitId)
+
+    const deleteHabitData = async () => {
+      const batch = writeBatch(this.db)
+      batch.delete(this.habitDocRef(habitId))
+      batch.set(this.habitDetailsDocRef(), {
+        activeIds: {
+          public: { [habitId]: deleteField() },
+          private: { [habitId]: deleteField() }
+        },
+        order: arrayRemove(habitId)
+      }, { merge: true })
+      await batch.commit()
+    }
+
+    await Promise.all([
+      deleteHabitData(),
+      deleteNotes()
+    ])
+    this.completeWrite()
+  }
+
+  public addSharedHabit = async (args: { friendUid: string, habitId: string, newOrder: string[] }) => {
+    const { friendUid, habitId, newOrder } = args
+    await this.update(this.habitDetailsDocRef(), {
+      shared: {
+        [friendUid]: arrayUnion(habitId)
+      },
+      order: newOrder
+    })
+  }
+
+  public removeSharedHabit = async (args: { friendUid: string, habitId: string, noneRemaining: boolean }) => {
+    const { friendUid, habitId, noneRemaining } = args
+    await this.update(this.habitDetailsDocRef(), {
+      shared: {
+        [friendUid]: noneRemaining ? deleteField() : arrayRemove(habitId)
+      },
+      order: arrayRemove(habitId)
+    })
   }
 
   public getNoteDoc = async (noteId: string, friendUid?: string) => {
@@ -107,73 +147,42 @@ export default class DbHandler {
 
   public updateNote = async (note: NoteDocumentData) => {
     this.isWriteComplete = false
-    const batch = writeBatch(this.db)
-    batch.set(this.noteDocRef(note.id), note, { merge: true })
-    batch.set(this.weekDocRef(note.weekStartDate), {
-      startDate: note.weekStartDate,
-      notes: { [note.habitId]: arrayUnion(note.id) },
-      notesMetadata: { [note.id]: { title: note.title, icon: note.icon } }
-    }, { merge: true })
-    await batch.commit()
+    await setDoc(this.noteDocRef(note.id), note, { merge: true })
     this.completeWrite()
   }
 
   public deleteNote = async (note: NoteDocumentData) => {
     this.isWriteComplete = false
-    const batch = writeBatch(this.db)
-    batch.delete(this.noteDocRef(note.id))
-    batch.set(this.weekDocRef(note.weekStartDate), {
-      notes: { [note.habitId]: arrayRemove(note.id) },
-      notesMetadata: { [note.id]: deleteField() }
-    }, { merge: true })
-    await batch.commit()
+    await deleteDoc(this.noteDocRef(note.id))
     this.completeWrite()
   }
 
-  public deleteHabit = async (habitId: string) => {
-    this.isWriteComplete = false
-    const deleteHabitDataPromise = this.update(this.habitsDocRef(), {
-      habits: { [habitId]: deleteField() },
-      order: arrayRemove(habitId)
-    })
-    const deleteNotesPromise = this.deleteNotesWithHabitId(habitId)
-    await Promise.all([
-      deleteHabitDataPromise,
-      deleteNotesPromise
-    ])
-    this.completeWrite()
-  }
-
-  public userDocRef = (path?: string, friendUid?: string) => {
-    return doc(this.db, USERS, friendUid ?? this.uid, path ?? '')
+  public userDocRef = (path?: string, options?: { friendUid?: string }) => {
+    return doc(this.db, USERS, options?.friendUid ?? this.uid, path ?? '')
   }
 
   public get friendRequestsDocRef() {
     return this.userDocRef(FRIEND_REQUESTS)
   }
-  
+
   public get friendsDocRef() {
     return this.userDocRef(FRIENDS)
   }
 
-  public habitsDocRef(friendUid?: string) {
-    return this.userDocRef(HABITS, friendUid)
+  public habitDetailsDocRef(friendUid?: string) {
+    return this.userDocRef(HABIT_DETAILS, { friendUid })
   }
 
-  public weekDocRef = (weekStartDate: string, friendUid?: string) => {
-    return this.userDocRef(WEEKS + '/' + weekStartDate, friendUid)
+  public habitsCollectionRef(friendUid?: string) {
+    return collection(this.db, USERS, friendUid ?? this.uid, HABITS)
   }
 
-  public weekIconsDocRef = (year: string) => {
-    return this.userDocRef(WEEK_ICONS + '/' + year)
+  public habitDocRef(habitId: string, options?: { friendUid?: string }) {
+    return this.userDocRef(HABITS + '/' + habitId, { friendUid: options?.friendUid })
   }
 
   public noteDocRef = (noteId: string, friendUid?: string) => {
-    return this.userDocRef(NOTES + '/' + noteId, friendUid)
-  }
-
-  public get weeksCollectionRef() {
-    return collection(this.db, USERS, this.uid, WEEKS)
+    return this.userDocRef(NOTES + '/' + noteId, { friendUid })
   }
 
   public get notesCollectionRef() {

@@ -7,9 +7,8 @@ import EmojiPaletteEditor from '@/components/page/habit-editor/EmojiPaletteEdito
 import HabitEditorNavSection from '@/components/page/habit-editor/HabitEditorNavSection'
 import HabitIconPicker from '@/components/page/habit-editor/HabitIconPicker'
 import HabitNameInput from '@/components/page/habit-editor/HabitNameInput'
-import HabitStatusPicker from '@/components/page/habit-editor/HabitStatusPicker'
-import HabitTimeableCheckbox from '@/components/page/habit-editor/HabitTimeableCheckbox'
 import HabitEditorPresetsSection from '@/components/page/habit-editor/HabitEditorPresetsSection'
+import HabitStreakSettings from '@/components/page/habit-editor/HabitStreakSettings'
 import Box from '@/components/primitives/Box'
 import FadeIn from '@/components/primitives/FadeIn'
 import Flex from '@/components/primitives/Flex'
@@ -33,8 +32,7 @@ const HabitEditorPage = () => {
           <HabitNameInput />
         </Flex>
         <Spacer mb={2} />
-        {editor.isNewHabit ? <HabitEditorPresetsSection /> : <HabitStatusPicker />}
-        <Spacer mb={3} />
+        {editor.isNewHabit && <HabitEditorPresetsSection />}
         <InitiallyHiddenOptions />
       </Box>
     </HabitEditorContext.Provider>
@@ -46,20 +44,18 @@ const InitiallyHiddenOptions = observer(() => {
   const [isVisible, setIsVisible] = useState(false)
   const [fadeIn] = useState(!habitEditor.habit?.name)
 
-  if (!isVisible) {
-    if (habitEditor.habit?.name) {
-      setIsVisible(true)
-    }
-    return null
-  }
+  if (!isVisible && habitEditor.habit?.name) setIsVisible(true)
+  if (isVisible && !habitEditor.habit?.name) setIsVisible(false)
+  if (!isVisible && habitEditor.isNewHabit) return null
 
   return (
     <FadeIn time={fadeIn ? 350 : 0} delay={400}>
-      <HabitTimeableCheckbox />
-      <Spacer mb={[3, 8]} />
+      <Spacer mb={[3, 4]} />
+      <HabitStreakSettings />
+      <Spacer mb={[3, 4]} />
       <EmojiPaletteEditor />
     </FadeIn>
   )
 })
 
-export default withApp(HabitEditorPage, 'neutral')
+export default withApp(HabitEditorPage)

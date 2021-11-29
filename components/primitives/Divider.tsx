@@ -1,8 +1,17 @@
 import Box from '@/components/primitives/Box'
+import { StyledComponent } from '@/components/types/StyledComponent'
 
-const Divider = ({ color }: { color?: string }) => {
+interface Props {
+  color?: string
+}
+
+const Divider: StyledComponent<Props> = ({ color, className }) => {
   return (
-    <Box sx={{ borderTop: 'solid 1px', borderColor: color ?? 'divider' }} />
+    <Box
+      role="presentation"
+      sx={{ borderTop: 'solid 1px', borderColor: color ?? 'divider' }}
+      className={className}
+    />
   )
 }
 

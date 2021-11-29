@@ -3,7 +3,6 @@ import { container } from 'tsyringe'
 import AuthHandler from '@/logic/app/AuthHandler'
 import ProfileHandler from '@/logic/app/ProfileHandler'
 import DbHandler from '@/logic/app/DbHandler'
-import accentColor from '@/logic/utils/accentColor'
 import Dropdown from '@/components/app/Dropdown'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
@@ -42,7 +41,7 @@ const MainHeading = observer(() => {
           fontSize: ['1.6rem', '1.8rem', '2.1rem'],
           ml: 2,
           mr: [4, 4, 6],
-          color: accentColor.current,
+          color: 'accent',
           transition: 'color 400ms',
           transform: null
         }}

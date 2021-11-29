@@ -2,15 +2,19 @@ const theme = {
   breakpoints: ['501px', '1251px'],
   colors: {
     text: 'var(--text-color)',
+    textAccent: 'var(--text-accent-color)',
+    textAccentAlt: 'var(--text-accent-color-alt)',
     bg: 'var(--background-color)',
     divider: 'var(--divider-color)',
     grid: 'var(--grid-color)',
     button: 'var(--button-color)',
+    buttonAccent: 'var(--button-accent-color)',
+    buttonAccentAlt: 'var(--button-accent-color-alt)',
+    buttonWarning: 'var(--button-warning-color)',
     buttonHighlight: 'var(--button-highlight-color)',
     warning: 'var(--warning-color)',
-    tracker: 'var(--tracker-accent-color)',
-    notes: 'var(--notes-accent-color)',
-    focus: 'var(--focus-accent-color)',
+    accent: 'var(--accent-color)',
+    accentAlt: 'var(--accent-color-alt)',
     whiteAlpha: {
       0: 'rgba(255, 255, 255, 0)',
       3: 'rgba(255, 255, 255, 0.03)',
@@ -41,7 +45,8 @@ const theme = {
     bold: 700
   },
   radii: {
-    default: '4px'
+    default: '4px',
+    trackerStatus: '10px'
   },
   sizes: {
     max: '1200px',

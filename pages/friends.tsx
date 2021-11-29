@@ -38,4 +38,4 @@ function useFriendRequestsListener() {
   }, [])
 }
 
-export default withApp(FriendsPage, 'neutral')
+export default withApp(FriendsPage)

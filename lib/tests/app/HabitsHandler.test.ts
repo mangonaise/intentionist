@@ -2,14 +2,13 @@ import '@abraham/reflection'
 import { container } from 'tsyringe'
 import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
 import signInDummyUser from '@/test-setup/signInDummyUser'
-import deleteHabitsDoc from '@/test-setup/deleteHabitsDoc'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import teardownFirebase from '@/test-setup/teardownFirebase'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
-import DbHandler from '@/logic/app/DbHandler'
+import deleteHabits from '@/test-setup/deleteHabits'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
+import DbHandler from '@/logic/app/DbHandler'
 import generateHabitId from '@/logic/utils/generateHabitId'
-import exclude from '@/logic/utils/exclude'
 
 // 🔨
 
@@ -18,10 +17,13 @@ const firebase = initializeFirebase(projectId)
 const { db: adminDb } = getFirebaseAdmin(projectId)
 
 let dbHandler: DbHandler, habitsHandler: HabitsHandler
-const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '🧪', status: 'active' }
-const dummyHabitB: Habit = { id: generateHabitId(), name: 'Build app', icon: '👨‍💻', status: 'active' }
-const dummyHabitC: Habit = { id: generateHabitId(), name: 'Fix bugs', icon: '🐛', status: 'active' }
-const getHabitsDoc = async () => await dbHandler.getDocData(dbHandler.habitsDocRef())
+
+const commonHabitData = { archived: false, creationTime: 123, timeable: true, palette: [] as string[], visibility: 'private' } as const
+const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '🧪', ...commonHabitData }
+const dummyHabitB: Habit = { id: generateHabitId(), name: 'Build app', icon: '👨‍💻', ...commonHabitData }
+const dummyHabitC: Habit = { id: generateHabitId(), name: 'Fix bugs', icon: '🐛', ...commonHabitData }
+
+const sortByHabitId = (habits: Habit[]) => habits.sort((a: Habit, b: Habit) => a.id < b.id ? 1 : -1)
 
 beforeAll(async () => {
   await signInDummyUser()
@@ -33,7 +35,7 @@ beforeEach(async () => {
 })
 
 afterEach(async () => {
-  await deleteHabitsDoc(adminDb)
+  await deleteHabits(adminDb)
   container.clearInstances()
 })
 
@@ -49,43 +51,33 @@ async function initialize() {
 // 🧪
 
 describe('initialization', () => {
-  test('if no data exists in database, local cache will be set to empty array', async () => {
+  test('if no data exists in database, active habits will be set to empty array', async () => {
     await initialize()
-    expect(habitsHandler.habits).toEqual([])
+    expect(habitsHandler.activeHabits).toEqual([])
   })
 
-  test('fetched habit is placed in an array in local cache', async () => {
-    await dbHandler.update(dbHandler.habitsDocRef(), {
-      habits: { [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') } },
-      order: [dummyHabitA.id]
-    })
+  test('when a habit is fetched, it is placed in an array in local cache', async () => {
+    await dbHandler.addHabit(dummyHabitA)
     await initialize()
-    expect(habitsHandler.habits).toEqual([dummyHabitA])
+    expect(habitsHandler.activeHabits).toEqual([dummyHabitA])
   })
 
-  test('fetched habits are ordered correctly', async () => {
-    await dbHandler.update(dbHandler.habitsDocRef(), {
-      habits: {
-        [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') },
-        [dummyHabitB.id]: { ...exclude(dummyHabitB, 'id') }
-      },
-      order: [dummyHabitB.id, dummyHabitA.id]
-    })
+  test('habit order is fetched correctly', async () => {
+    await dbHandler.addHabit(dummyHabitA)
+    await dbHandler.addHabit(dummyHabitB)
+
     await initialize()
-    expect(habitsHandler.habits).toEqual([dummyHabitB, dummyHabitA])
+    expect(habitsHandler.order).toEqual([dummyHabitA.id, dummyHabitB.id])
   })
 
-  test('if habit ids are missing from the fetched habit order, they are placed at the end of the local habits array', async () => {
-    await dbHandler.update(dbHandler.habitsDocRef(), {
-      habits: {
-        [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') },
-        [dummyHabitB.id]: { ...exclude(dummyHabitB, 'id') },
-        [dummyHabitC.id]: { ...exclude(dummyHabitC, 'id') }
-      },
-      order: [dummyHabitC.id, dummyHabitB.id]
-    })
+  test('if habit ids are missing from the fetched habit order, the missing habit ids are placed at the end of the "order" array', async () => {
+    await dbHandler.addHabit(dummyHabitA)
+    await dbHandler.addHabit(dummyHabitB)
+    await dbHandler.addHabit(dummyHabitC)
+    await dbHandler.update(dbHandler.habitDetailsDocRef(), { order: [dummyHabitC.id, dummyHabitB.id] })
     await initialize()
-    expect(habitsHandler.habits).toEqual([dummyHabitC, dummyHabitB, dummyHabitA])
+    expect(habitsHandler.order).toEqual([dummyHabitC.id, dummyHabitB.id, dummyHabitA.id])
+    expect(sortByHabitId(habitsHandler.activeHabits)).toEqual(sortByHabitId([dummyHabitC, dummyHabitB, dummyHabitA]))
   })
 })
 
@@ -98,14 +90,13 @@ describe('behavior', () => {
     await habitsHandler.setHabit(dummyHabitA)
     await habitsHandler.setHabit(dummyHabitB)
 
-    expect(habitsHandler.habits).toEqual([dummyHabitA, dummyHabitB])
-    expect(habitsHandler.orderedIds).toEqual([dummyHabitA.id, dummyHabitB.id])
+    expect(habitsHandler.activeHabits).toEqual([dummyHabitA, dummyHabitB])
 
-    expect(await getHabitsDoc()).toEqual({
-      habits: {
-        [dummyHabitA.id]: { ...exclude(dummyHabitA, 'id') },
-        [dummyHabitB.id]: { ...exclude(dummyHabitB, 'id') }
-      },
+    const activeHabitsDocs = await dbHandler.getActiveHabitsDocs()
+    expect(sortByHabitId(activeHabitsDocs)).toEqual(sortByHabitId(habitsHandler.activeHabits))
+
+    expect(await dbHandler.getHabitDetailsDoc()).toEqual({
+      activeIds: { private: { [dummyHabitA.id]: true, [dummyHabitB.id]: true } },
       order: [dummyHabitA.id, dummyHabitB.id]
     })
   })
@@ -114,15 +105,12 @@ describe('behavior', () => {
     await habitsHandler.setHabit(dummyHabitA)
     await habitsHandler.setHabit(dummyHabitB)
 
-    const updatedHabit = { ...dummyHabitA, icon: '🤓' } as Habit
+    const updatedHabit = { ...dummyHabitA, icon: '🤓' }
     await habitsHandler.setHabit(updatedHabit)
 
-    expect(habitsHandler.habits).toEqual([updatedHabit, dummyHabitB])
+    expect(habitsHandler.activeHabits).toEqual([updatedHabit, dummyHabitB])
 
-    expect((await getHabitsDoc())!.habits).toEqual({
-      [dummyHabitA.id]: { name: dummyHabitA.name, icon: '🤓', status: dummyHabitA.status },
-      [dummyHabitB.id]: { name: dummyHabitB.name, icon: dummyHabitB.icon, status: dummyHabitB.status }
-    })
+    expect(sortByHabitId(await dbHandler.getActiveHabitsDocs())).toEqual(sortByHabitId(habitsHandler.activeHabits))
   })
 
   test('adding or updating a habit returns the updated habit when changes are made', async () => {
@@ -141,10 +129,28 @@ describe('behavior', () => {
     const a = await habitsHandler.setHabit(dummyHabitA)
     const b = await habitsHandler.setHabit(dummyHabitB)
     const c = await habitsHandler.setHabit(dummyHabitC)
-    await habitsHandler.reorderHabits(a, c)
-    expect(habitsHandler.habits).toEqual([b, c, a])
-    expect(habitsHandler.orderedIds).toEqual([b.id, c.id, a.id])
-    expect((await getHabitsDoc())?.order).toEqual([b.id, c.id, a.id])
+    habitsHandler.reorderHabitsLocally(a.id, c.id)
+    await habitsHandler.uploadHabitOrder()
+    expect(habitsHandler.order).toEqual([b.id, c.id, a.id])
+    expect((await dbHandler.getHabitDetailsDoc())?.order).toEqual([b.id, c.id, a.id])
+  })
+
+  test('changing habit visibility updates the local cache and database correctly', async () => {
+    const habit = await habitsHandler.setHabit(dummyHabitA)
+
+    await habitsHandler.changeHabitVisibility(habit, 'public')
+    expect(habit.visibility).toEqual('public')
+    expect(await dbHandler.getHabitDetailsDoc()).toEqual({
+      activeIds: { public: { [habit.id]: true }, private: {} },
+      order: [habit.id]
+    })
+
+    await habitsHandler.changeHabitVisibility(habit, 'private')
+    expect(habit.visibility).toEqual('private')
+    expect(await dbHandler.getHabitDetailsDoc()).toEqual({
+      activeIds: { public: {}, private: { [habit.id]: true } },
+      order: [habit.id]
+    })
   })
 
   test('deleting a habit removes it from local cache and database', async () => {
@@ -152,13 +158,11 @@ describe('behavior', () => {
     await habitsHandler.setHabit(dummyHabitB)
     await habitsHandler.deleteHabitById(dummyHabitA.id)
 
-    expect(habitsHandler.habits).toEqual([dummyHabitB])
-    expect(habitsHandler.orderedIds).toEqual([dummyHabitB.id])
+    expect(habitsHandler.activeHabits).toEqual([dummyHabitB])
 
-    expect(await getHabitsDoc()).toEqual({
-      habits: {
-        [dummyHabitB.id]: { name: dummyHabitB.name, icon: dummyHabitB.icon, status: dummyHabitB.status }
-      },
+    expect(await dbHandler.getActiveHabitsDocs()).toEqual([dummyHabitB])
+    expect(await dbHandler.getHabitDetailsDoc()).toEqual({
+      activeIds: { private: { [dummyHabitB.id]: true } },
       order: [dummyHabitB.id]
     })
   })
@@ -175,6 +179,7 @@ describe('behavior', () => {
   })
 })
 
-test('habits doc removed after tests', async () => {
-  expect(await getHabitsDoc()).toBeUndefined()
+test('habits docs are removed after tests', async () => {
+  expect(await dbHandler.getActiveHabitsDocs()).toEqual([])
+  expect(await dbHandler.getHabitDetailsDoc()).toBeUndefined()
 })

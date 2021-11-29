@@ -51,7 +51,7 @@ const EditorNavSection = observer(() => {
         icon={CheckIcon}
         onClick={editor.finishEditing}
         hoverEffect={isWrapperPinned ? 'none' : 'opacity'}
-        sx={{ mr: 2, bg: 'notes' }}
+        sx={{ mr: 2, bg: 'accent' }}
       >
         Done
       </IconButton>
@@ -99,7 +99,7 @@ const DefaultNavSection = () => {
         <IconButton
           icon={PencilIcon}
           onClick={editor.startEditing}
-          sx={{ bg: 'notes', ml: 2 }}
+          sx={{ bg: 'accent', ml: 2 }}
           hoverEffect="opacity"
         />
       )}

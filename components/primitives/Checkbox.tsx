@@ -6,14 +6,16 @@ interface CheckboxProps extends ComponentPropsWithoutRef<'input'> {
 }
 
 const Checkbox: StyledComponent<CheckboxProps> = (props) => {
-  const { label } = props
+  const { label, checked } = props
+
 
   return (
     <label
       sx={{
         display: 'flex',
         alignItems: 'center',
-        color: 'whiteAlpha.80',
+        width: 'fit-content',
+        color: checked ? 'text' : 'whiteAlpha.70',
         '&:hover input:not(:checked)': {
           backgroundColor: 'whiteAlpha.30',
         }

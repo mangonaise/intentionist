@@ -14,8 +14,7 @@ const AddFriendButton = () => {
         onClick={() => setIsModalOpen(true)}
         hoverEffect="opacity"
         sx={{
-          backgroundColor: 'text',
-          color: 'bg',
+          backgroundColor: 'accent',
           fontWeight: 'medium'
         }}
       >

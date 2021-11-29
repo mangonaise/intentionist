@@ -19,7 +19,7 @@ let habitEditor: HabitEditor
 const router = container.resolve(MockRouter)
 container.register('Router', { useValue: router })
 
-const dummyHabit: Habit = { id: 'abcdefgh', name: 'Test habit editor', icon: '📝', status: 'active' }
+const dummyHabit: Habit = { id: 'abcdefgh', name: 'Test habit editor', icon: '📝', timeable: true, palette: [], creationTime: 123, archived: false, visibility: 'public' }
 
 function startHabitEditor() {
   habitEditor = container.resolve(HabitEditor)
@@ -59,7 +59,7 @@ describe('when habits have already been fetched', () => {
 
   afterEach(async () => {
     router.setQuery({})
-    for (const habit of habitsHandler.habits) {
+    for (const habit of habitsHandler.activeHabits) {
       await habitsHandler.deleteHabitById(habit.id)
     }
   })
@@ -70,10 +70,10 @@ describe('when habits have already been fetched', () => {
     expect(habitEditor.isNewHabit).toBe(true)
   })
 
-  test('if no habit id matches query param id, will route to habits page', () => {
+  test('if no habit id matches query param id, will route to home page', () => {
     router.setQuery({ id: 'idontexist' })
     container.resolve(HabitEditor)
-    expect(router.push).toHaveBeenCalledWith('/habits')
+    expect(router.push).toHaveBeenCalledWith('/home')
   })
 
   test('if query param id matches existing habit, editor will initialize with existing habit', async () => {
@@ -96,7 +96,7 @@ describe('when habits have already been fetched', () => {
     habitEditor.saveAndExit()
     await when(() => container.resolve(DbHandler).isWriteComplete)
 
-    expect(habitsHandler.habits).toEqual([createdHabitA, createdHabitB])
+    expect(habitsHandler.activeHabits).toEqual([createdHabitA, createdHabitB])
   })
 
   test('updated habit is reflected in HabitsHandler', async () => {
@@ -106,15 +106,7 @@ describe('when habits have already been fetched', () => {
     habitEditor.updateHabit({ name: 'Updated name' })
     habitEditor.saveAndExit()
     await when(() => container.resolve(DbHandler).isWriteComplete)
-    expect(habitsHandler.habits).toEqual([{ ...dummyHabit, name: 'Updated name' }])
-  })
-
-  test('on exit, return to app home page if query param returnHome is true', async () => {
-    await habitsHandler.setHabit(dummyHabit)
-    router.setQuery({ id: dummyHabit.id, returnHome: 'true' })
-    startHabitEditor()
-    habitEditor.exit()
-    expect(router.push).toHaveBeenCalledWith('/home')
+    expect(habitsHandler.activeHabits).toEqual([{ ...dummyHabit, name: 'Updated name' }])
   })
 
   test('deleted habit is reflected in HabitsHandler', async () => {
@@ -123,11 +115,11 @@ describe('when habits have already been fetched', () => {
     startHabitEditor()
     habitEditor.deleteHabit()
     await when(() => container.resolve(DbHandler).isWriteComplete)
-    expect(habitsHandler.habits).toEqual([])
+    expect(habitsHandler.activeHabits).toEqual([])
   })
 
   test('teardown: habits are reset', () => {
-    expect(habitsHandler.habits).toEqual([])
+    expect(habitsHandler.activeHabits).toEqual([])
   })
 })
 
