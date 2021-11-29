@@ -27,7 +27,7 @@ const HabitVisibilityDropdown = observer(() => {
       />
       <SelectDropdown.Item
         title="Visible to friends"
-        description="Friends will be able to see your tracker activity and notes for this habit."
+        description="Friends will be able to see your tracker activity for this habit."
         selected={!isPrivate}
         onClick={() => handleChangeVisibility('public')}
       />

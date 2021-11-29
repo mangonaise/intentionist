@@ -35,16 +35,15 @@ const DeleteHabitDropdown = () => {
           <Heading sx={{ my: 6 }}>Hold up!</Heading>
           <Box sx={{ px: 4, pb: 4 }}>
             <Box sx={{
-              maxWidth: '420px',
+              maxWidth: '402px',
               bg: 'whiteAlpha.5',
               borderRadius: 'default',
               p: 4, mb: 4,
               fontWeight: 'light',
-              textAlign: 'center',
               lineHeight: 1.5
             }}>
               <Text sx={{ mb: 4 }}>If you want to hide this habit because you aren't focusing on it anymore, simply <b>archive</b> it instead.</Text>
-              <Text>Permanently deleting this habit will <b>erase it from history.</b> That includes all tracker history and notes.</Text>
+              <Text>Permanently deleting this habit will <b>erase it from history.</b></Text>
             </Box>
             <Flex sx={{ flexWrap: ['wrap', 'nowrap'], flexDirection: ['column-reverse', 'row'], width: '100%' }}>
               <Button onClick={closeModal} sx={{ flex: 1, mr: [0, 3], mt: [3, 0], minWidth: ['100%', 'auto'] }}>
