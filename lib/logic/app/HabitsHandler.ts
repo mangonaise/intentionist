@@ -26,7 +26,10 @@ export type HabitVisibility = 'public' | 'private'
 
 export type HabitDetailsDocumentData = {
   order: string[],
-  activeIds: { [habitId: string]: true },
+  activeIds: {
+    public?: { [habitId: string]: true },
+    private?: { [habitId: string]: true }
+  },
   shared: { [friendUid: string]: string[] }
 }
 
@@ -68,7 +71,7 @@ export default class HabitsHandler {
     habit.visibility = visibility
 
     // ☁️
-    await this.dbHandler.update(this.dbHandler.habitDocRef(habit.id), habit)
+    await this.dbHandler.changeHabitVisibility(habit, visibility)
   }
 
   public addHabitFromPreset = async (preset: HabitPreset) => {
@@ -161,7 +164,11 @@ export default class HabitsHandler {
 
   private processFetchedHabitData = (activeHabits: Habit[], habitDetails: Fetched<HabitDetailsDocumentData>) => {
     const order: string[] = habitDetails?.order ?? []
-    const activeIds = Object.keys(habitDetails?.activeIds ?? {})
+
+    const publicIds = Object.keys(habitDetails?.activeIds?.public ?? {})
+    const privateIds = Object.keys(habitDetails?.activeIds?.private ?? {})
+    const activeIds = publicIds.concat(privateIds)
+
     for (const habitId of activeIds) {
       if (!order.includes(habitId)) {
         order.push(habitId)

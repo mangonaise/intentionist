@@ -5,7 +5,7 @@ import type { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
 import { inject, singleton } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
 import { collection, doc, getDoc, getDocs, query, setDoc, arrayUnion, arrayRemove, writeBatch, where, deleteDoc, deleteField } from '@firebase/firestore'
-import { Habit } from '@/logic/app/HabitsHandler'
+import { Habit, HabitVisibility } from '@/logic/app/HabitsHandler'
 import AuthUser from '@/logic/app/AuthUser'
 
 const USERS = 'users'
@@ -65,7 +65,29 @@ export default class DbHandler {
     batch.set(this.habitDetailsDocRef(), {
       order: arrayUnion(habit.id),
       activeIds: {
-        [habit.id]: true
+        private: {
+          [habit.id]: true
+        }
+      }
+    }, { merge: true })
+
+    await batch.commit()
+    this.completeWrite()
+  }
+
+  public changeHabitVisibility = async (habit: Habit, visibility: HabitVisibility) => {
+    this.isWriteComplete = false
+    const batch = writeBatch(this.db)
+
+    batch.set(this.habitDocRef(habit.id), { visibility }, { merge: true })
+    batch.set(this.habitDetailsDocRef(), {
+      activeIds: {
+        public: {
+          [habit.id]: visibility === 'public' ? true : deleteField()
+        },
+        private: {
+          [habit.id]: visibility === 'private' ? true : deleteField()
+        }
       }
     }, { merge: true })
 
@@ -82,7 +104,10 @@ export default class DbHandler {
       const batch = writeBatch(this.db)
       batch.delete(this.habitDocRef(habitId))
       batch.set(this.habitDetailsDocRef(), {
-        activeIds: { [habitId]: deleteField() },
+        activeIds: {
+          public: { [habitId]: deleteField() },
+          private: { [habitId]: deleteField() }
+        },
         order: arrayRemove(habitId)
       }, { merge: true })
       await batch.commit()

@@ -18,7 +18,7 @@ const { db: adminDb } = getFirebaseAdmin(projectId)
 
 let dbHandler: DbHandler, habitsHandler: HabitsHandler
 
-const commonHabitData = { archived: false, creationTime: 123, timeable: true, palette: [] as string[], visibility: 'public' } as const
+const commonHabitData = { archived: false, creationTime: 123, timeable: true, palette: [] as string[], visibility: 'private' } as const
 const dummyHabitA: Habit = { id: generateHabitId(), name: 'Run tests', icon: '🧪', ...commonHabitData }
 const dummyHabitB: Habit = { id: generateHabitId(), name: 'Build app', icon: '👨‍💻', ...commonHabitData }
 const dummyHabitC: Habit = { id: generateHabitId(), name: 'Fix bugs', icon: '🐛', ...commonHabitData }
@@ -96,7 +96,7 @@ describe('behavior', () => {
     expect(sortByHabitId(activeHabitsDocs)).toEqual(sortByHabitId(habitsHandler.activeHabits))
 
     expect(await dbHandler.getHabitDetailsDoc()).toEqual({
-      activeIds: { [dummyHabitA.id]: true, [dummyHabitB.id]: true },
+      activeIds: { private: { [dummyHabitA.id]: true, [dummyHabitB.id]: true } },
       order: [dummyHabitA.id, dummyHabitB.id]
     })
   })
@@ -135,6 +135,24 @@ describe('behavior', () => {
     expect((await dbHandler.getHabitDetailsDoc())?.order).toEqual([b.id, c.id, a.id])
   })
 
+  test('changing habit visibility updates the local cache and database correctly', async () => {
+    const habit = await habitsHandler.setHabit(dummyHabitA)
+
+    await habitsHandler.changeHabitVisibility(habit, 'public')
+    expect(habit.visibility).toEqual('public')
+    expect(await dbHandler.getHabitDetailsDoc()).toEqual({
+      activeIds: { public: { [habit.id]: true }, private: {} },
+      order: [habit.id]
+    })
+
+    await habitsHandler.changeHabitVisibility(habit, 'private')
+    expect(habit.visibility).toEqual('private')
+    expect(await dbHandler.getHabitDetailsDoc()).toEqual({
+      activeIds: { public: {}, private: { [habit.id]: true } },
+      order: [habit.id]
+    })
+  })
+
   test('deleting a habit removes it from local cache and database', async () => {
     await habitsHandler.setHabit(dummyHabitA)
     await habitsHandler.setHabit(dummyHabitB)
@@ -144,7 +162,7 @@ describe('behavior', () => {
 
     expect(await dbHandler.getActiveHabitsDocs()).toEqual([dummyHabitB])
     expect(await dbHandler.getHabitDetailsDoc()).toEqual({
-      activeIds: { [dummyHabitB.id]: true },
+      activeIds: { private: { [dummyHabitB.id]: true } },
       order: [dummyHabitB.id]
     })
   })
