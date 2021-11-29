@@ -2,7 +2,7 @@ import type { Auth } from '@firebase/auth'
 import type { Firestore } from '@firebase/firestore'
 import type { Functions } from '@firebase/functions'
 import { container } from 'tsyringe'
-import { FirebaseApp, initializeApp } from '@firebase/app'
+import { FirebaseApp, FirebaseOptions, initializeApp } from '@firebase/app'
 import { initializeAppCheck, ReCaptchaV3Provider } from '@firebase/app-check'
 import { connectAuthEmulator, getAuth } from '@firebase/auth'
 import { connectFirestoreEmulator, getFirestore } from '@firebase/firestore'
@@ -18,11 +18,13 @@ export type FirebaseServices = {
 }
 
 export default function initializeFirebase(projectId = 'intentionist') {
-  const firebaseConfig = {
+  const firebaseConfig: FirebaseOptions = {
     projectId,
     apiKey: 'AIzaSyCfjsR8D8fm-na_IVemInUmEiGerYcSblk',
     authDomain: 'intentionist.firebaseapp.com',
-    storageBucket: 'intentionist.appspot.com'
+    storageBucket: 'intentionist.appspot.com',
+    messagingSenderId: '643016629614',
+    appId: '1:643016629614:web:ab6fb549e32a5450de357f'
   }
 
   const app = initializeApp(firebaseConfig)
