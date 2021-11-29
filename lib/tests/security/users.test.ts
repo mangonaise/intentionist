@@ -60,8 +60,3 @@ test('authenticated users can update their own profile document once created', a
   })
   expect(await assertSucceeds(update()))
 })
-
-test('authenticated users can read documents in subcollections of their own user document', async () => {
-  const read = () => getDoc(doc(authenticatedDb, `/users/${authUid}/weeks/2021-11-01`))
-  expect(await assertSucceeds(read()))
-})

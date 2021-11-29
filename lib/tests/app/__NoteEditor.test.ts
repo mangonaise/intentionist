@@ -1,3 +1,9 @@
+/*
+
+! TESTS ARE CURRENTLY ARCHIVED UNTIL NOTES ARE REIMPLEMENTED
+
+*/
+
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { when } from 'mobx'
