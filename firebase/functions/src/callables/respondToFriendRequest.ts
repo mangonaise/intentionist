@@ -9,6 +9,9 @@ const friendsDoc = getFriendsDocShortcut(db)
 const friendRequestsDoc = getFriendRequestsDocShortcut(db)
 
 exports.respondToFriendRequest = functions.https.onCall(async (data, context) => {
+  if (!context.app && !process.env.FUNCTIONS_EMULATOR) {
+    throw new functions.https.HttpsError('failed-precondition', 'Request did not originate from an App Check verified app.')
+  }
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'You must be authenticated')
   }

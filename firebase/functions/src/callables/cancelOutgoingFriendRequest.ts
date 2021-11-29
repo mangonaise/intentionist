@@ -8,6 +8,9 @@ const db = admin.firestore()
 const friendRequestsDoc = getFriendRequestsDocShortcut(db)
 
 exports.cancelOutgoingFriendRequest = functions.https.onCall((data, context) => {
+  if (!context.app && !process.env.FUNCTIONS_EMULATOR) {
+    throw new functions.https.HttpsError('failed-precondition', 'Request did not originate from an App Check verified app.')
+  }
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'You must be authenticated')
   }
