@@ -139,7 +139,7 @@ const OutgoingRequest = ({ request }: { request: FriendRequest }) => {
       <Button
         onClick={handleCancelRequest}
         disabled={isCanceling}
-        sx={{ flex: 1, bg: isCanceling ? 'transparent' : null }}
+        sx={{ flex: 1, bg: isCanceling ? 'transparent' : null, animation: isCanceling ? 'pulse infinite 1.5s' : null }}
       >
         {isCanceling ? 'Canceling...' : 'Cancel request'}
       </Button>

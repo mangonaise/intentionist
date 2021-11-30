@@ -7,6 +7,7 @@ import Flex from '@/components/primitives/Flex'
 import Button from '@/components/primitives/Button'
 import Icon from '@/components/primitives/Icon'
 import Text from '@/components/primitives/Text'
+import FadeIn from '@/components/primitives/FadeIn'
 import CheckFillIcon from '@/components/icons/CheckFillIcon'
 import SendIcon from '@/components/icons/SendIcon'
 import CrossIcon from '@/components/icons/CrossIcon'
@@ -54,7 +55,10 @@ const PendingFriendRequestModal = observer(() => {
       <Flex column sx={{ width: '350px', maxWidth: 'calc(100vw - 2.4rem)', mt: 4 }}>
         <Flex center column>
           <Icon
-            sx={{ fontSize: '1.75rem', mb: 4 }}
+            sx={{
+              fontSize: '1.75rem', mb: 4,
+              animation: isIntermediateState ? 'pulse infinite 1.5s' : null
+            }}
             icon={content?.icon ?? EllipsisIcon}
           />
         </Flex>
@@ -70,6 +74,11 @@ const PendingFriendRequestModal = observer(() => {
           {content?.text.split('\n').map((text, index) => (
             <Text type="p" key={index}>{text}</Text>
           ))}
+          {isIntermediateState && (
+            <FadeIn sx={{ mt: 2 }}>
+              <Text sx={{ color: 'whiteAlpha.50' }}>This may take a few seconds.</Text>
+            </FadeIn>
+          )}
         </Flex>
         {!isIntermediateState && (
           <Button onClick={() => setShowModal(false)} sx={{ m: 4, mt: 0 }}>
