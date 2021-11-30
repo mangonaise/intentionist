@@ -1,3 +1,4 @@
+import { FC } from 'react'
 import { observer } from 'mobx-react-lite'
 import { container } from 'tsyringe'
 import AuthHandler from '@/logic/app/AuthHandler'
@@ -14,20 +15,47 @@ import IntentionistIcon from '@/components/icons/IntentionistIcon'
 import CloudUploadingIcon from '@/components/icons/CloudUploadingIcon'
 import CloudSyncedIcon from '@/components/icons/CloudSyncedIcon'
 import SmartEmoji from './SmartEmoji'
-import theme from 'styles/theme'
 
 const Navbar = () => {
   return (
-    <Box sx={{ position: 'absolute', top: 2, left: 2, right: 2 }}>
+    <Wrapper>
       <Flex
         align="center"
-        sx={{ height: theme.navbarHeights, maxWidth: 'max', m: 'auto', paddingBottom: 2 }}
+        sx={{ height: ['3rem', '3.5rem', '4rem'], maxWidth: 'max', m: 'auto', paddingBottom: 2 }}
       >
         <MainHeading />
         <CloudSyncIndicator />
         <Spacer mr={3} />
         <UserActionsDropdown />
       </Flex>
+    </Wrapper>
+  )
+}
+
+const Wrapper: FC = ({ children }) => {
+  return (
+    <Box sx={{
+      position: 'relative',
+      mx: '-0.5rem', mt: '-0.5rem', px: '0.5rem', pt: '0.5rem',
+      boxShadow: 'rgba(0, 0, 0, 0.1) 0 2px 6px',
+      '&::after': {
+        position: 'absolute',
+        zIndex: -1,
+        inset: 0,
+        content: '""',
+        borderBottom: 'solid 1px',
+        borderColor: 'textAccent',
+        opacity: 0.1
+      },
+      '&::before': {
+        position: 'absolute',
+        zIndex: -1,
+        inset: 0,
+        content: '""',
+        backgroundColor: 'nav'
+      }
+    }}>
+      {children}
     </Box>
   )
 }
@@ -38,7 +66,7 @@ const MainHeading = observer(() => {
       <Icon
         icon={IntentionistIcon}
         sx={{
-          fontSize: ['1.6rem', '1.8rem', '2.1rem'],
+          fontSize: ['1.6rem', '1.8rem'],
           ml: 2,
           mr: [4, 4, 6],
           color: 'accent',
@@ -49,7 +77,7 @@ const MainHeading = observer(() => {
       <Heading
         level={1}
         sx={{
-          fontSize: ['1.5rem', '1.75rem', '2rem'],
+          fontSize: ['1.5rem', '1.75rem'],
           fontWeight: 650,
           letterSpacing: '0.03ch',
           mr: 'auto'
@@ -87,9 +115,7 @@ const UserActionsDropdown = observer(() => {
           <SmartEmoji nativeEmoji={profileInfo?.avatar ?? '🙂'} rem={1.75} />
         </Flex>
       }
-      sx={{
-        '& > button': { px: 2, bg: 'transparent', borderRadius: '99px' }
-      }}
+      sx={{ '& > button': { px: 2, bg: 'transparent' } }}
     >
       <Flex
         center

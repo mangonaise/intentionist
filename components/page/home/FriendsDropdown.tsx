@@ -89,7 +89,7 @@ const DropdownTitle = observer(({ friendUid }: { friendUid: string | null }) => 
       <Text
         type="span"
         sx={{
-          ml: 3, maxWidth: 'calc(100vw - 7rem)',
+          ml: 3, maxWidth: ['calc(100vw - 6rem)', 'min(calc(100vw - 27rem), 500px)'],
           overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'
         }}
       >

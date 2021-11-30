@@ -46,25 +46,33 @@ const WeekSelector = observer(() => {
   }, [selectedDate])
 
   return (
-    <Flex align="center">
-      <Divider sx={{ flex: 1 }} />
-      <Flex sx={{ '& > button': { bg: 'transparent' }, width: ['100%', 'auto'], mx: [0, 2] }}>
-        <IconButton icon={ChevronLeftIcon} onClick={() => changeWeek(-1)} />
+    <Flex center>
+      <Flex sx={{ '& > button': { bg: 'transparent' }, width: ['100%', 'auto'] }}>
+        <IconButton
+          icon={ChevronLeftIcon}
+          onClick={() => changeWeek(-1)}
+          sx={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }} /
+        >
         <Dropdown
           title={title}
           noArrow
           sx={{
-            mx: '5px', flex: 1,
+            flex: 1,
             '& > button': {
-              display: 'flex', justifyContent: 'center', px: 0, bg: 'transparent', width: ['100%', '15rem']
+              display: 'flex', justifyContent: 'center', px: 0,
+              bg: 'transparent', width: ['100%', '15rem'], borderRadius: 0
             }
           }}
         >
           <MenuContent selectedDate={selectedDate} />
         </Dropdown>
-        <IconButton icon={ChevronRightIcon} onClick={() => changeWeek(1)} disabled={disableNextWeekButton} />
+        <IconButton
+          icon={ChevronRightIcon}
+          onClick={() => changeWeek(1)}
+          disabled={disableNextWeekButton}
+          sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+        />
       </Flex>
-      <Divider sx={{ flex: 1 }} />
     </Flex>
   )
 })

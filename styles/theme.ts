@@ -15,6 +15,7 @@ const theme = {
     warning: 'var(--warning-color)',
     accent: 'var(--accent-color)',
     accentAlt: 'var(--accent-color-alt)',
+    nav: 'var(--nav-color)',
     whiteAlpha: {
       0: 'rgba(255, 255, 255, 0)',
       3: 'rgba(255, 255, 255, 0.03)',
@@ -46,7 +47,7 @@ const theme = {
   },
   radii: {
     default: '4px',
-    trackerStatus: '10px'
+    trackerStatus: '8px'
   },
   sizes: {
     max: '1200px',
@@ -54,7 +55,6 @@ const theme = {
     row: '2.35rem',
   },
   space: ['0', '0.25rem', '0.5rem', '0.75rem', '1rem', '1.25rem', '1.5rem', '1.75rem', '2rem'],
-  navbarHeights: ['3rem', '3.5rem', '5rem']
 }
 
 export const windowsScrollbarStyle = '::-webkit-scrollbar{width:10px;}::-webkit-scrollbar-track{background:rgba(255,255,255,0.1);}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.3);}::-webkit-scrollbar-thumb:hover{background:rgba(255, 255, 255, 0.5);}'

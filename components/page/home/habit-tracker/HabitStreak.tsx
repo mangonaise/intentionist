@@ -28,7 +28,7 @@ const HabitStreak = observer(() => {
       >
         {count ?? 0}{habit.weeklyFrequency === 7 ? 'd' : 'w'}
       </Text>
-      <Icon icon={FlameIcon} sx={{ color, fontSize: ['1.2rem', '1.3rem'] }} />
+      <Icon icon={FlameIcon} sx={{ color, fontSize: '1.2rem' }} />
     </Flex>
   )
 })

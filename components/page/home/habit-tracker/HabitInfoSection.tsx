@@ -31,7 +31,11 @@ const HabitInfoSection = () => {
           <SmartEmoji rem={1.1} nativeEmoji={avatar} />
           <Text
             type="span"
-            sx={{ ml: 2, ...(isSharedHabit ? { color: 'textAccentAlt', fontWeight: 'medium' } : { opacity: 0.5 }) }}
+            sx={{
+              ml: 2, maxWidth: 'min(calc(100vw - 12rem), 400px)',
+              overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+              ...(isSharedHabit ? { color: 'textAccentAlt', fontWeight: 'medium' } : { opacity: 0.5 })
+            }}
           >
             {displayName}
           </Text>

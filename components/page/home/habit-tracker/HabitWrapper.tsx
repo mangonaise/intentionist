@@ -28,9 +28,9 @@ const HabitWrapper = observer(({ habit }: { habit: Habit & { friendUid?: string 
     <HabitContext.Provider value={{ habit, isSharedHabit }}>
       <Box sx={{ mb: [5, 6] }}>
         <Flex column>
-          <HabitInfoSection />
-          <Spacer mb={1} />
           <HabitTitleSection />
+          <Spacer mb={1} />
+          <HabitInfoSection />
         </Flex>
         <Spacer mb={3} />
         <TrackerStatusRow />

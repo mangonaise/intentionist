@@ -10,7 +10,7 @@ const HabitTitleSection = () => {
   const { habit } = useContext(HabitContext)
 
   return (
-    <NextLink href={{ pathname: 'habit', query: { id: habit.id } }}>
+    <NextLink href={{ pathname: 'habit', query: { id: habit.id } }} passHref>
       <Link
         tabIndex={habit.friendUid ? -1 : 0}
         sx={{

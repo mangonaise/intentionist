@@ -33,12 +33,6 @@ const FriendsPageNavSection = () => {
   )
 }
 
-const tabData: Array<{ text: string, tabName: FriendsPageTab }> = [
-  { text: 'Friends', tabName: 'friends' },
-  { text: 'Requests', tabName: 'requests' }
-]
-
-
 const Tabs = () => {
   const { tab, setTab } = useContext(FriendsPageContext)
 

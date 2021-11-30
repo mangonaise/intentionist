@@ -8,8 +8,9 @@
   font-display: swap;
 }
 
-$accent-color: #608faf;
-$accent-color-alt: #bb5d97;
+$accent-color: #6075af;
+$accent-color-alt: #bb5585;
+$button-accent-color: color.scale($accent-color, $lightness: -5%, $saturation: -5%);
 $warning-color: #e07785;
 
 :root {
@@ -24,11 +25,12 @@ $warning-color: #e07785;
   --divider-color: rgba(255, 255, 255, 0.1);
   --grid-color: rgba(255, 255, 255, 0.1);
   --focus-color: rgba(255, 255, 255, 0.75);
-  --button-color: rgba(255, 255, 255, 0.06);
   --button-highlight-color: rgba(255, 255, 255, 0.1);
-  --button-accent-color: #{color.scale($accent-color, $lightness: -5%, $saturation: -5%)};
+  --button-accent-color: #{$button-accent-color};
   --button-accent-color-alt: #{color.scale($accent-color-alt, $lightness: -5%, $saturation: -5%)};
   --button-warning-color: #{color.scale($warning-color, $lightness: -30%, $saturation: -40%)};
+  --nav-color: #{color.adjust($button-accent-color, $alpha: -0.875)};
+  --button-color: rgba(255, 255, 255, 0.06);
 }
 
 html,

@@ -12,8 +12,6 @@ import Spacer from '@/components/primitives/Spacer'
 import withAuthUser from './withAuthUser'
 import LoadingScreen from './LoadingScreen'
 import Navbar from './Navbar'
-import GradientBackground from './GradientBackground'
-import theme from 'styles/theme'
 
 const getProfileHandler = () => container.resolve(ProfileHandler)
 let disableFading = false
@@ -45,8 +43,7 @@ const withApp = (WrappedComponent: () => JSX.Element) => withAuthUser(observer((
   return (
     <FadeIn time={fade ? 500 : 0} delay={100} sx={{ zIndex: 100 }}>
       <Navbar />
-      <Spacer mb={theme.navbarHeights} />
-      <GradientBackground />
+      <Spacer mb={[3, 3, 5]} />
       <FadeIn time={300}>
         <WrappedComponent />
       </FadeIn>

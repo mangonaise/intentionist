@@ -21,7 +21,12 @@ const WeekdayRow = observer(() => {
   }, [weekdayId, selectedWeekStartDate])
 
   return (
-    <Flex sx={{ mx: ['-0.5rem', 'auto'], justifyContent: 'space-around', userSelect: 'none' }}>
+    <Flex
+      align="center"
+      sx={{
+        mx: ['-0.5rem', 'auto'],
+        justifyContent: 'space-around',
+      }}>
       {shellArray.map((_, index) => (
         <Text
           type="span"
@@ -31,8 +36,8 @@ const WeekdayRow = observer(() => {
               color: 'text',
               fontWeight: 'semibold'
             } : {
-              color: 'textAccent',
-              opacity: 0.5
+              color: 'accent',
+              opacity: 0.8
             })
           }}
           key={index}
