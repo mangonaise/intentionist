@@ -16,10 +16,6 @@ service cloud.firestore {
           (resource.data.visibility == 'public' && isUserXFriendOfUserY(request.auth.uid, userId));
       }
 
-      match /notes/{noteId} {
-        allow read, write: if requestedByUserWithId(userId);
-      }
-
       match /userData/friends {
         allow get: if requestedByUserWithId(userId);
       }
