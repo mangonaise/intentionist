@@ -18,6 +18,7 @@ const HabitVisibilityDropdown = observer(() => {
       title={isPrivate ? 'Private' : 'Public'}
       highlight={!isPrivate}
       anchorRight={true}
+      sx={{ '& > button': { px: 0, minWidth: '4.8rem' } }}
     >
       <SelectDropdown.Item
         title="Private"

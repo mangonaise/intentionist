@@ -19,7 +19,7 @@ const HabitPresetsList = observer(({ onSelectPreset }: Props) => {
   const { activeHabits } = container.resolve(HabitsHandler)
 
   const presetsToDisplay = habitPresets.filter((preset) => {
-    for (const habit of activeHabits) {
+    for (const habit of Object.values(activeHabits)) {
       if (habit.name.toLowerCase().includes(preset.uniqueText?.toLowerCase() ?? preset.name.toLowerCase())) {
         return false
       }

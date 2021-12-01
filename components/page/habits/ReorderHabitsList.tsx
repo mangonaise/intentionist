@@ -1,7 +1,6 @@
 import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
-import { forwardRef, useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
+import { forwardRef, useState } from 'react'
 import { DragStartEvent, DragEndEvent, DragOverlay, DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors, } from '@dnd-kit/core'
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy, } from '@dnd-kit/sortable'
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
@@ -14,28 +13,11 @@ import EmptyPageText from '@/components/app/EmptyPageText'
 import Flex from '@/components/primitives/Flex'
 import Text from '@/components/primitives/Text'
 
-function createHabitsMap(habits: Habit[]) {
-  return habits.reduce<{ [habitId: string]: Habit }>((map, habit) => {
-    map[habit.id] = habit
-    return map
-  }, {})
-}
-
 const ReorderHabitsList = observer(() => {
-  const router = useRouter()
-  const { isLoadingHabits, selectedFriendUid, habitsInView, refreshHabitsInView } = container.resolve(DisplayedHabitsHandler)
-  const { reorderHabitsLocally } = container.resolve(HabitsHandler)
+  const { refreshHabitsInView } = container.resolve(DisplayedHabitsHandler)
+  const { reorderHabitsLocally, activeHabits, getOrderedHabits } = container.resolve(HabitsHandler)
   const [draggedHabitId, setDraggedHabitId] = useState<string | null>(null)
-
-  const [habitsMap, setHabitsMap] = useState<{ [habitId: string]: Habit } | null>(null)
-
-  if (!isLoadingHabits && !habitsMap) setHabitsMap(createHabitsMap(habitsInView))
-
-  useEffect(() => {
-    if (selectedFriendUid) {
-      router.push('/home')
-    }
-  }, [])
+  const habits = getOrderedHabits()
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -45,8 +27,7 @@ const ReorderHabitsList = observer(() => {
     }),
   )
 
-  if (!habitsMap) return null
-  if (!habitsInView.length || selectedFriendUid) return <EmptyPageText text="Nothing to see here!" />
+  if (!habits.length) return <EmptyPageText text="Nothing to see here!" />
 
   return (
     <DndContext
@@ -57,15 +38,15 @@ const ReorderHabitsList = observer(() => {
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
     >
       <SortableContext
-        items={habitsInView}
+        items={habits}
         strategy={verticalListSortingStrategy}
       >
         <div>
-          {habitsInView.map(habit => <SortableHabit habit={habit} key={habit.id} />)}
+          {habits.map(habit => <SortableHabit habit={habit} key={habit.id} />)}
         </div>
       </SortableContext>
       <DragOverlay>
-        {!!draggedHabitId && <HabitWrapper isDragOverlay habit={habitsMap[draggedHabitId]} />}
+        {!!draggedHabitId && <HabitWrapper isDragOverlay habit={activeHabits[draggedHabitId]} />}
       </DragOverlay>
     </DndContext>
   )

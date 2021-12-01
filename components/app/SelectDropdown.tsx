@@ -23,11 +23,10 @@ const SelectDropdown: StyledComponent<Props> = ({ title, highlight, highlightCol
       sx={{
         '& > button': {
           minHeight: ['1.6rem', '1.6rem', '1.75rem'],
-          minWidth: '4.8rem',
+          px: '0.85rem',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          paddingX: 0,
           backgroundColor: highlight ? (highlightColor ?? 'buttonAccent') : 'whiteAlpha.5',
           borderRadius: '99px',
           color: highlight ? 'text' : 'whiteAlpha.80',
@@ -57,11 +56,13 @@ const Item = ({ title, description, selected, onClick }: SelectDropdownItemProps
       sx={{ py: 3 }}
       itemAction={onClick}
     >
-      <Flex asSpan flexWrap align="center" sx={{ maxWidth: 'calc(100vw - 3rem)' }}>
-        {title}{selected && <CheckMark />}
+      <Flex column sx={{ maxWidth: 'calc(100vw - 3rem)' }}>
+        <Text type="span">
+          {title}{selected && <CheckMark />}
+        </Text>
         <Text
           sx={{
-            mt: 2, maxWidth: '8.75rem', minWidth: '100%',
+            mt: 2, maxWidth: '18.2rem', minWidth: '100%',
             color: 'whiteAlpha.70', fontWeight: 'light', lineHeight: 1.15
           }}
         >

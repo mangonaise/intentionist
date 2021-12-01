@@ -6,6 +6,7 @@ import { getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
 import HabitStatusesHandler, { YearAndDay } from '@/logic/app/HabitStatusesHandler'
 import HabitsHandler, { Habit, HabitDetailsDocumentData } from '@/logic/app/HabitsHandler'
 import DbHandler from '@/logic/app/DbHandler'
+import FriendsHandler from '@/logic/app/FriendsHandler'
 import getYearAndDay from '@/logic/utils/getYearAndDay'
 
 export type FriendHabit = Habit & { friendUid: string }
@@ -19,7 +20,7 @@ export default class DisplayedHabitsHandler {
   public selectedWeekStartDate = getYearAndDay(getFirstDayOfThisWeek())
   private selectedFriendHabitOrder: string[] = []
 
-  private friendHabits: FriendHabit[] = []
+  private friendHabits: { [habitId: string]: FriendHabit } = {}
   private habitListeners: Array<{ habitId: string, friendUid: string, unsubscribe: Unsubscribe }> = []
   private habitDetailsListenerUnsubscribe: Unsubscribe | null = null
   private loadingHabitsCount = 0
@@ -29,6 +30,7 @@ export default class DisplayedHabitsHandler {
     private dbHandler: DbHandler,
     private habitsHandler: HabitsHandler,
     private statusesHandler: HabitStatusesHandler,
+    private friendsHandler: FriendsHandler
   ) {
     this.viewUser(null)
     makeAutoObservable(this)
@@ -41,12 +43,12 @@ export default class DisplayedHabitsHandler {
   public viewUser = async (friendUid: string | null) => {
     if (friendUid && this.selectedFriendUid === friendUid) return
 
-    this.stopListeningToUnsharedHabits()
+    this.stopListeningToUnlinkedHabits()
 
     if (friendUid) {
       await this.viewFriendHabits(friendUid)
     } else {
-      await this.viewActiveAndSharedHabits()
+      await this.viewActiveAndLinkedHabits()
     }
   }
 
@@ -62,7 +64,7 @@ export default class DisplayedHabitsHandler {
       unsubscribe: onSnapshot(
         this.dbHandler.habitDocRef(habitId, { friendUid }),
         (snapshot) => this.handleHabitSnapshot({ snapshot, habitId, friendUid }),
-        () => this.handleHabitSnapshotError({ friendUid, habitId })
+        () => this.handleHabitSnapshotError(habitId)
       )
     })
   }
@@ -71,32 +73,32 @@ export default class DisplayedHabitsHandler {
     const { snapshot, habitId, friendUid } = args
     const habitInSnapshot = snapshot.data() as Habit | undefined
 
-    if (!habitInSnapshot) {
-      return this.handleHabitSnapshotError({ friendUid, habitId })
+    if (!habitInSnapshot || habitInSnapshot.archived) {
+      return this.handleHabitSnapshotError(habitId)
     }
 
     this.statusesHandler.refreshStreak(habitInSnapshot)
 
-    const existingHabit = this.friendHabits.find((habit) => habit.friendUid === friendUid && habit.id === habitId)
+    const existingHabit = this.friendHabits[habitId]
     if (existingHabit) {
       Object.assign(existingHabit, habitInSnapshot)
     } else {
-      this.friendHabits.push({ ...habitInSnapshot, friendUid })
+      this.friendHabits[habitId] = { ...habitInSnapshot, friendUid }
       this.refreshHabitsInView()
     }
 
     this.loadingHabitsCount = Math.max(this.loadingHabitsCount - 1, 0)
   }
 
-  private handleHabitSnapshotError = ({ friendUid, habitId }: { friendUid: string, habitId: string }) => {
+  private handleHabitSnapshotError = (habitId: string) => {
     this.loadingHabitsCount = Math.max(this.loadingHabitsCount - 1, 0)
     this.removeHabitListener(habitId)
 
-    this.friendHabits = this.friendHabits.filter((habit) => habit.id !== habitId)
+    delete this.friendHabits[habitId]
     this.habitsInView = this.habitsInView.filter((habit) => habit.id !== habitId)
 
-    if (this.habitsHandler.sharedHabitIds[habitId]) {
-      this.habitsHandler.removeSharedHabit({ friendUid, habitId })
+    if (this.habitsHandler.linkedHabits[habitId]) {
+      this.habitsHandler.removeLinkedHabit(habitId)
     }
   }
 
@@ -104,7 +106,7 @@ export default class DisplayedHabitsHandler {
     const listenerToRemove = this.habitListeners.find((listener) => listener.habitId === habitId)
     listenerToRemove?.unsubscribe?.()
     this.habitListeners = this.habitListeners.filter((listener) => listener !== listenerToRemove)
-    this.friendHabits = this.friendHabits.filter((habit) => habit.id !== habitId)
+    delete this.friendHabits[habitId]
   }
 
   public refreshHabitsInView = () => {
@@ -112,34 +114,39 @@ export default class DisplayedHabitsHandler {
 
     const orderedHabitIds = this.selectedFriendUid ? this.selectedFriendHabitOrder : this.habitsHandler.order
 
+    for (const [friendHabitId, { friendUid }] of Object.entries(this.habitsHandler.linkedHabits)) {
+      if (!this.friendsHandler.friends.some((friend) => friend.uid === friendUid)) {
+        this.habitsHandler.removeLinkedHabit(friendHabitId)
+      }
+    }
+
     for (const habitId of orderedHabitIds) {
-      const habit =
-        this.habitsHandler.activeHabits.find((habit) => habit.id === habitId)
-        ?? this.friendHabits.find((habit) => habit.id === habitId)
+      const habit = this.habitsHandler.activeHabits[habitId] ?? this.friendHabits[habitId]
       if (habit) {
         newHabitsInView.push(habit)
+        if (!this.selectedFriendUid) {
+          newHabitsInView.push(...this.getLinkedHabits(habitId))
+        }
       }
     }
 
     this.habitsInView = newHabitsInView
   }
 
-  private viewActiveAndSharedHabits = async () => {
+  private viewActiveAndLinkedHabits = async () => {
     this.isLoadingHabits = true
     this.selectedFriendUid = null
 
-    await this.listenToSharedHabits()
+    await this.listenToLinkedHabits()
     this.refreshHabitsInView()
     runInAction(() => this.isLoadingHabits = false)
   }
 
-  private listenToSharedHabits = async () => {
-    const sharedHabitsIdsByFriend = this.habitsHandler.sharedHabitsIdsByFriend
+  private listenToLinkedHabits = async () => {
+    const linkedHabits = this.habitsHandler.linkedHabits
 
-    for (const friendUid of Object.keys(sharedHabitsIdsByFriend)) {
-      for (const habitId of sharedHabitsIdsByFriend[friendUid]) {
-        this.addHabitListener({ friendUid, habitId })
-      }
+    for (const habitId of Object.keys(linkedHabits)) {
+      this.addHabitListener({ habitId, friendUid: linkedHabits[habitId].friendUid })
     }
 
     await when(() => this.loadingHabitsCount === 0)
@@ -149,11 +156,11 @@ export default class DisplayedHabitsHandler {
     this.isLoadingHabits = true
     this.selectedFriendUid = friendUid
     this.habitsInView = []
-    await this.listenToUnsharedHabits(friendUid)
+    await this.listenToUnlinkedHabits(friendUid)
     runInAction(() => this.isLoadingHabits = false)
   }
 
-  private listenToUnsharedHabits = async (friendUid: string) => {
+  private listenToUnlinkedHabits = async (friendUid: string) => {
     this.hasLoadedFriendHabitDetails = false
     this.habitDetailsListenerUnsubscribe = onSnapshot(
       this.dbHandler.habitDetailsDocRef(friendUid),
@@ -181,14 +188,27 @@ export default class DisplayedHabitsHandler {
     this.refreshHabitsInView()
   }
 
-  private stopListeningToUnsharedHabits = () => {
+  private stopListeningToUnlinkedHabits = () => {
     this.habitDetailsListenerUnsubscribe?.()
     this.habitDetailsListenerUnsubscribe = null
 
-    const unsharedHabitListenerIds = this.habitListeners
-      .filter((listener) => !this.habitsHandler.sharedHabitIds[listener.habitId])
+    const unlinkedHabitListenerIds = this.habitListeners
+      .filter((listener) => !this.habitsHandler.linkedHabits[listener.habitId])
       .map((listener) => listener.habitId)
 
-    unsharedHabitListenerIds.forEach((habitId) => this.removeHabitListener(habitId))
+    unlinkedHabitListenerIds.forEach((habitId) => this.removeHabitListener(habitId))
+  }
+
+  private getLinkedHabits = (habitId: string) => {
+    const habits: Habit[] = []
+    Object.entries(this.habitsHandler.linkedHabits)
+      .filter(([_, linkedHabitData]) => linkedHabitData.linkedHabitId === habitId)
+      .sort(([_a, { time: timeA }], [_b, { time: timeB }]) => timeA - timeB)
+      .forEach(([friendHabitId, linkedHabitData]) => {
+        if (this.friendHabits[friendHabitId]) {
+          habits.push(this.friendHabits[friendHabitId])
+        }
+      })
+    return habits
   }
 }

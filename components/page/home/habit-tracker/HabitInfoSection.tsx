@@ -3,17 +3,18 @@ import { useContext } from 'react'
 import { HabitContext } from '@/components/page/home/habit-tracker/HabitWrapper'
 import HabitStreak from '@/components/page/home/habit-tracker/HabitStreak'
 import HabitVisibilityDropdown from '@/components/page/home/habit-tracker/HabitVisibilityDropdown'
-import ShareHabitButton from '@/components/page/home/habit-tracker/ShareHabitButton'
+import LinkHabitButton from '@/components/page/home/habit-tracker/LinkHabitButton'
 import FriendsHandler from '@/logic/app/FriendsHandler'
 import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
-import SmartEmoji from '@/components/app/SmartEmoji'
 import ProfileHandler from '@/logic/app/ProfileHandler'
+import SmartEmoji from '@/components/app/SmartEmoji'
 import Flex from '@/components/primitives/Flex'
 import Spacer from '@/components/primitives/Spacer'
 import Text from '@/components/primitives/Text'
+import Box from '@/components/primitives/Box'
 
 const HabitInfoSection = () => {
-  const { habit, isSharedHabit } = useContext(HabitContext)
+  const { habit, isLinkedHabit } = useContext(HabitContext)
   const { selectedFriendUid } = container.resolve(DisplayedHabitsHandler)
   const { friends } = container.resolve(FriendsHandler)
   const { profileInfo } = container.resolve(ProfileHandler)
@@ -26,18 +27,28 @@ const HabitInfoSection = () => {
 
   return (
     <Flex>
-      {!!selectedFriendUid ? <ShareHabitButton /> : (
-        <Flex align="center" sx={{ pl: 1 }}>
+      {!!selectedFriendUid ? <LinkHabitButton /> : (
+        <Flex asSpan align="center" sx={{ pl: 1 }}>
           <SmartEmoji rem={1.1} nativeEmoji={avatar} />
           <Text
             type="span"
             sx={{
-              ml: 2, maxWidth: 'min(calc(100vw - 12rem), 400px)',
-              overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
-              ...(isSharedHabit ? { color: 'textAccentAlt', fontWeight: 'medium' } : { opacity: 0.5 })
+              ml: 2, maxWidth: 'min(calc(100vw - 12rem), 400px)', color: 'whiteAlpha.50',
+              overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', fontWeight: 'light'
             }}
           >
-            {displayName}
+            <Text type="span" sx={{
+              color: isLinkedHabit ? 'textAccentAlt' : undefined,
+              fontWeight: isLinkedHabit ? 'medium' : undefined
+            }}>
+              {displayName}
+            </Text>
+            {isLinkedHabit && <>
+              <Box role="presentation" sx={{ display: 'inline', borderRight: 'solid 1px', borderColor: 'whiteAlpha.30', mx: 2 }} />
+              <Text type="span">
+                {habit.name}
+              </Text>
+            </>}
           </Text>
         </Flex>
       )}
@@ -45,7 +56,7 @@ const HabitInfoSection = () => {
       <HabitStreak />
       <Spacer ml={2} />
       {habit.friendUid
-        ? (!selectedFriendUid && <ShareHabitButton anchorRight />)
+        ? (!selectedFriendUid && <LinkHabitButton anchorRight />)
         : <HabitVisibilityDropdown />}
     </Flex>
   )

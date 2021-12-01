@@ -85,8 +85,8 @@ const AddFriendModal = ({ isOpen, closeModal }: { isOpen: boolean, closeModal: (
           </Flex>
         </Label>
         <Box sx={{ p: 4, mt: 4, borderRadius: 'default', bg: 'whiteAlpha.5', fontWeight: 'light' }}>
-          <Text sx={{ mb: 2 }}>Adding a friend allows you to set up shared habits.</Text>
-          <Text>Be aware that your public habits are visible to friends.</Text>
+          <Text sx={{ mb: 2 }}>Adding a friend allows you to set up <b>linked habits</b>.</Text>
+          <Text>Only your public habits are visible to friends.</Text>
         </Box>
       </Box>
     </ModalPopup>

@@ -48,7 +48,7 @@ describe('setting habit statuses', () => {
     await statusesHandler.setHabitStatus(testHabit, { year: 2021, dayOfYear: 325 }, '🌟')
     await statusesHandler.setHabitStatus(testHabit, { year: 2020, dayOfYear: 16 }, '👍')
 
-    const statuses = habitsHandler.activeHabits[0].statuses
+    const statuses = habitsHandler.activeHabits[testHabit.id].statuses
     expect(statuses).toEqual({ 2021: { 325: '🌟' }, 2020: { 16: '👍' } })
     expect((await habitDoc(authUid, testHabit.id).get()).data()?.statuses).toEqual(statuses)
   })
@@ -61,14 +61,14 @@ describe('setting habit statuses', () => {
     await statusesHandler.setHabitStatus(testHabit, { year: 2021, dayOfYear: 100 }, null)
 
     await new Promise(resolve => setTimeout(resolve, 0))
-    let statuses = habitsHandler.activeHabits[0].statuses
+    let statuses = habitsHandler.activeHabits[testHabit.id].statuses
     expect(statuses).toEqual({ 2021: { 200: '👍' } })
     expect((await habitDoc(authUid, testHabit.id).get()).data()?.statuses).toEqual(statuses)
 
     await statusesHandler.setHabitStatus(testHabit, { year: 2021, dayOfYear: 200 }, null)
 
     await new Promise(resolve => setTimeout(resolve, 0))
-    statuses = habitsHandler.activeHabits[0].statuses
+    statuses = habitsHandler.activeHabits[testHabit.id].statuses
     expect(statuses).toEqual({})
     expect((await habitDoc(authUid, testHabit.id).get()).data()?.statuses).toEqual(statuses)
   })

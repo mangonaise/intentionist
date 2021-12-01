@@ -21,7 +21,7 @@ function getModalContent(pendingStatus: PendingFriendRequestStatus, newFriendDis
     'accepting': { icon: EllipsisIcon, text: 'Accepting friend request...' },
     'accepted': {
       icon: CheckFillIcon,
-      text: `Added ${newFriendDisplayName} as a friend!\nYou can now view each other's weekly activity.`
+      text: `Added ${newFriendDisplayName} as a friend!\nYou can now view each other's public activity and create linked habits.`
     },
     'recipient-max-requests': { icon: CrossIcon, text: 'Your request failed to send. That user has too many incoming friend requests.' },
     'sender-max-requests': { icon: CrossIcon, text: 'Your request failed to send. You have too many outgoing friend requests.' },

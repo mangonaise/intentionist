@@ -14,7 +14,6 @@ import Spacer from '@/components/primitives/Spacer'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
 import FadeIn from '@/components/primitives/FadeIn'
-import Divider from '@/components/primitives/Divider'
 
 const HabitTracker = observer(() => {
   const { habitsInView, selectedFriendUid, isLoadingHabits, refreshHabitsInView } = container.resolve(DisplayedHabitsHandler)
@@ -52,10 +51,8 @@ const HabitTracker = observer(() => {
         </Box>
       </>}
 
-      {!fillNavWidth && <Divider sx={{ my: 3 }} />}
-
       {!displayNewUserGuide && <>
-        <Spacer mb={[3, 5]} />
+        <Spacer mb={[3, 6]} />
         <WeekdayRow />
         <Spacer mb={[3, 4]} />
       </>}

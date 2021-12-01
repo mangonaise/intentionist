@@ -51,15 +51,15 @@ async function initialize() {
 // 🧪
 
 describe('initialization', () => {
-  test('if no data exists in database, active habits will be set to empty array', async () => {
+  test('if no data exists in database, activeHabits will be set to empty object', async () => {
     await initialize()
-    expect(habitsHandler.activeHabits).toEqual([])
+    expect(habitsHandler.activeHabits).toEqual({})
   })
 
-  test('when a habit is fetched, it is placed in an array in local cache', async () => {
+  test('when a habit is fetched, it is placed in the activeHabits object, with the habit id as the key', async () => {
     await dbHandler.addHabit(dummyHabitA)
     await initialize()
-    expect(habitsHandler.activeHabits).toEqual([dummyHabitA])
+    expect(habitsHandler.activeHabits).toEqual({ [dummyHabitA.id]: dummyHabitA })
   })
 
   test('habit order is fetched correctly', async () => {
@@ -77,7 +77,7 @@ describe('initialization', () => {
     await dbHandler.update(dbHandler.habitDetailsDocRef(), { order: [dummyHabitC.id, dummyHabitB.id] })
     await initialize()
     expect(habitsHandler.order).toEqual([dummyHabitC.id, dummyHabitB.id, dummyHabitA.id])
-    expect(sortByHabitId(habitsHandler.activeHabits)).toEqual(sortByHabitId([dummyHabitC, dummyHabitB, dummyHabitA]))
+    expect(sortByHabitId(Object.values(habitsHandler.activeHabits))).toEqual(sortByHabitId([dummyHabitC, dummyHabitB, dummyHabitA]))
   })
 })
 
@@ -90,10 +90,13 @@ describe('behavior', () => {
     await habitsHandler.setHabit(dummyHabitA)
     await habitsHandler.setHabit(dummyHabitB)
 
-    expect(habitsHandler.activeHabits).toEqual([dummyHabitA, dummyHabitB])
+    expect(habitsHandler.activeHabits).toEqual({
+      [dummyHabitA.id]: dummyHabitA,
+      [dummyHabitB.id]: dummyHabitB
+    })
 
     const activeHabitsDocs = await dbHandler.getActiveHabitsDocs()
-    expect(sortByHabitId(activeHabitsDocs)).toEqual(sortByHabitId(habitsHandler.activeHabits))
+    expect(sortByHabitId(activeHabitsDocs)).toEqual(sortByHabitId(Object.values(habitsHandler.activeHabits)))
 
     expect(await dbHandler.getHabitDetailsDoc()).toEqual({
       activeIds: { private: { [dummyHabitA.id]: true, [dummyHabitB.id]: true } },
@@ -108,9 +111,12 @@ describe('behavior', () => {
     const updatedHabit = { ...dummyHabitA, icon: '🤓' }
     await habitsHandler.setHabit(updatedHabit)
 
-    expect(habitsHandler.activeHabits).toEqual([updatedHabit, dummyHabitB])
+    expect(habitsHandler.activeHabits).toEqual({
+      [updatedHabit.id]: updatedHabit,
+      [dummyHabitB.id]: dummyHabitB
+    })
 
-    expect(sortByHabitId(await dbHandler.getActiveHabitsDocs())).toEqual(sortByHabitId(habitsHandler.activeHabits))
+    expect(sortByHabitId(await dbHandler.getActiveHabitsDocs())).toEqual(sortByHabitId(Object.values(habitsHandler.activeHabits)))
   })
 
   test('adding or updating a habit returns the updated habit when changes are made', async () => {
@@ -158,24 +164,13 @@ describe('behavior', () => {
     await habitsHandler.setHabit(dummyHabitB)
     await habitsHandler.deleteHabitById(dummyHabitA.id)
 
-    expect(habitsHandler.activeHabits).toEqual([dummyHabitB])
+    expect(habitsHandler.activeHabits).toEqual({ [dummyHabitB.id]: dummyHabitB })
 
     expect(await dbHandler.getActiveHabitsDocs()).toEqual([dummyHabitB])
     expect(await dbHandler.getHabitDetailsDoc()).toEqual({
       activeIds: { private: { [dummyHabitB.id]: true } },
       order: [dummyHabitB.id]
     })
-  })
-
-  test('deleting a habit removes associated notes from database', async () => {
-    await habitsHandler.setHabit(dummyHabitA)
-    await dbHandler.update(dbHandler.noteDocRef('a1'), { habitId: dummyHabitA.id })
-    await dbHandler.update(dbHandler.noteDocRef('a2'), { habitId: dummyHabitA.id })
-    await dbHandler.update(dbHandler.noteDocRef('b1'), { habitId: dummyHabitB.id })
-    await habitsHandler.deleteHabitById(dummyHabitA.id)
-    expect(await dbHandler.getNoteDoc('a1')).toBeNull()
-    expect(await dbHandler.getNoteDoc('a2')).toBeNull()
-    expect(await dbHandler.getNoteDoc('b1')).not.toBeNull()
   })
 })
 

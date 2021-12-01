@@ -59,8 +59,8 @@ describe('when habits have already been fetched', () => {
 
   afterEach(async () => {
     router.setQuery({})
-    for (const habit of habitsHandler.activeHabits) {
-      await habitsHandler.deleteHabitById(habit.id)
+    for (const habitId of Object.keys(habitsHandler.activeHabits)) {
+      await habitsHandler.deleteHabitById(habitId)
     }
   })
 
@@ -96,7 +96,10 @@ describe('when habits have already been fetched', () => {
     habitEditor.saveAndExit()
     await when(() => container.resolve(DbHandler).isWriteComplete)
 
-    expect(habitsHandler.activeHabits).toEqual([createdHabitA, createdHabitB])
+    expect(habitsHandler.activeHabits).toEqual({
+      [createdHabitA!.id]: createdHabitA,
+      [createdHabitB!.id]: createdHabitB
+    })
   })
 
   test('updated habit is reflected in HabitsHandler', async () => {
@@ -106,7 +109,10 @@ describe('when habits have already been fetched', () => {
     habitEditor.updateHabit({ name: 'Updated name' })
     habitEditor.saveAndExit()
     await when(() => container.resolve(DbHandler).isWriteComplete)
-    expect(habitsHandler.activeHabits).toEqual([{ ...dummyHabit, name: 'Updated name' }])
+
+    expect(habitsHandler.activeHabits).toEqual({
+      [dummyHabit.id]: { ...dummyHabit, name: 'Updated name' }
+    })
   })
 
   test('deleted habit is reflected in HabitsHandler', async () => {
@@ -115,11 +121,11 @@ describe('when habits have already been fetched', () => {
     startHabitEditor()
     habitEditor.deleteHabit()
     await when(() => container.resolve(DbHandler).isWriteComplete)
-    expect(habitsHandler.activeHabits).toEqual([])
+    expect(habitsHandler.activeHabits).toEqual({})
   })
 
   test('teardown: habits are reset', () => {
-    expect(habitsHandler.activeHabits).toEqual([])
+    expect(habitsHandler.activeHabits).toEqual({})
   })
 })
 

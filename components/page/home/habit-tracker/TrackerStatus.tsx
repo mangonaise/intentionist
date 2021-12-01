@@ -19,7 +19,7 @@ interface Props {
 
 const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }: Props) => {
   const { yearAndDay: { year: currentYear, dayOfYear: today } } = container.resolve(CurrentDateHandler)
-  const { habit, isSharedHabit } = useContext(HabitContext)
+  const { habit, isLinkedHabit } = useContext(HabitContext)
   const [isEditing, setIsEditing] = useState(false)
   const hasValue = !!value
 
@@ -34,7 +34,7 @@ const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }:
     <Flex
       align="center"
       sx={{
-        '--status-color': isSharedHabit ? 'var(--button-accent-color-alt)' : 'var(--button-accent-color)',
+        '--status-color': isLinkedHabit ? 'var(--button-accent-color-alt)' : 'var(--button-accent-color)',
         position: 'relative', flexGrow: 1
       }}
     >

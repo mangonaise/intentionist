@@ -1,6 +1,4 @@
 import type { Firestore, DocumentReference, DocumentData } from '@firebase/firestore'
-import type { Fetched } from '@/logic/app/InitialFetchHandler'
-import type { NoteDocumentData } from '@/logic/app/NoteEditor'
 import type { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
 import { inject, singleton } from 'tsyringe'
 import { makeAutoObservable } from 'mobx'
@@ -12,7 +10,6 @@ const USERS = 'users'
 const USERNAMES = 'usernames'
 const HABITS = 'habits'
 const HABIT_DETAILS = 'userData/habitDetails'
-const NOTES = 'notes'
 const FRIEND_REQUESTS = 'userData/friendRequests'
 const FRIENDS = 'userData/friends'
 
@@ -98,63 +95,35 @@ export default class DbHandler {
   public deleteHabit = async (habitId: string) => {
     this.isWriteComplete = false
 
-    const deleteNotes = () => this.deleteNotesWithHabitId(habitId)
-
-    const deleteHabitData = async () => {
-      const batch = writeBatch(this.db)
-      batch.delete(this.habitDocRef(habitId))
-      batch.set(this.habitDetailsDocRef(), {
-        activeIds: {
-          public: { [habitId]: deleteField() },
-          private: { [habitId]: deleteField() }
-        },
-        order: arrayRemove(habitId)
-      }, { merge: true })
-      await batch.commit()
-    }
-
-    await Promise.all([
-      deleteHabitData(),
-      deleteNotes()
-    ])
-    this.completeWrite()
-  }
-
-  public addSharedHabit = async (args: { friendUid: string, habitId: string, newOrder: string[] }) => {
-    const { friendUid, habitId, newOrder } = args
-    await this.update(this.habitDetailsDocRef(), {
-      shared: {
-        [friendUid]: arrayUnion(habitId)
-      },
-      order: newOrder
-    })
-  }
-
-  public removeSharedHabit = async (args: { friendUid: string, habitId: string, noneRemaining: boolean }) => {
-    const { friendUid, habitId, noneRemaining } = args
-    await this.update(this.habitDetailsDocRef(), {
-      shared: {
-        [friendUid]: noneRemaining ? deleteField() : arrayRemove(habitId)
+    const batch = writeBatch(this.db)
+    batch.delete(this.habitDocRef(habitId))
+    batch.set(this.habitDetailsDocRef(), {
+      activeIds: {
+        public: { [habitId]: deleteField() },
+        private: { [habitId]: deleteField() }
       },
       order: arrayRemove(habitId)
+    }, { merge: true })
+    await batch.commit()
+
+    this.completeWrite()
+  }
+
+  public addLinkedHabit = async (args: { friendHabitId: string, friendUid: string, linkedHabitId: string }) => {
+    const { friendHabitId, friendUid, linkedHabitId } = args
+    await this.update(this.habitDetailsDocRef(), {
+      linked: {
+        [friendHabitId]: { friendUid, linkedHabitId, time: Date.now() }
+      }
     })
   }
 
-  public getNoteDoc = async (noteId: string, friendUid?: string) => {
-    const noteDoc = await this.getDocData(this.noteDocRef(noteId, friendUid)) ?? null
-    return noteDoc as Fetched<NoteDocumentData>
-  }
-
-  public updateNote = async (note: NoteDocumentData) => {
-    this.isWriteComplete = false
-    await setDoc(this.noteDocRef(note.id), note, { merge: true })
-    this.completeWrite()
-  }
-
-  public deleteNote = async (note: NoteDocumentData) => {
-    this.isWriteComplete = false
-    await deleteDoc(this.noteDocRef(note.id))
-    this.completeWrite()
+  public removeLinkedHabit = async (friendHabitId: string) => {
+    await this.update(this.habitDetailsDocRef(), {
+      linked: {
+        [friendHabitId]: deleteField()
+      }
+    })
   }
 
   public userDocRef = (path?: string, options?: { friendUid?: string }) => {
@@ -179,24 +148,6 @@ export default class DbHandler {
 
   public habitDocRef(habitId: string, options?: { friendUid?: string }) {
     return this.userDocRef(HABITS + '/' + habitId, { friendUid: options?.friendUid })
-  }
-
-  public noteDocRef = (noteId: string, friendUid?: string) => {
-    return this.userDocRef(NOTES + '/' + noteId, { friendUid })
-  }
-
-  public get notesCollectionRef() {
-    return collection(this.db, USERS, this.uid, NOTES)
-  }
-
-  // TODO: Move to cloud function
-  private deleteNotesWithHabitId = async (habitId: string) => {
-    const noteDocs = await getDocs(query(this.notesCollectionRef, where('habitId', '==', habitId)))
-    let deleteNotePromises: Promise<void>[] = []
-    noteDocs.forEach((doc) => {
-      deleteNotePromises.push(deleteDoc(doc.ref))
-    })
-    await Promise.all(deleteNotePromises)
   }
 
   private completeWrite = () => {

@@ -25,20 +25,21 @@ export type HabitStatuses = { [year: number]: { [day: number]: string } }
 export type HabitVisibility = 'public' | 'private'
 
 export type HabitDetailsDocumentData = {
-  order: string[],
-  activeIds: {
+  order?: string[],
+  activeIds?: {
     public?: { [habitId: string]: true },
     private?: { [habitId: string]: true }
   },
-  shared: { [friendUid: string]: string[] }
+  linked?: LinkedHabitsMap
 }
+
+type LinkedHabitsMap = { [friendHabitId: string]: { friendUid: string, linkedHabitId: string, time: number } }
 
 @singleton()
 export default class HabitsHandler {
   public order: string[] = []
-  public activeHabits: Habit[] = []
-  public sharedHabitsIdsByFriend: { [friendUid: string]: string[] } = {}
-  public sharedHabitIds: { [habitId: string]: true } = {} // for convenience only
+  public activeHabits: { [habitId: string]: Habit } = {}
+  public linkedHabits: LinkedHabitsMap = {}
 
   constructor(initialState: InitialState, private dbHandler: DbHandler) {
     const { activeHabitsDocs, habitDetailsDoc } = initialState.data
@@ -47,25 +48,24 @@ export default class HabitsHandler {
   }
 
   public setHabit = async (habitToSet: Habit) => {
-    let existingHabit = this.findHabitById(habitToSet.id)
+    let existingHabit = this.activeHabits[habitToSet.id]
     if (!existingHabit) {
       return await this.addNewHabit(habitToSet)
     }
     if (isEqual(existingHabit, habitToSet)) return existingHabit
 
     // 💻
-    const index = this.activeHabits.indexOf(existingHabit)
-    Object.assign(this.activeHabits[index], habitToSet)
+    this.activeHabits[habitToSet.id] = habitToSet
 
     // ☁️
     await this.dbHandler.update(this.dbHandler.habitDocRef(habitToSet.id), habitToSet)
 
-    return this.activeHabits[index]
+    return this.activeHabits[habitToSet.id]
   }
 
   public changeHabitVisibility = async (habit: Habit, visibility: HabitVisibility) => {
     if (habit.visibility === visibility) return
-    if (this.activeHabits.indexOf(habit) < 0) return
+    if (!this.activeHabits[habit.id]) return
 
     // 💻
     habit.visibility = visibility
@@ -89,11 +89,11 @@ export default class HabitsHandler {
   }
 
   public deleteHabitById = async (id: string) => {
-    const habitToDelete = this.findHabitById(id)
+    const habitToDelete = this.activeHabits[id]
     if (!habitToDelete) throw new Error('Cannot delete a habit that does not exist')
 
     // 💻
-    this.activeHabits = this.activeHabits.filter((habit) => habit !== habitToDelete)
+    delete this.activeHabits[id]
     this.order = this.order.filter((habitId) => id !== habitId)
 
     // ☁️
@@ -118,70 +118,55 @@ export default class HabitsHandler {
 
   private addNewHabit = async (newHabit: Habit) => {
     // 💻
-    this.activeHabits.push(newHabit)
+    this.activeHabits[newHabit.id] = newHabit
     this.order.push(newHabit.id)
 
     // ☁️
     await this.dbHandler.addHabit(newHabit)
 
-    return this.activeHabits[this.activeHabits.length - 1]
+    return this.activeHabits[newHabit.id]
   }
 
-  public addSharedHabit = async (args: { friendUid: string, habitId: string }) => {
-    const { friendUid, habitId } = args
+  public addLinkedHabit = async (args: { friendHabitId: string, friendUid: string, linkedHabitId: string }) => {
+    const { friendHabitId, friendUid, linkedHabitId } = args
 
     // 💻
-    this.sharedHabitsIdsByFriend[friendUid] = this.sharedHabitsIdsByFriend[friendUid] ?? []
-    this.sharedHabitsIdsByFriend[friendUid].push(habitId)
-    this.sharedHabitIds[habitId] = true
-    this.order.unshift(habitId)
+    this.linkedHabits[friendHabitId] = { friendUid, linkedHabitId, time: Date.now() }
 
     // ☁️
-    await this.dbHandler.addSharedHabit({ friendUid, habitId, newOrder: this.order })
+    await this.dbHandler.addLinkedHabit(args)
   }
 
-  public removeSharedHabit = async (args: { friendUid: string, habitId: string }) => {
-    const { friendUid, habitId } = args
-
-    const sharedHabit = this.sharedHabitsIdsByFriend[friendUid]?.find((id) => id === habitId)
-    if (!sharedHabit) return
-
+  public removeLinkedHabit = async (friendHabitId: string) => {
     // 💻
-    this.sharedHabitsIdsByFriend[friendUid] = this.sharedHabitsIdsByFriend[friendUid].filter((id) => id !== habitId)
-    this.order = this.order.filter((id) => id !== habitId)
-    delete this.sharedHabitIds[habitId]
-    const noneRemaining = this.sharedHabitsIdsByFriend[friendUid].length === 0
-    if (noneRemaining) delete this.sharedHabitsIdsByFriend[friendUid]
-
+    delete this.linkedHabits[friendHabitId]
 
     // ☁️
-    await this.dbHandler.removeSharedHabit({ ...args, noneRemaining })
+    await this.dbHandler.removeLinkedHabit(friendHabitId)
   }
 
-  public findHabitById = (id: string) => {
-    return this.activeHabits.find((habit) => habit.id === id)
+  public getOrderedHabits = () => {
+    return this.order.map((habitId) => this.activeHabits[habitId])
   }
 
-  private processFetchedHabitData = (activeHabits: Habit[], habitDetails: Fetched<HabitDetailsDocumentData>) => {
-    const order: string[] = habitDetails?.order ?? []
+  private processFetchedHabitData = (activeHabitsArray: Habit[], habitDetails: Fetched<HabitDetailsDocumentData>) => {
+    this.order = habitDetails?.order ?? []
 
     const publicIds = Object.keys(habitDetails?.activeIds?.public ?? {})
     const privateIds = Object.keys(habitDetails?.activeIds?.private ?? {})
     const activeIds = publicIds.concat(privateIds)
 
     for (const habitId of activeIds) {
-      if (!order.includes(habitId)) {
-        order.push(habitId)
+      if (!this.order.includes(habitId)) {
+        this.order.push(habitId)
       }
     }
-    this.order = order
-    this.activeHabits = activeHabits
 
-    this.sharedHabitsIdsByFriend = habitDetails?.shared ?? {}
+    for (const habit of activeHabitsArray) {
+      this.activeHabits[habit.id] = habit
+    }
 
-    Object.entries(this.sharedHabitsIdsByFriend).forEach(([_, habitIds]) => {
-      habitIds.forEach((habitId) => this.sharedHabitIds[habitId] = true)
-    })
+    this.linkedHabits = habitDetails?.linked ?? {}
   }
 }
 
