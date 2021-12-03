@@ -92,8 +92,11 @@ export default class DbHandler {
     this.completeWrite()
   }
 
-  public deleteHabit = async (habitId: string) => {
+  public deleteHabit = async (habitId: string, linkedHabitIds: string[]) => {
     this.isWriteComplete = false
+
+    let linked = {} as { [friendHabitId: string]: any }
+    linkedHabitIds.forEach((id) => linked[id] = deleteField())
 
     const batch = writeBatch(this.db)
     batch.delete(this.habitDocRef(habitId))
@@ -102,7 +105,8 @@ export default class DbHandler {
         public: { [habitId]: deleteField() },
         private: { [habitId]: deleteField() }
       },
-      order: arrayRemove(habitId)
+      order: arrayRemove(habitId),
+      linked
     }, { merge: true })
     await batch.commit()
 

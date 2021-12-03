@@ -92,13 +92,18 @@ export default class HabitsHandler {
     const habitToDelete = this.activeHabits[id]
     if (!habitToDelete) throw new Error('Cannot delete a habit that does not exist')
 
+    const linkedHabitIds = this.getHabitsLinkedWithId(id)
+
     // 💻
     delete this.activeHabits[id]
     this.order = this.order.filter((habitId) => id !== habitId)
+    linkedHabitIds.forEach((id) => delete this.linkedHabits[id])
 
     // ☁️
-    await this.dbHandler.deleteHabit(id)
+    await this.dbHandler.deleteHabit(id, linkedHabitIds)
   }
+
+  // todo: archive habit (make sure linked habits are removed)
 
   public reorderHabitsLocally = (habitIdToMove: string, habitIdToTakePositionOf: string) => {
     const oldIndex = this.order.indexOf(habitIdToMove)
@@ -167,6 +172,19 @@ export default class HabitsHandler {
     }
 
     this.linkedHabits = habitDetails?.linked ?? {}
+  }
+
+  private getHabitsLinkedWithId = (deletedHabitId: string) => {
+    const friendHabitIds = [] as string[]
+
+    // 💻
+    for (const [friendHabitId, linkedHabitData] of Object.entries(this.linkedHabits)) {
+      if (linkedHabitData.linkedHabitId === deletedHabitId) {
+        friendHabitIds.push(friendHabitId)
+      }
+    }
+
+    return friendHabitIds
   }
 }
 
