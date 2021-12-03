@@ -55,7 +55,7 @@ export default class HabitsHandler {
     if (isEqual(existingHabit, habitToSet)) return existingHabit
 
     // 💻
-    this.activeHabits[habitToSet.id] = habitToSet
+    Object.assign(this.activeHabits[habitToSet.id], habitToSet)
 
     // ☁️
     await this.dbHandler.update(this.dbHandler.habitDocRef(habitToSet.id), habitToSet)
