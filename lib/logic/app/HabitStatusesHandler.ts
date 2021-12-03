@@ -6,6 +6,7 @@ import DbHandler from '@/logic/app/DbHandler'
 import getYearAndDay from '@/logic/utils/getYearAndDay'
 import dateFnsGetDaysInYear from 'date-fns/getDaysInYear'
 import startOfWeek from 'date-fns/startOfWeek'
+import setYear from 'date-fns/setYear'
 
 //* the first day of the year is represented as 1, NOT 0.
 
@@ -158,7 +159,7 @@ export default class HabitStatusesHandler {
       return cachedCount
     }
 
-    return this.daysInYearCounts[year] = dateFnsGetDaysInYear(new Date(`${year}`))
+    return this.daysInYearCounts[year] = dateFnsGetDaysInYear(setYear(new Date(), year))
   }
 
   private getHabitStatusAtDate = (statuses: HabitStatuses | undefined, date: YearAndDay) => {

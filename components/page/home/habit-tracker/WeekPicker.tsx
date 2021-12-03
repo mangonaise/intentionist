@@ -2,7 +2,7 @@ import { container } from 'tsyringe'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback, useMemo, useState } from 'react'
 import { getFirstDayOfLastWeek, getFirstDayOfThisWeek } from '@/logic/utils/dateUtilities'
-import { startOfMonth, format, isSameMonth, addMonths, endOfMonth, eachWeekOfInterval, isFuture, isSameWeek, isSameDay, setDayOfYear, addWeeks } from 'date-fns'
+import { startOfMonth, format, isSameMonth, addMonths, endOfMonth, eachWeekOfInterval, isFuture, isSameWeek, isSameDay, setDayOfYear, addWeeks, setYear } from 'date-fns'
 import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
 import getYearAndDay from '@/logic/utils/getYearAndDay'
 import CurrentDateHandler from '@/logic/app/CurrentDateHandler'
@@ -21,9 +21,9 @@ import IconButton from '@/components/primitives/IconButton'
 const WeekSelector = observer(() => {
   const { selectedWeekStartDate, setSelectedWeekStartDate } = container.resolve(DisplayedHabitsHandler)
   const { weekdayId } = container.resolve(CurrentDateHandler)
-
   const { year: selectedYear, dayOfYear: selectedDay } = selectedWeekStartDate
-  const selectedDate = setDayOfYear(new Date(`${selectedYear}`), selectedDay)
+
+  const selectedDate = setDayOfYear(setYear(new Date(), selectedYear), selectedDay)
 
   const title = useMemo(() => {
     const selectedDateValue = selectedDate.valueOf()
