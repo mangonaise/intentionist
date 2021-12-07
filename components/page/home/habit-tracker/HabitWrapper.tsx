@@ -28,7 +28,7 @@ const HabitWrapper = observer(({ habit }: { habit: Habit & { friendUid?: string 
 
   return (
     <HabitContext.Provider value={{ habit, isLinkedHabit }}>
-      <Box sx={{ mb: [5, 6], mt: (!selectedFriendUid && isLinkedHabit) ? ['-0.5rem','-0.85rem'] : null }}>
+      <Box sx={{ mb: 5, mt: (!selectedFriendUid && isLinkedHabit) ? ['-0.5rem','-0.65rem'] : 1 }}>
         <Flex column>
           {(!isLinkedHabit || selectedFriendUid) && <>
             <HabitTitleSection />
