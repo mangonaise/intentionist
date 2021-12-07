@@ -1,4 +1,4 @@
-import type { Firestore, DocumentReference, DocumentData, WriteBatch } from '@firebase/firestore'
+import type { Firestore, DocumentReference, DocumentData, WriteBatch, FieldValue } from '@firebase/firestore'
 import type { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
 import { inject, singleton } from 'tsyringe'
 import { makeAutoObservable, runInAction } from 'mobx'
@@ -159,7 +159,7 @@ export default class DbHandler {
   }
 
   private removeHabitFromHabitDetailsDoc = ({ batch, habitId, linkedHabitIds }: { batch: WriteBatch, habitId: string, linkedHabitIds: string[] }) => {
-    let linked = {} as { [friendHabitId: string]: any }
+    let linked = {} as { [friendHabitId: string]: FieldValue }
     linkedHabitIds.forEach((id) => linked[id] = deleteField())
 
     batch.set(this.habitDetailsDocRef(), {
@@ -168,7 +168,7 @@ export default class DbHandler {
         private: { [habitId]: deleteField() }
       },
       order: arrayRemove(habitId),
-      linked
+      ...(Object.keys(linked).length ? { linked } : {})
     }, { merge: true })
   }
 
