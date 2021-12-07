@@ -37,15 +37,15 @@ const TrackerStatusEditor = ({ hasValue, palette, onSelectStatus, onCancelEditin
       <Box sx={{ position: 'absolute', size: '100%' }}>
         {!!palette.length && (
           <TrackerStatusEditorBar above>
-            <TrackerStatusEditorButton content={SearchIcon} action={() => setShowEmojiPicker(true)} focusIndex={0} />
             {palette.map((emoji, index) => (
               <TrackerStatusEditorButton
                 content={emoji}
                 action={() => onSelectStatus(emoji)}
-                focusIndex={index + 1}
+                focusIndex={index}
                 key={index}
               />
             ))}
+            <TrackerStatusEditorButton content={SearchIcon} action={() => setShowEmojiPicker(true)} focusIndex={palette.length} />
             {hasValue && (
               <TrackerStatusEditorButton content={CrossIcon} action={() => onSelectStatus(null)} focusIndex={palette.length + 1} />
             )}
