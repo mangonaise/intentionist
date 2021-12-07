@@ -60,7 +60,7 @@ describe('when habits have already been fetched', () => {
   afterEach(async () => {
     router.setQuery({})
     for (const habitId of Object.keys(habitsHandler.activeHabits)) {
-      await habitsHandler.deleteHabitById(habitId)
+      await habitsHandler.deleteActiveHabitById(habitId)
     }
   })
 

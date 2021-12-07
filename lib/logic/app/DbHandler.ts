@@ -1,9 +1,9 @@
-import type { Firestore, DocumentReference, DocumentData } from '@firebase/firestore'
+import type { Firestore, DocumentReference, DocumentData, WriteBatch } from '@firebase/firestore'
 import type { AvatarAndDisplayName } from '@/logic/app/ProfileHandler'
 import { inject, singleton } from 'tsyringe'
-import { makeAutoObservable } from 'mobx'
-import { collection, doc, getDoc, getDocs, query, setDoc, arrayUnion, arrayRemove, writeBatch, where, deleteDoc, deleteField } from '@firebase/firestore'
-import { Habit, HabitVisibility } from '@/logic/app/HabitsHandler'
+import { makeAutoObservable, runInAction } from 'mobx'
+import { collection, doc, getDoc, getDocs, query, setDoc, arrayUnion, arrayRemove, writeBatch, where, deleteField } from '@firebase/firestore'
+import { ArchivedHabitsDocumentData, Habit, HabitDetailsDocumentData, HabitVisibility } from '@/logic/app/HabitsHandler'
 import AuthUser from '@/logic/app/AuthUser'
 
 const USERS = 'users'
@@ -11,6 +11,7 @@ const USERNAMES = 'usernames'
 const HABITS = 'habits'
 const HABIT_DETAILS = 'userData/habitDetails'
 const FRIEND_REQUESTS = 'userData/friendRequests'
+const ARCHIVED_HABITS = 'userData/archivedHabits'
 const FRIENDS = 'userData/friends'
 
 @singleton()
@@ -95,11 +96,72 @@ export default class DbHandler {
   public deleteHabit = async (habitId: string, linkedHabitIds: string[]) => {
     this.isWriteComplete = false
 
+    const batch = writeBatch(this.db)
+    batch.delete(this.habitDocRef(habitId))
+    this.removeHabitFromHabitDetailsDoc({ batch, habitId, linkedHabitIds })
+    await batch.commit()
+
+    this.completeWrite()
+  }
+
+  public archiveHabit = async (habit: Habit, linkedHabitIds: string[]) => {
+    this.isWriteComplete = false
+
     let linked = {} as { [friendHabitId: string]: any }
     linkedHabitIds.forEach((id) => linked[id] = deleteField())
 
     const batch = writeBatch(this.db)
-    batch.delete(this.habitDocRef(habitId))
+
+    this.removeHabitFromHabitDetailsDoc({ batch, habitId: habit.id, linkedHabitIds })
+
+    batch.set(this.userDocRef(ARCHIVED_HABITS), {
+      [habit.id]: {
+        name: habit.name,
+        icon: habit.icon,
+        archiveTime: Date.now()
+      }
+    } as ArchivedHabitsDocumentData, { merge: true })
+
+    batch.set(this.habitDocRef(habit.id), {
+      archived: true
+    }, { merge: true })
+
+    await batch.commit()
+
+    this.completeWrite()
+  }
+
+  public restoreArchivedHabit = async (habitId: string): Promise<Habit> => {
+    const habit = await this.getDocData(this.habitDocRef(habitId)) as Habit
+    if (!habit) throw new Error('Cannot restore habit that does not exist.')
+
+    runInAction(() => this.isWriteComplete = false)
+
+    const activeIds = {} as Exclude<HabitDetailsDocumentData['activeIds'], undefined>
+    if (habit.visibility === 'public') {
+      activeIds.public = { [habitId]: true }
+    } else {
+      activeIds.private = { [habitId]: true }
+    }
+
+    const batch = writeBatch(this.db)
+    batch.set(this.habitDocRef(habitId), { archived: false }, { merge: true })
+    batch.set(this.archivedHabitsDocRef, { [habitId]: deleteField() }, { merge: true })
+    batch.set(this.habitDetailsDocRef(), {
+      order: arrayUnion(habitId),
+      activeIds
+    }, { merge: true })
+    await batch.commit()
+
+    this.completeWrite()
+
+    return { ...habit, archived: false }
+  }
+
+  private removeHabitFromHabitDetailsDoc = ({ batch, habitId, linkedHabitIds }: { batch: WriteBatch, habitId: string, linkedHabitIds: string[] }) => {
+    let linked = {} as { [friendHabitId: string]: any }
+    linkedHabitIds.forEach((id) => linked[id] = deleteField())
+
     batch.set(this.habitDetailsDocRef(), {
       activeIds: {
         public: { [habitId]: deleteField() },
@@ -108,9 +170,6 @@ export default class DbHandler {
       order: arrayRemove(habitId),
       linked
     }, { merge: true })
-    await batch.commit()
-
-    this.completeWrite()
   }
 
   public addLinkedHabit = async (args: { friendHabitId: string, friendUid: string, linkedHabitId: string }) => {
@@ -140,6 +199,10 @@ export default class DbHandler {
 
   public get friendsDocRef() {
     return this.userDocRef(FRIENDS)
+  }
+
+  public get archivedHabitsDocRef() {
+    return this.userDocRef(ARCHIVED_HABITS)
   }
 
   public habitDetailsDocRef(friendUid?: string) {

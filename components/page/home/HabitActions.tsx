@@ -18,7 +18,7 @@ const HabitActions = observer(() => {
       </NextLink>
       <Dropdown anchorRight sx={{ marginLeft: '5px', '& > button': { bg: 'transparent' } }}>
         <Dropdown.Item href="/habits">Reorder habits</Dropdown.Item>
-        <Dropdown.Item sx={{ opacity: 0.5 }}>View archived habits</Dropdown.Item>
+        <Dropdown.Item href="/archive">View archived habits</Dropdown.Item>
       </Dropdown>
     </Flex>
   )

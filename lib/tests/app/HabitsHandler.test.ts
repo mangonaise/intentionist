@@ -162,14 +162,57 @@ describe('behavior', () => {
   test('deleting a habit removes it from local cache and database', async () => {
     await habitsHandler.setHabit(dummyHabitA)
     await habitsHandler.setHabit(dummyHabitB)
-    await habitsHandler.deleteHabitById(dummyHabitA.id)
+    await habitsHandler.deleteActiveHabitById(dummyHabitA.id)
 
     expect(habitsHandler.activeHabits).toEqual({ [dummyHabitB.id]: dummyHabitB })
 
     expect(await dbHandler.getActiveHabitsDocs()).toEqual([dummyHabitB])
     expect(await dbHandler.getHabitDetailsDoc()).toEqual({
       activeIds: { private: { [dummyHabitB.id]: true } },
-      order: [dummyHabitB.id]
+      order: [dummyHabitB.id],
+      linked: {}
+    })
+  })
+
+  test('archiving a habit updates the local cache and database correctly', async () => {
+    await habitsHandler.setHabit(dummyHabitA)
+    await habitsHandler.setHabit(dummyHabitB)
+    await habitsHandler.archiveHabitById(dummyHabitA.id)
+
+    expect(habitsHandler.activeHabits).toEqual({ [dummyHabitB.id]: dummyHabitB })
+
+    const archivedHabit = await dbHandler.getDocData(dbHandler.habitDocRef(dummyHabitA.id))
+    expect(archivedHabit?.archived).toEqual(true)
+    expect(await dbHandler.getDocData(dbHandler.archivedHabitsDocRef)).toEqual({
+      [dummyHabitA.id]: {
+        name: dummyHabitA.name,
+        icon: dummyHabitA.icon,
+        archiveTime: expect.any(Number)
+      }
+    })
+    expect(await dbHandler.getActiveHabitsDocs()).toEqual([dummyHabitB])
+    expect(await dbHandler.getHabitDetailsDoc()).toEqual({
+      activeIds: { private: { [dummyHabitB.id]: true } },
+      order: [dummyHabitB.id],
+      linked: {}
+    })
+  })
+
+  test('restoring an archived habit updates the local cache and database correctly', async () => {
+    await habitsHandler.setHabit(dummyHabitA)
+    await habitsHandler.setHabit(dummyHabitB)
+    await habitsHandler.archiveHabitById(dummyHabitA.id)
+    await habitsHandler.restoreArchivedHabitById(dummyHabitA.id)
+
+    expect(habitsHandler.activeHabits).toEqual({ [dummyHabitA.id]: dummyHabitA, [dummyHabitB.id]: dummyHabitB })
+    const restoredHabit = await dbHandler.getDocData(dbHandler.habitDocRef(dummyHabitA.id))
+    expect(restoredHabit?.archived).toEqual(false)
+    expect(await dbHandler.getDocData(dbHandler.archivedHabitsDocRef)).toEqual({})
+    expect(sortByHabitId(await dbHandler.getActiveHabitsDocs())).toEqual(sortByHabitId([dummyHabitA, dummyHabitB]))
+    expect(await dbHandler.getHabitDetailsDoc()).toEqual({
+      activeIds: { private: { [dummyHabitA.id]: true, [dummyHabitB.id]: true } },
+      order: [dummyHabitB.id, dummyHabitA.id],
+      linked: {}
     })
   })
 })

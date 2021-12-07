@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { HabitEditorContext } from 'pages/habit'
-import DeleteHabitDropdown from './DeleteHabitDropdown'
+import HabitOptionsDropdown from './HabitOptionsDropdown'
 import Button from '@/components/primitives/Button'
 import Flex from '@/components/primitives/Flex'
 import IconButton from '@/components/primitives/IconButton'
@@ -36,7 +36,7 @@ const HabitEditorNavSection = () => {
       >
         {editor.isNewHabit ? 'Add' : 'Save'}
       </Button>
-      {!editor.isNewHabit && <DeleteHabitDropdown />}
+      {!editor.isNewHabit && <HabitOptionsDropdown />}
     </Flex>
   )
 }

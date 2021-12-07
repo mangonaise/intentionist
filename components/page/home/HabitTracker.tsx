@@ -61,7 +61,7 @@ const HabitTracker = observer(() => {
         : <FadeIn delay={50}>
           {(habitsInView.length
             ? habitsInView.map((habit) => <HabitWrapper habit={habit} key={habit.id} />)
-            : (!displayNewUserGuide && <EmptyPageText text="Nothing to see here!" />))}
+            : (!displayNewUserGuide && <EmptyPageText />))}
         </FadeIn>}
       {displayNewUserGuide && <NewUserHabitsGuide />}
     </Box>

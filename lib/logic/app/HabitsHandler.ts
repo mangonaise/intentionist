@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import { singleton } from 'tsyringe'
 import { Fetched, InitialState } from '@/logic/app/InitialFetchHandler'
 import DbHandler from '@/logic/app/DbHandler'
@@ -7,6 +7,7 @@ import getUtcSeconds from '@/logic/utils/getUtcSeconds'
 import arrayMove from '@/logic/utils/arrayMove'
 import isEqual from 'lodash/isEqual'
 
+//#region types
 export type Habit = {
   id: string
   name: string
@@ -33,6 +34,15 @@ export type HabitDetailsDocumentData = {
   linked?: LinkedHabitsMap
 }
 
+export type ArchivedHabitsDocumentData = {
+  [habitId: string]: {
+    name: string,
+    icon: string,
+    archiveTime: number
+  }
+}
+//#endregion
+
 type LinkedHabitsMap = { [friendHabitId: string]: { friendUid: string, linkedHabitId: string, time: number } }
 
 @singleton()
@@ -40,6 +50,7 @@ export default class HabitsHandler {
   public order: string[] = []
   public activeHabits: { [habitId: string]: Habit } = {}
   public linkedHabits: LinkedHabitsMap = {}
+  public archivedHabits: undefined | ArchivedHabitsDocumentData = undefined
 
   constructor(initialState: InitialState, private dbHandler: DbHandler) {
     const { activeHabitsDocs, habitDetailsDoc } = initialState.data
@@ -88,23 +99,6 @@ export default class HabitsHandler {
     })
   }
 
-  public deleteHabitById = async (id: string) => {
-    const habitToDelete = this.activeHabits[id]
-    if (!habitToDelete) throw new Error('Cannot delete a habit that does not exist')
-
-    const linkedHabitIds = this.getHabitsLinkedWithId(id)
-
-    // 💻
-    delete this.activeHabits[id]
-    this.order = this.order.filter((habitId) => id !== habitId)
-    linkedHabitIds.forEach((id) => delete this.linkedHabits[id])
-
-    // ☁️
-    await this.dbHandler.deleteHabit(id, linkedHabitIds)
-  }
-
-  // todo: archive habit (make sure linked habits are removed)
-
   public reorderHabitsLocally = (habitIdToMove: string, habitIdToTakePositionOf: string) => {
     const oldIndex = this.order.indexOf(habitIdToMove)
     const newIndex = this.order.indexOf(habitIdToTakePositionOf)
@@ -152,6 +146,55 @@ export default class HabitsHandler {
 
   public getOrderedHabits = () => {
     return this.order.map((habitId) => this.activeHabits[habitId])
+  }
+
+  public archiveHabitById = async (id: string) => {
+    const habitToArchive = this.activeHabits[id]
+    if (!habitToArchive) throw new Error('Cannot archive a habit that does not exist')
+
+    const linkedHabitIds = this.getHabitsLinkedWithId(id)
+
+    // 💻
+    this.removeActiveHabitLocally(id, linkedHabitIds)
+    if (this.archivedHabits) {
+      this.archivedHabits[id] = { name: habitToArchive.name, icon: habitToArchive.icon, archiveTime: Date.now() }
+    }
+
+    // ☁️
+    await this.dbHandler.archiveHabit(habitToArchive, linkedHabitIds)
+  }
+
+  public restoreArchivedHabitById = async (id: string) => {
+    const habit = await this.dbHandler.restoreArchivedHabit(id)
+    runInAction(() => {
+      this.activeHabits[id] = habit
+      delete this.archivedHabits?.[id]
+      this.order.push(id)
+    })
+  }
+
+  public loadArchivedHabits = async () => {
+    const archivedHabits = (await this.dbHandler.getDocData(this.dbHandler.archivedHabitsDocRef)) ?? {}
+    runInAction(() => this.archivedHabits = archivedHabits)
+  }
+
+  public deleteActiveHabitById = async (id: string) => {
+    const habitToDelete = this.activeHabits[id]
+    if (!habitToDelete) throw new Error('Cannot delete a habit that does not exist')
+
+    const linkedHabitIds = this.getHabitsLinkedWithId(id)
+
+    // 💻
+    this.removeActiveHabitLocally(id, linkedHabitIds)
+
+    // ☁️
+    await this.dbHandler.deleteHabit(id, linkedHabitIds)
+  }
+
+  private removeActiveHabitLocally = (habitIdToRemove: string, linkedHabitIds: string[]) => {
+    delete this.activeHabits[habitIdToRemove]
+    this.order = this.order.filter((habitId) => habitId !== habitIdToRemove)
+    linkedHabitIds.forEach((id) => delete this.linkedHabits[id])
   }
 
   private processFetchedHabitData = (activeHabitsArray: Habit[], habitDetails: Fetched<HabitDetailsDocumentData>) => {

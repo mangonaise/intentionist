@@ -44,9 +44,15 @@ export default class HabitEditor {
     this.habit = { ...this.habit, ...updates }
   }
 
-  public deleteHabit = () => {
+  public archiveHabit = async () => {
+    if (!this.habit) throw new Error ('Cannot archive undefined habit')
+    await this.habitsHandler.archiveHabitById(this.habit.id)
+    this.exit()
+  }
+
+  public deleteHabit = async () => {
     if (!this.habit) throw new Error('Cannot delete undefined habit')
-    this.habitsHandler.deleteHabitById(this.habit.id)
+    await this.habitsHandler.deleteActiveHabitById(this.habit.id)
     this.exit()
   }
 

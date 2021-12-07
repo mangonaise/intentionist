@@ -2,7 +2,7 @@ import FadeIn from '@/components/primitives/FadeIn'
 import Flex from '@/components/primitives/Flex'
 import Text from '@/components/primitives/Text'
 
-const EmptyPageText = ({ text }: { text: string }) => {
+const EmptyPageText = ({ text = 'Nothing to see here!' }: { text?: string }) => {
   return (
     <FadeIn delay={100}>
       <Flex center sx={{ height: '4rem' }}>

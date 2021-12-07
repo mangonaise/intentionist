@@ -27,7 +27,7 @@ const ReorderHabitsList = observer(() => {
     }),
   )
 
-  if (!habits.length) return <EmptyPageText text="Nothing to see here!" />
+  if (!habits.length) return <EmptyPageText />
 
   return (
     <DndContext

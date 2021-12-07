@@ -28,6 +28,10 @@ service cloud.firestore {
         allow write: if requestedByUserWithId(userId);
         allow get: if requestedByUserWithId(userId) || isUserXFriendOfUserY(request.auth.uid, userId);
       }
+
+      match /userData/archivedHabits {
+        allow get, write: if requestedByUserWithId(userId);
+      }
     }
 
     match /usernames/{username} {
