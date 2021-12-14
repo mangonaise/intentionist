@@ -170,7 +170,6 @@ describe('behavior', () => {
     expect(await dbHandler.getHabitDetailsDoc()).toEqual({
       activeIds: { private: { [dummyHabitB.id]: true } },
       order: [dummyHabitB.id],
-      linked: {}
     })
   })
 
@@ -194,7 +193,6 @@ describe('behavior', () => {
     expect(await dbHandler.getHabitDetailsDoc()).toEqual({
       activeIds: { private: { [dummyHabitB.id]: true } },
       order: [dummyHabitB.id],
-      linked: {}
     })
   })
 
@@ -212,7 +210,6 @@ describe('behavior', () => {
     expect(await dbHandler.getHabitDetailsDoc()).toEqual({
       activeIds: { private: { [dummyHabitA.id]: true, [dummyHabitB.id]: true } },
       order: [dummyHabitB.id, dummyHabitA.id],
-      linked: {}
     })
   })
 })
