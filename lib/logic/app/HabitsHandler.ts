@@ -41,9 +41,9 @@ export type ArchivedHabitsDocumentData = {
     archiveTime: number
   }
 }
-//#endregion
 
 type LinkedHabitsMap = { [friendHabitId: string]: { friendUid: string, linkedHabitId: string, time: number } }
+//#endregion
 
 @singleton()
 export default class HabitsHandler {
@@ -156,7 +156,7 @@ export default class HabitsHandler {
 
     // 💻
     this.removeActiveHabitLocally(id, linkedHabitIds)
-    if (this.archivedHabits) {
+    if (this.archivedHabits) { // only if archived habits have already been loaded
       this.archivedHabits[id] = { name: habitToArchive.name, icon: habitToArchive.icon, archiveTime: Date.now() }
     }
 
