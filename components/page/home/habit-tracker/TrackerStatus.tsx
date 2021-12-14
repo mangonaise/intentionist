@@ -90,7 +90,7 @@ const TrackerStatusButton: FC<TrackerStatusButtonProps> = ({ onClick, hasValue, 
           position: 'absolute',
           inset: 0,
           content: '""',
-          border: 'solid 2px',
+          border: 'solid 1px',
           borderColor: 'var(--status-color)',
           borderRadius: 'inherit',
           opacity: isEditing || hasValue ? 1 : 0.6,
@@ -111,7 +111,7 @@ const ConnectingLine = ({ visible, fade }: { visible: boolean, fade?: 'left' | '
     <Box
       sx={{
         maskImage: fade ? (fade === 'left' ? leftGradient : rightGradient) : null,
-        borderBottom: 'solid 2px',
+        borderBottom: 'solid 1px',
         borderColor: 'var(--status-color)',
         flex: 1,
         zIndex: -1,

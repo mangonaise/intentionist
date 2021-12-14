@@ -112,7 +112,7 @@ const UserActionsDropdown = observer(() => {
       anchorRight
       title={
         <Flex center sx={{ mr: '-0.3rem' }}>
-          <SmartEmoji nativeEmoji={profileInfo?.avatar ?? '🙂'} rem={1.75} />
+          <SmartEmoji nativeEmoji={profileInfo?.avatar ?? '🙂'} rem={1.5} />
         </Flex>
       }
       sx={{ '& > button': { px: 2, bg: 'transparent' } }}
