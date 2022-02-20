@@ -16,9 +16,9 @@ afterAll(async () => {
 
 test('signing in and out correctly updates local auth state', async () => {
   const authHandler = container.resolve(AuthHandler)
-  expect(authHandler.isAuthenticated).toBe(false)
+  expect(authHandler.isAuthenticated).toEqual(false)
   await signInDummyUser(userSeed)
-  expect(authHandler.isAuthenticated).toBe(true)
+  expect(authHandler.isAuthenticated).toEqual(true)
   await authHandler.handleSignOut()
-  expect(authHandler.isAuthenticated).toBe(false)
+  expect(authHandler.isAuthenticated).toEqual(false)
 })

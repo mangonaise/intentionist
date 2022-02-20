@@ -1,16 +1,16 @@
 import '@abraham/reflection'
 import { container } from 'tsyringe'
 import { setDoc, doc } from '@firebase/firestore'
-import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
+import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import teardownFirebase from '@/test-setup/teardownFirebase'
+import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import AuthUser from '@/logic/app/AuthUser'
 import DbHandler from '@/logic/app/DbHandler'
-import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
 
-// 🔨
+//#region test setup
 
 const firebase = initializeFirebase('test-profilehandler')
 const { app: firebaseAdmin, db: adminDb } = getFirebaseAdmin('test-profilehandler')
@@ -44,17 +44,20 @@ afterAll(async () => {
   await firebaseAdmin.delete()
 })
 
-// 🧪
+//#endregion
 
 describe('initialization', () => {
-  test('local profile is set to null when user profile does not exist in database', async () => {
+  test(`if a user's profile does not exist in the database, the local profile info is set to null`, async () => {
     await initializeProfileHandler()
     expect(profileHandler.profileInfo).toBeNull()
   })
 
-  test('fetching profile of an existing user works', async () => {
+  test(`if a user's profile does exist in the database, their profile will be correctly fetched`, async () => {
+    // add user profile to db
     const profile: UserProfileInfo = { displayName: 'Bob', avatar: '😎', username: testUsername }
     await setDoc(doc(firebase.db, 'users', authUser.uid), profile)
+
+    // initialize to fetch
     await initializeProfileHandler()
     expect(profileHandler.profileInfo).toEqual(profile)
   })
@@ -65,51 +68,25 @@ describe('behavior', () => {
     await initializeProfileHandler()
   })
 
-  test('updated profile info appears in the "profile" field in the user document', async () => {
-    await profileHandler.setUserProfileInfo({
-      displayName: 'Jeff',
-      avatar: '🐹',
-      username: testUsername
-    })
-    const userDoc = await dbHandler.getDocData(dbHandler.userDocRef())
-    expect(userDoc).toEqual({
-      displayName: 'Jeff',
-      avatar: '🐹',
-      username: testUsername
-    })
-  })
-
-  test('updated profile data is reflected in local cache', async () => {
-    await profileHandler.setUserProfileInfo({
+  test(`when a user updates their profile, the local cache is correctly updated`, async () => {
+    const testProfileInfo = {
       displayName: 'Zoe',
       avatar: '🐸',
       username: testUsername
-    })
-    expect(profileHandler.profileInfo?.displayName).toBe('Zoe')
+    }
+    await profileHandler.setUserProfileInfo(testProfileInfo)
+    expect(profileHandler.profileInfo).toEqual(testProfileInfo)
   })
 
-  test('updating profile data returns the new data', async () => {
-    const profileInfo: UserProfileInfo = {
-      displayName: 'Pam',
-      avatar: '🐔',
+  test(`when a user updates their profile, the "profile" field in the user document is correctly updated`, async () => {
+    const testProfileInfo: UserProfileInfo = {
+      displayName: 'Jeff',
+      avatar: '🐹',
       username: testUsername
     }
-    expect(await profileHandler.setUserProfileInfo(profileInfo)).toEqual(profileInfo)
-  })
+    await profileHandler.setUserProfileInfo(testProfileInfo)
 
-  test('attempting to update profile without changing anything just returns the existing profile', async () => {
-    const profileInfo: UserProfileInfo = {
-      displayName: 'Arnold',
-      avatar: '🤖',
-      username: testUsername
-    }
-    const firstUpdate = await profileHandler.setUserProfileInfo(profileInfo)
-    const secondUpdate = await profileHandler.setUserProfileInfo(profileInfo)
-    expect(firstUpdate === secondUpdate).toBe(true)
+    const userDoc = await dbHandler.getDocData(dbHandler.userDocRef())
+    expect(userDoc).toEqual(testProfileInfo)
   })
-})
-
-test('teardown: user document and username document are removed after tests', async () => {
-  expect(await dbHandler.getDocData(dbHandler.userDocRef())).toBeUndefined()
-  expect(await dbHandler.getUsernameDoc(testUsername)).toBeNull()
 })

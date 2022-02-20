@@ -2,6 +2,8 @@ import { RulesTestEnvironment, assertFails, assertSucceeds } from '@firebase/rul
 import { setDoc, getDoc, getDocs, doc, collection, query, where } from '@firebase/firestore'
 import { createRulesTestEnvironment } from './_setup'
 
+//#region test setup
+
 let authUid: string
 let testEnv: RulesTestEnvironment
 let unauthenticatedDb: any, authenticatedDb: any
@@ -14,6 +16,8 @@ afterAll(async () => {
   await testEnv.clearFirestore()
   await testEnv.cleanup()
 })
+
+//#endregion
 
 test('unauthenticated users cannot read from the database', async () => {
   const get = () => getDoc(doc(unauthenticatedDb, '/users/bob'))

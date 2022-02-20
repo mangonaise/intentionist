@@ -8,16 +8,12 @@ import signInDummyUser from '@/test-setup/signInDummyUser'
 import teardownFirebase from '@/test-setup/teardownFirebase'
 import initializeFirebase from '@/firebase-setup/initializeFirebase'
 
+//#region test setup
+
 const firebase = initializeFirebase()
 const { app, db } = getFirebaseAdmin()
-
+const { userDoc, usernameDoc, friendRequestsDoc, } = getDbShortcuts(db)
 const cancelFriendRequest = httpsCallable(firebase.functions, 'cancelOutgoingFriendRequest')
-
-const {
-  userDoc,
-  usernameDoc,
-  friendRequestsDoc,
-} = getDbShortcuts(db)
 
 const now = Date.now()
 const authUserSeed = 'cancelFriendRequest'
@@ -36,14 +32,8 @@ const recipient = {
   avatar: '📨'
 }
 
-const otherUsername = 'some_other_username'
-
 beforeAll(async () => {
   senderUid = (await signInDummyUser(authUserSeed)).uid
-})
-
-beforeEach(async () => {
-  await setup()
 })
 
 afterEach(async () => {
@@ -55,7 +45,7 @@ afterAll(async () => {
   await app.delete()
 })
 
-async function setup() {
+async function createFriendRequests() {
   await userDoc(senderUid).set({ username: sender.username, displayName: sender.displayName, avatar: sender.avatar })
   await userDoc(recipient.uid).set({ username: recipient.username, displayName: recipient.displayName, avatar: recipient.avatar })
 
@@ -64,15 +54,13 @@ async function setup() {
 
   await friendRequestsDoc(senderUid).set({
     outgoing: {
-      [recipient.username]: { time: 123 },
-      [otherUsername]: { time: 123 }
+      [recipient.username]: { time: 123 }
     }
   })
 
   await friendRequestsDoc(recipient.uid).set({
     incoming: {
-      [sender.username]: { time: 123 },
-      [otherUsername]: { time: 123 }
+      [sender.username]: { time: 123 }
     }
   })
 }
@@ -84,30 +72,42 @@ async function teardown() {
   await usernameDoc(recipient.username).delete()
 }
 
+//#endregion
+
+beforeEach(async () => {
+  await createFriendRequests()
+})
+
 describe('making a valid cancellation', () => {
   it(`removes the correct fields from the sender's outgoing requests and the recipient's incoming requests`, async () => {
     await cancelFriendRequest({ recipientUsername: recipient.username })
+
     const recipientIncomingRequests = (await friendRequestsDoc(recipient.uid).get()).data()?.incoming
-    expect(recipientIncomingRequests).toEqual({ [otherUsername]: { time: 123 } })
+    expect(recipientIncomingRequests).toEqual({})
+
     const senderOutgoingRequests = (await friendRequestsDoc(senderUid).get()).data()?.outgoing
-    expect(senderOutgoingRequests).toEqual({ [otherUsername]: { time: 123 } })
+    expect(senderOutgoingRequests).toEqual({})
   })
 })
 
 describe('expected failures', () => {
-  it('fails if the user is not authenticated', async () => {
-    await signOut(firebase.auth)
-    let fails = false
-    try { await cancelFriendRequest({ recipientUsername: recipient.username }) }
-    catch { fails = true }
-    expect(fails).toEqual(true)
-    await signInDummyUser(authUserSeed)
-  })
-
   it('fails if no recipient username is specified', async () => {
     let fails = false
     try { await cancelFriendRequest({}) }
     catch { fails = true }
+
     expect(fails).toEqual(true)
+  })
+
+  it('fails if the user is not authenticated', async () => {
+    await signOut(firebase.auth)
+
+    let fails = false
+    try { await cancelFriendRequest({ recipientUsername: recipient.username }) }
+    catch { fails = true }
+
+    expect(fails).toEqual(true)
+
+    await signInDummyUser(authUserSeed)
   })
 })

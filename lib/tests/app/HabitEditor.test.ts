@@ -10,16 +10,14 @@ import DbHandler from '@/logic/app/DbHandler'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import HabitEditor from '@/logic/app/HabitEditor'
 
-// 🔨
-
-const firebase = initializeFirebase('test-habiteditor')
+//#region test setup
 
 let habitEditor: HabitEditor
-
+const firebase = initializeFirebase('test-habiteditor')
 const router = container.resolve(MockRouter)
-container.register('Router', { useValue: router })
-
 const dummyHabit: Habit = { id: 'abcdefgh', name: 'Test habit editor', icon: '📝', timeable: true, palette: [], creationTime: 123, archived: false, visibility: 'public' }
+
+container.register('Router', { useValue: router })
 
 function startHabitEditor() {
   habitEditor = container.resolve(HabitEditor)
@@ -37,7 +35,7 @@ afterAll(async () => {
   await teardownFirebase(firebase)
 })
 
-// 🧪
+//#endregion
 
 describe('before habits have been fetched', () => {
   test('throws error', () => {
@@ -64,26 +62,26 @@ describe('when habits have already been fetched', () => {
     }
   })
 
-  test('if router query contains param "new", editor will initialize with new habit', () => {
+  test('if router query contains param "new", the editor will initialize with new habit', () => {
     router.setQuery({ new: '' })
     startHabitEditor()
-    expect(habitEditor.isNewHabit).toBe(true)
+    expect(habitEditor.isNewHabit).toEqual(true)
   })
 
-  test('if no habit id matches query param id, will route to home page', () => {
+  test('if no habit id matches query param id, the editor will route to home page', () => {
     router.setQuery({ id: 'idontexist' })
     container.resolve(HabitEditor)
     expect(router.push).toHaveBeenCalledWith('/home')
   })
 
-  test('if query param id matches existing habit, editor will initialize with existing habit', async () => {
+  test('if query param id matches an existing habit, the editor will initialize with that existing habit', async () => {
     await habitsHandler.setHabit(dummyHabit)
     router.setQuery({ id: dummyHabit.id })
     startHabitEditor()
     expect(habitEditor.habit).toEqual(dummyHabit)
   })
 
-  test('newly created habits are reflected in HabitsHandler', async () => {
+  test('after saving and exiting from the editor, newly created habits are reflected in HabitsHandler', async () => {
     router.setQuery({ new: '' })
 
     startHabitEditor()
@@ -91,20 +89,15 @@ describe('when habits have already been fetched', () => {
     habitEditor.saveAndExit()
     await when(() => container.resolve(DbHandler).isWriteComplete)
 
-    startHabitEditor()
-    const createdHabitB = habitEditor.habit
-    habitEditor.saveAndExit()
-    await when(() => container.resolve(DbHandler).isWriteComplete)
-
     expect(habitsHandler.activeHabits).toEqual({
-      [createdHabitA!.id]: createdHabitA,
-      [createdHabitB!.id]: createdHabitB
+      [createdHabitA!.id]: createdHabitA
     })
   })
 
-  test('updated habit is reflected in HabitsHandler', async () => {
+  test('when a habit is updated, the changes are reflected in HabitsHandler', async () => {
     await habitsHandler.setHabit(dummyHabit)
     router.setQuery({ id: dummyHabit.id })
+
     startHabitEditor()
     habitEditor.updateHabit({ name: 'Updated name' })
     habitEditor.saveAndExit()
@@ -115,20 +108,14 @@ describe('when habits have already been fetched', () => {
     })
   })
 
-  test('deleted habit is reflected in HabitsHandler', async () => {
+  test('when a habit is deleted, the change is reflected in HabitsHandler', async () => {
     await habitsHandler.setHabit(dummyHabit)
     router.setQuery({ id: dummyHabit.id })
+
     startHabitEditor()
     habitEditor.deleteHabit()
     await when(() => container.resolve(DbHandler).isWriteComplete)
+
     expect(habitsHandler.activeHabits).toEqual({})
   })
-
-  test('teardown: habits are reset', () => {
-    expect(habitsHandler.activeHabits).toEqual({})
-  })
-})
-
-test('teardown: query is reset', () => {
-  expect(router.query).toEqual({})
 })

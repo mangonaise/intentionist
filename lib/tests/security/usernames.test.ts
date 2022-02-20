@@ -2,12 +2,16 @@ import { assertFails, assertSucceeds } from '@firebase/rules-unit-testing'
 import { setDoc, getDoc, getDocs, doc, collection, query } from '@firebase/firestore'
 import { createRulesTestEnvironment } from './_setup'
 
+//#region test setup
+
 let authUid: string
 let unauthenticatedDb: any, authenticatedDb: any
 
 beforeAll(async () => {
   let { } = { unauthenticatedDb, authenticatedDb, authUid } = await createRulesTestEnvironment()
 })
+
+//#endregion
 
 test('users cannot write documents in the usernames collection', async () => {
   const create = () => setDoc(doc(authenticatedDb, 'usernames', 'my_username'), { uid: authUid })

@@ -4,7 +4,7 @@ import { when } from 'mobx'
 import initializeFirebase, { registerFirebaseInjectionTokens } from '@/firebase-setup/initializeFirebase'
 import ProfileHandler, { UserProfileInfo } from '@/logic/app/ProfileHandler'
 import FriendsHandler, { maxFriends } from '@/logic/app/FriendsHandler'
-import FriendRequestsHandler from '@/logic/app/FriendRequestsHandler'
+import FriendRequestsHandler, { PendingFriendRequestStatus, UserSearchResult } from '@/logic/app/FriendRequestsHandler'
 import simulateInitialFetches from '@/test-setup/simulateInitialFetches'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import getDbShortcuts from '@/test-setup/getDbShortcuts'
@@ -12,26 +12,20 @@ import waitForRealtimeUpdates from '@/test-setup/waitForRealtimeUpdates'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import teardownFirebase from '@/test-setup/teardownFirebase'
 
-// 🔨
+//#region test setup
 
 const firebase = initializeFirebase()
 const { db } = getFirebaseAdmin()
-
-const {
-  usernameDoc,
-  userDoc,
-  friendRequestsDoc
-} = getDbShortcuts(db)
+const { usernameDoc, userDoc, friendRequestsDoc } = getDbShortcuts(db)
 
 const now = Date.now()
-
+let requestsHandler: FriendRequestsHandler, friendsHandler: FriendsHandler
 let testUserUid: string
 let testUserProfile: UserProfileInfo = {
   username: `frh${now}`,
   displayName: 'FriendRequestsHandler Test User',
   avatar: '🧪'
 }
-let requestsHandler: FriendRequestsHandler, friendsHandler: FriendsHandler
 
 beforeAll(async () => {
   const user = await signInDummyUser('testfrh')
@@ -60,25 +54,7 @@ afterAll(async () => {
   await teardownFirebase(firebase)
 })
 
-// 🧪
-
-describe('initialization', () => {
-  test('incoming and outgoing requests initialize to empty arrays', () => {
-    expect(requestsHandler.incomingRequests).toEqual([])
-    expect(requestsHandler.outgoingRequests).toEqual([])
-  })
-
-  test('view mode initializes to "incoming"', () => {
-    expect(requestsHandler.viewMode).toEqual('incoming')
-  })
-})
-
-test('the view mode can be switched between incoming and outgoing', () => {
-  requestsHandler.setViewMode('outgoing')
-  expect(requestsHandler.viewMode).toEqual('outgoing')
-  requestsHandler.setViewMode('incoming')
-  expect(requestsHandler.viewMode).toEqual('incoming')
-})
+//#endregion
 
 describe('searching for users', () => {
   describe('valid search', () => {
@@ -106,39 +82,39 @@ describe('searching for users', () => {
   describe('handling invalid searches', () => {
     test('searching for a user that does not exist returns "not found"', async () => {
       const searchResult = await requestsHandler.searchForUser('i_do_not_exist')
-      expect(searchResult).toEqual('not found')
+      expect(searchResult).toEqual<UserSearchResult>('not found')
     })
 
     test('searching for yourself returns "self"', async () => {
       await container.resolve(ProfileHandler).setUserProfileInfo(testUserProfile)
 
       const searchResult = await requestsHandler.searchForUser(testUserProfile.username)
-      expect(searchResult).toEqual('self')
+      expect(searchResult).toEqual<UserSearchResult>('self')
     })
 
     test('searching for an invalid username returns "invalid"', async () => {
       expect(await requestsHandler.searchForUser('a')).toEqual('invalid')
-      expect(await requestsHandler.searchForUser('a'.repeat(31))).toEqual('invalid')
-      expect(await requestsHandler.searchForUser('invalid-char')).toEqual('invalid')
-      expect(await requestsHandler.searchForUser('abc_')).toEqual('invalid')
+      expect(await requestsHandler.searchForUser('toolong'.repeat(30))).toEqual('invalid')
+      expect(await requestsHandler.searchForUser('invalid$char')).toEqual('invalid')
+      expect(await requestsHandler.searchForUser('end_underscore_')).toEqual('invalid')
     })
 
     test('searching for a user who you have an outgoing friend request to returns "already outgoing"', async () => {
       requestsHandler.outgoingRequests.push({ username: 'test_already_outgoing', avatar: '🧪', displayName: 'Test Already Outgoing' })
       const searchResult = await requestsHandler.searchForUser('test_already_outgoing')
-      expect(searchResult).toEqual('already outgoing')
+      expect(searchResult).toEqual<UserSearchResult>('already outgoing')
     })
 
     test('searching for a user who you have an incoming friend request from returns "already incoming"', async () => {
       requestsHandler.incomingRequests.push({ username: 'test_already_incoming', avatar: '🧪', displayName: 'Test Already Incoming' })
       const searchResult = await requestsHandler.searchForUser('test_already_incoming')
-      expect(searchResult).toEqual('already incoming')
+      expect(searchResult).toEqual<UserSearchResult>('already incoming')
     })
 
     test('searching for a user who is already your friend returns "already friends"', async () => {
       friendsHandler.friends.push({ uid: 'test-already-friends', username: 'test_already_friends', avatar: '🧪', displayName: 'Test Already Friends' })
       const searchResult = await requestsHandler.searchForUser('test_already_friends')
-      expect(searchResult).toEqual('already friends')
+      expect(searchResult).toEqual<UserSearchResult>('already friends')
     })
 
     test('searching for a user when you have reached the maximum friends limit returns "max friends"', async () => {
@@ -149,7 +125,7 @@ describe('searching for users', () => {
         username: `test_max_friends${index}`
       }))
       const searchResult = await requestsHandler.searchForUser('does_not_matter')
-      expect(searchResult).toEqual('max friends')
+      expect(searchResult).toEqual<UserSearchResult>('max friends')
     })
   })
 })
@@ -180,30 +156,15 @@ describe('sending and canceling outgoing friend requests', () => {
     await friendRequestsDoc(testUserUid).delete()
   })
 
-  test(`when a request is sent, the user's data appears in the outgoing requests array`, async () => {
+  test(`when a request is successfully sent to a user, the recipient's profile data appears in the sender's outgoing requests array`, async () => {
     await requestsHandler.sendFriendRequest(recipient.username)
     await waitForRealtimeUpdates()
+
     expect(requestsHandler.outgoingRequests).toEqual([{
       username: recipient.username,
       displayName: recipient.displayName,
       avatar: recipient.avatar
     }])
-  })
-
-  test('immediately after sending a request, the outgoing friend request status is set to "sending"', async () => {
-    requestsHandler.sendFriendRequest(recipient.username)
-    expect(requestsHandler.pendingStatus).toEqual('sending')
-    await when(() => requestsHandler.pendingStatus !== 'sending')
-  })
-
-  test('after a request is successfully sent, the outgoing request status is set to "sent"', async () => {
-    await requestsHandler.sendFriendRequest(recipient.username)
-    expect(requestsHandler.pendingStatus).toEqual('sent')
-  })
-
-  test('if the friend request fails, the outgoing request status is set to "error"', async () => {
-    await requestsHandler.sendFriendRequest('this_user_does_not_exist')
-    expect(requestsHandler.pendingStatus).toEqual('error')
   })
 
   test('when a friend request is canceled, it is removed from the outgoing requests array', async () => {
@@ -213,6 +174,22 @@ describe('sending and canceling outgoing friend requests', () => {
     await requestsHandler.cancelOutgoingFriendRequest(request!)
     await waitForRealtimeUpdates()
     expect(requestsHandler.outgoingRequests).toEqual([])
+  })
+
+  test('after sending a friend request, in the time before the request resolves, the pending friend request status is set to "sending"', async () => {
+    requestsHandler.sendFriendRequest(recipient.username)
+    expect(requestsHandler.pendingStatus).toEqual<PendingFriendRequestStatus>('sending')
+    await when(() => requestsHandler.pendingStatus !== 'sending')
+  })
+
+  test('after a friend request is successfully sent, the pending friend request status is set to "sent"', async () => {
+    await requestsHandler.sendFriendRequest(recipient.username)
+    expect(requestsHandler.pendingStatus).toEqual<PendingFriendRequestStatus>('sent')
+  })
+
+  test('if a friend request fails, the pending friend request status is set to "error"', async () => {
+    await requestsHandler.sendFriendRequest('this_user_does_not_exist')
+    expect(requestsHandler.pendingStatus).toEqual<PendingFriendRequestStatus>('error')
   })
 })
 
@@ -238,6 +215,7 @@ describe('responding to incoming friend requests', () => {
     // sender needs to 1. exist & 2. have matching outgoing request, or else the attempt to accept a friend request will be denied
     await userDoc(sender.uid).set({ username: sender.username, displayName: sender.displayName, avatar: sender.avatar })
     await friendRequestsDoc(sender.uid).set({ outgoing: { [testUserProfile.username]: {} } })
+    await waitForRealtimeUpdates()
   })
 
   afterEach(async () => {
@@ -247,7 +225,6 @@ describe('responding to incoming friend requests', () => {
   })
 
   test('when a friend request is declined, the friend request is removed from the incoming requests array', async () => {
-    await waitForRealtimeUpdates()
     const incomingRequest = requestsHandler.incomingRequests.find((request) => request.username = sender.username)
     await requestsHandler.declineFriendRequest(incomingRequest!)
     await waitForRealtimeUpdates()
@@ -255,7 +232,6 @@ describe('responding to incoming friend requests', () => {
   })
 
   test('when a friend request is accepted, the friend request is removed from the incoming requests array', async () => {
-    await waitForRealtimeUpdates()
     const incomingRequest = requestsHandler.incomingRequests.find((request) => request.username = sender.username)
     await requestsHandler.acceptFriendRequest(incomingRequest!)
     await waitForRealtimeUpdates()

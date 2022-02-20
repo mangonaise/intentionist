@@ -11,6 +11,11 @@ import deleteHabits from '@/test-setup/deleteHabits'
 import getDbShortcuts from '@/test-setup/getDbShortcuts'
 import generateHabitId from '@/logic/utils/generateHabitId'
 
+//? "Habit status" = an emoji used to represent the daily status of a habit.
+//? For example, a habit called "Exercise" could have a status of "👍" to represent good progress made on that day.
+
+//#region test setup
+
 const projectId = 'test-habitshandler'
 const firebase = initializeFirebase(projectId)
 const { db: adminDb } = getFirebaseAdmin(projectId)
@@ -18,9 +23,8 @@ const { habitDoc } = getDbShortcuts(adminDb)
 
 let authUid: string
 let statusesHandler: HabitStatusesHandler, habitsHandler: HabitsHandler
-
-const testHabitProperties: Habit = { id: generateHabitId(), name: 'Test', icon: '🧪', archived: false, creationTime: 123, timeable: true, palette: [] as string[], visibility: 'public' }
 let testHabit: Habit
+const testHabitProperties: Habit = { id: generateHabitId(), name: 'Test', icon: '🧪', archived: false, creationTime: 123, timeable: true, palette: [] as string[], visibility: 'public' }
 
 beforeAll(async () => {
   authUid = (await signInDummyUser()).uid
@@ -43,34 +47,50 @@ afterAll(async () => {
   await teardownFirebase(firebase)
 })
 
+//#endregion
+
 describe('setting habit statuses', () => {
   test('setting habit statuses correctly updates local cache and database', async () => {
     await statusesHandler.setHabitStatus(testHabit, { year: 2021, dayOfYear: 325 }, '🌟')
-    await statusesHandler.setHabitStatus(testHabit, { year: 2020, dayOfYear: 16 }, '👍')
 
-    const statuses = habitsHandler.activeHabits[testHabit.id].statuses
-    expect(statuses).toEqual({ 2021: { 325: '🌟' }, 2020: { 16: '👍' } })
-    expect((await habitDoc(authUid, testHabit.id).get()).data()?.statuses).toEqual(statuses)
+    // local
+    const habitStatuses = habitsHandler.activeHabits[testHabit.id].statuses
+    expect(habitStatuses).toEqual({
+      2021: {
+        325: '🌟'
+      }
+    })
+
+    // db
+    const habitDocData = (await habitDoc(authUid, testHabit.id).get()).data()
+    expect(habitDocData?.statuses).toEqual(habitStatuses)
   })
 
-  //? waiting for next tick is necessary but I'm not sure why
   test('removing a habit status correctly updates local cache and database', async () => {
     await statusesHandler.setHabitStatus(testHabit, { year: 2021, dayOfYear: 100 }, '🌟')
     await statusesHandler.setHabitStatus(testHabit, { year: 2021, dayOfYear: 200 }, '👍')
 
+    // remove "🌟"
     await statusesHandler.setHabitStatus(testHabit, { year: 2021, dayOfYear: 100 }, null)
 
-    await new Promise(resolve => setTimeout(resolve, 0))
+    // local
     let statuses = habitsHandler.activeHabits[testHabit.id].statuses
     expect(statuses).toEqual({ 2021: { 200: '👍' } })
-    expect((await habitDoc(authUid, testHabit.id).get()).data()?.statuses).toEqual(statuses)
 
+    // db
+    let habitDocData = (await habitDoc(authUid, testHabit.id).get()).data()
+    expect(habitDocData?.statuses).toEqual(statuses)
+
+    // remove "👍"
     await statusesHandler.setHabitStatus(testHabit, { year: 2021, dayOfYear: 200 }, null)
 
-    await new Promise(resolve => setTimeout(resolve, 0))
+    // local
     statuses = habitsHandler.activeHabits[testHabit.id].statuses
     expect(statuses).toEqual({})
-    expect((await habitDoc(authUid, testHabit.id).get()).data()?.statuses).toEqual(statuses)
+
+    // db
+    habitDocData = (await habitDoc(authUid, testHabit.id).get()).data()
+    expect(habitDocData?.statuses).toEqual(statuses)
   })
 })
 

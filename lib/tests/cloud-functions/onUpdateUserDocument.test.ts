@@ -2,15 +2,10 @@ import { waitForCloudFunctionExecution } from './_helpers'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import getDbShortcuts from '@/test-setup/getDbShortcuts'
 
-// 🔨
+//#region test setup
 
 const { app, db } = getFirebaseAdmin()
-const {
-  userDoc,
-  usernameDoc,
-  friendsDoc,
-  friendRequestsDoc
-} = getDbShortcuts(db)
+const { userDoc, usernameDoc, friendsDoc, friendRequestsDoc } = getDbShortcuts(db)
 
 const now = Date.now()
 let testUser = {
@@ -24,7 +19,7 @@ afterAll(async () => {
   await app.delete()
 })
 
-// 🧪
+//#endregion
 
 describe('automatically creating and updating username documents', () => {
   afterAll(async () => {
@@ -32,13 +27,12 @@ describe('automatically creating and updating username documents', () => {
     await usernameDoc(testUser.username).delete()
   })
 
-  test(`1. creating a user document automatically creates a username document with the user's avatar and display name`, async () => {
+  test(`creating a user document automatically creates a username document with the user's avatar and display name`, async () => {
     await userDoc(testUser.uid).set({
       username: testUser.username,
       displayName: testUser.displayName,
       avatar: testUser.avatar
     })
-
     await waitForCloudFunctionExecution()
 
     const generatedUsernameDoc = await usernameDoc(testUser.username).get()
@@ -48,13 +42,13 @@ describe('automatically creating and updating username documents', () => {
     })
   })
 
-  test('2. when a user changes their username, the old username document is deleted and a new one is created', async () => {
+  test('when a user changes their username, the old username document is deleted and a new one is created', async () => {
     const originalUsername = testUser.username
     testUser.username = `test_username_updated${now}`
+
     await userDoc(testUser.uid).update({
       username: testUser.username
     })
-
     await waitForCloudFunctionExecution()
 
     const originalUsernameDoc = await usernameDoc(originalUsername).get()
@@ -67,9 +61,9 @@ describe('automatically creating and updating username documents', () => {
     })
   })
 
-  test('3. when a user updates their avatar or display name, the username document is updated with the new data', async () => {
+  test('when a user updates their avatar or display name, the username document is updated with the new data', async () => {
     testUser.avatar = '😎'
-    testUser.displayName = 'onUpdateUserDocument Cool User'
+    testUser.displayName = 'onUpdateUserDocument New Display Name'
 
     await userDoc(testUser.uid).update({ avatar: testUser.avatar, displayName: testUser.displayName })
     await waitForCloudFunctionExecution()
@@ -98,7 +92,6 @@ describe('automatically updating denormalized data when a user updates their pro
   })
 
   describe('updating denormalized data in friendRequests doc', () => {
-    const otherUsername = 'other_username' // for ensuring proper merge
     const senderUid = `test-request-sender-uid${now}`
     const recipientUid = `test-request-recipient-uid${now}`
 
@@ -106,14 +99,12 @@ describe('automatically updating denormalized data when a user updates their pro
       await friendRequestsDoc(senderUid).set({
         outgoing: {
           [testUser.username]: { time: 123, displayName: testUser.displayName, avatar: testUser.avatar },
-          [otherUsername]: { time: 123 }
         }
       })
 
       await friendRequestsDoc(recipientUid).set({
         incoming: {
           [testUser.username]: { time: 456, displayName: testUser.displayName, avatar: testUser.avatar },
-          [otherUsername]: { time: 123 }
         }
       })
     })
@@ -135,9 +126,6 @@ describe('automatically updating denormalized data when a user updates their pro
             time: 123,
             displayName: testUser.displayName,
             avatar: testUser.avatar
-          },
-          [otherUsername]: {
-            time: 123
           }
         }
       })
@@ -148,9 +136,6 @@ describe('automatically updating denormalized data when a user updates their pro
             time: 456,
             displayName: testUser.displayName,
             avatar: testUser.avatar
-          },
-          [otherUsername]: {
-            time: 123
           }
         }
       })
@@ -167,9 +152,6 @@ describe('automatically updating denormalized data when a user updates their pro
             time: 123,
             displayName: testUser.displayName,
             avatar: testUser.avatar
-          },
-          [otherUsername]: {
-            time: 123
           }
         }
       })
@@ -180,9 +162,6 @@ describe('automatically updating denormalized data when a user updates their pro
             time: 456,
             displayName: testUser.displayName,
             avatar: testUser.avatar
-          },
-          [otherUsername]: {
-            time: 123
           }
         }
       })
@@ -191,13 +170,11 @@ describe('automatically updating denormalized data when a user updates their pro
 
   describe('automatically updating denormalized user data in friends doc', () => {
     const friendUid = `test-friend-uid${now}`
-    const otherUid = `other-uid${now}` // for ensuring proper merge
 
     beforeEach(async () => {
       await friendsDoc(friendUid).set({
         friends: {
-          [testUser.uid]: { time: 123, username: testUser.username, displayName: testUser.displayName, avatar: testUser.avatar },
-          [otherUid]: { time: 123 }
+          [testUser.uid]: { time: 123, username: testUser.username, displayName: testUser.displayName, avatar: testUser.avatar }
         }
       })
     })
@@ -214,8 +191,7 @@ describe('automatically updating denormalized data when a user updates their pro
 
       expect((await friendsDoc(friendUid).get()).data()).toEqual({
         friends: {
-          [testUser.uid]: { time: 123, username: testUser.username, displayName: testUser.displayName, avatar: testUser.avatar },
-          [otherUid]: { time: 123 }
+          [testUser.uid]: { time: 123, username: testUser.username, displayName: testUser.displayName, avatar: testUser.avatar }
         }
       })
     })

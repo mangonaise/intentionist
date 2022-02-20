@@ -1,27 +1,20 @@
 import '@abraham/reflection'
-import { firestore } from 'firebase-admin'
 import { waitForCloudFunctionExecution } from 'lib/tests/cloud-functions/_helpers'
 import { httpsCallable } from '@firebase/functions'
 import { signOut } from '@firebase/auth'
+import { maxFriends } from '@/logic/app/FriendsHandler'
 import getDbShortcuts from '@/test-setup/getDbShortcuts'
 import initializeFirebase from '@/firebase-setup/initializeFirebase'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import signInDummyUser from '@/test-setup/signInDummyUser'
 import teardownFirebase from '@/test-setup/teardownFirebase'
 
-// 🔨
+//#region test setup
 
 const firebase = initializeFirebase()
 const { app, db } = getFirebaseAdmin()
-
+const { userDoc, usernameDoc, friendsDoc, friendRequestsDoc } = getDbShortcuts(db)
 const respondToFriendRequest = httpsCallable(firebase.functions, 'respondToFriendRequest')
-
-const {
-  userDoc,
-  usernameDoc,
-  friendsDoc,
-  friendRequestsDoc
-} = getDbShortcuts(db)
 
 const now = Date.now()
 const authUserSeed = 'respondToFriendRequest'
@@ -37,10 +30,8 @@ const recipient = {
 const sender = {
   username: `test_sender${now}`,
   displayName: 'respondToFriendRequest Test Sender',
-  avatar: '✉️'
+  avatar: '📧'
 }
-
-const otherUsername = 'some_other_username'
 
 beforeAll(async () => {
   recipientUid = (await signInDummyUser(authUserSeed)).uid
@@ -68,15 +59,13 @@ async function setup() {
 
   await friendRequestsDoc(recipientUid).set({
     incoming: {
-      [sender.username]: { time: 123 },
-      [otherUsername]: { time: 123 }
+      [sender.username]: { time: 123 }
     }
   })
 
   await friendRequestsDoc(senderUid).set({
     outgoing: {
-      [recipient.username]: { time: 123 },
-      [otherUsername]: { time: 123 }
+      [recipient.username]: { time: 123 }
     }
   })
 }
@@ -88,15 +77,15 @@ async function teardown() {
   await usernameDoc(sender.username).delete()
 }
 
-// 🧪
+//#endregion
 
 describe('making a valid response', () => {
   test(`declining a friend request removes the recipient's incoming request and the sender's outgoing request`, async () => {
     await respondToFriendRequest({ senderUsername: sender.username, accept: false })
     const recipientFriendRequests = (await (friendRequestsDoc(recipientUid).get())).data()
     const senderFriendRequests = (await (friendRequestsDoc(senderUid).get())).data()
-    expect(recipientFriendRequests?.incoming).toEqual({ [otherUsername]: { time: 123 } })
-    expect(senderFriendRequests?.outgoing).toEqual({ [otherUsername]: { time: 123 } })
+    expect(recipientFriendRequests?.incoming).toEqual({})
+    expect(senderFriendRequests?.outgoing).toEqual({})
   })
 
   test(`accepting a friend request removes the incoming/outgoing requests, and registers the users as friends with each other`, async () => {
@@ -105,8 +94,8 @@ describe('making a valid response', () => {
 
     const recipientFriendRequests = (await (friendRequestsDoc(recipientUid).get())).data()
     const senderFriendRequests = (await (friendRequestsDoc(senderUid).get())).data()
-    expect(recipientFriendRequests?.incoming).toEqual({ [otherUsername]: { time: 123 } })
-    expect(senderFriendRequests?.outgoing).toEqual({ [otherUsername]: { time: 123 } })
+    expect(recipientFriendRequests?.incoming).toEqual({})
+    expect(senderFriendRequests?.outgoing).toEqual({})
 
     const recipientFriendsDoc = (await (friendsDoc(recipientUid).get())).data()
     const senderFriends = (await (friendsDoc(senderUid).get())).data()
@@ -134,30 +123,21 @@ describe('making a valid response', () => {
 })
 
 describe('expected failures', () => {
-  it('fails if the user is not authenticated', async () => {
-    await signOut(firebase.auth)
-    let fails = false
-    try { await respondToFriendRequest({ senderUsername: sender.username, accept: true }) }
-    catch { fails = true }
-    expect(fails).toEqual(true)
-    await signInDummyUser(authUserSeed)
-  })
-
-  it('fails if the sender user provided has not sent a friend request to the recipient', async () => {
+  it('fails if the given sender user has not actually sent a friend request to the recipient', async () => {
     await friendRequestsDoc(senderUid).set({
-      outgoing: {
-        [recipient.username]: firestore.FieldValue.delete()
-      }
-    }, { merge: true })
+      outgoing: {}
+    })
+
     let fails = false
     try { await respondToFriendRequest({ senderUsername: sender.username, accept: true }) }
     catch { fails = true }
+
     expect(fails).toEqual(true)
   })
 
-  it('fails if the sender has reached the maximum number of 50 friends', async () => {
+  it('fails if the sender has reached the maximum number of friends', async () => {
     let friends = {} as { [uid: string]: any }
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < maxFriends; i++) {
       friends[`uid-${i}`] = { time: 123 }
     }
     await (friendsDoc(senderUid).set({ friends }))
@@ -167,12 +147,13 @@ describe('expected failures', () => {
     catch (err) {
       failReason = (err as any).details?.failReason
     }
+
     expect(failReason).toEqual('sender-max-friends')
   })
 
-  it('fails if the recipient has reached the maximum number of 50 friends', async () => {
+  it('fails if the recipient has reached the maximum number of friends', async () => {
     let friends = {} as { [uid: string]: any }
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < maxFriends; i++) {
       friends[`uid-${i}`] = { time: 123 }
     }
     await (friendsDoc(recipientUid).set({ friends }))
@@ -180,6 +161,19 @@ describe('expected failures', () => {
     let fails = false
     try { await respondToFriendRequest({ senderUsername: sender.username, accept: true }) }
     catch { fails = true }
+
     expect(fails).toEqual(true)
+  })
+
+  it('fails if the user is not authenticated', async () => {
+    await signOut(firebase.auth)
+
+    let fails = false
+    try { await respondToFriendRequest({ senderUsername: sender.username, accept: true }) }
+    catch { fails = true }
+
+    expect(fails).toEqual(true)
+
+    await signInDummyUser(authUserSeed)
   })
 })

@@ -10,19 +10,16 @@ import signInDummyUser from '@/test-setup/signInDummyUser'
 import teardownFirebase from '@/test-setup/teardownFirebase'
 import AuthHandler from '@/logic/app/AuthHandler'
 
-// 🔨
+//#region test setup 
 
 const now = Date.now()
-const authUserSeed = 'sendFriendRequest'
-
-const { app, db } = getFirebaseAdmin()
 const firebase = initializeFirebase()
-
-const sendFriendRequest = httpsCallable(firebase.functions, 'sendFriendRequest')
+const { app, db } = getFirebaseAdmin()
 const { friendRequestsDoc } = getDbShortcuts(db)
-
+const sendFriendRequest = httpsCallable(firebase.functions, 'sendFriendRequest')
 
 let sender: User
+const authUserSeed = 'sendFriendRequest'
 const senderUsername = `test_sender_username${now}`
 const recipientUid = `test-recipient-uid${now}`
 const recipientUsername = `test_recipient_username${now}`
@@ -44,8 +41,6 @@ afterAll(async () => {
   await app.delete()
 })
 
-// 🧪
-
 async function setup() {
   await db.collection('users').doc(recipientUid).set({
     username: recipientUsername,
@@ -55,7 +50,7 @@ async function setup() {
   await db.collection('users').doc(sender.uid).set({
     username: senderUsername,
     displayName: 'Test Friend Request Sender',
-    avatar: '✉️',
+    avatar: '📧',
   })
   await waitForCloudFunctionExecution()
 }
@@ -67,41 +62,35 @@ async function teardown() {
   await db.collection('usernames').doc(recipientUsername).delete()
 }
 
+//#endregion
+
 describe('sending a valid friend request', () => {
-  test(`the sender and recipient's /userData/friendRequests documents are updated correctly with the outgoing and incoming request`, async () => {
+  test(`the sender and recipient's friendRequests documents are updated correctly with the outgoing and incoming requests`, async () => {
     const result = await sendFriendRequest({ recipientUsername })
-    const resultData = result.data as { time: Date }
+    const { time } = result.data as { time: Date }
 
     const senderFriendRequestsDoc = await friendRequestsDoc(sender.uid).get()
     expect(senderFriendRequestsDoc.data()?.outgoing?.[recipientUsername]).toEqual({
-      time: resultData.time,
       displayName: 'Test Friend Request Recipient',
-      avatar: '🧪'
+      avatar: '🧪',
+      time
     })
 
     const recipientFriendRequestsDoc = await friendRequestsDoc(recipientUid).get()
     expect(recipientFriendRequestsDoc.data()?.incoming?.[senderUsername]).toEqual({
-      time: resultData.time,
       displayName: 'Test Friend Request Sender',
-      avatar: '✉️'
+      avatar: '📧',
+      time
     })
   })
 })
 
 describe('expected failures', () => {
-  it('fails if the user is not authenticated', async () => {
-    await signOut(container.resolve(AuthHandler).auth)
-    let fails = false
-    try { await sendFriendRequest({ recipientUsername }) }
-    catch { fails = true }
-    expect(fails).toEqual(true)
-    await signInDummyUser(authUserSeed)
-  })
-
   it('fails if no recipient username is specified', async () => {
     let fails = false
     try { await sendFriendRequest({}) }
     catch { fails = true }
+
     expect(fails).toEqual(true)
   })
 
@@ -109,6 +98,7 @@ describe('expected failures', () => {
     let fails = false
     try { await sendFriendRequest({ recipientUsername: 'non_existent_username' }) }
     catch (err) { fails = true }
+
     expect(fails).toEqual(true)
   })
 
@@ -116,6 +106,7 @@ describe('expected failures', () => {
     let fails = false
     try { await sendFriendRequest({ recipientUsername: senderUsername }) }
     catch (err) { fails = true }
+
     expect(fails).toEqual(true)
   })
 
@@ -125,6 +116,7 @@ describe('expected failures', () => {
     let fails = false
     try { await sendFriendRequest({ recipientUsername }) }
     catch (err) { fails = true }
+
     expect(fails).toEqual(true)
   })
 
@@ -140,6 +132,7 @@ describe('expected failures', () => {
     catch (err) {
       failReason = (err as any).details?.failReason
     }
+
     expect(failReason).toEqual('recipient-max-requests')
   })
 
@@ -155,6 +148,19 @@ describe('expected failures', () => {
     catch (err) {
       failReason = (err as any).details?.failReason
     }
+
     expect(failReason).toEqual('sender-max-requests')
+  })
+
+  it('fails if the user is not authenticated', async () => {
+    await signOut(container.resolve(AuthHandler).auth)
+
+    let fails = false
+    try { await sendFriendRequest({ recipientUsername }) }
+    catch { fails = true }
+
+    expect(fails).toEqual(true)
+
+    await signInDummyUser(authUserSeed)
   })
 })
