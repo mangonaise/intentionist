@@ -1,1 +1,0 @@
-export type PropsWithStyle<T> = { className?: string } & T
