@@ -3,7 +3,7 @@ import { useContext } from 'react'
 import { observer } from 'mobx-react-lite'
 import { HabitContext } from '@/components/page/home/habit-tracker/HabitWrapper'
 import HabitsHandler, { HabitVisibility } from '@/logic/app/HabitsHandler'
-import SelectDropdown from '@/components/app/SelectDropdown'
+import SelectDropdown from '@/components/modular/SelectDropdown'
 
 const HabitVisibilityDropdown = observer(() => {
   const { habit } = useContext(HabitContext)

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useRouter } from 'next/router'
-import withApp from '@/components/app/withApp'
+import withApp from '@/components/modular/withApp'
 import SettingsPageLayout from '@/components/page/settings/SettingsPageLayout'
 import ProfileSettings from '@/components/page/settings/ProfileSettings'
 

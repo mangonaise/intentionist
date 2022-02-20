@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import Dropdown from '@/components/app/Dropdown'
+import Dropdown from '@/components/modular/Dropdown'
 import IconButton from '@/components/primitives/IconButton'
 import Flex from '@/components/primitives/Flex'
 import PlusIcon from '@/components/icons/PlusIcon'

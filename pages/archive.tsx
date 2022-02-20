@@ -1,4 +1,4 @@
-import withApp from '@/components/app/withApp'
+import withApp from '@/components/modular/withApp'
 import ArchivedHabitsList from '@/components/page/archive/ArchivedHabitsList'
 import ArchiveNavSection from '@/components/page/archive/ArchiveNavSection'
 import Box from '@/components/primitives/Box'

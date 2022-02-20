@@ -1,5 +1,5 @@
 import type { StyledComponent } from '@/components/types/StyledComponent'
-import Dropdown from '@/components/app/Dropdown'
+import Dropdown from '@/components/modular/Dropdown'
 import Text from '@/components/primitives/Text'
 import Icon from '@/components/primitives/Icon'
 import Flex from '@/components/primitives/Flex'

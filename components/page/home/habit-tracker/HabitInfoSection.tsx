@@ -7,7 +7,7 @@ import LinkHabitButton from '@/components/page/home/habit-tracker/LinkHabitButto
 import FriendsHandler from '@/logic/app/FriendsHandler'
 import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
 import ProfileHandler from '@/logic/app/ProfileHandler'
-import SmartEmoji from '@/components/app/SmartEmoji'
+import SmartEmoji from '@/components/modular/SmartEmoji'
 import Flex from '@/components/primitives/Flex'
 import Spacer from '@/components/primitives/Spacer'
 import Text from '@/components/primitives/Text'

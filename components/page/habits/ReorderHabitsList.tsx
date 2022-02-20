@@ -7,9 +7,9 @@ import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifi
 import { CSS } from '@dnd-kit/utilities'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
-import DragHandle, { DragHandleProps } from '@/components/app/DragHandle'
-import SmartEmoji from '@/components/app/SmartEmoji'
-import EmptyPageText from '@/components/app/EmptyPageText'
+import DragHandle, { DragHandleProps } from '@/components/modular/DragHandle'
+import SmartEmoji from '@/components/modular/SmartEmoji'
+import EmptyPageText from '@/components/modular/EmptyPageText'
 import Flex from '@/components/primitives/Flex'
 import Text from '@/components/primitives/Text'
 

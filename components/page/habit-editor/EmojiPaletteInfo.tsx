@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import ModalPopup from '@/components/app/ModalPopup'
+import ModalPopup from '@/components/modular/ModalPopup'
 import Box from '@/components/primitives/Box'
 import Flex from '@/components/primitives/Flex'
 import Heading from '@/components/primitives/Heading'

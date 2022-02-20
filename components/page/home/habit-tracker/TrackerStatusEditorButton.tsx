@@ -1,4 +1,4 @@
-import SmartEmoji from '@/components/app/SmartEmoji'
+import SmartEmoji from '@/components/modular/SmartEmoji'
 import Box from '@/components/primitives/Box'
 import Button from '@/components/primitives/Button'
 import Flex from '@/components/primitives/Flex'

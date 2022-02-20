@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { HabitContext } from '@/components/page/home/habit-tracker/HabitWrapper'
-import SmartEmoji from '@/components/app/SmartEmoji'
+import SmartEmoji from '@/components/modular/SmartEmoji'
 import Link from '@/components/primitives/Link'
 import Text from '@/components/primitives/Text'
 import Flex from '@/components/primitives/Flex'

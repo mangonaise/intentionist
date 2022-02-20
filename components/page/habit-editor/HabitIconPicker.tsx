@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
 import { HabitEditorContext } from 'pages/habit'
-import EmojiButton from '@/components/app/EmojiButton'
+import EmojiButton from '@/components/modular/EmojiButton'
 
 const HabitIconPicker = () => {
   const editor = useContext(HabitEditorContext)

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { SettingsSectionData, settingsSections } from 'pages/settings'
 import useMediaQuery from '@/hooks/useMediaQuery'
-import Dropdown from '@/components/app/Dropdown'
+import Dropdown from '@/components/modular/Dropdown'
 import Flex from '@/components/primitives/Flex'
 import Heading from '@/components/primitives/Heading'
 import Link from '@/components/primitives/Link'
