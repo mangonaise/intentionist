@@ -21,21 +21,18 @@ export default class FriendRequestsHandler {
   public viewMode: FriendRequestsViewMode = 'incoming'
   public pendingStatus = null as PendingFriendRequestStatus
   public newFriendDisplayName?: string
-  private profileHandler
-  private dbHandler
-  private friendsHandler
-  private functions
   private listenerUnsubscribe: Unsubscribe | null = null
 
-  constructor(profileHandler: ProfileHandler, dbHandler: DbHandler, friendsHandler: FriendsHandler, @inject('Functions') functions: Functions) {
-    this.profileHandler = profileHandler
-    this.dbHandler = dbHandler
-    this.friendsHandler = friendsHandler
-    this.functions = functions
+  constructor(
+    private profileHandler: ProfileHandler,
+    private dbHandler: DbHandler,
+    private friendsHandler: FriendsHandler,
+    @inject('Functions') private functions: Functions
+  ) {
     makeAutoObservable(this)
   }
 
-  public startListener = () => {
+  public startListeningToFriendRequests = () => {
     this.setViewMode('incoming')
     if (this.listenerUnsubscribe) return
     this.listenerUnsubscribe = onSnapshot(
@@ -44,7 +41,7 @@ export default class FriendRequestsHandler {
     )
   }
 
-  public stopListener = () => {
+  public stopListeningToFriendRequests = () => {
     this.listenerUnsubscribe?.()
     this.listenerUnsubscribe = null
   }
@@ -71,7 +68,6 @@ export default class FriendRequestsHandler {
       if (condition) return result
     }
 
-    // if the target user has friend requests disabled (not yet implemented), the request will fail, so wrap in a try/catch 
     try {
       const userData = await this.dbHandler.getUsernameDoc(username)
       return userData ?? 'not found'
@@ -106,6 +102,7 @@ export default class FriendRequestsHandler {
     const respond = httpsCallable(this.functions, 'respondToFriendRequest')
 
     this.pendingStatus = 'accepting'
+
     if (!this.friendsHandler.hasLoadedFriends) {
       await when(() => this.friendsHandler.hasLoadedFriends)
     }

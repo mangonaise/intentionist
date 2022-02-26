@@ -31,6 +31,7 @@ const LandingPage: NextPage = () => {
   }))
 
   if (hide) return <LoadingScreen />
+  
   return (
     <FadeIn>
       <Head><title>Intentionist | Social habit tracker</title></Head>

@@ -13,13 +13,9 @@ export const maxFriends = 50
 export default class FriendsHandler {
   public friends: Friend[] = []
   public hasLoadedFriends = false
-  private dbHandler
-  private functions
   private friendsDocListenerUnsubscribe: Unsubscribe | null = null
 
-  constructor(dbHandler: DbHandler, @inject('Functions') functions: Functions) {
-    this.dbHandler = dbHandler
-    this.functions = functions
+  constructor(private dbHandler: DbHandler, @inject('Functions') private functions: Functions) {
     makeAutoObservable(this)
   }
 
@@ -31,7 +27,7 @@ export default class FriendsHandler {
     )
   }
 
-  public stopFriendsDocListener = () => {
+  public stopListeningToFriendsDoc = () => {
     this.friendsDocListenerUnsubscribe?.()
     this.friendsDocListenerUnsubscribe = null
   }

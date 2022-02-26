@@ -17,12 +17,10 @@ const FRIENDS = 'userData/friends'
 @singleton()
 export default class DbHandler {
   private uid
-  public db
   public isWriteComplete = true
 
-  constructor(authUser: AuthUser, @inject('Firestore') db: Firestore) {
+  constructor(authUser: AuthUser, @inject('Firestore') private db: Firestore) {
     this.uid = authUser.uid
-    this.db = db
     makeAutoObservable(this)
   }
 
@@ -99,8 +97,8 @@ export default class DbHandler {
     const batch = writeBatch(this.db)
     batch.delete(this.habitDocRef(habitId))
     this.removeHabitFromHabitDetailsDoc({ batch, habitId, linkedHabitIds })
-    await batch.commit()
 
+    await batch.commit()
     this.completeWrite()
   }
 
@@ -127,7 +125,6 @@ export default class DbHandler {
     }, { merge: true })
 
     await batch.commit()
-
     this.completeWrite()
   }
 
@@ -151,8 +148,8 @@ export default class DbHandler {
       order: arrayUnion(habitId),
       activeIds
     }, { merge: true })
-    await batch.commit()
 
+    await batch.commit()
     this.completeWrite()
 
     return { ...habit, archived: false }

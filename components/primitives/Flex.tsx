@@ -2,11 +2,11 @@ import { forwardRef, PropsWithChildren } from 'react'
 import { BoxProps } from './Box'
 
 interface FlexProps extends BoxProps {
-  center?: boolean,
-  column?: boolean,
-  flexWrap?: boolean,
+  center?: boolean
+  column?: boolean
+  flexWrap?: boolean
   justify?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'space-evenly'
-  align?: 'stretch' | 'center' | 'flex-start' | 'flex-end' | 'baseline',
+  align?: 'stretch' | 'center' | 'flex-start' | 'flex-end' | 'baseline'
   asSpan?: boolean
 }
 

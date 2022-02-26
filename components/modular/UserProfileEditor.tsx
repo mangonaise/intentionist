@@ -17,7 +17,7 @@ import ModalPopup from './ModalPopup'
 import EmojiButton from './EmojiButton'
 
 interface Props {
-  initialProfile: UserProfileInfo,
+  initialProfile: UserProfileInfo
   isNewUser: boolean
 }
 

@@ -6,9 +6,9 @@ import Flex from '@/components/primitives/Flex'
 import CheckIcon from '@/components/icons/CheckIcon'
 
 interface Props {
-  title: string,
-  highlight?: boolean,
-  highlightColor?: string,
+  title: string
+  highlight?: boolean
+  highlightColor?: string
   anchorRight?: boolean | boolean[]
 }
 

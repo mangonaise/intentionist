@@ -9,9 +9,9 @@ import Heading from '@/components/primitives/Heading'
 import Text from '@/components/primitives/Text'
 
 interface Props {
-  isOpen: boolean,
-  closeModal: () => void,
-  searchResult?: UserSearchResult,
+  isOpen: boolean
+  closeModal: () => void
+  searchResult?: UserSearchResult
   onSendFriendRequest: () => void
 }
 

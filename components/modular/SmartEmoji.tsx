@@ -4,7 +4,7 @@ import isWindowsOS from '@/logic/utils/isWindowsOS'
 import Text from '@/components/primitives/Text'
 
 interface Props {
-  nativeEmoji: string,
+  nativeEmoji: string
   rem: number
 }
 

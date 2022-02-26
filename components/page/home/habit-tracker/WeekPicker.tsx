@@ -143,8 +143,8 @@ const MenuContent = ({ selectedDate }: { selectedDate: Date }) => {
 }
 
 interface WeekButtonProps {
-  weekStart: Date,
-  selectedDate: Date,
+  weekStart: Date
+  selectedDate: Date
   onSelectWeek: (startDate: Date) => void
 }
 

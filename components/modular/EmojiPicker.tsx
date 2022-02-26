@@ -14,10 +14,10 @@ import CrossIcon from '@/components/icons/CrossIcon'
 import Modal from 'react-responsive-modal'
 
 interface Props {
-  isOpen: boolean,
-  label: string,
-  onClosePicker: () => void,
-  onSelectEmoji: (emoji: BaseEmoji) => void,
+  isOpen: boolean
+  label: string
+  onClosePicker: () => void
+  onSelectEmoji: (emoji: BaseEmoji) => void
 }
 
 const EmojiPicker = ({ isOpen, label, onSelectEmoji, onClosePicker }: Props) => {

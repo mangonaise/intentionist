@@ -7,8 +7,8 @@ import EmojiPicker from './EmojiPicker'
 import SmartEmoji from './SmartEmoji'
 
 interface Props {
-  value: string,
-  onChangeEmoji: (nativeEmoji: string) => void,
+  value: string
+  onChangeEmoji: (nativeEmoji: string) => void
   buttonSize: string | string[]
   emojiSizeRem: number
   label: string

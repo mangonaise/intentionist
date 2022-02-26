@@ -6,10 +6,10 @@ import Icon from '@/components/primitives/Icon'
 
 interface Props {
   content: string | (() => JSX.Element)
-  action: () => void,
+  action: () => void
   focusIndex: number
-  invert?: boolean,
-  disabled?: boolean,
+  invert?: boolean
+  disabled?: boolean
 }
 
 const TrackerStatusEditorButton = ({ content, action, focusIndex, invert, disabled = false }: Props) => {

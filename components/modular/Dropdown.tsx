@@ -11,14 +11,14 @@ import FocusTrap from 'focus-trap-react'
 import { UrlObject } from 'url'
 
 interface DropdownProps {
-  title?: string | JSX.Element,
-  anchorRight?: boolean | boolean[],
-  noGap?: boolean,
-  noArrow?: boolean,
-  disabled?: boolean,
-  highlightWhenOpen?: boolean,
-  menuMaxWidth?: string | string[],
-  className?: string,
+  title?: string | JSX.Element
+  anchorRight?: boolean | boolean[]
+  noGap?: boolean
+  noArrow?: boolean
+  disabled?: boolean
+  highlightWhenOpen?: boolean
+  menuMaxWidth?: string | string[]
+  className?: string
   children: ReactNode
 }
 

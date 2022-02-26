@@ -18,12 +18,10 @@ export type UsernameAvailability = 'unknown' | 'checking' | 'invalid' | 'availab
 
 @singleton()
 export default class ProfileHandler {
-  private dbHandler: DbHandler
   public profileInfo: UserProfileInfo | null
 
-  constructor(initialState: InitialState, dbHandler: DbHandler) {
+  constructor(initialState: InitialState, private dbHandler: DbHandler) {
     this.profileInfo = initialState.data.userProfile
-    this.dbHandler = dbHandler
     makeAutoObservable(this)
   }
 

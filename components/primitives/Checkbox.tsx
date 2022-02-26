@@ -8,7 +8,6 @@ interface CheckboxProps extends ComponentPropsWithoutRef<'input'> {
 const Checkbox: StyledComponent<CheckboxProps> = (props) => {
   const { label, checked } = props
 
-
   return (
     <label
       sx={{

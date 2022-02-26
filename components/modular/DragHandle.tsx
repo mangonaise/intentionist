@@ -4,8 +4,8 @@ import IconButton from '@/components/primitives/IconButton'
 import DragHandleIcon from '@/components/icons/DragHandleIcon'
 
 export interface DragHandleProps {
-  isDragOverlay?: boolean,
-  listeners?: DraggableSyntheticListeners,
+  isDragOverlay?: boolean
+  listeners?: DraggableSyntheticListeners
   attributes?: any
 }
 

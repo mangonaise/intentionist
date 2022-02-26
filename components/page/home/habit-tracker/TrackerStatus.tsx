@@ -10,10 +10,10 @@ import Button from '@/components/primitives/Button'
 import Flex from '@/components/primitives/Flex'
 
 interface Props {
-  value: string | null,
-  date: YearAndDay,
-  weekdayIndex: number,
-  connectLeft: boolean,
+  value: string | null
+  date: YearAndDay
+  weekdayIndex: number
+  connectLeft: boolean
   connectRight: boolean
 }
 
@@ -66,8 +66,8 @@ const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }:
 interface TrackerStatusButtonProps {
   onClick: () => void
   hasValue: boolean
-  isEditing: boolean,
-  isFuture: boolean,
+  isEditing: boolean
+  isFuture: boolean
   belongsToFriend: boolean
 }
 

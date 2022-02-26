@@ -7,10 +7,10 @@ import CrossIcon from '@/components/icons/CrossIcon'
 import 'react-responsive-modal/styles.css'
 
 interface Props {
-  isOpen: boolean,
-  closeModal: () => void,
+  isOpen: boolean
+  closeModal: () => void
   children: ReactNode
-  disableClose?: boolean,
+  disableClose?: boolean
   initialFocusRef?: RefObject<HTMLElement>
 }
 

@@ -107,13 +107,13 @@ export default class HabitStatusesHandler {
 
     const hasValueToday = !!statuses[today.year]?.[today.dayOfYear]
     const isPending = !hasValueToday
+    
     let count = hasValueToday ? 1 : 0
+    let dateToCheck = this.getPreviousDate(today)
 
-    let dateToCount = this.getPreviousDate(today)
-
-    while (this.getHabitStatusAtDate(statuses, dateToCount)) {
+    while (this.getHabitStatusAtDate(statuses, dateToCheck)) {
       count++
-      dateToCount = this.getPreviousDate(dateToCount)
+      dateToCheck = this.getPreviousDate(dateToCheck)
     }
 
     return { count, isPending }
@@ -121,17 +121,17 @@ export default class HabitStatusesHandler {
 
   private calculateWeeklyStreak = (statuses: HabitStatuses, frequency: number): Streak => {
     const hasEnoughStatusesInWeek = (weekStart: YearAndDay) => {
-      let dateToCount = weekStart
+      let dateToCheck = weekStart
       let statusesInWeek = 0
 
       for (let i = 0; i < 7; i++) {
-        if (this.getHabitStatusAtDate(statuses, dateToCount)) {
+        if (this.getHabitStatusAtDate(statuses, dateToCheck)) {
           statusesInWeek++
           if (statusesInWeek >= frequency) {
             return true
           }
         }
-        dateToCount = this.getNextDate(dateToCount)
+        dateToCheck = this.getNextDate(dateToCheck)
       }
 
       return false
@@ -142,11 +142,11 @@ export default class HabitStatusesHandler {
     const isPending = !hasEnoughStatusesThisWeek
     let count = hasEnoughStatusesThisWeek ? 1 : 0
 
-    let weekToCount = this.getPreviousDate(thisWeekStart, { subtractWeek: true })
+    let weekToCheck = this.getPreviousDate(thisWeekStart, { subtractWeek: true })
 
-    while (hasEnoughStatusesInWeek(weekToCount)) {
+    while (hasEnoughStatusesInWeek(weekToCheck)) {
       count++
-      weekToCount = this.getPreviousDate(weekToCount, { subtractWeek: true })
+      weekToCheck = this.getPreviousDate(weekToCheck, { subtractWeek: true })
     }
 
     return { count, isPending }

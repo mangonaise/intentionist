@@ -37,6 +37,7 @@ const NewUserPage = withAuthUser(observer(() => {
 
   if (initialFetches?.userProfile) return null
   if (!hasCompletedInitialFetches) return <LoadingScreen />
+  
   return (
     <FadeIn>
       <Head><title>Welcome</title></Head>

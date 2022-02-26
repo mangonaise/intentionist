@@ -5,9 +5,9 @@ import IconButton from '@/components/primitives/IconButton'
 
 interface Props {
   data: Array<{
-    text: string | JSX.Element,
-    color: string,
-    icon: (() => JSX.Element) | null,
+    text: string | JSX.Element
+    color: string
+    icon: (() => JSX.Element) | null
     onClick: () => void
   }>
   hideText?: boolean

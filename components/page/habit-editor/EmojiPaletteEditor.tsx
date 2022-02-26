@@ -130,8 +130,8 @@ const SortableEmoji = ({ id }: { id: string }) => {
 }
 
 interface EmojiWrapperProps extends DragHandleProps {
-  id: string,
-  isDragging?: boolean,
+  id: string
+  isDragging?: boolean
   style?: {
     transform: string | undefined
     transition: string | undefined

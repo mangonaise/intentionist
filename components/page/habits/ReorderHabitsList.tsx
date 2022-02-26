@@ -93,8 +93,8 @@ const SortableHabit = ({ habit }: { habit: Habit }) => {
 }
 
 interface HabitWrapperProps extends DragHandleProps {
-  habit: Habit,
-  isDragging?: boolean,
+  habit: Habit
+  isDragging?: boolean
   style?: {
     transform: string | undefined
     transition: string | undefined

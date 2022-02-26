@@ -9,9 +9,9 @@ import CrossIcon from '@/components/icons/CrossIcon'
 import FocusTrap from 'focus-trap-react'
 
 interface TrackerStatusEditorProps {
-  hasValue: boolean,
-  palette: string[],
-  onSelectStatus: (status: string | null) => void,
+  hasValue: boolean
+  palette: string[]
+  onSelectStatus: (status: string | null) => void
   onCancelEditing: () => void
 }
 

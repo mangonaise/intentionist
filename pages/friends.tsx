@@ -31,10 +31,14 @@ const FriendsPage = () => {
 }
 
 function useFriendRequestsListener() {
-  const { startListener, stopListener } = container.resolve(FriendRequestsHandler)
+  const {
+    startListeningToFriendRequests,
+    stopListeningToFriendRequests
+  } = container.resolve(FriendRequestsHandler)
+
   useEffect(() => {
-    startListener()
-    return () => stopListener()
+    startListeningToFriendRequests()
+    return () => stopListeningToFriendRequests()
   }, [])
 }
 

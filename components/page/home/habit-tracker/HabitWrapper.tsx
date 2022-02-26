@@ -13,7 +13,7 @@ import Flex from '@/components/primitives/Flex'
 import Box from '@/components/primitives/Box'
 
 export const HabitContext = createContext<{
-  habit: Habit & { friendUid?: string },
+  habit: Habit & { friendUid?: string }
   isLinkedHabit: boolean
 }>(null!)
 

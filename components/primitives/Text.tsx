@@ -10,7 +10,7 @@ const Text: StyledComponent<Props> = (props) => {
     <Component
       sx={{
         margin: 0,
-        '& b': { 
+        '& b': {
           fontWeight: 'semibold'
         }
       }}

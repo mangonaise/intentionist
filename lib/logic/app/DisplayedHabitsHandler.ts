@@ -16,8 +16,8 @@ export default class DisplayedHabitsHandler {
   public habitsInView: Array<Habit | FriendHabit> = []
 
   public isLoadingHabits = true
-  public selectedFriendUid: string | null = null
   public selectedWeekStartDate = getYearAndDay(getFirstDayOfThisWeek())
+  public selectedFriendUid: string | null = null
   private selectedFriendHabitOrder: string[] = []
 
   private friendHabits: { [habitId: string]: FriendHabit } = {}
@@ -139,6 +139,7 @@ export default class DisplayedHabitsHandler {
 
     await this.listenToLinkedHabits()
     this.refreshHabitsInView()
+
     runInAction(() => this.isLoadingHabits = false)
   }
 
@@ -166,7 +167,6 @@ export default class DisplayedHabitsHandler {
       this.dbHandler.habitDetailsDocRef(friendUid),
       (snapshot) => this.handleHabitDetailsDocSnapshot({ snapshot, friendUid })
     )
-
     await when(() => this.hasLoadedFriendHabitDetails && this.loadingHabitsCount === 0)
   }
 

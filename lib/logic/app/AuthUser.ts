@@ -3,8 +3,8 @@ import { inject, singleton } from 'tsyringe'
 
 @singleton()
 export default class AuthUser {
-  uid
-  displayName
+  public uid
+  public displayName
 
   constructor(@inject('Auth') auth: Auth) {
     if (!auth.currentUser) {

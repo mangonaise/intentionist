@@ -6,7 +6,7 @@ import Text from './Text'
 
 interface Props extends ButtonProps {
   icon: () => JSX.Element
-  right?: boolean,
+  right?: boolean
 }
 
 const iconMargin = '0.8em'

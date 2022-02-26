@@ -1,7 +1,7 @@
 import { StyledComponent } from '@/components/types/StyledComponent'
 
 interface Props {
-  time?: number,
+  time?: number
   delay?: number
 }
 

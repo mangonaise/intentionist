@@ -14,13 +14,11 @@ type QueryParams = {
 export default class HabitEditor {
   public habit
   public isNewHabit
-  private habitsHandler
-  private router
 
-  constructor(habitsHandler: HabitsHandler, @inject('Router') router: Router) {
-    this.habitsHandler = habitsHandler
-    this.router = router
-
+  constructor(
+    private habitsHandler: HabitsHandler,
+    @inject('Router') private router: Router
+  ) {
     const query = router.query as QueryParams
     if (query.new !== undefined) {
       this.isNewHabit = true
@@ -45,7 +43,7 @@ export default class HabitEditor {
   }
 
   public archiveHabit = async () => {
-    if (!this.habit) throw new Error ('Cannot archive undefined habit')
+    if (!this.habit) throw new Error('Cannot archive undefined habit')
     await this.habitsHandler.archiveHabitById(this.habit.id)
     this.exit()
   }

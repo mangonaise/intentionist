@@ -37,14 +37,14 @@ beforeEach(async () => {
   registerFirebaseInjectionTokens(firebase)
   await simulateInitialFetches()
   requestsHandler = container.resolve(FriendRequestsHandler)
-  requestsHandler.startListener()
+  requestsHandler.startListeningToFriendRequests()
   friendsHandler = container.resolve(FriendsHandler)
   friendsHandler.listenToFriendsDoc()
 })
 
 afterEach(async () => {
-  requestsHandler.stopListener()
-  friendsHandler.stopFriendsDocListener()
+  requestsHandler.stopListeningToFriendRequests()
+  friendsHandler.stopListeningToFriendsDoc()
   container.clearInstances()
 })
 

@@ -20,6 +20,7 @@ export const HabitEditorContext = createContext<HabitEditor>(null!)
 const HabitEditorPage = () => {
   const [editor] = useState(container.resolve(HabitEditor))
   if (!editor.habit) return <></>
+  
   return (
     <HabitEditorContext.Provider value={editor}>
       <Head><title>{editor.isNewHabit ? 'Add habit' : 'Edit habit'}</title></Head>

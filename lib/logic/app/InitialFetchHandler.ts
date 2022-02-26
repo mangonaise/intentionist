@@ -15,12 +15,10 @@ type InitialFetches = {
 
 @singleton()
 export default class InitialFetchHandler {
-  private dbHandler
   public initialFetches: InitialFetches | undefined
   public hasCompletedInitialFetches = false
 
-  constructor(dbHandler: DbHandler, friendsHandler: FriendsHandler) {
-    this.dbHandler = dbHandler
+  constructor(private dbHandler: DbHandler, friendsHandler: FriendsHandler) {
     this.makeInitialFetches()
     friendsHandler.listenToFriendsDoc()
     makeAutoObservable(this)
