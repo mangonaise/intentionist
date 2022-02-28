@@ -20,7 +20,12 @@ const EmojiPaletteInfo = () => {
 
   return (
     <>
-      <IconButton onClick={openModal} icon={InfoIcon} sx={{ p: '0.7rem', bg: 'transparent' }} />
+      <IconButton
+        onClick={openModal}
+        icon={InfoIcon}
+        aria-label="View info about quick palettes"
+        sx={{ p: '0.7rem', bg: 'transparent' }}
+      />
       <ModalPopup isOpen={showModal} closeModal={closeModal}>
         <Flex center column>
           <Heading level={2} sx={{ my: 6 }}>Quick palette</Heading>

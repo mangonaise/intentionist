@@ -45,6 +45,7 @@ const FriendsList = observer(() => {
                 <Spacer ml="auto" />
                 <IconButton
                   icon={CrossIcon}
+                  aria-label="Remove friend"
                   onClick={() => setRemovingFriendUid(friend.uid)}
                   sx={{ bg: 'transparent', '&:not(:hover)': { color: 'whiteAlpha.60' } }}
                 />

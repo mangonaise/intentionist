@@ -6,21 +6,23 @@ import Icon from '@/components/primitives/Icon'
 
 interface Props {
   content: string | (() => JSX.Element)
-  action: () => void
+  action: () => void,
+  label?: string,
   focusIndex: number
   invert?: boolean
   disabled?: boolean
 }
 
-const TrackerStatusEditorButton = ({ content, action, focusIndex, invert, disabled = false }: Props) => {
+const TrackerStatusEditorButton = ({ content, action, label, focusIndex, invert, disabled = false }: Props) => {
   return (
     <Box sx={{ mr: '4px', mb: '4px', opacity: 0, animation: 'fade-in forwards 175ms' }}>
       <Button
         onClick={action}
+        aria-label={label}
         hoverEffect={disabled || invert ? 'none' : 'default'}
         sx={{
           width: '2.5rem', height: '2.5rem', p: 0,
-          borderRadius: 'trackerStatus', 
+          borderRadius: 'trackerStatus',
           bg: invert ? 'text' : 'transparent',
           color: disabled ? '#666' : 'text',
           cursor: disabled ? 'default' : 'pointer',

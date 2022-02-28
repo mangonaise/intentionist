@@ -16,6 +16,7 @@ const HabitTitleSection = observer(() => {
       <NextLink href={{ pathname: 'habit', query: { id: habit.id } }} passHref>
         <Link
           tabIndex={habit.friendUid ? -1 : 0}
+          aria-label={habit.name}
           sx={{
             width: 'fit-content', px: 1,
             fontSize: ['1.2rem', '1.5rem'], fontWeight: 'medium', borderRadius: 'default',

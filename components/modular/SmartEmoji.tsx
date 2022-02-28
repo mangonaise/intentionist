@@ -1,5 +1,5 @@
 import { Emoji, getEmojiDataFromNative } from 'emoji-mart'
-import emojiData from 'emoji-mart/data/all.json'
+import allEmojiData from 'emoji-mart/data/all.json'
 import isWindowsOS from '@/logic/utils/isWindowsOS'
 import Text from '@/components/primitives/Text'
 
@@ -8,16 +8,31 @@ interface Props {
   rem: number
 }
 
-const SmartEmoji = ({ nativeEmoji, rem }: Props) => {
+const SmartEmoji = ({ nativeEmoji, rem }: Props) => {  
   if (isWindowsOS) {
-    const twemoji = getEmojiDataFromNative(nativeEmoji, 'twitter', emojiData)
-    if (twemoji) {
+    const emojiData = getEmojiDataFromNative(nativeEmoji, 'twitter', allEmojiData)
+    if (emojiData) {
       const twemojiSize = rem * 14
       return (
-        <Text type="span"
-          sx={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center', size: `${twemojiSize}px`, '& span': { size: `${twemojiSize}px` } }}
+        <Text 
+          type="span"
+          aria-label={nativeEmoji}
+          sx={{
+            display: 'inline-flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            size: `${twemojiSize}px`,
+            '& span': { size: `${twemojiSize}px` }
+          }}
         >
-          <Emoji emoji={twemoji} size={twemojiSize} set="twitter" sheetSize={32} skin={twemoji.skin || undefined} />
+          <Emoji
+            
+            emoji={emojiData}
+            size={twemojiSize}
+            set="twitter"
+            sheetSize={32}
+            skin={emojiData.skin || undefined}
+          />
         </Text >
       )
     }
@@ -25,6 +40,7 @@ const SmartEmoji = ({ nativeEmoji, rem }: Props) => {
   return (
     <Text
       type="span"
+      aria-label={nativeEmoji}
       sx={{
         display: 'flex', justifyContent: 'center', alignItems: 'center',
         size: `${rem}rem`,

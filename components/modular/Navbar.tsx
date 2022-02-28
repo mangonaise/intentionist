@@ -110,6 +110,7 @@ const UserActionsDropdown = observer(() => {
   return (
     <Dropdown
       anchorRight
+      label="User menu"
       title={
         <Flex center sx={{ mr: '-0.3rem' }}>
           <SmartEmoji nativeEmoji={profileInfo?.avatar ?? '🙂'} rem={1.5} />

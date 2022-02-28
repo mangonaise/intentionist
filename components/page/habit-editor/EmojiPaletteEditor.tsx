@@ -8,6 +8,7 @@ import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifi
 import { CSS } from '@dnd-kit/utilities'
 import { HabitEditorContext } from 'pages/habit'
 import { ThemeUIStyleObject } from '@theme-ui/css'
+import { sortableAnnouncements } from '@/logic/utils/sortableAnnouncements'
 import HabitEditor from '@/logic/app/HabitEditor'
 import arrayMove from '@/logic/utils/arrayMove'
 import EmojiPaletteInfo from './EmojiPaletteInfo'
@@ -40,7 +41,11 @@ const HeadingSection = () => {
 
   return (
     <Flex align="center" sx={{ mb: [2, 3], pb: [2, 3], borderBottom: 'solid 1px', borderColor: 'divider' }}>
-      <IconButton icon={PlusIcon} onClick={addEmoji} sx={{ mr: 3, p: '0.7rem' }} />
+      <IconButton
+        icon={PlusIcon}
+        aria-label="Add to quick palette"
+        onClick={addEmoji} sx={{ mr: 3, p: '0.7rem' }}
+      />
       <Heading level={3} sx={{ fontSize: ['1.25rem', '1.5rem'], fontWeight: 'medium' }}>
         Quick palette
       </Heading>
@@ -68,6 +73,7 @@ const EmojiList = observer(() => {
       onDragEnd={handleDragEnd}
       onDragStart={handleDragStart}
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+      announcements={sortableAnnouncements}
     >
       <SortableContext
         // Destructuring fixes bug where new emojis have no transform data

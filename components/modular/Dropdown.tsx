@@ -12,6 +12,7 @@ import { UrlObject } from 'url'
 
 interface DropdownProps {
   title?: string | JSX.Element
+  label?: string
   anchorRight?: boolean | boolean[]
   noGap?: boolean
   noArrow?: boolean
@@ -60,7 +61,7 @@ const Dropdown = (props: DropdownProps) => {
 
 const DropdownButton = () => {
   const [preventOpen, setPreventOpen] = useState(false)
-  const { isOpen, openDropdown, title, noArrow, disabled, highlightWhenOpen = true } = useContext(DropdownContext)
+  const { isOpen, openDropdown, title, label, noArrow, disabled, highlightWhenOpen = true } = useContext(DropdownContext)
 
   function handleClick() {
     if (!preventOpen) {
@@ -78,6 +79,8 @@ const DropdownButton = () => {
       onClick={handleClick}
       onPointerDown={handlePointerDown}
       disabled={disabled}
+      aria-label={label ?? ''}
+      aria-haspopup="menu"
       sx={{
         paddingX: title ? undefined : 3,
         size: '100%',
@@ -150,12 +153,13 @@ const DropdownMenu = () => {
 }
 
 interface ItemProps extends CustomButtonProps {
-  itemAction?: () => void,
+  itemAction?: () => void
   href?: UrlObject | string
+  label?: string
 }
 
 const Item: StyledComponent<ItemProps> = (props) => {
-  const { itemAction, href, children } = props
+  const { itemAction, label, href, children } = props
   const { closeDropdown } = useContext(DropdownContext)
 
   function handleClick() {
@@ -166,6 +170,8 @@ const Item: StyledComponent<ItemProps> = (props) => {
   const component = (
     <Button
       onClick={handleClick}
+      aria-label={label}
+      role="menuitem"
       sx={{
         minHeight: '2.6rem',
         textAlign: 'left',

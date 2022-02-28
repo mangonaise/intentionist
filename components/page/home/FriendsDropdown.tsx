@@ -15,6 +15,8 @@ const FriendsDropdown = observer(() => {
   const { friends } = container.resolve(FriendsHandler)
   const { viewUser, selectedFriendUid } = container.resolve(DisplayedHabitsHandler)
 
+  const selectedUserProfile = getUserProfile(selectedFriendUid)
+
   function handleSelectFriend(friendUid: string | null) {
     if (selectedFriendUid !== friendUid) {
       viewUser(friendUid)
@@ -23,7 +25,8 @@ const FriendsDropdown = observer(() => {
 
   return (
     <Dropdown
-      title={<DropdownTitle friendUid={selectedFriendUid} />}
+      title={<DropdownTitle profile={selectedUserProfile} />}
+      label={`Friends menu, currently viewing ${selectedUserProfile.displayName}`}
       sx={{ '& > button': { bg: 'transparent', px: 3 } }}
     >
       <FriendButton friend={null} onClick={() => handleSelectFriend(null)} />
@@ -48,7 +51,7 @@ const FriendButton = ({ friend, onClick }: { friend: Friend | null, onClick: () 
   const avatar = friend?.avatar ?? profileInfo!.avatar
 
   return (
-    <Dropdown.Item itemAction={onClick}>
+    <Dropdown.Item label={displayName} itemAction={onClick}>
       <Flex align="center" sx={{ maxWidth: '100%' }}>
         <SmartEmoji nativeEmoji={avatar} rem={1.2} />
         <Text
@@ -64,25 +67,7 @@ const FriendButton = ({ friend, onClick }: { friend: Friend | null, onClick: () 
   )
 }
 
-const DropdownTitle = observer(({ friendUid }: { friendUid: string | null }) => {
-  const { profileInfo } = container.resolve(ProfileHandler)
-  const { friends } = container.resolve(FriendsHandler)
-
-  let profile: UserProfileInfo | undefined
-
-  if (friendUid) {
-    const friend = friends.find((friend) => friend.uid === friendUid)
-    if (friend) {
-      profile = {
-        avatar: friend.avatar,
-        displayName: friend.displayName,
-        username: friend.username
-      }
-    }
-  }
-
-  if (!profile) profile = { ...profileInfo!, displayName: 'You' }
-
+const DropdownTitle = observer(({ profile }: { profile: UserProfileInfo }) => {
   return (
     <Flex align="center">
       <SmartEmoji nativeEmoji={profile.avatar} rem={1.2} />
@@ -98,5 +83,27 @@ const DropdownTitle = observer(({ friendUid }: { friendUid: string | null }) => 
     </Flex >
   )
 })
+
+function getUserProfile(friendUid: string | null) {
+  const { friends } = container.resolve(FriendsHandler)
+  const { profileInfo: loggedInUserProfileInfo } = container.resolve(ProfileHandler)
+
+  let profile: UserProfileInfo | undefined
+
+  if (friendUid) {
+    const friend = friends.find((friend) => friend.uid === friendUid)
+    if (friend) {
+      profile = {
+        avatar: friend.avatar,
+        displayName: friend.displayName,
+        username: friend.username
+      }
+    }
+  }
+
+  if (!profile) profile = { ...loggedInUserProfileInfo!, displayName: 'You' }
+
+  return profile
+}
 
 export default FriendsDropdown

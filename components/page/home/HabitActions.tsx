@@ -16,7 +16,11 @@ const HabitActions = observer(() => {
           title="New habit"
         />
       </NextLink>
-      <Dropdown anchorRight sx={{ marginLeft: '5px', '& > button': { bg: 'transparent' } }}>
+      <Dropdown
+        label="More habit options"
+        anchorRight
+        sx={{ marginLeft: '5px', '& > button': { bg: 'transparent' } }}
+      >
         <Dropdown.Item href="/habits">Reorder habits</Dropdown.Item>
         <Dropdown.Item href="/archive">View archived habits</Dropdown.Item>
       </Dropdown>

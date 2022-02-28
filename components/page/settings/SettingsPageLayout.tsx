@@ -48,7 +48,11 @@ const SectionsSidebar = ({ activeSectionPath }: { activeSectionPath: SettingsSec
     <Flex column sx={{ width: '30%', mr: 6 }}>
       <Flex sx={{ mb: 2 }}>
         <NextLink href="/home">
-          <IconButton icon={BackIcon} sx={{ bg: 'transparent' }} />
+          <IconButton
+            aria-label="Return to home page"
+            icon={BackIcon}
+            sx={{ bg: 'transparent' }}
+          />
         </NextLink>
       </Flex>
       <Flex

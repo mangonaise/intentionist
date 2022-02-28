@@ -15,6 +15,7 @@ const Text: StyledComponent<Props> = (props) => {
         }
       }}
       className={props.className}
+      {...props}
     >
       {props.children}
     </Component>

@@ -41,15 +41,11 @@ const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }:
       <ConnectingLine visible={hasValue && connectLeft} fade={weekdayIndex === 0 ? 'left' : null} />
       <TrackerStatusButton
         onClick={() => setIsEditing(true)}
-        hasValue={hasValue}
+        value={value}
         isEditing={isEditing}
         isFuture={isFuture}
         belongsToFriend={!!habit.friendUid}
-      >
-        <Flex center asSpan>
-          {!!value && <SmartEmoji nativeEmoji={value} rem={1} />}
-        </Flex>
-      </TrackerStatusButton>
+      />
       {isEditing && (
         <TrackerStatusEditor
           hasValue={hasValue}
@@ -59,22 +55,25 @@ const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }:
         />
       )}
       <ConnectingLine visible={hasValue && connectRight} fade={weekdayIndex === 6 ? 'right' : null} />
-    </Flex>
+    </Flex >
   )
 }
 
 interface TrackerStatusButtonProps {
-  onClick: () => void
-  hasValue: boolean
+  onClick: () => void,
+  value: string | null,
   isEditing: boolean
   isFuture: boolean
   belongsToFriend: boolean
 }
 
-const TrackerStatusButton: FC<TrackerStatusButtonProps> = ({ onClick, hasValue, isEditing, isFuture, belongsToFriend, children }) => {
+const TrackerStatusButton: FC<TrackerStatusButtonProps> = ({ onClick, value, isEditing, isFuture, belongsToFriend, children }) => {
+  const hasValue = !!value
+
   return (
     <Button
       onClick={onClick}
+      aria-label={`Status: ${value ?? 'empty'}`}
       disabled={belongsToFriend || (isFuture && !hasValue)}
       sx={{
         position: 'relative', px: 0, minHeight: '2.5rem', minWidth: '2.5rem', borderRadius: 'trackerStatus',
@@ -98,7 +97,9 @@ const TrackerStatusButton: FC<TrackerStatusButtonProps> = ({ onClick, hasValue, 
         }
       }}
     >
-      {children}
+      <Flex center asSpan>
+        {!!value && <SmartEmoji nativeEmoji={value} rem={1} />}
+      </Flex>
     </Button>
   )
 }

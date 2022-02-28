@@ -107,6 +107,7 @@ const IncomingRequest = ({ request }: { request: FriendRequest }) => {
   return (
     <FriendRequestLayout request={request}>
       <IconButton
+        aria-label="Accept friend request"
         onClick={handleAcceptRequest}
         disabled={isDeclining}
         icon={CheckIcon}
@@ -116,6 +117,7 @@ const IncomingRequest = ({ request }: { request: FriendRequest }) => {
         Accept
       </IconButton>
       <IconButton
+        aria-label="Decline friend request"
         onClick={handleDeclineRequest}
         disabled={isDeclining}
         icon={isDeclining ? EllipsisIcon : CrossIcon}

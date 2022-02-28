@@ -21,7 +21,7 @@ const FriendsPageNavSection = () => {
       <Flex align="center" sx={{ mb: 3 }}>
         <Head><title>Friends</title></Head>
         <NextLink href="/home">
-          <IconButton icon={BackIcon} sx={{ bg: 'transparent' }} />
+          <IconButton icon={BackIcon} aria-label="Return to home page" sx={{ bg: 'transparent' }} />
         </NextLink>
         <Spacer ml={2} />
         <Heading level={2} sx={{ fontSize: ['1.2rem', '1.5rem'] }}>Friends</Heading>

@@ -49,6 +49,7 @@ const WeekSelector = observer(() => {
       <Flex sx={{ '& > button': { bg: 'transparent' }, width: ['100%', 'auto'] }}>
         <IconButton
           icon={ChevronLeftIcon}
+          aria-label="View previous week"
           onClick={() => changeWeek(-1)}
           sx={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }} /
         >
@@ -67,6 +68,7 @@ const WeekSelector = observer(() => {
         </Dropdown>
         <IconButton
           icon={ChevronRightIcon}
+          aria-label="View following week"
           onClick={() => changeWeek(1)}
           disabled={disableNextWeekButton}
           sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
@@ -112,6 +114,7 @@ const MenuContent = ({ selectedDate }: { selectedDate: Date }) => {
       <Flex center>
         <ChangeMonthButton
           icon={ChevronLeftIcon}
+          label="View previous month"
           onClick={() => changeDisplayedMonth(-1)}
         />
         <Flex center sx={{ width: '14ch' }}>
@@ -121,6 +124,7 @@ const MenuContent = ({ selectedDate }: { selectedDate: Date }) => {
         </Flex>
         <ChangeMonthButton
           icon={ChevronRightIcon}
+          label="View following month"
           onClick={() => changeDisplayedMonth(1)}
           disable={isDisplayingCurrentMonth}
         />
@@ -192,9 +196,17 @@ const ViewThisWeekButton = ({ onClick }: { onClick: () => void }) => {
   )
 }
 
-const ChangeMonthButton: FC<{ icon: () => JSX.Element, onClick: () => void, disable?: boolean }> = ({ icon, onClick, disable, children }) => (
+interface ChangeMonthButtonProps {
+  icon: () => JSX.Element
+  label: string
+  onClick: () => void
+  disable?: boolean
+}
+
+const ChangeMonthButton: FC<ChangeMonthButtonProps> = ({ icon, label, onClick, disable, children }) => (
   <IconButton
     icon={icon}
+    aria-label={label}
     onClick={onClick}
     sx={{
       position: 'relative',

@@ -5,6 +5,7 @@ import { DragStartEvent, DragEndEvent, DragOverlay, DndContext, closestCenter, K
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy, } from '@dnd-kit/sortable'
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
+import { sortableAnnouncements } from '@/logic/utils/sortableAnnouncements'
 import HabitsHandler, { Habit } from '@/logic/app/HabitsHandler'
 import DisplayedHabitsHandler from '@/logic/app/DisplayedHabitsHandler'
 import DragHandle, { DragHandleProps } from '@/components/modular/DragHandle'
@@ -36,6 +37,7 @@ const ReorderHabitsList = observer(() => {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+      announcements={sortableAnnouncements}
     >
       <SortableContext
         items={habits}

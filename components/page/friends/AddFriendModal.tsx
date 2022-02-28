@@ -76,6 +76,7 @@ const AddFriendModal = ({ isOpen, closeModal }: { isOpen: boolean, closeModal: (
               ref={inputRef}
             />
             <IconButton
+              aria-label="Search for user"
               icon={isSearching ? EllipsisIcon : SearchIcon}
               onClick={handleSearch}
               hoverEffect="opacity"

@@ -45,9 +45,18 @@ const TrackerStatusEditor = ({ hasValue, palette, onSelectStatus, onCancelEditin
                 key={index}
               />
             ))}
-            <TrackerStatusEditorButton content={SearchIcon} action={() => setShowEmojiPicker(true)} focusIndex={palette.length} />
+            <TrackerStatusEditorButton
+              label="Search for an emoji"
+              content={SearchIcon}
+              action={() => setShowEmojiPicker(true)} focusIndex={palette.length}
+            />
             {hasValue && (
-              <TrackerStatusEditorButton content={CrossIcon} action={() => onSelectStatus(null)} focusIndex={palette.length + 1} />
+              <TrackerStatusEditorButton
+                label="Clear status"
+                content={CrossIcon}
+                action={() => onSelectStatus(null)}
+                focusIndex={palette.length + 1}
+              />
             )}
           </TrackerStatusEditorBar>
         )}

@@ -142,6 +142,7 @@ const LinkableHabit = ({ habit, onLink }: { habit: Habit, onLink: (habit: Habit)
       </Text>
       <Spacer ml="auto" />
       <IconButton
+        aria-label={`Link ${habit.name}`}
         icon={LinkIcon}
         onClick={() => onLink(habit)}
         hoverEffect="opacity"
