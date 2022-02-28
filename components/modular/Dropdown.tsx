@@ -81,7 +81,7 @@ const DropdownButton = () => {
       sx={{
         paddingX: title ? undefined : 3,
         size: '100%',
-        backgroundColor: highlightWhenOpen && isOpen ? 'var(--button-highlight-color) !important' : null,
+        backgroundColor: highlightWhenOpen && isOpen ? 'var(--color-button-highlight) !important' : null,
         '&:disabled': { opacity: 0.75 }
       }}
     >
@@ -130,7 +130,7 @@ const DropdownMenu = () => {
             transform: noGap ? null : 'translateY(5px)',
             backgroundColor: '#2d2d2d',
             borderRadius: 'default',
-            boxShadow: 'var(--background-color) 0px 4px 16px 0px',
+            boxShadow: 'var(--color-bg) 0px 4px 16px 0px',
             wordBreak: 'break-word',
             opacity: 0,
             animation: 'fade-in forwards 200ms',

@@ -111,7 +111,7 @@ const PickerWrapper = ({ onSelectEmoji }: { onSelectEmoji: (emoji: BaseEmoji) =>
           showPreview={false}
           title={'Skin tone'}
           emoji=""
-          color="var(--text-color)"
+          color="var(--color-text)"
           notFoundEmoji=""
           exclude={['recent']}
         />

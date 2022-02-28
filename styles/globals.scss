@@ -8,29 +8,28 @@
   font-display: swap;
 }
 
-$accent-color: #6075af;
-$accent-color-alt: #b15c83;
-$button-accent-color: color.scale($accent-color, $lightness: -5%, $saturation: -5%);
-$warning-color: #e07785;
+$color-accent: #6075af;
+$color-accent-alt: #b15c83;
+$color-button-accent: color.scale($color-accent, $lightness: -5%, $saturation: -5%);
+$color-warning: #e07785;
 
 :root {
   font-size: 14px;
-  --accent-color: #{$accent-color};
-  --accent-color-alt: #{$accent-color-alt};
-  --warning-color: #{$warning-color};
-  --background-color: #181818;
-  --text-color: white;
-  --text-accent-color: #{color.scale($accent-color, $lightness: 25%, $saturation: 20%)};
-  --text-accent-color-alt: #{color.scale($accent-color-alt, $lightness: 25%, $saturation: 20%)};
-  --divider-color: rgba(255, 255, 255, 0.1);
-  --grid-color: rgba(255, 255, 255, 0.1);
-  --focus-color: rgba(255, 255, 255, 0.75);
-  --button-highlight-color: rgba(255, 255, 255, 0.1);
-  --button-accent-color: #{$button-accent-color};
-  --button-accent-color-alt: #{color.scale($accent-color-alt, $lightness: -5%, $saturation: -5%)};
-  --button-warning-color: #{color.scale($warning-color, $lightness: -30%, $saturation: -40%)};
-  --nav-color: #{color.adjust($button-accent-color, $alpha: -0.875)};
-  --button-color: rgba(255, 255, 255, 0.06);
+  --color-accent: #{$color-accent};
+  --color-accent-alt: #{$color-accent-alt};
+  --color-warning: #{$color-warning};
+  --color-bg: #181818;
+  --color-text: white;
+  --color-text-accent: #{color.scale($color-accent, $lightness: 25%, $saturation: 20%)};
+  --color-text-accent-alt: #{color.scale($color-accent-alt, $lightness: 25%, $saturation: 20%)};
+  --color-divider: rgba(255, 255, 255, 0.1);
+  --color-focus: rgba(255, 255, 255, 0.75);
+  --color-button: rgba(255, 255, 255, 0.06);
+  --color-button-highlight: rgba(255, 255, 255, 0.1);
+  --color-button-accent: #{$color-button-accent};
+  --color-button-accent-alt: #{color.scale($color-accent-alt, $lightness: -5%, $saturation: -5%)};
+  --color-button-warning: #{color.scale($color-warning, $lightness: -30%, $saturation: -40%)};
+  --color-nav: #{color.adjust($color-button-accent, $alpha: -0.875)};
 }
 
 html,
@@ -39,13 +38,13 @@ body {
   padding: 0.25rem;
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, "Helvetica Neue", sans-serif;
-  color: var(--text-color);
-  background-color: var(--background-color);
+  color: var(--color-text);
+  background-color: var(--color-bg);
   -webkit-tap-highlight-color: transparent;
 
   :focus {      
     outline: none;
-    box-shadow: 0 0 0 2px var(--focus-color);
+    box-shadow: 0 0 0 2px var(--color-focus);
     &:not(:focus-visible) {
       outline: none;
       box-shadow: none;

@@ -34,7 +34,7 @@ const TrackerStatus = ({ value, date, weekdayIndex, connectLeft, connectRight }:
     <Flex
       align="center"
       sx={{
-        '--status-color': isLinkedHabit ? 'var(--button-accent-color-alt)' : 'var(--button-accent-color)',
+        '--status-color': isLinkedHabit ? 'var(--color-button-accent-alt)' : 'var(--color-button-accent)',
         position: 'relative', flexGrow: 1
       }}
     >
@@ -83,7 +83,7 @@ const TrackerStatusButton: FC<TrackerStatusButtonProps> = ({ onClick, hasValue, 
           opacity: belongsToFriend && !isFuture ? 1 : 0.3
         },
         '&:focus': {
-          boxShadow: '0 0 0 4px var(--focus-color) inset',
+          boxShadow: '0 0 0 4px var(--color-focus) inset',
           '&:not(:focus-visible)': { boxShadow: 'none' }
         },
         '&::before': {
