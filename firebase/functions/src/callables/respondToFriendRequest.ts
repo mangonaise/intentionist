@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions'
 import admin = require('firebase-admin')
 import { firestore } from 'firebase-admin'
-import { getFriendRequestsDocShortcut, getFriendsDocShortcut, getUserDataByUid, getUserDataByUsername } from '../helpers'
+import { getFriendRequestsDocShortcut, getFriendsDocShortcut, getUserDataByUid, getUserDataByUsername, rejectInvalidFunctionCall } from '../helpers'
 
 const db = admin.firestore()
 
@@ -9,15 +9,7 @@ const friendsDoc = getFriendsDocShortcut(db)
 const friendRequestsDoc = getFriendRequestsDocShortcut(db)
 
 exports.respondToFriendRequest = functions.https.onCall(async (data, context) => {
-  if (!context.app && !process.env.FUNCTIONS_EMULATOR) {
-    throw new functions.https.HttpsError('failed-precondition', 'Request did not originate from an App Check verified app.')
-  }
-  if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'You must be authenticated')
-  }
-  if (!data || !data.senderUsername || data.accept === undefined) {
-    throw new functions.https.HttpsError('invalid-argument', '"senderUsername" and "accept" arguments were not provided')
-  }
+  rejectInvalidFunctionCall({ context, requiredData: [data?.senderUsername] })
 
   const { senderUsername, accept } = data
 

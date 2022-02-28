@@ -1,5 +1,23 @@
+import * as functions from 'firebase-functions'
 import type { BasicUserData } from './types'
 import type { Firestore, Transaction } from 'firebase-admin/firestore'
+
+export function rejectInvalidFunctionCall(
+  { context, requiredData }: {
+    context: functions.https.CallableContext,
+    requiredData: any[]
+  }
+) {
+  if (!context.app && !process.env.FUNCTIONS_EMULATOR) {
+    throw new functions.https.HttpsError('failed-precondition', 'Request did not originate from an App Check verified app.')
+  }
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'You must be authenticated.')
+  }
+  for (const item of requiredData) {
+    if (!item) throw new functions.https.HttpsError('invalid-argument', 'Missing or invalid function arguments.')
+  }
+}
 
 export function getUserDocShortcut(db: Firestore) {
   return (uid: string) => db.collection('users').doc(uid)
