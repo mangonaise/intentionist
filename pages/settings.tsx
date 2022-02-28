@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import withApp from '@/components/modular/withApp'
 import SettingsPageLayout from '@/components/page/settings/SettingsPageLayout'
 import ProfileSettings from '@/components/page/settings/ProfileSettings'
+import About from '@/components/page/settings/About'
 
 const PlaceholderSettingsComponent = () => {
   return (
@@ -11,7 +12,7 @@ const PlaceholderSettingsComponent = () => {
 }
 
 export type SettingsSectionData = {
-  path: 'profile' | 'plus' | 'account' | 'about'
+  path: 'profile' | 'about'
   title: string,
   shortName?: string,
   component: () => JSX.Element
@@ -25,19 +26,9 @@ export const settingsSections: SettingsSectionData[] = [
     component: ProfileSettings
   },
   {
-    path: 'plus',
-    title: 'Intentionist Plus',
-    component: PlaceholderSettingsComponent
-  },
-  {
-    path: 'account',
-    title: 'Account settings',
-    component: PlaceholderSettingsComponent
-  },
-  {
     path: 'about',
     title: 'About',
-    component: PlaceholderSettingsComponent
+    component: About
   },
 ]
 
