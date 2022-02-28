@@ -3,7 +3,11 @@
     "target": "es6",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -18,20 +22,35 @@
     "jsxImportSource": "@theme-ui/core",
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["components/*"],
-      "@/firebase-setup/*": ["lib/firebase-setup/*"],
-      "@/logic/*": ["lib/logic/*"],
-      "@/hooks/*": ["lib/hooks/*"],
-      "@/test-setup/*": ["lib/tests/_setup/*"],
-      "@/types/*": ["lib/types/*"],
-      "@/public/*": ["public/*"]
-    }
+      "@/components/*": [
+        "components/*"
+      ],
+      "@/firebase-setup/*": [
+        "lib/firebase-setup/*"
+      ],
+      "@/logic/*": [
+        "lib/logic/*"
+      ],
+      "@/hooks/*": [
+        "lib/hooks/*"
+      ],
+      "@/test-setup/*": [
+        "lib/tests/_setup/*"
+      ],
+      "@/types/*": [
+        "lib/types/*"
+      ],
+      "@/public/*": [
+        "public/*"
+      ]
+    },
+    "incremental": true
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx", 
-    "jest.config.js" 
+    "**/*.tsx",
+    "jest.config.js"
   ],
   "exclude": [
     "node_modules",
