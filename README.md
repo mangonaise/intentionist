@@ -1,4 +1,4 @@
-### More info about this project, including a link to the live site, can be found [here](https://liamrobertson.pages.dev/projects/intentionist).
+### [Click here to try out this project](https://intentionist.pages.dev/welcome).
 
 Intentionist is a social habit tracking web app for friends with similar goals. It allows you to:
 - create any number of habits to track
