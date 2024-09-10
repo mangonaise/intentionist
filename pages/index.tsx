@@ -41,9 +41,8 @@ const LandingPage: NextPage = () => {
       <Head><title>Intentionist | Social habit tracker</title></Head>
       <Flex
         column align="flex-start" justify="center"
-        sx={{ height: '90vh', marginX: ['1rem', '2rem', '4rem'] }}
+        sx={{ height: '75vh', marginX: ['1rem', '2rem', '4rem'] }}
       >
-        <GridEffect />
         <MainHeading />
         <Spacer mb="3rem" />
         <Slogan />
@@ -52,6 +51,8 @@ const LandingPage: NextPage = () => {
         <Spacer mb="2rem" />
         <SignInButton />
       </Flex >
+      <ScreenshotsSection />
+      <GridEffect />
     </FadeIn>
   )
 }
@@ -72,7 +73,7 @@ const MainHeading = () => {
 
 const Slogan = () => {
   return (
-    <Heading level={2} sx={{ fontSize: ['2.5rem', '3.5rem', '4rem'] }}>
+    <Text sx={{ fontSize: ['2.5rem', '3.5rem', '4rem'], fontWeight: 600 }}>
       <Text type="span" sx={{ color: 'textAccent' }}>
         Trying to build good habits?
       </Text>
@@ -80,17 +81,67 @@ const Slogan = () => {
       <Text type="span">
         Don't do it alone.
       </Text>
-    </Heading>
+    </Text>
   )
 }
 
 const Description = () => {
   return (
-    <Text sx={{ fontWeight: 450, '& strong': { fontWeight: 'inherit', color: 'textAccent' } }}>
-      intentionist is a <strong>free habit tracking tool</strong>{' '}
+    <Text sx={{ fontWeight: 450, fontSize: 16, '& strong': { fontWeight: 650, color: 'textAccent' } }}>
+      intentionist is a completely free<strong> habit tracking tool</strong>{' '}
       that lets you create <strong>linked habits with friends</strong>{' '}
       to help you stay <strong>encouraged</strong> and <strong>accountable</strong>.
     </Text>
+  )
+}
+
+const ScreenshotsSection = () => {
+  return (
+    <Flex center column sx={{ bg: '#111', borderTop: 'solid 1px var(--color-accent)', pt: '1.5rem', pb: '3rem', px: 2, mx: '-0.25rem' }}>
+      <ScreenshotWithHeader
+        headerContent={<>Build <Text type="span" sx={{ color: 'textAccent' }}>streaks</Text> for any habit.</>}
+        imageSrc="/images/screenshot-1-main.png"
+        imageAlt="intentionist's habit-tracking interface"
+        imageWidthPx={1014 * 0.5}
+      />
+
+      <ScreenshotWithHeader
+        headerContent={<>Link habits <Text type="span" sx={{ color: 'textAccent' }}>with friends</Text>, in real time.</>}
+        imageSrc="/images/screenshot-2-linked-habits.gif"
+        imageAlt="an animation of two friends' habits linked together, updating in real time"
+        imageWidthPx={580 * 0.66}
+      />
+
+      <ScreenshotWithHeader
+        headerContent={<>Sync <Text type="span" sx={{ color: 'textAccent' }}>across devices</Text> for free.</>}
+        imageSrc="/images/screenshot-3-mobile.png"
+        imageAlt="the intentionist app on a mobile device"
+        imageWidthPx={712 * 0.3}
+      />
+
+      <Heading level={3} sx={{ fontWeight: 400, fontSize: ['1.5rem', '2rem'], py: 15, textAlign: 'center' }}>
+        Get started
+      </Heading>
+      <SignInButton />
+    </Flex>
+  )
+}
+
+const ScreenshotWithHeader = ({ headerContent, imageSrc, imageAlt, imageWidthPx }: {
+  headerContent: React.ReactNode, imageSrc: string, imageAlt: string, imageWidthPx: number
+}) => {
+  return (
+    <>
+      <Heading level={3} sx={{ fontWeight: 400, fontSize: ['1.5rem', '2rem'], py: 15, textAlign: 'center' }}>
+        {headerContent}
+      </Heading>
+      <img
+        src={imageSrc}
+        alt={imageAlt}
+        sx={{ borderRadius: 8, width: imageWidthPx, maxWidth: '100%' }}
+      />
+      <Spacer mb={25} />
+    </>
   )
 }
 
@@ -98,23 +149,16 @@ const SignInButton = () => {
   const { signInWithGoogle } = container.resolve(AuthHandler)
 
   return (
-    <IconButton
-      icon={GoogleIcon}
-      onClick={signInWithGoogle}
-      sx={{
-        position: 'relative',
-        '&::before': {
-          position: 'absolute',
-          inset: 0,
-          zIndex: -1,
-          content: '""',
-          bg: 'bg',
-          borderRadius: 'inherit'
-        }
-      }}
-    >
-      Continue with Google
-    </IconButton>
+    <Box sx={{ bg: 'bg' }}>
+      <IconButton
+        icon={GoogleIcon}
+        onClick={signInWithGoogle}
+        hoverEffect="none"
+        sx={{ bg: 'buttonAccent' }}
+      >
+        Continue with Google
+      </IconButton>
+    </Box>
   )
 }
 
