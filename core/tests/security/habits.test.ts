@@ -1,6 +1,6 @@
 import { assertFails, assertSucceeds, RulesTestEnvironment } from '@firebase/rules-unit-testing'
 import { getDoc, setDoc, getDocs, query, where, doc, collection } from '@firebase/firestore'
-import { createRulesTestEnvironment } from 'lib/tests/security/_setup'
+import { createRulesTestEnvironment } from 'core/tests/security/_setup'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import getDbShortcuts from '@/test-setup/getDbShortcuts'
 

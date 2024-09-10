@@ -26,19 +26,19 @@
         "components/*"
       ],
       "@/firebase-setup/*": [
-        "lib/firebase-setup/*"
+        "core/firebase-setup/*"
       ],
       "@/logic/*": [
-        "lib/logic/*"
+        "core/logic/*"
       ],
       "@/hooks/*": [
-        "lib/hooks/*"
+        "core/hooks/*"
       ],
       "@/test-setup/*": [
-        "lib/tests/_setup/*"
+        "core/tests/_setup/*"
       ],
       "@/types/*": [
-        "lib/types/*"
+        "core/types/*"
       ],
       "@/public/*": [
         "public/*"

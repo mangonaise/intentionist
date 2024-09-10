@@ -1,7 +1,7 @@
 import '@abraham/reflection'
 import { httpsCallable } from '@firebase/functions'
 import { signOut } from '@firebase/auth'
-import { waitForCloudFunctionExecution } from 'lib/tests/cloud-functions/_helpers'
+import { waitForCloudFunctionExecution } from 'core/tests/cloud-functions/_helpers'
 import getDbShortcuts from '@/test-setup/getDbShortcuts'
 import getFirebaseAdmin from '@/test-setup/getFirebaseAdmin'
 import signInDummyUser from '@/test-setup/signInDummyUser'

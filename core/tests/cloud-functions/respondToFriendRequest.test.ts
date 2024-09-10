@@ -1,5 +1,5 @@
 import '@abraham/reflection'
-import { waitForCloudFunctionExecution } from 'lib/tests/cloud-functions/_helpers'
+import { waitForCloudFunctionExecution } from 'core/tests/cloud-functions/_helpers'
 import { httpsCallable } from '@firebase/functions'
 import { signOut } from '@firebase/auth'
 import { maxFriends } from '@/logic/app/FriendsHandler'
