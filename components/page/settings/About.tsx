@@ -6,7 +6,7 @@ const About = observer(() => {
   return (
     <Text>
       Created by{' '}
-      <NextLink href="https://liamrobertson.pages.dev/" passHref>
+      <NextLink href="https://github.com/repercussive" passHref>
         <a sx={{ color: 'textAccent' }}>
           Liam Robertson
         </a>
